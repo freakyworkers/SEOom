@@ -365,11 +365,18 @@
                                         @if(config('app.server_ip'))
                                             <code>{{ config('app.server_ip') }}</code>
                                         @else
-                                            <span class="text-muted">서버 IP 주소 (서버 관리자에게 문의)</span>
+                                            <span class="text-muted">서버 IP 주소</span>
                                         @endif
                                         <br>
                                         • <strong>TTL:</strong> 자동 (또는 3600)
                                     </div>
+                                    @if(!config('app.server_ip'))
+                                        <div class="mt-2 small">
+                                            <strong><i class="bi bi-info-circle me-1"></i>서버 IP 주소 확인 방법:</strong><br>
+                                            • AWS EC2를 사용하는 경우: EC2 콘솔 → 인스턴스 → 퍼블릭 IPv4 주소 확인<br>
+                                            • 기타 서버: 서버 관리자에게 문의하거나 서버 정보에서 확인
+                                        </div>
+                                    @endif
                                     <div class="mt-2 small text-warning">
                                         <i class="bi bi-exclamation-triangle me-1"></i>
                                         <strong>참고:</strong> 서버 IP 주소가 변경되면 수동으로 업데이트해야 합니다.
