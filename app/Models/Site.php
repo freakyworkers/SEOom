@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Schema;
 
 class Site extends Model
 {
@@ -145,9 +146,18 @@ class Site extends Model
      */
     public static function getMasterSite(): ?self
     {
-        return static::where('is_master_site', true)
-            ->where('status', 'active')
-            ->first();
+        try {
+            // Check if table exists before querying
+            if (!Schema::hasTable('sites')) {
+                return null;
+            }
+            return static::where('is_master_site', true)
+                ->where('status', 'active')
+                ->first();
+        } catch (\Exception $e) {
+            // If table doesn't exist or any other error, return null
+            return null;
+        }
     }
 
     /**
