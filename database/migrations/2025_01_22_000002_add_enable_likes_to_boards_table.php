@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::table('boards', function (Blueprint $table) {
             if (!Schema::hasColumn('boards', 'enable_likes')) {
-                $table->boolean('enable_likes')->default(false)->after('remove_links')->comment('추천 기능 활성화');
+                // remove_links 컬럼이 있으면 그 뒤에, 없으면 테이블 끝에 추가
+                if (Schema::hasColumn('boards', 'remove_links')) {
+                    $table->boolean('enable_likes')->default(false)->after('remove_links')->comment('추천 기능 활성화');
+                } else {
+                    $table->boolean('enable_likes')->default(false)->comment('추천 기능 활성화');
+                }
             }
         });
     }

@@ -12,29 +12,64 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('boards', function (Blueprint $table) {
+            // enable_likes 컬럼이 있는지 확인
+            $hasEnableLikes = Schema::hasColumn('boards', 'enable_likes');
+            
             if (!Schema::hasColumn('boards', 'enable_anonymous')) {
-                $table->boolean('enable_anonymous')->default(false)->after('enable_likes');
+                if ($hasEnableLikes) {
+                    $table->boolean('enable_anonymous')->default(false)->after('enable_likes');
+                } else {
+                    $table->boolean('enable_anonymous')->default(false);
+                }
             }
             if (!Schema::hasColumn('boards', 'enable_secret')) {
-                $table->boolean('enable_secret')->default(false)->after('enable_anonymous');
+                if (Schema::hasColumn('boards', 'enable_anonymous')) {
+                    $table->boolean('enable_secret')->default(false)->after('enable_anonymous');
+                } else {
+                    $table->boolean('enable_secret')->default(false);
+                }
             }
             if (!Schema::hasColumn('boards', 'enable_reply')) {
-                $table->boolean('enable_reply')->default(false)->after('enable_secret');
+                if (Schema::hasColumn('boards', 'enable_secret')) {
+                    $table->boolean('enable_reply')->default(false)->after('enable_secret');
+                } else {
+                    $table->boolean('enable_reply')->default(false);
+                }
             }
             if (!Schema::hasColumn('boards', 'exclude_from_rss')) {
-                $table->boolean('exclude_from_rss')->default(false)->after('enable_reply');
+                if (Schema::hasColumn('boards', 'enable_reply')) {
+                    $table->boolean('exclude_from_rss')->default(false)->after('enable_reply');
+                } else {
+                    $table->boolean('exclude_from_rss')->default(false);
+                }
             }
             if (!Schema::hasColumn('boards', 'prevent_drag')) {
-                $table->boolean('prevent_drag')->default(false)->after('exclude_from_rss');
+                if (Schema::hasColumn('boards', 'exclude_from_rss')) {
+                    $table->boolean('prevent_drag')->default(false)->after('exclude_from_rss');
+                } else {
+                    $table->boolean('prevent_drag')->default(false);
+                }
             }
             if (!Schema::hasColumn('boards', 'enable_attachments')) {
-                $table->boolean('enable_attachments')->default(true)->after('prevent_drag');
+                if (Schema::hasColumn('boards', 'prevent_drag')) {
+                    $table->boolean('enable_attachments')->default(true)->after('prevent_drag');
+                } else {
+                    $table->boolean('enable_attachments')->default(true);
+                }
             }
             if (!Schema::hasColumn('boards', 'enable_author_comment_adopt')) {
-                $table->boolean('enable_author_comment_adopt')->default(false)->after('enable_attachments');
+                if (Schema::hasColumn('boards', 'enable_attachments')) {
+                    $table->boolean('enable_author_comment_adopt')->default(false)->after('enable_attachments');
+                } else {
+                    $table->boolean('enable_author_comment_adopt')->default(false);
+                }
             }
             if (!Schema::hasColumn('boards', 'enable_admin_comment_adopt')) {
-                $table->boolean('enable_admin_comment_adopt')->default(false)->after('enable_author_comment_adopt');
+                if (Schema::hasColumn('boards', 'enable_author_comment_adopt')) {
+                    $table->boolean('enable_admin_comment_adopt')->default(false)->after('enable_author_comment_adopt');
+                } else {
+                    $table->boolean('enable_admin_comment_adopt')->default(false);
+                }
             }
         });
     }
