@@ -25,6 +25,9 @@ class ResolveSiteByDomain
         // 포트 제거 (localhost:8000 → localhost)
         $host = preg_replace('/:\d+$/', '', $host);
         
+        // 먼저 마스터 사이트를 가져옴
+        $masterSite = Site::getMasterSite();
+        
         // 마스터 도메인 체크
         $masterDomain = config('app.master_domain', 'seoom.com');
         $masterDomains = [
@@ -32,9 +35,14 @@ class ResolveSiteByDomain
             'www.' . $masterDomain,
         ];
         
+        // 마스터 사이트의 도메인도 마스터 도메인 목록에 추가
+        if ($masterSite && $masterSite->domain) {
+            $masterDomains[] = $masterSite->domain;
+            $masterDomains[] = 'www.' . $masterSite->domain;
+        }
+        
         if (in_array($host, $masterDomains)) {
             // 마스터 사이트 처리
-            $masterSite = Site::getMasterSite();
             if ($masterSite) {
                 $request->attributes->set('site', $masterSite);
             }
@@ -54,7 +62,7 @@ class ResolveSiteByDomain
             }
         }
         
-        // 커스텀 도메인 체크
+        // 커스텀 도메인 체크 (마스터 사이트도 포함)
         $site = Site::where('domain', $host)
             ->where('status', 'active')
             ->first();
@@ -76,6 +84,18 @@ class ResolveSiteByDomain
                 $request->attributes->set('site', $site);
                 return $next($request);
             }
+            
+            // www. 제거 후 마스터 사이트 도메인 체크
+            if ($masterSite && $masterSite->domain === $hostWithoutWww) {
+                $request->attributes->set('site', $masterSite);
+                return $next($request);
+            }
+        }
+        
+        // 마스터 사이트가 도메인으로 설정된 경우도 체크
+        if ($masterSite && $masterSite->domain === $host) {
+            $request->attributes->set('site', $masterSite);
+            return $next($request);
         }
         
         // 사이트를 찾을 수 없으면 계속 진행 (슬러그 기반 라우팅 또는 마스터 콘솔)
