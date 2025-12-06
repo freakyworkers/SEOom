@@ -313,7 +313,7 @@ class AuthController extends Controller
             // 이메일 발송 시도
             try {
                 $fromName = $site->getSetting('mail_from_name', $site->name);
-                Mail::to($email)->send(new EmailVerificationMail($site, $email, $verification->code, $fromName));
+                Mail::to($email)->send(new EmailVerificationMail($site, $email, $verification->token, $fromName));
                 
                 return response()->json([
                     'success' => true,
@@ -327,8 +327,8 @@ class AuthController extends Controller
                 if (config('app.debug') || app()->environment('local')) {
                     return response()->json([
                         'success' => true,
-                        'message' => '개발 모드: 메일 서버 설정이 없어 이메일을 발송하지 못했습니다. 인증번호: ' . $verification->code,
-                        'verification_code' => $verification->code,
+                        'message' => '개발 모드: 메일 서버 설정이 없어 이메일을 발송하지 못했습니다. 인증번호: ' . $verification->token,
+                        'verification_code' => $verification->token,
                         'debug_mode' => true,
                     ]);
                 }
