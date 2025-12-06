@@ -73,25 +73,10 @@
                     @error('type')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                    <small class="form-text text-muted">플랜 이름이 플랜 종류를 나타냅니다 (랜딩페이지/브랜드/커뮤니티)</small>
                 </div>
-                <div class="col-md-4 mb-3" id="plan_type_container" style="display: {{ $selectedType === 'plan' ? 'block' : 'none' }};">
-                    <label for="plan_type" class="form-label">플랜 종류 <span class="text-danger">*</span></label>
-                    <select class="form-select @error('plan_type') is-invalid @enderror" 
-                            id="plan_type" 
-                            name="plan_type"
-                            required>
-                        <option value="">선택하세요</option>
-                        <option value="landing" {{ old('plan_type', $isPlanType ? $currentType : 'landing') === 'landing' ? 'selected' : '' }}>랜딩페이지</option>
-                        <option value="brand" {{ old('plan_type', $isPlanType ? $currentType : 'landing') === 'brand' ? 'selected' : '' }}>브랜드</option>
-                        <option value="community" {{ old('plan_type', $isPlanType ? $currentType : 'landing') === 'community' ? 'selected' : '' }}>커뮤니티</option>
-                    </select>
-                    @error('plan_type')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-                @if($selectedType === 'server')
-                    <input type="hidden" name="plan_type" value="">
-                @endif
+                {{-- 플랜 종류는 플랜 이름으로 구분하므로 제거 --}}
+                <input type="hidden" name="plan_type" value="{{ $isPlanType ? $currentType : 'landing' }}">
 
                 <div class="col-md-4 mb-3">
                     <label for="billing_type" class="form-label">결제 유형 <span class="text-danger">*</span></label>
@@ -835,7 +820,6 @@ document.querySelectorAll('.main-feature-checkbox').forEach(cb => {
 
 // 요금제 타입 변경 시 섹션 표시/숨김
 const planTypeSelect = document.getElementById('type');
-const planTypeContainer = document.getElementById('plan_type_container');
 const planTypeSections = document.getElementById('plan_type_sections');
 const serverTypeSections = document.getElementById('server_type_sections');
 
@@ -843,38 +827,21 @@ if (planTypeSelect) {
     planTypeSelect.addEventListener('change', function() {
         const selectedType = this.value;
         if (selectedType === 'plan') {
-            planTypeContainer.style.display = 'block';
             planTypeSections.style.display = 'block';
             serverTypeSections.style.display = 'none';
-            document.getElementById('plan_type').required = true;
             document.getElementById('server_limit_storage').required = false;
             document.getElementById('server_limit_traffic').required = false;
             
-            const planTypeValue = document.getElementById('plan_type').value;
-            if (planTypeValue === 'brand' || planTypeValue === 'community') {
-                applyParentPlanFeatures(planTypeValue);
+            // 기존 플랜의 type에 따라 상위 플랜 기능 적용
+            const currentPlanType = '{{ $plan->type }}';
+            if (currentPlanType === 'brand' || currentPlanType === 'community') {
+                applyParentPlanFeatures(currentPlanType);
             }
         } else if (selectedType === 'server') {
-            planTypeContainer.style.display = 'none';
             planTypeSections.style.display = 'none';
             serverTypeSections.style.display = 'block';
-            document.getElementById('plan_type').required = false;
             document.getElementById('server_limit_storage').required = true;
             document.getElementById('server_limit_traffic').required = true;
-        }
-    });
-}
-
-// 플랜 종류 변경 시 상위 플랜 기능 자동 적용
-const planTypeDetailSelect = document.getElementById('plan_type');
-if (planTypeDetailSelect) {
-    planTypeDetailSelect.addEventListener('change', function() {
-        const selectedType = this.value;
-        if (selectedType === 'brand' || selectedType === 'community') {
-            applyParentPlanFeatures(selectedType);
-        } else if (selectedType === 'landing') {
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            updateDependentCheckboxes();
         }
     });
 }
@@ -884,12 +851,8 @@ document.getElementById('planForm').addEventListener('submit', function(e) {
     const planType = document.getElementById('type').value;
     
     if (planType === 'plan') {
-        const planTypeValue = document.getElementById('plan_type').value;
-        const typeInput = document.createElement('input');
-        typeInput.type = 'hidden';
-        typeInput.name = 'type';
-        typeInput.value = planTypeValue;
-        this.appendChild(typeInput);
+        // 플랜 종류는 기존 플랜의 type을 유지하므로 hidden 필드로 전송
+        // plan_type은 hidden 필드로 이미 설정되어 있음
         
         const mainFeatures = Array.from(document.querySelectorAll('.main-feature-checkbox:checked')).map(cb => cb.value);
         const boardTypes = Array.from(document.querySelectorAll('.board-type-checkbox:checked')).map(cb => cb.value);
@@ -952,16 +915,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // 초기 요금제 타입에 따라 섹션 표시
     const initialType = planTypeSelect?.value;
     if (initialType === 'server') {
-        planTypeContainer.style.display = 'none';
         planTypeSections.style.display = 'none';
         serverTypeSections.style.display = 'block';
         document.getElementById('server_limit_storage').required = true;
         document.getElementById('server_limit_traffic').required = true;
     } else {
-        planTypeContainer.style.display = 'block';
         planTypeSections.style.display = 'block';
         serverTypeSections.style.display = 'none';
-        document.getElementById('plan_type').required = true;
         document.getElementById('server_limit_storage').required = false;
         document.getElementById('server_limit_traffic').required = false;
         

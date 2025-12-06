@@ -211,16 +211,15 @@ class MasterPlanController extends Controller
      */
     public function update(Request $request, Plan $plan)
     {
-        // 검증 전에 plan_type이 없으면 기존 plan의 type에서 추출
+        // 플랜 종류는 플랜 이름으로 구분하므로, 기존 plan의 type을 유지
+        // type이 'plan'인 경우 기존 plan의 type을 사용
         if ($request->type === 'plan') {
-            if (!$request->has('plan_type') || $request->plan_type === null || $request->plan_type === '') {
-                // 기존 plan의 type이 landing, brand, community 중 하나면 그대로 사용
-                if (in_array($plan->type, ['landing', 'brand', 'community'])) {
-                    $request->merge(['plan_type' => $plan->type]);
-                } else {
-                    // 기본값으로 landing 사용
-                    $request->merge(['plan_type' => 'landing']);
-                }
+            // 기존 plan의 type이 landing, brand, community 중 하나면 그대로 사용
+            if (in_array($plan->type, ['landing', 'brand', 'community'])) {
+                $request->merge(['plan_type' => $plan->type]);
+            } else {
+                // 기본값으로 landing 사용
+                $request->merge(['plan_type' => 'landing']);
             }
         }
         
@@ -229,7 +228,6 @@ class MasterPlanController extends Controller
             'slug' => 'required|string|max:255|unique:plans,slug,' . $plan->id,
             'description' => 'nullable|string',
             'type' => 'required|in:plan,server',
-            'plan_type' => 'required_if:type,plan|in:landing,brand,community',
             'billing_type' => 'required|in:free,one_time,monthly',
             'price' => 'nullable|numeric|min:0',
             'one_time_price' => 'nullable|numeric|min:0',
@@ -243,11 +241,11 @@ class MasterPlanController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // type이 'plan'인 경우 plan_type을 실제 type으로 사용
+        // type이 'plan'인 경우 기존 plan의 type을 유지
         $actualType = $request->type;
         if ($actualType === 'plan') {
-            // plan_type이 없으면 기존 plan의 type 사용
-            $actualType = $request->plan_type ?? $plan->type;
+            // 기존 plan의 type 사용 (플랜 이름으로 구분하므로 type은 변경하지 않음)
+            $actualType = $plan->type;
         }
 
         // 기본 플랜이 설정되면 다른 플랜의 is_default를 false로 변경
