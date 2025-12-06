@@ -358,7 +358,7 @@ class AuthController extends Controller
 
         $verification = EmailVerification::where('site_id', $site->id)
             ->where('email', $request->email)
-            ->where('code', $request->code)
+            ->where('token', $request->code)
             ->first();
 
         if (!$verification) {
