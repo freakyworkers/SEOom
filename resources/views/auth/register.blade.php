@@ -188,12 +188,14 @@
                                    name="email" 
                                    value="{{ old('email', session('verified_email')) }}" 
                                    required>
-                            @if($site->getSetting('registration_enable_email_verification', false))
-                                <button type="button" class="btn btn-outline-primary" id="emailVerifyBtn">
+                        </div>
+                        @if($site->getSetting('registration_enable_email_verification', false))
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-outline-primary w-100" id="emailVerifyBtn">
                                     인증하기
                                 </button>
-                            @endif
-                        </div>
+                            </div>
+                        @endif
                         @if($site->getSetting('registration_enable_email_verification', false))
                             <div id="emailVerifyStatus" class="mt-2"></div>
                             {{-- 인증번호 입력 필드 --}}
