@@ -10,7 +10,7 @@
     {{-- 로그인 후: 사용자 이름 버튼 (드롭다운) --}}
     <div class="dropdown">
         <button class="btn btn-link text-decoration-none p-0 border-0 bg-transparent dropdown-toggle" type="button" id="mobileUserDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="color: {{ $headerTextColor }}; font-size: 0.875rem;">
-            {{ $user->name }}
+            {{ $user->nickname ?? $user->name }}
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileUserDropdown">
             <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>

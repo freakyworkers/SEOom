@@ -701,7 +701,7 @@
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown1" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
-                                        {{ auth()->user()->name }}
+                                        {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown1">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
@@ -806,7 +806,7 @@
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown2" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
-                                        {{ auth()->user()->name }}
+                                        {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown2">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
@@ -911,7 +911,7 @@
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown3" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
-                                        {{ auth()->user()->name }}
+                                        {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown3">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
@@ -1016,7 +1016,7 @@
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown4" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
-                                        {{ auth()->user()->name }}
+                                        {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown4">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
@@ -1121,7 +1121,7 @@
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown5" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
-                                        {{ auth()->user()->name }}
+                                        {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown5">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
@@ -1230,7 +1230,7 @@
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
-                                        {{ auth()->user()->name }}
+                                        {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
@@ -1339,7 +1339,7 @@
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown7" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
-                                        {{ auth()->user()->name }}
+                                        {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown7">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
@@ -1453,7 +1453,7 @@
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown8" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
-                                        {{ auth()->user()->name }}
+                                        {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown8">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>

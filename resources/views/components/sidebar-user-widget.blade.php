@@ -88,7 +88,7 @@
         <div class="card-body p-3">
             {{-- 사용자 이름 및 로그아웃 버튼 --}}
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="mb-0 fw-bold">{{ $user->name }}님</h6>
+                <h6 class="mb-0 fw-bold">{{ $user->nickname ?? $user->name }}님</h6>
                 <form action="{{ route('logout', ['site' => $site->slug ?? 'default']) }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn-sm btn-outline-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">

@@ -595,7 +595,7 @@
                             @auth
                                 <div class="dropdown">
                                     <a class="btn btn-sm dropdown-toggle position-relative" href="#" id="topHeaderUserDropdown" role="button" data-bs-toggle="dropdown" style="background-color: transparent; border: 1px solid {{ $pointColor }}; color: {{ $pointColor }} !important; padding: 0.15rem 0.5rem; font-size: 0.75rem;">
-                                        <i class="bi bi-person-circle me-1"></i>{{ auth()->user()->name }}
+                                        <i class="bi bi-person-circle me-1"></i>{{ auth()->user()->nickname ?? auth()->user()->name }}
                                         @if($unreadNotificationCount > 0)
                                             <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="width: 8px; height: 8px; margin-left: 2px;"></span>
                                         @endif
