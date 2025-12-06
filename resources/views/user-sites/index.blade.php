@@ -531,10 +531,9 @@
                             </div>
                             
                             <div class="mt-3 alert alert-warning">
-                                <strong><i class="bi bi-clock me-1"></i>DNS 설정 적용 시간:</strong><br>
-                                • DNS 설정 변경 후 적용까지 보통 <strong>5분~24시간</strong> 정도 소요됩니다.<br>
-                                • 설정 후 잠시 기다렸다가 도메인으로 접속해보세요.<br>
-                                • <code>nslookup example.com</code> 명령어로 DNS 설정이 제대로 적용되었는지 확인할 수 있습니다.
+                                <strong><i class="bi bi-clock me-1"></i>설정 적용 시간:</strong><br>
+                                • 네임서버 변경 후 적용까지 보통 <strong>5분~24시간</strong> 정도 소요됩니다.<br>
+                                • 설정 후 잠시 기다렸다가 도메인으로 접속해보세요.
                             </div>
                             
                             <div class="mt-3 alert alert-success">
