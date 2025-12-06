@@ -191,9 +191,13 @@ class UserSiteController extends Controller
         // 세션 정리
         session()->forget(['pending_site_plan_id', 'pending_site_subscription_id']);
 
-        // 생성된 사이트로 리다이렉트
-        return redirect()->route('home', ['site' => $newSite->slug])
-            ->with('success', '사이트가 성공적으로 생성되었습니다.');
+        // 서브도메인 URL 생성
+        $masterDomain = config('app.master_domain', 'seoomweb.com');
+        $subdomainUrl = 'https://' . $newSite->slug . '.' . $masterDomain;
+        
+        // 생성된 사이트의 서브도메인으로 리다이렉트
+        return redirect($subdomainUrl)
+            ->with('success', '사이트가 성공적으로 생성되었습니다. 서브도메인으로 접근합니다.');
     }
 }
 

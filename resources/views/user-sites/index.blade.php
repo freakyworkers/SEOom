@@ -46,13 +46,18 @@
                                             <p class="text-muted small mb-2">
                                                 <i class="bi bi-link-45deg me-1"></i>
                                                 @if($userSite->domain)
-                                                    <a href="http://{{ $userSite->domain }}" target="_blank" class="text-decoration-none">
+                                                    <a href="https://{{ $userSite->domain }}" target="_blank" class="text-decoration-none">
                                                         {{ $userSite->domain }}
                                                     </a>
+                                                    <span class="badge bg-success ms-2">커스텀 도메인</span>
                                                 @elseif($userSite->slug)
-                                                    <a href="{{ route('home', ['site' => $userSite->slug]) }}" target="_blank" class="text-decoration-none">
-                                                        {{ url('/site/' . $userSite->slug) }}
+                                                    @php
+                                                        $subdomainUrl = 'https://' . $userSite->slug . '.' . config('app.master_domain', 'seoomweb.com');
+                                                    @endphp
+                                                    <a href="{{ $subdomainUrl }}" target="_blank" class="text-decoration-none">
+                                                        {{ $subdomainUrl }}
                                                     </a>
+                                                    <span class="badge bg-info ms-2">서브도메인</span>
                                                 @else
                                                     <span class="text-muted">슬러그 없음</span>
                                                 @endif
@@ -340,10 +345,38 @@
                                     </h6>
                                     <div class="small">
                                         <strong>설정 방법:</strong><br>
-                                        • <strong>타입:</strong> CNAME<br>
-                                        • <strong>이름:</strong> @ (또는 비워두기) 또는 www<br>
-                                        • <strong>값/대상:</strong> <code>{{ config('app.master_domain', 'seoomweb.com') }}</code><br>
-                                        • <strong>TTL:</strong> 자동 (또는 3600)
+                                        <div class="table-responsive mt-2">
+                                            <table class="table table-sm table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>타입</th>
+                                                        <th>이름</th>
+                                                        <th>값/대상</th>
+                                                        <th>TTL</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>CNAME</td>
+                                                        <td>@</td>
+                                                        <td><code>{{ config('app.master_domain', 'seoomweb.com') }}</code></td>
+                                                        <td>자동</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>CNAME</td>
+                                                        <td>www</td>
+                                                        <td><code>{{ config('app.master_domain', 'seoomweb.com') }}</code></td>
+                                                        <td>자동</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="mt-2">
+                                            <strong>설정 예시:</strong><br>
+                                            • 도메인이 <code>example.com</code>인 경우:<br>
+                                            &nbsp;&nbsp;- <code>@</code> → <code>{{ config('app.master_domain', 'seoomweb.com') }}</code><br>
+                                            &nbsp;&nbsp;- <code>www</code> → <code>{{ config('app.master_domain', 'seoomweb.com') }}</code>
+                                        </div>
                                     </div>
                                     <div class="mt-2 small text-success">
                                         <i class="bi bi-check-circle me-1"></i>
@@ -359,24 +392,58 @@
                                     </h6>
                                     <div class="small">
                                         <strong>설정 방법:</strong><br>
-                                        • <strong>타입:</strong> A<br>
-                                        • <strong>이름:</strong> @ (또는 비워두기) 또는 www<br>
-                                        • <strong>값/대상:</strong> 
-                                        @if(config('app.server_ip'))
-                                            <code>{{ config('app.server_ip') }}</code>
-                                        @else
-                                            <span class="text-muted">서버 IP 주소</span>
-                                        @endif
-                                        <br>
-                                        • <strong>TTL:</strong> 자동 (또는 3600)
-                                    </div>
-                                    @if(!config('app.server_ip'))
-                                        <div class="mt-2 small">
-                                            <strong><i class="bi bi-info-circle me-1"></i>서버 IP 주소 확인 방법:</strong><br>
-                                            • AWS EC2를 사용하는 경우: EC2 콘솔 → 인스턴스 → 퍼블릭 IPv4 주소 확인<br>
-                                            • 기타 서버: 서버 관리자에게 문의하거나 서버 정보에서 확인
+                                        <div class="table-responsive mt-2">
+                                            <table class="table table-sm table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>타입</th>
+                                                        <th>이름</th>
+                                                        <th>값/대상</th>
+                                                        <th>TTL</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>A</td>
+                                                        <td>@</td>
+                                                        <td>
+                                                            @if(config('app.server_ip'))
+                                                                <code>{{ config('app.server_ip') }}</code>
+                                                            @else
+                                                                <span class="text-muted">서버 IP 주소</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>자동</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>A</td>
+                                                        <td>www</td>
+                                                        <td>
+                                                            @if(config('app.server_ip'))
+                                                                <code>{{ config('app.server_ip') }}</code>
+                                                            @else
+                                                                <span class="text-muted">서버 IP 주소</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>자동</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    @endif
+                                        @if(!config('app.server_ip'))
+                                            <div class="mt-2">
+                                                <strong><i class="bi bi-info-circle me-1"></i>서버 IP 주소 확인 방법:</strong><br>
+                                                • AWS EC2를 사용하는 경우: EC2 콘솔 → 인스턴스 → 퍼블릭 IPv4 주소 확인<br>
+                                                • 기타 서버: 서버 관리자에게 문의하거나 서버 정보에서 확인
+                                            </div>
+                                        @endif
+                                        <div class="mt-2">
+                                            <strong>설정 예시:</strong><br>
+                                            • 도메인이 <code>example.com</code>이고 서버 IP가 <code>54.180.2.108</code>인 경우:<br>
+                                            &nbsp;&nbsp;- <code>@</code> → <code>54.180.2.108</code><br>
+                                            &nbsp;&nbsp;- <code>www</code> → <code>54.180.2.108</code>
+                                        </div>
+                                    </div>
                                     <div class="mt-2 small text-warning">
                                         <i class="bi bi-exclamation-triangle me-1"></i>
                                         <strong>참고:</strong> 서버 IP 주소가 변경되면 수동으로 업데이트해야 합니다.
@@ -384,12 +451,49 @@
                                 </div>
                             </div>
                             
-                            <div class="mt-3 small">
-                                <strong><i class="bi bi-question-circle me-1"></i>도메인 제공업체별 설정 위치:</strong><br>
-                                • <strong>가비아:</strong> 마이 가비아 → 도메인 → DNS 관리<br>
-                                • <strong>후이즈:</strong> 도메인 관리 → DNS 설정<br>
-                                • <strong>Cloudflare:</strong> 대시보드 → DNS → 레코드 추가<br>
-                                • <strong>기타:</strong> 도메인 관리 페이지에서 "DNS 설정" 또는 "네임서버 설정" 메뉴 찾기
+                            <div class="mt-3">
+                                <strong><i class="bi bi-question-circle me-1"></i>도메인 제공업체별 설정 위치:</strong>
+                                <div class="mt-2 small">
+                                    <div class="card">
+                                        <div class="card-body p-2">
+                                            <div class="mb-2">
+                                                <strong>가비아:</strong><br>
+                                                1. 마이 가비아 로그인<br>
+                                                2. 도메인 → 내 도메인 → DNS 관리<br>
+                                                3. 레코드 추가 버튼 클릭<br>
+                                                4. 위의 표에 따라 레코드 입력 후 저장
+                                            </div>
+                                            <hr class="my-2">
+                                            <div class="mb-2">
+                                                <strong>후이즈:</strong><br>
+                                                1. 후이즈 로그인<br>
+                                                2. 도메인 관리 → DNS 설정<br>
+                                                3. 레코드 추가 버튼 클릭<br>
+                                                4. 위의 표에 따라 레코드 입력 후 저장
+                                            </div>
+                                            <hr class="my-2">
+                                            <div class="mb-2">
+                                                <strong>Cloudflare:</strong><br>
+                                                1. Cloudflare 대시보드 로그인<br>
+                                                2. 도메인 선택 → DNS → 레코드<br>
+                                                3. 레코드 추가 버튼 클릭<br>
+                                                4. 위의 표에 따라 레코드 입력 후 저장
+                                            </div>
+                                            <hr class="my-2">
+                                            <div>
+                                                <strong>기타 제공업체:</strong><br>
+                                                도메인 관리 페이지에서 "DNS 설정", "네임서버 설정", "레코드 관리" 등의 메뉴를 찾아 위와 동일하게 설정하세요.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3 alert alert-warning">
+                                <strong><i class="bi bi-clock me-1"></i>DNS 설정 적용 시간:</strong><br>
+                                • DNS 설정 변경 후 적용까지 보통 <strong>5분~24시간</strong> 정도 소요됩니다.<br>
+                                • 설정 후 잠시 기다렸다가 도메인으로 접속해보세요.<br>
+                                • <code>nslookup example.com</code> 명령어로 DNS 설정이 제대로 적용되었는지 확인할 수 있습니다.
                             </div>
                             
                             <div class="mt-3 alert alert-success">
