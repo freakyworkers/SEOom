@@ -85,8 +85,8 @@ class SiteProvisionService
             $site->setSetting('registration_login_method', $data['login_method']);
         }
 
-        // Create default boards
-        $this->createDefaultBoards($site);
+        // 기본 게시판 생성 기능 제거됨
+        // $this->createDefaultBoards($site);
 
         // Create default settings
         $this->createDefaultSettings($site);
