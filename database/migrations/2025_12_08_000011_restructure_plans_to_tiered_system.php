@@ -12,8 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 기존 플랜 삭제
+        // 기존 플랜 삭제 (외래 키 제약 조건 때문에 truncate 대신 delete 사용)
+        // 외래 키 체크를 일시적으로 비활성화
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('plans')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         
         // 통일된 제한사항 (Free와 Basic 공통)
         $baseLimits = json_encode([
@@ -264,8 +267,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // 롤백 시 모든 플랜 삭제
+        // 롤백 시 모든 플랜 삭제 (외래 키 제약 조건 때문에 truncate 대신 delete 사용)
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('plans')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 };
 
