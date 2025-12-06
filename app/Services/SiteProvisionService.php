@@ -73,7 +73,7 @@ class SiteProvisionService
                 'site_id' => $site->id,
                 'name' => $data['admin_name'] ?? 'Administrator',
                 'username' => $data['admin_username'] ?? null,
-                'nickname' => null,
+                'nickname' => '운영자',
                 'email' => $data['admin_email'],
                 'password' => Hash::make($data['admin_password']),
                 'role' => 'admin',
