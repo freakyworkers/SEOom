@@ -156,14 +156,38 @@
                         <label for="email" class="form-label">이메일 <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" 
+                            <input type="text" 
                                    class="form-control @error('email') is-invalid @enderror" 
+                                   id="email_prefix" 
+                                   value="{{ old('email_prefix', session('verified_email') ? explode('@', session('verified_email'))[0] : '') }}" 
+                                   placeholder="이메일 아이디"
+                                   {{ $site->getSetting('registration_enable_email_verification', false) && session('verified_email') ? 'readonly' : '' }}
+                                   autocomplete="off">
+                            <span class="input-group-text">@</span>
+                            <select class="form-select @error('email') is-invalid @enderror" 
+                                    id="email_domain" 
+                                    {{ $site->getSetting('registration_enable_email_verification', false) && session('verified_email') ? 'disabled' : '' }}>
+                                <option value="gmail.com" {{ old('email_domain', session('verified_email') ? explode('@', session('verified_email'))[1] : 'gmail.com') === 'gmail.com' ? 'selected' : '' }}>gmail.com</option>
+                                <option value="naver.com" {{ old('email_domain', session('verified_email') ? explode('@', session('verified_email'))[1] : '') === 'naver.com' ? 'selected' : '' }}>naver.com</option>
+                                <option value="daum.net" {{ old('email_domain', session('verified_email') ? explode('@', session('verified_email'))[1] : '') === 'daum.net' ? 'selected' : '' }}>daum.net</option>
+                                <option value="hanmail.net" {{ old('email_domain', session('verified_email') ? explode('@', session('verified_email'))[1] : '') === 'hanmail.net' ? 'selected' : '' }}>hanmail.net</option>
+                                <option value="kakao.com" {{ old('email_domain', session('verified_email') ? explode('@', session('verified_email'))[1] : '') === 'kakao.com' ? 'selected' : '' }}>kakao.com</option>
+                                <option value="outlook.com" {{ old('email_domain', session('verified_email') ? explode('@', session('verified_email'))[1] : '') === 'outlook.com' ? 'selected' : '' }}>outlook.com</option>
+                                <option value="yahoo.com" {{ old('email_domain', session('verified_email') ? explode('@', session('verified_email'))[1] : '') === 'yahoo.com' ? 'selected' : '' }}>yahoo.com</option>
+                                <option value="custom">직접 입력</option>
+                            </select>
+                            <input type="text" 
+                                   class="form-control @error('email') is-invalid @enderror" 
+                                   id="email_domain_custom" 
+                                   placeholder="도메인 입력 (예: example.com)"
+                                   style="display: none;"
+                                   autocomplete="off"
+                                   pattern="[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}">
+                            <input type="hidden" 
                                    id="email" 
                                    name="email" 
                                    value="{{ old('email', session('verified_email')) }}" 
-                                   required
-                                   placeholder="example@email.com"
-                                   {{ $site->getSetting('registration_enable_email_verification', false) && session('verified_email') ? 'readonly' : '' }}>
+                                   required>
                             @if($site->getSetting('registration_enable_email_verification', false))
                                 <button type="button" class="btn btn-outline-primary" id="emailVerifyBtn">
                                     인증하기
@@ -401,9 +425,101 @@ document.getElementById('verifyReferrerBtn').addEventListener('click', function(
 @endpush
 @endif
 
-@if($site->getSetting('registration_enable_email_verification', false))
 @push('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 이메일 prefix와 domain을 합쳐서 실제 email 필드에 저장
+    const emailPrefix = document.getElementById('email_prefix');
+    const emailDomain = document.getElementById('email_domain');
+    const emailDomainCustom = document.getElementById('email_domain_custom');
+    const emailInput = document.getElementById('email');
+    
+    function updateEmail() {
+        const prefix = emailPrefix.value.trim();
+        let domain = '';
+        
+        if (emailDomain.value === 'custom') {
+            domain = emailDomainCustom.value.trim();
+            if (!domain) {
+                emailInput.value = '';
+                return;
+            }
+        } else {
+            domain = emailDomain.value;
+        }
+        
+        if (prefix && domain) {
+            emailInput.value = prefix + '@' + domain;
+        } else {
+            emailInput.value = '';
+        }
+    }
+    
+    // 직접 입력 옵션 선택 시 커스텀 입력 필드 표시
+    emailDomain.addEventListener('change', function() {
+        if (this.value === 'custom') {
+            emailDomainCustom.style.display = 'block';
+            emailDomainCustom.required = true;
+            emailDomainCustom.focus();
+        } else {
+            emailDomainCustom.style.display = 'none';
+            emailDomainCustom.required = false;
+            emailDomainCustom.value = '';
+        }
+        updateEmail();
+    });
+    
+    // 커스텀 도메인 입력 시 이메일 업데이트
+    emailDomainCustom.addEventListener('input', function() {
+        if (emailDomain.value === 'custom') {
+            updateEmail();
+        }
+    });
+    
+    // prefix나 domain 변경 시 email 업데이트
+    emailPrefix.addEventListener('input', updateEmail);
+    emailPrefix.addEventListener('blur', updateEmail);
+    emailDomainCustom.addEventListener('input', updateEmail);
+    emailDomainCustom.addEventListener('blur', updateEmail);
+    
+    // 초기 이메일이 있는 경우 prefix와 domain 분리
+    @if(old('email', session('verified_email')))
+        const initialEmail = '{{ old('email', session('verified_email')) }}';
+        if (initialEmail && initialEmail.includes('@')) {
+            const parts = initialEmail.split('@');
+            if (parts.length === 2) {
+                emailPrefix.value = parts[0];
+                const domain = parts[1];
+                // 드롭다운에 있는 도메인인지 확인
+                const domainOption = Array.from(emailDomain.options).find(opt => opt.value === domain);
+                if (domainOption) {
+                    emailDomain.value = domain;
+                } else {
+                    emailDomain.value = 'custom';
+                    emailDomainCustom.style.display = 'block';
+                    emailDomainCustom.value = domain;
+                }
+                updateEmail();
+            }
+        }
+    @endif
+    
+    // 폼 제출 전 이메일 검증
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            updateEmail();
+            if (!emailInput.value || !emailInput.value.includes('@')) {
+                e.preventDefault();
+                alert('올바른 이메일을 입력해주세요.');
+                emailPrefix.focus();
+                return false;
+            }
+        });
+    }
+});
+
+@if($site->getSetting('registration_enable_email_verification', false))
 document.addEventListener('DOMContentLoaded', function() {
     const emailInput = document.getElementById('email');
     const emailVerifyBtn = document.getElementById('emailVerifyBtn');
@@ -420,14 +536,44 @@ document.addEventListener('DOMContentLoaded', function() {
         emailVerifyBtn.classList.add('btn-success');
     @endif
     
-    emailVerifyBtn.addEventListener('click', function() {
-        const email = emailInput.value;
-        const btn = this;
+    // 이메일 업데이트 함수
+    function updateEmailForVerification() {
+        const emailPrefix = document.getElementById('email_prefix');
+        const emailDomain = document.getElementById('email_domain');
+        const emailDomainCustom = document.getElementById('email_domain_custom');
+        const prefix = emailPrefix.value.trim();
+        let domain = '';
         
-        if (!email) {
+        if (emailDomain.value === 'custom') {
+            domain = emailDomainCustom.value.trim();
+            if (!domain) {
+                emailInput.value = '';
+                return false;
+            }
+        } else {
+            domain = emailDomain.value;
+        }
+        
+        if (prefix && domain) {
+            emailInput.value = prefix + '@' + domain;
+            return true;
+        } else {
+            emailInput.value = '';
+            return false;
+        }
+    }
+    
+    emailVerifyBtn.addEventListener('click', function() {
+        // 이메일 업데이트
+        if (!updateEmailForVerification()) {
             alert('이메일을 입력해주세요.');
+            const emailPrefix = document.getElementById('email_prefix');
+            emailPrefix.focus();
             return;
         }
+        
+        const email = emailInput.value;
+        const btn = this;
         
         // 이메일 형식 검증
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -465,7 +611,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 인증번호 입력 필드 표시
                 document.getElementById('verificationCodeInput').style.display = 'block';
                 document.getElementById('verification_code').focus();
-                emailInput.readOnly = true;
+                const emailPrefix = document.getElementById('email_prefix');
+                const emailDomain = document.getElementById('email_domain');
+                const emailDomainCustom = document.getElementById('email_domain_custom');
+                emailPrefix.readOnly = true;
+                emailDomain.disabled = true;
+                if (emailDomain.value === 'custom') {
+                    emailDomainCustom.readOnly = true;
+                }
                 
                 btn.textContent = '재전송';
                 emailVerified.value = '0';
@@ -503,6 +656,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const verifyCodeBtn = document.getElementById('verifyCodeBtn');
     if (verifyCodeBtn) {
         verifyCodeBtn.addEventListener('click', function() {
+            // 이메일 업데이트
+            updateEmailForVerification();
             const email = emailInput.value;
             const code = verificationCodeInput.value;
             const btn = this;
