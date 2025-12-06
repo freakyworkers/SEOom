@@ -166,11 +166,6 @@
                             @enderror
                         </div>
 
-                        <div class="alert alert-warning">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            <strong>주의:</strong> 사이트 생성 후에는 이름과 주소를 변경할 수 없습니다. 신중하게 입력해주세요.
-                        </div>
-
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a href="{{ route('home', ['site' => $site->slug]) }}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle me-1"></i>취소
