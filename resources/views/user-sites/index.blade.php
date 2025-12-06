@@ -45,7 +45,11 @@
                                             </h5>
                                             <p class="text-muted small mb-2">
                                                 <i class="bi bi-link-45deg me-1"></i>
-                                                @if($userSite->slug)
+                                                @if($userSite->domain)
+                                                    <a href="http://{{ $userSite->domain }}" target="_blank" class="text-decoration-none">
+                                                        {{ $userSite->domain }}
+                                                    </a>
+                                                @elseif($userSite->slug)
                                                     <a href="{{ route('home', ['site' => $userSite->slug]) }}" target="_blank" class="text-decoration-none">
                                                         {{ url('/site/' . $userSite->slug) }}
                                                     </a>
@@ -53,6 +57,11 @@
                                                     <span class="text-muted">슬러그 없음</span>
                                                 @endif
                                             </p>
+                                            @if($userSite->domain)
+                                                <p class="text-success small mb-2">
+                                                    <i class="bi bi-check-circle me-1"></i>커스텀 도메인 연결됨
+                                                </p>
+                                            @endif
                                             
                                             @if($userSite->subscription)
                                                 <div class="mb-3">
@@ -182,19 +191,27 @@
                                                         @endif
                                                     </div>
                                                 @endif
-                                                <div class="d-flex gap-2">
-                                                    @if($userSite->slug)
-                                                        <a href="{{ route('home', ['site' => $userSite->slug]) }}" class="btn btn-sm btn-outline-primary flex-fill" target="_blank">
-                                                            <i class="bi bi-box-arrow-up-right me-1"></i>사이트 보기
-                                                        </a>
-                                                        @if(auth()->user()->canManage() || $userSite->users()->where('id', auth()->id())->exists())
-                                                            <a href="{{ route('admin.dashboard', ['site' => $userSite->slug]) }}" class="btn btn-sm btn-outline-secondary flex-fill">
-                                                                <i class="bi bi-gear me-1"></i>관리
+                                                <div class="d-flex flex-column gap-2">
+                                                    <div class="d-flex gap-2">
+                                                        @if($userSite->slug)
+                                                            <a href="{{ route('home', ['site' => $userSite->slug]) }}" class="btn btn-sm btn-outline-primary flex-fill" target="_blank">
+                                                                <i class="bi bi-box-arrow-up-right me-1"></i>사이트 보기
                                                             </a>
+                                                            @if(auth()->user()->canManage() || $userSite->users()->where('id', auth()->id())->exists())
+                                                                <a href="{{ route('admin.dashboard', ['site' => $userSite->slug]) }}" class="btn btn-sm btn-outline-secondary flex-fill">
+                                                                    <i class="bi bi-gear me-1"></i>관리
+                                                                </a>
+                                                            @endif
+                                                        @else
+                                                            <span class="btn btn-sm btn-outline-secondary flex-fill disabled">슬러그 없음</span>
                                                         @endif
-                                                    @else
-                                                        <span class="btn btn-sm btn-outline-secondary flex-fill disabled">슬러그 없음</span>
-                                                    @endif
+                                                    </div>
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-outline-info w-100" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#domainModal{{ $userSite->id }}">
+                                                        <i class="bi bi-globe me-1"></i>도메인 연결
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -264,4 +281,76 @@
     }
 </style>
 @endpush
+
+{{-- 도메인 연결 모달 --}}
+@foreach($userSites as $userSite)
+<div class="modal fade" id="domainModal{{ $userSite->id }}" tabindex="-1" aria-labelledby="domainModalLabel{{ $userSite->id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="domainModalLabel{{ $userSite->id }}">
+                    <i class="bi bi-globe me-2"></i>도메인 연결
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ route('user-sites.update-domain', ['site' => $site->slug, 'userSite' => $userSite->slug]) }}">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="domain{{ $userSite->id }}" class="form-label">도메인</label>
+                        <input type="text" 
+                               class="form-control @error('domain') is-invalid @enderror" 
+                               id="domain{{ $userSite->id }}" 
+                               name="domain" 
+                               value="{{ old('domain', $userSite->domain) }}"
+                               placeholder="예: example.com">
+                        @error('domain')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text text-muted">
+                            커스텀 도메인을 입력하세요. www는 제외하고 입력해주세요. (예: example.com)
+                        </small>
+                    </div>
+                    @if($userSite->domain)
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>주의:</strong> 기존 도메인을 변경하면 DNS 설정을 다시 해야 할 수 있습니다.
+                        </div>
+                    @else
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>도메인 연결 방법:</strong><br>
+                            1. 도메인을 입력하고 저장합니다.<br>
+                            2. 도메인 제공업체에서 DNS 설정을 변경합니다.<br>
+                            3. A 레코드를 서버 IP 주소로 설정하거나, CNAME 레코드를 {{ config('app.master_domain', 'seoomweb.com') }}로 설정합니다.
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    @if($userSite->domain)
+                        <button type="button" 
+                                class="btn btn-danger me-auto" 
+                                onclick="if(confirm('정말 도메인을 제거하시겠습니까?')) { document.getElementById('removeDomainForm{{ $userSite->id }}').submit(); }">
+                            <i class="bi bi-trash me-1"></i>도메인 제거
+                        </button>
+                    @endif
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i>저장
+                    </button>
+                </div>
+            </form>
+            @if($userSite->domain)
+                <form id="removeDomainForm{{ $userSite->id }}" 
+                      method="POST" 
+                      action="{{ route('user-sites.remove-domain', ['site' => $site->slug, 'userSite' => $userSite->slug]) }}">
+                    @csrf
+                    @method('DELETE')
+                </form>
+            @endif
+        </div>
+    </div>
+</div>
+@endforeach
 

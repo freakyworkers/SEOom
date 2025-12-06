@@ -502,5 +502,78 @@ class UserMySitesController extends Controller
         
         return $size;
     }
+
+    /**
+     * Update domain for a user site.
+     */
+    public function updateDomain(Request $request, Site $site, Site $userSite)
+    {
+        // 마스터 사이트인지 확인
+        if (!$site->isMasterSite()) {
+            abort(404);
+        }
+
+        $user = Auth::user();
+
+        // 사용자가 소유한 사이트인지 확인
+        if ($userSite->created_by !== $user->id) {
+            abort(403, '이 사이트를 변경할 권한이 없습니다.');
+        }
+
+        $request->validate([
+            'domain' => 'nullable|string|max:255|regex:/^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$/',
+        ], [
+            'domain.regex' => '올바른 도메인 형식이 아닙니다. (예: example.com)',
+        ]);
+
+        // 도메인 정규화 (www 제거, 소문자 변환, 공백 제거)
+        $domain = $request->input('domain');
+        if ($domain) {
+            $domain = strtolower(trim($domain));
+            $domain = preg_replace('/^www\./', '', $domain);
+            
+            // 중복 체크 (다른 사이트에서 사용 중인지)
+            $existingSite = Site::where('domain', $domain)
+                ->where('id', '!=', $userSite->id)
+                ->where('status', 'active')
+                ->first();
+            
+            if ($existingSite) {
+                return back()->withErrors(['domain' => '이 도메인은 이미 다른 사이트에서 사용 중입니다.'])->withInput();
+            }
+        }
+
+        $userSite->update([
+            'domain' => $domain ?: null,
+        ]);
+
+        return redirect()->route('users.my-sites', ['site' => $site->slug])
+            ->with('success', $domain ? '도메인이 성공적으로 연결되었습니다.' : '도메인이 제거되었습니다.');
+    }
+
+    /**
+     * Remove domain from a user site.
+     */
+    public function removeDomain(Site $site, Site $userSite)
+    {
+        // 마스터 사이트인지 확인
+        if (!$site->isMasterSite()) {
+            abort(404);
+        }
+
+        $user = Auth::user();
+
+        // 사용자가 소유한 사이트인지 확인
+        if ($userSite->created_by !== $user->id) {
+            abort(403, '이 사이트를 변경할 권한이 없습니다.');
+        }
+
+        $userSite->update([
+            'domain' => null,
+        ]);
+
+        return redirect()->route('users.my-sites', ['site' => $site->slug])
+            ->with('success', '도메인이 제거되었습니다.');
+    }
 }
 

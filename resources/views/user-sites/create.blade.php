@@ -75,17 +75,21 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="domain" class="form-label">도메인 (선택사항)</label>
+                            <label for="domain" class="form-label">도메인</label>
                             <input type="text" 
                                    class="form-control @error('domain') is-invalid @enderror" 
                                    id="domain" 
                                    name="domain" 
-                                   value="{{ old('domain') }}"
-                                   placeholder="예: example.com">
+                                   value=""
+                                   placeholder="나중에 설정할 수 있습니다"
+                                   disabled
+                                   readonly>
                             @error('domain')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="form-text text-muted">나중에 설정할 수 있습니다.</small>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle me-1"></i>도메인은 사이트 생성 후 설정할 수 있습니다.
+                            </small>
                         </div>
 
                         <hr class="my-4">

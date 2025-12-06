@@ -106,7 +106,6 @@ class UserSiteController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:sites,slug',
-            'domain' => 'nullable|string|max:255',
             'login_method' => 'required|in:email,username',
             'admin_username' => [
                 'required',
@@ -155,6 +154,7 @@ class UserSiteController extends Controller
         $data['status'] = 'active';
         $data['is_master_site'] = false;
         $data['created_by'] = $user->id; // 사이트 생성자 저장
+        $data['domain'] = null; // 도메인은 나중에 설정
 
         // 관리자 계정 정보
         $data['admin_name'] = $user->name;
