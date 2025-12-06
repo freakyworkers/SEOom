@@ -62,6 +62,21 @@ return [
     */
     
     'server_ip' => env('SERVER_IP', null),
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Nameservers
+    |--------------------------------------------------------------------------
+    |
+    | Nameservers for custom domain configuration.
+    | Users can change their domain's nameservers to these values.
+    |
+    */
+    
+    'nameservers' => [
+        env('NAMESERVER_1', 'ns1.cloudflare.com'),
+        env('NAMESERVER_2', 'ns2.cloudflare.com'),
+    ],
 
     /*
     |--------------------------------------------------------------------------

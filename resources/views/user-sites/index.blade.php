@@ -303,13 +303,31 @@
                 @method('PUT')
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="domain{{ $userSite->id }}" class="form-label">도메인</label>
-                        <input type="text" 
-                               class="form-control @error('domain') is-invalid @enderror" 
-                               id="domain{{ $userSite->id }}" 
-                               name="domain" 
-                               value="{{ old('domain', $userSite->domain) }}"
-                               placeholder="예: example.com">
+                        <label for="domain{{ $userSite->id }}" class="form-label">
+                            도메인
+                            <button type="button" 
+                                    class="btn btn-sm btn-link p-0 ms-1" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-placement="top"
+                                    data-bs-html="true"
+                                    title="<strong>네임서버 정보</strong><br><br>다음 네임서버로 변경하세요:<br>@foreach(config('app.nameservers', []) as $nameserver)• {{ $nameserver }}<br>@endforeach<br>도메인 제공업체에서 네임서버 설정을 변경하면 자동으로 연결됩니다.">
+                                <i class="bi bi-question-circle text-primary"></i>
+                            </button>
+                        </label>
+                        <div class="input-group">
+                            <input type="text" 
+                                   class="form-control @error('domain') is-invalid @enderror" 
+                                   id="domain{{ $userSite->id }}" 
+                                   name="domain" 
+                                   value="{{ old('domain', $userSite->domain) }}"
+                                   placeholder="예: example.com">
+                            <button type="button" 
+                                    class="btn btn-outline-secondary" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#nameserverModal{{ $userSite->id }}">
+                                <i class="bi bi-question-circle me-1"></i>네임서버 확인
+                            </button>
+                        </div>
                         @error('domain')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -331,11 +349,34 @@
                                 <strong>1단계:</strong> 도메인을 입력하고 저장합니다.
                             </div>
                             <div class="mb-2">
-                                <strong>2단계:</strong> 도메인 제공업체(가비아, 후이즈 등) 또는 Cloudflare에서 DNS 설정을 변경합니다.
+                                <strong>2단계:</strong> 도메인 옆 <button type="button" class="btn btn-sm btn-link p-0" data-bs-toggle="modal" data-bs-target="#nameserverModal{{ $userSite->id }}"><i class="bi bi-question-circle"></i></button> 버튼을 클릭하여 네임서버를 확인합니다.
                             </div>
                             <div class="mb-2">
-                                <strong>3단계:</strong> 다음 중 하나의 방법을 선택하여 DNS 레코드를 추가합니다:
+                                <strong>3단계:</strong> 도메인 제공업체(가비아, 후이즈 등)에서 네임서버를 변경합니다.
                             </div>
+                            <div class="mt-3">
+                                <div class="card bg-light">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title mb-2">
+                                            <i class="bi bi-lightbulb me-1"></i>
+                                            <strong>간단한 방법 (권장)</strong>
+                                        </h6>
+                                        <p class="card-text small mb-0">
+                                            네임서버를 변경하면 DNS 레코드를 하나하나 설정할 필요 없이 자동으로 연결됩니다.<br>
+                                            도메인 제공업체에서 "네임서버 설정" 또는 "네임서버 변경" 메뉴를 찾아 위의 네임서버로 변경하세요.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <details>
+                                    <summary class="text-muted small" style="cursor: pointer;">
+                                        <i class="bi bi-chevron-down me-1"></i>고급: DNS 레코드 직접 설정 (네임서버 변경이 불가능한 경우)
+                                    </summary>
+                                    <div class="mt-2">
+                                        <div class="mb-2">
+                                            <strong>3단계 (대안):</strong> 다음 중 하나의 방법을 선택하여 DNS 레코드를 추가합니다:
+                                        </div>
                             
                             <div class="card mb-2" style="background-color: #e7f3ff;">
                                 <div class="card-body p-3">
@@ -540,5 +581,87 @@
         </div>
     </div>
 </div>
+
+{{-- 네임서버 정보 모달 --}}
+<div class="modal fade" id="nameserverModal{{ $userSite->id }}" tabindex="-1" aria-labelledby="nameserverModalLabel{{ $userSite->id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nameserverModalLabel{{ $userSite->id }}">
+                    <i class="bi bi-server me-2"></i>네임서버 정보
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>도메인 제공업체에서 다음 네임서버로 변경하세요:</strong>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        @foreach(config('app.nameservers', ['ns1.cloudflare.com', 'ns2.cloudflare.com']) as $index => $nameserver)
+                            <div class="mb-2">
+                                <strong>네임서버 {{ $index + 1 }}:</strong>
+                                <code class="ms-2" style="font-size: 1.1em;">{{ $nameserver }}</code>
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-secondary ms-2" 
+                                        onclick="copyToClipboard('{{ $nameserver }}', this)">
+                                    <i class="bi bi-clipboard me-1"></i>복사
+                                </button>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <strong><i class="bi bi-question-circle me-1"></i>도메인 제공업체별 설정 위치:</strong>
+                    <div class="mt-2 small">
+                        <ul class="list-unstyled">
+                            <li><strong>가비아:</strong> 마이 가비아 → 도메인 → 네임서버 설정</li>
+                            <li><strong>후이즈:</strong> 도메인 관리 → 네임서버 설정</li>
+                            <li><strong>기타:</strong> 도메인 관리 페이지에서 "네임서버 설정" 또는 "네임서버 변경" 메뉴 찾기</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-3 alert alert-success">
+                    <i class="bi bi-check-circle me-1"></i>
+                    <strong>팁:</strong> 네임서버를 변경하면 DNS 레코드를 하나하나 설정할 필요 없이 자동으로 연결됩니다.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endforeach
+
+@push('scripts')
+<script>
+    // 네임서버 복사 기능
+    function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(function() {
+            const originalHtml = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-check me-1"></i>복사됨';
+            button.classList.remove('btn-outline-secondary');
+            button.classList.add('btn-success');
+            
+            setTimeout(function() {
+                button.innerHTML = originalHtml;
+                button.classList.remove('btn-success');
+                button.classList.add('btn-outline-secondary');
+            }, 2000);
+        }).catch(function(err) {
+            alert('복사에 실패했습니다. 수동으로 복사해주세요.');
+        });
+    }
+    
+    // Tooltip 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+@endpush
 
