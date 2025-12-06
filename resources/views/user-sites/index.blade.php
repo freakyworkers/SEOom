@@ -320,16 +320,70 @@
                     @else
                         <div class="alert alert-info">
                             <i class="bi bi-info-circle me-2"></i>
-                            <strong>도메인 연결 방법:</strong><br>
-                            1. 도메인을 입력하고 저장합니다.<br>
-                            2. 도메인 제공업체(또는 Cloudflare)에서 DNS 설정을 변경합니다.<br>
-                            3. 다음 중 하나의 방법을 선택하여 설정합니다:<br>
-                            &nbsp;&nbsp;• <strong>CNAME 레코드 (권장):</strong> {{ config('app.master_domain', 'seoomweb.com') }}로 설정<br>
-                            &nbsp;&nbsp;• <strong>A 레코드:</strong> 서버 IP 주소로 설정 (서버 관리자에게 문의)<br>
-                            <small class="text-muted mt-2 d-block">
-                                <i class="bi bi-lightbulb me-1"></i>
-                                <strong>팁:</strong> CNAME 레코드 방식이 더 간단하고 서버 IP 변경 시에도 자동으로 적용됩니다.
-                            </small>
+                            <strong>도메인 연결 방법:</strong>
+                            <hr class="my-2">
+                            <div class="mb-2">
+                                <strong>1단계:</strong> 도메인을 입력하고 저장합니다.
+                            </div>
+                            <div class="mb-2">
+                                <strong>2단계:</strong> 도메인 제공업체(가비아, 후이즈 등) 또는 Cloudflare에서 DNS 설정을 변경합니다.
+                            </div>
+                            <div class="mb-2">
+                                <strong>3단계:</strong> 다음 중 하나의 방법을 선택하여 DNS 레코드를 추가합니다:
+                            </div>
+                            
+                            <div class="card mb-2" style="background-color: #e7f3ff;">
+                                <div class="card-body p-3">
+                                    <h6 class="card-title mb-2">
+                                        <i class="bi bi-star-fill text-warning me-1"></i>
+                                        <strong>방법 1: CNAME 레코드 (권장)</strong>
+                                    </h6>
+                                    <div class="small">
+                                        <strong>설정 방법:</strong><br>
+                                        • <strong>타입:</strong> CNAME<br>
+                                        • <strong>이름:</strong> @ (또는 비워두기) 또는 www<br>
+                                        • <strong>값/대상:</strong> <code>{{ config('app.master_domain', 'seoomweb.com') }}</code><br>
+                                        • <strong>TTL:</strong> 자동 (또는 3600)
+                                    </div>
+                                    <div class="mt-2 small text-success">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        <strong>장점:</strong> 설정이 간단하고, 서버 IP 변경 시 자동으로 적용됩니다.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card" style="background-color: #fff3cd;">
+                                <div class="card-body p-3">
+                                    <h6 class="card-title mb-2">
+                                        <strong>방법 2: A 레코드</strong>
+                                    </h6>
+                                    <div class="small">
+                                        <strong>설정 방법:</strong><br>
+                                        • <strong>타입:</strong> A<br>
+                                        • <strong>이름:</strong> @ (또는 비워두기) 또는 www<br>
+                                        • <strong>값/대상:</strong> 
+                                        @if(config('app.server_ip'))
+                                            <code>{{ config('app.server_ip') }}</code>
+                                        @else
+                                            <span class="text-muted">서버 IP 주소 (서버 관리자에게 문의)</span>
+                                        @endif
+                                        <br>
+                                        • <strong>TTL:</strong> 자동 (또는 3600)
+                                    </div>
+                                    <div class="mt-2 small text-warning">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>
+                                        <strong>참고:</strong> 서버 IP 주소가 변경되면 수동으로 업데이트해야 합니다.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3 small">
+                                <strong><i class="bi bi-question-circle me-1"></i>도메인 제공업체별 설정 위치:</strong><br>
+                                • <strong>가비아:</strong> 마이 가비아 → 도메인 → DNS 관리<br>
+                                • <strong>후이즈:</strong> 도메인 관리 → DNS 설정<br>
+                                • <strong>Cloudflare:</strong> 대시보드 → DNS → 레코드 추가<br>
+                                • <strong>기타:</strong> 도메인 관리 페이지에서 "DNS 설정" 또는 "네임서버 설정" 메뉴 찾기
+                            </div>
                         </div>
                     @endif
                 </div>

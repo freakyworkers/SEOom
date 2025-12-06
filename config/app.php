@@ -50,6 +50,18 @@ return [
     */
 
     'master_domain' => env('MASTER_DOMAIN', 'seoom.com'),
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Server IP Address
+    |--------------------------------------------------------------------------
+    |
+    | This is the public IP address of the server for A record DNS configuration.
+    | This can be found in AWS EC2 console or by contacting server administrator.
+    |
+    */
+    
+    'server_ip' => env('SERVER_IP', null),
 
     /*
     |--------------------------------------------------------------------------
