@@ -1,0 +1,116 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use App\Models\Site;
+
+class ResolveSiteByDomain
+{
+    /**
+     * Handle an incoming request.
+     * 도메인 기반으로 사이트를 찾아서 라우트에 바인딩합니다.
+     * 
+     * 우선순위:
+     * 1. 마스터 도메인 → 마스터 사이트
+     * 2. 서브도메인 → slug로 사이트 조회
+     * 3. 커스텀 도메인 → domain으로 사이트 조회
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        $host = $request->getHost();
+        
+        // 포트 제거 (localhost:8000 → localhost)
+        $host = preg_replace('/:\d+$/', '', $host);
+        
+        // 마스터 도메인 체크
+        $masterDomain = config('app.master_domain', 'seoom.com');
+        $masterDomains = [
+            $masterDomain,
+            'www.' . $masterDomain,
+        ];
+        
+        if (in_array($host, $masterDomains)) {
+            // 마스터 사이트 처리
+            $masterSite = Site::getMasterSite();
+            if ($masterSite) {
+                $request->attributes->set('site', $masterSite);
+            }
+            return $next($request);
+        }
+        
+        // 서브도메인 체크 (예: test-site.seoom.com)
+        $subdomain = $this->extractSubdomain($host, $masterDomain);
+        if ($subdomain) {
+            $site = Site::where('slug', $subdomain)
+                ->where('status', 'active')
+                ->first();
+            
+            if ($site) {
+                $request->attributes->set('site', $site);
+                return $next($request);
+            }
+        }
+        
+        // 커스텀 도메인 체크
+        $site = Site::where('domain', $host)
+            ->where('status', 'active')
+            ->first();
+        
+        if ($site) {
+            $request->attributes->set('site', $site);
+            return $next($request);
+        }
+        
+        // www. 접두사 제거 후 재시도 (예: www.example.com → example.com)
+        if (str_starts_with($host, 'www.')) {
+            $hostWithoutWww = substr($host, 4);
+            
+            $site = Site::where('domain', $hostWithoutWww)
+                ->where('status', 'active')
+                ->first();
+            
+            if ($site) {
+                $request->attributes->set('site', $site);
+                return $next($request);
+            }
+        }
+        
+        // 사이트를 찾을 수 없으면 계속 진행 (슬러그 기반 라우팅 또는 마스터 콘솔)
+        // 마스터 콘솔 라우트는 허용
+        if ($request->is('master/*')) {
+            return $next($request);
+        }
+        
+        // 슬러그 기반 라우팅으로 넘어감 (/site/{slug}/ 형태)
+        return $next($request);
+    }
+    
+    /**
+     * Extract subdomain from host
+     * 
+     * @param string $host
+     * @param string $masterDomain
+     * @return string|null
+     */
+    private function extractSubdomain(string $host, string $masterDomain): ?string
+    {
+        // 정확히 마스터 도메인과 일치하면 null 반환
+        if ($host === $masterDomain || $host === 'www.' . $masterDomain) {
+            return null;
+        }
+        
+        // 서브도메인 패턴 체크 (예: test-site.seoom.com)
+        if (str_ends_with($host, '.' . $masterDomain)) {
+            $subdomain = str_replace('.' . $masterDomain, '', $host);
+            // www. 접두사 제거
+            $subdomain = str_replace('www.', '', $subdomain);
+            return $subdomain ?: null;
+        }
+        
+        return null;
+    }
+}
+

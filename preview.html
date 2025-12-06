@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEOom Builder - 페이지 미리보기</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .preview-section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            border: 2px dashed #dee2e6;
+            border-radius: 0.5rem;
+        }
+        .preview-section h3 {
+            color: #0d6efd;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-house-door"></i> SEOom Builder
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">
+                            <i class="bi bi-grid"></i> 게시판
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#login">로그인</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#register">회원가입</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-4">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> 이것은 페이지 미리보기입니다. 실제 기능을 사용하려면 Laravel 개발 서버를 실행해야 합니다.
+        </div>
+
+        <!-- 게시판 목록 미리보기 -->
+        <div class="preview-section" id="boards">
+            <h3><i class="bi bi-grid"></i> 게시판 목록 페이지</h3>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-grid"></i> 게시판</h2>
+                <a href="#" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> 게시판 만들기
+                </a>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="#" class="text-decoration-none">공지사항</a>
+                            </h5>
+                            <p class="card-text text-muted">중요한 공지사항을 확인하세요.</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-file-text"></i> 15개의 게시글
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="#" class="text-decoration-none">자유게시판</a>
+                            </h5>
+                            <p class="card-text text-muted">자유롭게 글을 작성하세요.</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-file-text"></i> 42개의 게시글
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="#" class="text-decoration-none">질문과 답변</a>
+                            </h5>
+                            <p class="card-text text-muted">궁금한 점을 질문하세요.</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-file-text"></i> 8개의 게시글
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 로그인 페이지 미리보기 -->
+        <div class="preview-section" id="login">
+            <h3><i class="bi bi-box-arrow-in-right"></i> 로그인 페이지</h3>
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h4 class="mb-0"><i class="bi bi-box-arrow-in-right"></i> 로그인</h4>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">이메일</label>
+                                    <input type="email" class="form-control" id="email" placeholder="example@email.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">비밀번호</label>
+                                    <input type="password" class="form-control" id="password">
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="remember">
+                                    <label class="form-check-label" for="remember">로그인 상태 유지</label>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-box-arrow-in-right"></i> 로그인
+                                    </button>
+                                </div>
+                            </form>
+                            <hr>
+                            <div class="text-center">
+                                <p class="mb-0">계정이 없으신가요? <a href="#register">회원가입</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 회원가입 페이지 미리보기 -->
+        <div class="preview-section" id="register">
+            <h3><i class="bi bi-person-plus"></i> 회원가입 페이지</h3>
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-5">
+                    <div class="card shadow">
+                        <div class="card-header bg-success text-white text-center">
+                            <h4 class="mb-0"><i class="bi bi-person-plus"></i> 회원가입</h4>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label for="reg_name" class="form-label">이름</label>
+                                    <input type="text" class="form-control" id="reg_name" placeholder="홍길동">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reg_email" class="form-label">이메일</label>
+                                    <input type="email" class="form-control" id="reg_email" placeholder="example@email.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reg_password" class="form-label">비밀번호</label>
+                                    <input type="password" class="form-control" id="reg_password">
+                                    <small class="form-text text-muted">최소 8자 이상 입력해주세요.</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reg_password_confirmation" class="form-label">비밀번호 확인</label>
+                                    <input type="password" class="form-control" id="reg_password_confirmation">
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-person-plus"></i> 회원가입
+                                    </button>
+                                </div>
+                            </form>
+                            <hr>
+                            <div class="text-center">
+                                <p class="mb-0">이미 계정이 있으신가요? <a href="#login">로그인</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 관리자 대시보드 미리보기 -->
+        <div class="preview-section" id="admin">
+            <h3><i class="bi bi-speedometer2"></i> 관리자 대시보드</h3>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <h2 class="text-primary"><i class="bi bi-people"></i></h2>
+                            <h3 class="mb-0">25</h3>
+                            <p class="text-muted mb-0">사용자</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary mt-2">
+                                관리하기 <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <h2 class="text-success"><i class="bi bi-grid"></i></h2>
+                            <h3 class="mb-0">5</h3>
+                            <p class="text-muted mb-0">게시판</p>
+                            <a href="#" class="btn btn-sm btn-outline-success mt-2">
+                                관리하기 <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card border-info">
+                        <div class="card-body text-center">
+                            <h2 class="text-info"><i class="bi bi-file-text"></i></h2>
+                            <h3 class="mb-0">128</h3>
+                            <p class="text-muted mb-0">게시글</p>
+                            <a href="#" class="btn btn-sm btn-outline-info mt-2">
+                                관리하기 <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="text-muted mb-0">&copy; 2024 SEOom Builder. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+

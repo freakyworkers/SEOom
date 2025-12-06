@@ -1,0 +1,1955 @@
+@extends('layouts.admin')
+
+@section('title', '사이트 설정')
+@section('page-title', '사이트 설정')
+@section('page-subtitle', '사이트 정보와 기본 설정을 변경할 수 있습니다')
+
+@push('styles')
+<style>
+    .settings-section {
+        margin-bottom: 2rem;
+    }
+    .settings-section:last-child {
+        margin-bottom: 0;
+    }
+    .theme-preview {
+        position: relative;
+    }
+    .image-upload-area {
+        position: relative;
+        width: 100%;
+        min-height: 120px;
+        border: 2px dashed #dee2e6;
+        border-radius: 0.375rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .image-upload-area:hover {
+        border-color: #0d6efd;
+        background-color: #e7f1ff;
+    }
+    .image-upload-area.has-image {
+        border: 2px solid #dee2e6;
+        padding: 0.5rem;
+    }
+    .image-preview {
+        max-width: 100%;
+        max-height: 120px;
+        border-radius: 0.25rem;
+        cursor: pointer;
+    }
+    .image-preview:hover {
+        opacity: 0.8;
+    }
+    .image-upload-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        color: #6c757d;
+    }
+    .image-upload-btn i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    .help-icon {
+        cursor: help;
+        color: #6c757d;
+        margin-left: 0.25rem;
+    }
+    .help-icon:hover {
+        color: #0d6efd;
+    }
+    .logo-settings-table {
+        background-color: white;
+    }
+    .logo-settings-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        text-align: center;
+        vertical-align: middle;
+    }
+    .logo-settings-table td {
+        vertical-align: middle;
+    }
+    .size-input {
+        width: 100px;
+    }
+    .hidden-file-input {
+        display: none;
+    }
+    .theme-preview {
+        margin-top: 1rem;
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        background-color: #f8f9fa;
+        overflow: hidden;
+        position: relative;
+    }
+    .theme-preview-container {
+        overflow: hidden;
+        width: 100%;
+        position: relative;
+    }
+    .header-preview-wrapper {
+        transform: scale(0.75);
+        transform-origin: top left;
+        width: 133.33%;
+        margin-bottom: -25%;
+    }
+    .footer-preview-wrapper {
+        transform: scale(0.75);
+        transform-origin: top left;
+        width: 133.33%;
+        margin-bottom: -25%;
+    }
+</style>
+@endpush
+
+@section('content')
+<form method="POST" action="{{ route('admin.settings.update', ['site' => $site->slug]) }}" id="settingsForm">
+    @csrf
+    @method('PUT')
+    
+    <!-- 기본 설정 -->
+    <div class="card shadow-sm settings-section">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-gear me-2"></i>기본 설정</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="site_name" class="form-label">사이트 이름</label>
+                    <input type="text" 
+                           class="form-control @error('site_name') is-invalid @enderror" 
+                           id="site_name" 
+                           name="site_name" 
+                           value="{{ old('site_name', $settings['site_name'] ?? $site->name) }}">
+                    @error('site_name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="site_keywords" class="form-label">사이트 키워드</label>
+                    <input type="text" 
+                           class="form-control @error('site_keywords') is-invalid @enderror" 
+                           id="site_keywords" 
+                           name="site_keywords" 
+                           value="{{ old('site_keywords', $settings['site_keywords'] ?? '') }}"
+                           placeholder="키워드1, 키워드2, 키워드3">
+                    <small class="form-text text-muted">쉼표로 구분하여 입력하세요.</small>
+                    @error('site_keywords')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="site_description" class="form-label">사이트 설명</label>
+                <textarea class="form-control @error('site_description') is-invalid @enderror" 
+                          id="site_description" 
+                          name="site_description" 
+                          rows="3">{{ old('site_description', $settings['site_description'] ?? '') }}</textarea>
+                @error('site_description')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <hr class="my-4">
+
+            <h6 class="mb-3"><i class="bi bi-search me-2"></i>검색 엔진 등록</h6>
+            <div class="alert alert-info mb-3">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>안내:</strong> 각 검색 엔진에서 제공하는 인증 코드를 입력하세요. 입력한 메타 태그는 사이트의 <code>&lt;head&gt;</code> 태그에 자동으로 삽입됩니다.
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="google_site_verification" class="form-label">
+                        <i class="bi bi-google me-1"></i>구글 서치콘솔
+                    </label>
+                    <input type="text" 
+                           class="form-control @error('google_site_verification') is-invalid @enderror" 
+                           id="google_site_verification" 
+                           name="google_site_verification" 
+                           value="{{ old('google_site_verification', $settings['google_site_verification'] ?? '') }}"
+                           placeholder="인증 코드 입력">
+                    <small class="form-text text-muted">구글 서치콘솔에서 제공하는 인증 코드를 입력하세요.</small>
+                    @error('google_site_verification')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="naver_site_verification" class="form-label">
+                        <i class="bi bi-globe me-1"></i>네이버 서치어드바이저
+                    </label>
+                    <input type="text" 
+                           class="form-control @error('naver_site_verification') is-invalid @enderror" 
+                           id="naver_site_verification" 
+                           name="naver_site_verification" 
+                           value="{{ old('naver_site_verification', $settings['naver_site_verification'] ?? '') }}"
+                           placeholder="인증 코드 입력">
+                    <small class="form-text text-muted">네이버 서치어드바이저에서 제공하는 인증 코드를 입력하세요.</small>
+                    @error('naver_site_verification')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="daum_site_verification" class="form-label">
+                        <i class="bi bi-globe me-1"></i>다음 검색 등록
+                    </label>
+                    <input type="text" 
+                           class="form-control @error('daum_site_verification') is-invalid @enderror" 
+                           id="daum_site_verification" 
+                           name="daum_site_verification" 
+                           value="{{ old('daum_site_verification', $settings['daum_site_verification'] ?? '') }}"
+                           placeholder="인증 코드 입력">
+                    <small class="form-text text-muted">다음 검색 등록에서 제공하는 인증 코드를 입력하세요.</small>
+                    @error('daum_site_verification')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <h6 class="mb-3">구글</h6>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="google_analytics_id" class="form-label">애널리틱스</label>
+                    <input type="text" 
+                           class="form-control @error('google_analytics_id') is-invalid @enderror" 
+                           id="google_analytics_id" 
+                           name="google_analytics_id" 
+                           value="{{ old('google_analytics_id', $settings['google_analytics_id'] ?? '') }}"
+                           placeholder="G-XXXXXXXXXX">
+                    <small class="form-text text-muted">구글 애널리틱스 측정 ID를 입력하세요.</small>
+                    @error('google_analytics_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6">
+                    <label for="adsense_ads_txt" class="form-label">애드센스 ads.txt</label>
+                    <textarea class="form-control @error('adsense_ads_txt') is-invalid @enderror" 
+                              id="adsense_ads_txt" 
+                              name="adsense_ads_txt" 
+                              rows="4"
+                              placeholder="google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0">{{ old('adsense_ads_txt', $settings['adsense_ads_txt'] ?? '') }}</textarea>
+                    <small class="form-text text-muted">애드센스 ads.txt 내용을 입력하세요.</small>
+                    @error('adsense_ads_txt')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <h6 class="mb-3"><i class="bi bi-file-text me-2"></i>로봇 텍스트 (robots.txt)</h6>
+            <div class="alert alert-info mb-3">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>안내:</strong> robots.txt는 검색 엔진 크롤러에게 사이트 크롤링 규칙을 알려주는 파일입니다. 기본값이 제공되며, 필요시 수정할 수 있습니다.
+            </div>
+            
+            <div class="mb-3">
+                <label for="robots_txt" class="form-label">robots.txt 내용</label>
+                @php
+                    $defaultRobotsTxt = "User-agent: *\nAllow: /\n\nSitemap: " . route('sitemap', ['site' => $site->slug]);
+                    $robotsTxtValue = old('robots_txt', $settings['robots_txt'] ?? $defaultRobotsTxt);
+                @endphp
+                <textarea class="form-control @error('robots_txt') is-invalid @enderror" 
+                          id="robots_txt" 
+                          name="robots_txt" 
+                          rows="8"
+                          placeholder="필요한 경우 수정할 수 있습니다.">{{ $robotsTxtValue }}</textarea>
+                <small class="form-text text-muted">사이트맵 URL을 포함한 기본값이 자동으로 설정되었습니다.</small>
+                @error('robots_txt')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{{ route('robots', ['site' => $site->slug]) }}" 
+                       class="btn btn-sm btn-outline-primary" 
+                       target="_blank">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>robots.txt 보기
+                    </a>
+                    <a href="{{ route('sitemap', ['site' => $site->slug]) }}" 
+                       class="btn btn-sm btn-outline-primary" 
+                       target="_blank">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>사이트맵 보기
+                    </a>
+                    <a href="{{ route('rss', ['site' => $site->slug]) }}" 
+                       class="btn btn-sm btn-outline-primary" 
+                       target="_blank">
+                        <i class="bi bi-rss me-1"></i>RSS 피드 보기
+                    </a>
+                </div>
+            </div>
+
+        <div class="d-flex justify-content-end mt-3">
+            <button type="submit" form="settingsForm" class="btn btn-primary">
+                <i class="bi bi-check-circle me-1"></i>기본 설정 저장
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 로고 설정 -->
+<div class="card shadow-sm settings-section">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-image me-2"></i>로고</h5>
+    </div>
+    <div class="card-body">
+            
+            <div class="table-responsive">
+                <table class="table table-bordered logo-settings-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="width: 100px;">로고</th>
+                            <th>타입</th>
+                            <th>이미지</th>
+                            <th>이미지 (다크모드)</th>
+                            <th>데스크탑 사이즈</th>
+                            <th>모바일 사이즈</th>
+                            <th>파비콘 <i class="bi bi-question-circle help-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="파비콘은 브라우저 탭에 표시되는 작은 아이콘입니다. 권장 사이즈: 32x32px 또는 16x16px (ICO, PNG 형식)"></i></th>
+                            <th>OG 이미지 <i class="bi bi-question-circle help-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="OG(Open Graph) 이미지는 소셜 미디어 공유 시 표시되는 이미지입니다. 권장 사이즈: 1200x630px (PNG, JPG 형식)"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2" class="text-center align-middle">
+                                <strong>로고</strong>
+                            </td>
+                            <td>
+                                <select class="form-select form-select-sm" name="logo_type" id="logo_type">
+                                    <option value="image" {{ ($settings['logo_type'] ?? 'image') === 'image' ? 'selected' : '' }}>이미지</option>
+                                    <option value="text" {{ ($settings['logo_type'] ?? '') === 'text' ? 'selected' : '' }}>텍스트</option>
+                                </select>
+                                <div id="logo-text-notice" class="alert alert-info mt-2 mb-0" style="display: none;">
+                                    <i class="bi bi-info-circle me-1"></i>사이트 이름이 로고로 표시됩니다.
+                                </div>
+                            </td>
+                            <td>
+                                <div class="image-upload-area {{ !empty($settings['site_logo'] ?? '') ? 'has-image' : '' }}" 
+                                     data-type="logo" 
+                                     data-input="site_logo">
+                                    @if(!empty($settings['site_logo'] ?? ''))
+                                        <img src="{{ $settings['site_logo'] }}" alt="로고" class="image-preview">
+                                    @else
+                                        <div class="image-upload-btn">
+                                            <i class="bi bi-cloud-upload"></i>
+                                            <span>업로드</span>
+                                        </div>
+                                    @endif
+                                    <input type="file" class="hidden-file-input" accept="image/*" data-type="logo">
+                                    <input type="hidden" name="site_logo" id="site_logo" value="{{ $settings['site_logo'] ?? '' }}">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="image-upload-area {{ !empty($settings['site_logo_dark'] ?? '') ? 'has-image' : '' }}" 
+                                     data-type="logo_dark" 
+                                     data-input="site_logo_dark">
+                                    @if(!empty($settings['site_logo_dark'] ?? ''))
+                                        <img src="{{ $settings['site_logo_dark'] }}" alt="로고 (다크모드)" class="image-preview">
+                                    @else
+                                        <div class="image-upload-btn">
+                                            <i class="bi bi-cloud-upload"></i>
+                                            <span>업로드</span>
+                                        </div>
+                                    @endif
+                                    <input type="file" class="hidden-file-input" accept="image/*" data-type="logo_dark">
+                                    <input type="hidden" name="site_logo_dark" id="site_logo_dark" value="{{ $settings['site_logo_dark'] ?? '' }}">
+                                </div>
+                            </td>
+                            <td>
+                                <input type="number" 
+                                       class="form-control form-control-sm size-input" 
+                                       name="logo_desktop_size" 
+                                       id="logo_desktop_size" 
+                                       value="{{ old('logo_desktop_size', $settings['logo_desktop_size'] ?? '300') }}"
+                                       min="50" 
+                                       max="1000">
+                                <small class="text-muted">px</small>
+                            </td>
+                            <td>
+                                <input type="number" 
+                                       class="form-control form-control-sm size-input" 
+                                       name="logo_mobile_size" 
+                                       id="logo_mobile_size" 
+                                       value="{{ old('logo_mobile_size', $settings['logo_mobile_size'] ?? '200') }}"
+                                       min="50" 
+                                       max="1000">
+                                <small class="text-muted">px</small>
+                            </td>
+                            <td>
+                                <div class="image-upload-area {{ !empty($settings['site_favicon'] ?? '') ? 'has-image' : '' }}" 
+                                     data-type="favicon" 
+                                     data-input="site_favicon"
+                                     style="min-height: 60px;">
+                                    @if(!empty($settings['site_favicon'] ?? ''))
+                                        <img src="{{ $settings['site_favicon'] }}" alt="파비콘" class="image-preview" style="max-height: 60px;">
+                                    @else
+                                        <div class="image-upload-btn" style="padding: 0.5rem;">
+                                            <i class="bi bi-cloud-upload"></i>
+                                            <span style="font-size: 0.75rem;">업로드</span>
+                                        </div>
+                                    @endif
+                                    <input type="file" class="hidden-file-input" accept="image/*,.ico" data-type="favicon">
+                                    <input type="hidden" name="site_favicon" id="site_favicon" value="{{ $settings['site_favicon'] ?? '' }}">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="image-upload-area {{ !empty($settings['og_image'] ?? '') ? 'has-image' : '' }}" 
+                                     data-type="og_image" 
+                                     data-input="og_image">
+                                    @if(!empty($settings['og_image'] ?? ''))
+                                        <img src="{{ $settings['og_image'] }}" alt="OG 이미지" class="image-preview">
+                                    @else
+                                        <div class="image-upload-btn">
+                                            <i class="bi bi-cloud-upload"></i>
+                                            <span>업로드</span>
+                                        </div>
+                                    @endif
+                                    <input type="file" class="hidden-file-input" accept="image/*" data-type="og_image">
+                                    <input type="hidden" name="og_image" id="og_image" value="{{ $settings['og_image'] ?? '' }}">
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        <div class="d-flex justify-content-end mt-3">
+            <button type="submit" form="settingsForm" class="btn btn-primary">
+                <i class="bi bi-check-circle me-1"></i>로고 설정 저장
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 테마 설정 -->
+<div class="card shadow-sm settings-section">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-palette me-2"></i>테마</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ route('admin.settings.update', ['site' => $site->slug]) }}" id="themeForm">
+            @csrf
+            @method('PUT')
+            
+            <!-- 다크모드, 메인, 사이드바 -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <label for="theme_dark_mode" class="form-label">다크모드</label>
+                    <select class="form-select" name="theme_dark_mode" id="theme_dark_mode">
+                        <option value="light" {{ ($settings['theme_dark_mode'] ?? 'light') === 'light' ? 'selected' : '' }}>라이트</option>
+                        <option value="dark" {{ ($settings['theme_dark_mode'] ?? '') === 'dark' ? 'selected' : '' }}>다크</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="theme_main" class="form-label">메인</label>
+                    <select class="form-select" name="theme_main" id="theme_main">
+                        <option value="round" {{ ($settings['theme_main'] ?? 'round') === 'round' ? 'selected' : '' }}>라운드</option>
+                        <option value="square" {{ ($settings['theme_main'] ?? 'round') === 'square' ? 'selected' : '' }}>스퀘어</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="theme_sidebar" class="form-label">사이드바</label>
+                    @php
+                        $hasSidebarWidgets = $site->hasFeature('sidebar_widgets');
+                        $sidebarValue = $hasSidebarWidgets ? ($settings['theme_sidebar'] ?? 'left') : 'none';
+                    @endphp
+                    <select class="form-select" 
+                            name="theme_sidebar" 
+                            id="theme_sidebar"
+                            {{ !$hasSidebarWidgets ? 'disabled' : '' }}>
+                        <option value="left" {{ $sidebarValue === 'left' ? 'selected' : '' }}>좌측</option>
+                        <option value="right" {{ $sidebarValue === 'right' ? 'selected' : '' }}>우측</option>
+                        <option value="none" {{ $sidebarValue === 'none' ? 'selected' : '' }}>없음</option>
+                    </select>
+                    @if(!$hasSidebarWidgets)
+                        <input type="hidden" name="theme_sidebar" value="none">
+                        <small class="text-muted d-block mt-1">
+                            <i class="bi bi-info-circle me-1"></i>
+                            현재 플랜에서는 사이드 위젯 기능을 사용할 수 없어 사이드바가 비활성화됩니다.
+                        </small>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- 메뉴 폰트 설정 -->
+            <div class="mb-4">
+                <h5 class="mb-3">메뉴 폰트 설정</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="menu_font_size" class="form-label">폰트 사이즈</label>
+                        <select class="form-select theme-preview-select" name="menu_font_size" id="menu_font_size" data-type="header">
+                            <option value="0.75rem" {{ ($settings['menu_font_size'] ?? '1.25rem') === '0.75rem' ? 'selected' : '' }}>12px</option>
+                            <option value="0.875rem" {{ ($settings['menu_font_size'] ?? '1.25rem') === '0.875rem' ? 'selected' : '' }}>14px</option>
+                            <option value="1rem" {{ ($settings['menu_font_size'] ?? '1.25rem') === '1rem' ? 'selected' : '' }}>16px</option>
+                            <option value="1.125rem" {{ ($settings['menu_font_size'] ?? '1.25rem') === '1.125rem' ? 'selected' : '' }}>18px</option>
+                            <option value="1.25rem" {{ ($settings['menu_font_size'] ?? '1.25rem') === '1.25rem' ? 'selected' : '' }}>20px</option>
+                            <option value="1.5rem" {{ ($settings['menu_font_size'] ?? '1.25rem') === '1.5rem' ? 'selected' : '' }}>24px</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="menu_font_padding" class="form-label">메뉴 간격</label>
+                        <select class="form-select theme-preview-select" name="menu_font_padding" id="menu_font_padding" data-type="header">
+                            <option value="0.25rem" {{ ($settings['menu_font_padding'] ?? '0.5rem') === '0.25rem' ? 'selected' : '' }}>4px</option>
+                            <option value="0.5rem" {{ ($settings['menu_font_padding'] ?? '0.5rem') === '0.5rem' ? 'selected' : '' }}>8px</option>
+                            <option value="0.75rem" {{ ($settings['menu_font_padding'] ?? '0.5rem') === '0.75rem' ? 'selected' : '' }}>12px</option>
+                            <option value="1rem" {{ ($settings['menu_font_padding'] ?? '0.5rem') === '1rem' ? 'selected' : '' }}>16px</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="menu_font_weight" class="form-label">폰트 두께</label>
+                        <select class="form-select theme-preview-select" name="menu_font_weight" id="menu_font_weight" data-type="header">
+                            <option value="300" {{ (isset($settings['menu_font_weight']) && (string)$settings['menu_font_weight'] === '300') ? 'selected' : '' }}>얇음</option>
+                            <option value="400" {{ (isset($settings['menu_font_weight']) && (string)$settings['menu_font_weight'] === '400') ? 'selected' : '' }}>보통</option>
+                            <option value="700" {{ (!isset($settings['menu_font_weight']) || (string)$settings['menu_font_weight'] === '700') ? 'selected' : '' }}>볼드</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 상단 헤더 -->
+            <div class="mb-4">
+                <div class="row align-items-start">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <label for="theme_top" class="form-label mb-0 me-2">상단</label>
+                            <i class="bi bi-question-circle help-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="상단 헤더 테마를 선택합니다"></i>
+                        </div>
+                        <select class="form-select theme-preview-select" name="theme_top" id="theme_top" data-type="header">
+                            <option value="design1" {{ ($settings['theme_top'] ?? 'design1') === 'design1' ? 'selected' : '' }}>디자인1</option>
+                            <option value="design2" {{ ($settings['theme_top'] ?? 'design1') === 'design2' ? 'selected' : '' }}>디자인2</option>
+                            <option value="design3" {{ ($settings['theme_top'] ?? 'design1') === 'design3' ? 'selected' : '' }}>디자인3</option>
+                            <option value="design4" {{ ($settings['theme_top'] ?? 'design1') === 'design4' ? 'selected' : '' }}>디자인4</option>
+                            <option value="design5" {{ ($settings['theme_top'] ?? 'design1') === 'design5' ? 'selected' : '' }}>디자인5</option>
+                            <option value="design6" {{ ($settings['theme_top'] ?? 'design1') === 'design6' ? 'selected' : '' }}>디자인6</option>
+                        </select>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" name="theme_top_header_show" id="theme_top_header_show" value="1" {{ (isset($settings['theme_top_header_show']) && $settings['theme_top_header_show'] == '1') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="theme_top_header_show">
+                                최상단 헤더 표시
+                            </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" name="top_header_login_show" id="top_header_login_show" value="1" {{ (isset($settings['top_header_login_show']) && $settings['top_header_login_show'] == '1') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="top_header_login_show">
+                                최상단 헤더 로그인 버튼
+                            </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" name="header_sticky" id="header_sticky" value="1" {{ (isset($settings['header_sticky']) && $settings['header_sticky'] == '1') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="header_sticky">
+                                헤더 고정
+                            </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" name="theme_full_width" id="theme_full_width" value="1" {{ (isset($settings['theme_full_width']) && $settings['theme_full_width'] == '1') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="theme_full_width">
+                                가로100%
+                            </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <div class="d-flex align-items-center">
+                                <input class="form-check-input" type="checkbox" name="menu_login_show" id="menu_login_show" value="1" {{ (isset($settings['menu_login_show']) && $settings['menu_login_show'] == '1') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="menu_login_show">
+                                    메뉴 로그인 표시
+                                </label>
+                                <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="활성화 시 검색창이 있는 헤더 디자인(2, 3, 4번)에서는 검색창 위치에 로그인 버튼이 표시됩니다."></i>
+                            </div>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" name="header_shadow" id="header_shadow" value="1" {{ (isset($settings['header_shadow']) && $settings['header_shadow'] == '1') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="header_shadow">
+                                그림자
+                            </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" name="header_border" id="header_border" value="1" {{ (isset($settings['header_border']) && $settings['header_border'] == '1') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="header_border">
+                                헤더 테두리
+                            </label>
+                        </div>
+                        <div id="header_border_settings" class="mt-2 ms-4" style="display: {{ (isset($settings['header_border']) && $settings['header_border'] == '1') ? 'block' : 'none' }};">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <label for="header_border_width" class="form-label mb-0">두께:</label>
+                                <select class="form-select form-select-sm" name="header_border_width" id="header_border_width" style="width: auto;">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <option value="{{ $i }}" {{ (isset($settings['header_border_width']) && $settings['header_border_width'] == $i) ? 'selected' : '' }}>{{ $i }}px</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="header_border_color" class="form-label mb-0">컬러:</label>
+                                <input type="color" class="form-control form-control-color form-control-sm" name="header_border_color" id="header_border_color" value="{{ $settings['header_border_color'] ?? '#dee2e6' }}" title="헤더 테두리 색상" style="width: 50px; height: 38px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center mb-2" style="height: 24px;">
+                            <label class="form-label mb-0">미리보기</label>
+                        </div>
+                        <div id="theme_top_preview" class="theme-preview" style="height: 200px; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; background-color: #f8f9fa; overflow: hidden; position: relative;">
+                            <div class="theme-preview-container" style="position: relative; width: 100%; height: 100%;">
+                                @if(isset($headerPreviewHtml) && !empty($headerPreviewHtml))
+                                    {!! $headerPreviewHtml !!}
+                                @else
+                                    <div class="text-muted p-3">
+                                        미리보기를 불러올 수 없습니다.
+                                        @if(config('app.debug'))
+                                            <br><small>Debug: headerPreviewHtml is not set</small>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 하단 푸터 -->
+            <div class="mb-4">
+                <div class="row align-items-start">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <label for="theme_bottom" class="form-label mb-0 me-2">하단</label>
+                            <i class="bi bi-question-circle help-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="푸터 디자인을 선택합니다"></i>
+                        </div>
+                        <select class="form-select theme-preview-select" name="theme_bottom" id="theme_bottom" data-type="footer">
+                            <option value="theme01" {{ ($settings['theme_bottom'] ?? 'theme03') === 'theme01' ? 'selected' : '' }}>테마01</option>
+                            <option value="theme02" {{ ($settings['theme_bottom'] ?? 'theme03') === 'theme02' ? 'selected' : '' }}>테마02</option>
+                            <option value="theme03" {{ ($settings['theme_bottom'] ?? 'theme03') === 'theme03' ? 'selected' : '' }}>테마03</option>
+                            <option value="theme04" {{ ($settings['theme_bottom'] ?? 'theme03') === 'theme04' ? 'selected' : '' }}>테마04</option>
+                            <option value="theme05" {{ ($settings['theme_bottom'] ?? 'theme03') === 'theme05' ? 'selected' : '' }}>테마05</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center mb-2" style="height: 24px;">
+                            <label class="form-label mb-0">미리보기</label>
+                        </div>
+                        <div id="theme_bottom_preview" class="theme-preview" style="height: 200px; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; background-color: #f8f9fa; overflow: hidden; position: relative;">
+                            <div class="theme-preview-container" style="position: relative; width: 100%; height: 100%;">
+                                @if(isset($footerPreviewHtml) && !empty(trim($footerPreviewHtml)))
+                                    {!! $footerPreviewHtml !!}
+                                @else
+                                    <div class="text-muted p-3" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                        미리보기를 불러올 수 없습니다.
+                                        @if(config('app.debug'))
+                                            <br><small>Debug: footerPreviewHtml is {{ isset($footerPreviewHtml) ? 'set but empty' : 'not set' }}</small>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>테마 설정 저장
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 모바일 상단 설정 -->
+<div class="card shadow-sm settings-section" style="margin-top: 2rem;">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-phone me-2"></i>모바일 상단</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ route('admin.settings.update', ['site' => $site->slug]) }}" id="mobileHeaderForm">
+            @csrf
+            @method('PUT')
+            
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="mobile_header_theme" class="form-label">
+                            <i class="bi bi-palette me-1"></i>모바일 상단
+                        </label>
+                        <select class="form-select mobile-header-preview-select" name="mobile_header_theme" id="mobile_header_theme" data-type="mobile-header">
+                            <option value="theme1" {{ ($settings['mobile_header_theme'] ?? 'theme1') === 'theme1' ? 'selected' : '' }}>테마1</option>
+                            <option value="theme2" {{ ($settings['mobile_header_theme'] ?? 'theme1') === 'theme2' ? 'selected' : '' }}>테마2</option>
+                            <option value="theme3" {{ ($settings['mobile_header_theme'] ?? 'theme1') === 'theme3' ? 'selected' : '' }}>테마3</option>
+                            <option value="theme4" {{ ($settings['mobile_header_theme'] ?? 'theme1') === 'theme4' ? 'selected' : '' }}>테마4</option>
+                            <option value="theme5" {{ ($settings['mobile_header_theme'] ?? 'theme1') === 'theme5' ? 'selected' : '' }}>테마5</option>
+                            <option value="theme6" {{ ($settings['mobile_header_theme'] ?? 'theme1') === 'theme6' ? 'selected' : '' }}>테마6</option>
+                            <option value="theme7" {{ ($settings['mobile_header_theme'] ?? 'theme1') === 'theme7' ? 'selected' : '' }}>테마7</option>
+                            <option value="theme8" {{ ($settings['mobile_header_theme'] ?? 'theme1') === 'theme8' ? 'selected' : '' }}>테마8</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mobile_menu_icon" class="form-label">
+                            <i class="bi bi-list me-1"></i>모바일 메뉴 아이콘
+                        </label>
+                        <select class="form-select" name="mobile_menu_icon" id="mobile_menu_icon">
+                            <option value="bi-list" {{ ($settings['mobile_menu_icon'] ?? 'bi-list') === 'bi-list' ? 'selected' : '' }}>☰ 리스트</option>
+                            <option value="bi-grid-3x3-gap" {{ ($settings['mobile_menu_icon'] ?? 'bi-list') === 'bi-grid-3x3-gap' ? 'selected' : '' }}>⊞ 그리드</option>
+                            <option value="bi-three-dots" {{ ($settings['mobile_menu_icon'] ?? 'bi-list') === 'bi-three-dots' ? 'selected' : '' }}>⋮ 세로 점</option>
+                            <option value="bi-three-dots-vertical" {{ ($settings['mobile_menu_icon'] ?? 'bi-list') === 'bi-three-dots-vertical' ? 'selected' : '' }}>⋮ 세로 점 3개</option>
+                            <option value="bi-menu-button-wide" {{ ($settings['mobile_menu_icon'] ?? 'bi-list') === 'bi-menu-button-wide' ? 'selected' : '' }}>☰ 와이드 메뉴</option>
+                            <option value="bi-menu-app" {{ ($settings['mobile_menu_icon'] ?? 'bi-list') === 'bi-menu-app' ? 'selected' : '' }}>☰ 앱 메뉴</option>
+                            <option value="bi-justify" {{ ($settings['mobile_menu_icon'] ?? 'bi-list') === 'bi-justify' ? 'selected' : '' }}>☰ 정렬</option>
+                            <option value="bi-list-ul" {{ ($settings['mobile_menu_icon'] ?? 'bi-list') === 'bi-list-ul' ? 'selected' : '' }}>☰ 리스트 UL</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mobile_menu_direction" class="form-label">
+                            <i class="bi bi-arrow-right me-1"></i>모바일 메뉴 방향
+                        </label>
+                        <select class="form-select" name="mobile_menu_direction" id="mobile_menu_direction">
+                            <option value="top-to-bottom" {{ ($settings['mobile_menu_direction'] ?? 'top-to-bottom') === 'top-to-bottom' ? 'selected' : '' }}>위에서 아래</option>
+                            <option value="left-to-right" {{ ($settings['mobile_menu_direction'] ?? 'top-to-bottom') === 'left-to-right' ? 'selected' : '' }}>좌에서 우</option>
+                            <option value="right-to-left" {{ ($settings['mobile_menu_direction'] ?? 'top-to-bottom') === 'right-to-left' ? 'selected' : '' }}>우에서 좌</option>
+                            <option value="bottom-to-top" {{ ($settings['mobile_menu_direction'] ?? 'top-to-bottom') === 'bottom-to-top' ? 'selected' : '' }}>아래에서 위</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="mobile_menu_icon_border" id="mobile_menu_icon_border" value="1" {{ ($settings['mobile_menu_icon_border'] ?? '0') == '1' ? 'checked' : '' }}>
+                            <label class="form-check-label" for="mobile_menu_icon_border">
+                                메뉴 아이콘 테두리
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="mobile_menu_login_widget" id="mobile_menu_login_widget" value="1" {{ ($settings['mobile_menu_login_widget'] ?? '0') == '1' ? 'checked' : '' }}>
+                            <label class="form-check-label" for="mobile_menu_login_widget">
+                                모바일 메뉴 로그인 위젯
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label class="form-label">미리보기</label>
+                        <div id="mobile_header_preview" style="border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; min-height: 667px; width: 375px; max-width: 375px; background-color: #f8f9fa; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                            <div class="text-center text-muted">
+                                <i class="bi bi-phone"></i> 모바일 헤더 미리보기
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>모바일 상단 설정 저장
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 색상 설정 -->
+<div class="card shadow-sm settings-section" style="margin-top: 2rem;">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-paint-bucket me-2"></i>색상</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ route('admin.settings.update', ['site' => $site->slug]) }}" id="colorForm">
+            @csrf
+            @method('PUT')
+        <!-- 라이트 모드 -->
+        <div class="mb-4">
+            <h6 class="mb-3">라이트 모드</h6>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;"></th>
+                            <th>헤더</th>
+                            <th>푸터</th>
+                            <th>본문</th>
+                            <th>포인트</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>글씨</th>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_light_header_text" value="{{ $settings['color_light_header_text'] ?? '#000000' }}" title="헤더 글씨 색상">
+                            </td>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_light_footer_text" value="{{ $settings['color_light_footer_text'] ?? '#000000' }}" title="푸터 글씨 색상">
+                            </td>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_light_body_text" value="{{ $settings['color_light_body_text'] ?? '#000000' }}" title="본문 글씨 색상">
+                            </td>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_light_point_main" value="{{ $settings['color_light_point_main'] ?? '#0d6efd' }}" title="포인트 색상">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>배경</th>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_light_header_bg" value="{{ $settings['color_light_header_bg'] ?? '#ffffff' }}" title="헤더 배경 색상">
+                            </td>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_light_footer_bg" value="{{ $settings['color_light_footer_bg'] ?? '#f8f9fa' }}" title="푸터 배경 색상">
+                            </td>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_light_body_bg" value="{{ $settings['color_light_body_bg'] ?? '#f8f9fa' }}" title="본문 배경 색상">
+                            </td>
+                            <td>
+                                <span class="text-muted">-</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 다크 모드 -->
+        <div>
+            <h6 class="mb-3">다크 모드</h6>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;"></th>
+                            <th>헤더</th>
+                            <th>푸터</th>
+                            <th>본문</th>
+                            <th>포인트</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>글씨</th>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_dark_header_text" value="{{ $settings['color_dark_header_text'] ?? '#ffffff' }}" title="헤더 글씨 색상">
+                            </td>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_dark_footer_text" value="{{ $settings['color_dark_footer_text'] ?? '#ffffff' }}" title="푸터 글씨 색상">
+                            </td>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_dark_body_text" value="{{ $settings['color_dark_body_text'] ?? '#ffffff' }}" title="본문 글씨 색상">
+                            </td>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_dark_point_main" value="{{ $settings['color_dark_point_main'] ?? '#ffffff' }}" title="포인트 색상">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>배경</th>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_dark_header_bg" value="{{ $settings['color_dark_header_bg'] ?? '#000000' }}" title="헤더 배경 색상">
+                            </td>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_dark_footer_bg" value="{{ $settings['color_dark_footer_bg'] ?? '#000000' }}" title="푸터 배경 색상">
+                            </td>
+                            <td>
+                                <input type="color" class="form-control form-control-color" name="color_dark_body_bg" value="{{ $settings['color_dark_body_bg'] ?? '#000000' }}" title="본문 배경 색상">
+                            </td>
+                            <td>
+                                <span class="text-muted">-</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-end mt-3">
+            <button type="submit" form="colorForm" class="btn btn-primary">
+                <i class="bi bi-check-circle me-1"></i>색상 설정 저장
+            </button>
+        </div>
+        </form>
+    </div>
+</div>
+
+<!-- 폰트 설정 -->
+<div class="card shadow-sm settings-section">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-type me-2"></i>폰트</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ route('admin.settings.update', ['site' => $site->slug]) }}" id="fontForm">
+            @csrf
+            @method('PUT')
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">디자인</th>
+                        <th>크기</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <select class="form-select form-select-sm" name="font_design" id="font_design">
+                                <option value="noto-sans" {{ ($settings['font_design'] ?? 'noto-sans') === 'noto-sans' ? 'selected' : '' }}>노토산스</option>
+                                <option value="malgun-gothic" {{ ($settings['font_design'] ?? '') === 'malgun-gothic' ? 'selected' : '' }}>맑은 고딕</option>
+                                <option value="nanum-gothic" {{ ($settings['font_design'] ?? '') === 'nanum-gothic' ? 'selected' : '' }}>나눔고딕</option>
+                                <option value="nanum-myeongjo" {{ ($settings['font_design'] ?? '') === 'nanum-myeongjo' ? 'selected' : '' }}>나눔명조</option>
+                                <option value="pretendard" {{ ($settings['font_design'] ?? '') === 'pretendard' ? 'selected' : '' }}>프리텐다드</option>
+                                <option value="roboto" {{ ($settings['font_design'] ?? '') === 'roboto' ? 'selected' : '' }}>로보토</option>
+                                <option value="arial" {{ ($settings['font_design'] ?? '') === 'arial' ? 'selected' : '' }}>Arial</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm" name="font_size" id="font_size">
+                                <option value="small" {{ ($settings['font_size'] ?? 'normal') === 'small' ? 'selected' : '' }}>작게</option>
+                                <option value="normal" {{ ($settings['font_size'] ?? 'normal') === 'normal' ? 'selected' : '' }}>보통</option>
+                                <option value="large" {{ ($settings['font_size'] ?? '') === 'large' ? 'selected' : '' }}>크게</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="d-flex justify-content-end mt-3">
+            <button type="submit" form="fontForm" class="btn btn-primary">
+                <i class="bi bi-check-circle me-1"></i>폰트 설정 저장
+            </button>
+        </div>
+        </form>
+    </div>
+</div>
+
+<!-- 게시판 설정 -->
+<div class="card shadow-sm settings-section">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-clipboard me-2"></i>게시판</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ route('admin.settings.update', ['site' => $site->slug]) }}" id="boardForm">
+            @csrf
+            @method('PUT')
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width: 150px;">베스트 글 기준</th>
+                            <th>글쓰기 텀 (초)</th>
+                            <th>새글 기준 (시간)</th>
+                            <th>조회수 공개</th>
+                            <th>게시글/댓글 시각 표시</th>
+                            <th style="width: 100px;">설정</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <select class="form-select form-select-sm" name="best_post_criteria" id="best_post_criteria">
+                                    <option value="views" {{ ($settings['best_post_criteria'] ?? 'views') === 'views' ? 'selected' : '' }}>조회수</option>
+                                    <option value="likes" {{ ($settings['best_post_criteria'] ?? '') === 'likes' ? 'selected' : '' }}>추천수</option>
+                                    <option value="comments" {{ ($settings['best_post_criteria'] ?? '') === 'comments' ? 'selected' : '' }}>댓글수</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" 
+                                       class="form-control form-control-sm" 
+                                       name="write_interval" 
+                                       id="write_interval" 
+                                       value="{{ old('write_interval', $settings['write_interval'] ?? '0') }}"
+                                       min="0"
+                                       step="1">
+                            </td>
+                            <td>
+                                <input type="number" 
+                                       class="form-control form-control-sm" 
+                                       name="new_post_hours" 
+                                       id="new_post_hours" 
+                                       value="{{ old('new_post_hours', $settings['new_post_hours'] ?? '24') }}"
+                                       min="0"
+                                       step="1">
+                            </td>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="show_views" id="show_views" value="1" {{ (!isset($settings['show_views']) || $settings['show_views'] == '1') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="show_views">
+                                        조회수 공개
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="show_datetime" id="show_datetime" value="1" {{ (!isset($settings['show_datetime']) || $settings['show_datetime'] == '1') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="show_datetime">
+                                        시각 표시
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <button type="submit" form="boardForm" class="btn btn-sm btn-primary w-100">저장</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 기능 ON/OFF -->
+<div class="card shadow-sm settings-section">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-toggle-on me-2"></i>기능 ON/OFF</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ route('admin.settings.update', ['site' => $site->slug]) }}" id="featureForm">
+            @csrf
+            @method('PUT')
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>방문자수 표기</th>
+                            <th>방문자수 변경</th>
+                            <th>이메일 알림</th>
+                            <th>일반 로그인</th>
+                            <th style="width: 100px;">설정</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="show_visitor_count" id="show_visitor_count" value="1" {{ (!isset($settings['show_visitor_count']) || $settings['show_visitor_count'] == '1') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="show_visitor_count">
+                                        방문자수 표기
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           name="visitor_count_adjust" 
+                                           id="visitor_count_adjust" 
+                                           value="0"
+                                           min="0"
+                                           step="1"
+                                           style="width: 100px;">
+                                    <button type="button" class="btn btn-sm btn-secondary" id="increaseVisitorBtn">증가</button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="email_notification" id="email_notification" value="1" {{ (!isset($settings['email_notification']) || $settings['email_notification'] == '1') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="email_notification">
+                                        이메일 알림
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="general_login" id="general_login" value="1" {{ (!isset($settings['general_login']) || $settings['general_login'] == '1') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="general_login">
+                                        일반 로그인
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <button type="submit" form="featureForm" class="btn btn-sm btn-primary w-100">저장</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 이용약관 & 개인정보처리방침 -->
+<div class="card shadow-sm settings-section">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-file-text me-2"></i>이용약관 & 개인정보처리방침</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ route('admin.settings.update', ['site' => $site->slug]) }}" id="termsForm">
+            @csrf
+            @method('PUT')
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="terms_of_service" class="form-label">이용약관</label>
+                    <textarea class="form-control @error('terms_of_service') is-invalid @enderror" 
+                              id="terms_of_service" 
+                              name="terms_of_service" 
+                              rows="15"
+                              style="resize: vertical;">{{ old('terms_of_service', $settings['terms_of_service'] ?? '') }}</textarea>
+                    <small class="form-text text-muted">푸터의 "이용약관" 링크 클릭 시 팝업으로 표시됩니다.</small>
+                    @error('terms_of_service')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="privacy_policy" class="form-label">개인정보처리방침</label>
+                    <textarea class="form-control @error('privacy_policy') is-invalid @enderror" 
+                              id="privacy_policy" 
+                              name="privacy_policy" 
+                              rows="15"
+                              style="resize: vertical;">{{ old('privacy_policy', $settings['privacy_policy'] ?? '') }}</textarea>
+                    <small class="form-text text-muted">푸터의 "개인정보처리방침" 링크 클릭 시 팝업으로 표시됩니다.</small>
+                    @error('privacy_policy')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+                <button type="submit" form="termsForm" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>저장
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 회사정보 -->
+<div class="card shadow-sm settings-section">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">
+            <i class="bi bi-building me-2"></i>회사정보
+            <i class="bi bi-question-circle help-icon" 
+               data-bs-toggle="tooltip" 
+               data-bs-placement="top" 
+               title="회사정보는 필수 입력 항목이 아닙니다. 공란으로 두어도 되며, 작성한 내용만 푸터에 표시됩니다."></i>
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info mb-3">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>안내:</strong> 회사정보는 필수 입력 항목이 아닙니다. 공란으로 두어도 되며, 작성한 내용만 푸터에 표시됩니다.
+        </div>
+        <form method="POST" action="{{ route('admin.settings.update', ['site' => $site->slug]) }}" id="companyInfoForm">
+            @csrf
+            @method('PUT')
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="company_representative" class="form-label">대표자</label>
+                    <input type="text" 
+                           class="form-control @error('company_representative') is-invalid @enderror" 
+                           id="company_representative" 
+                           name="company_representative" 
+                           value="{{ old('company_representative', $settings['company_representative'] ?? '') }}"
+                           placeholder="대표자명을 입력하세요 (선택사항)">
+                    @error('company_representative')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="company_contact" class="form-label">연락처</label>
+                    <input type="text" 
+                           class="form-control @error('company_contact') is-invalid @enderror" 
+                           id="company_contact" 
+                           name="company_contact" 
+                           value="{{ old('company_contact', $settings['company_contact'] ?? '') }}"
+                           placeholder="연락처를 입력하세요 (선택사항)">
+                    @error('company_contact')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="company_address" class="form-label">주소</label>
+                    <input type="text" 
+                           class="form-control @error('company_address') is-invalid @enderror" 
+                           id="company_address" 
+                           name="company_address" 
+                           value="{{ old('company_address', $settings['company_address'] ?? '') }}"
+                           placeholder="주소를 입력하세요 (선택사항)">
+                    @error('company_address')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="company_registration_number" class="form-label">사업자등록번호</label>
+                    <input type="text" 
+                           class="form-control @error('company_registration_number') is-invalid @enderror" 
+                           id="company_registration_number" 
+                           name="company_registration_number" 
+                           value="{{ old('company_registration_number', $settings['company_registration_number'] ?? '') }}"
+                           placeholder="사업자등록번호를 입력하세요 (선택사항)">
+                    @error('company_registration_number')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="company_telecom_number" class="form-label">통신판매업신고 번호</label>
+                    <input type="text" 
+                           class="form-control @error('company_telecom_number') is-invalid @enderror" 
+                           id="company_telecom_number" 
+                           name="company_telecom_number" 
+                           value="{{ old('company_telecom_number', $settings['company_telecom_number'] ?? '') }}"
+                           placeholder="통신판매업신고 번호를 입력하세요 (선택사항)">
+                    @error('company_telecom_number')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="company_additional_info" class="form-label">추가 작성내용</label>
+                <textarea class="form-control @error('company_additional_info') is-invalid @enderror" 
+                          id="company_additional_info" 
+                          name="company_additional_info" 
+                          rows="4"
+                          placeholder="고객센터 전화번호, 운영시간 등 추가 정보를 입력하세요 (선택사항)">{{ old('company_additional_info', $settings['company_additional_info'] ?? '') }}</textarea>
+                <small class="form-text text-muted">추가 정보는 푸터에 텍스트로 표시됩니다. 작성한 내용만 표시되며, 공란으로 두어도 됩니다. <strong>HTML 형태의 글도 작성 가능합니다.</strong></small>
+                @error('company_additional_info')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+                <button type="submit" form="companyInfoForm" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>저장
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+// 테마 미리보기 데이터
+const themePreviews = {
+    header: {
+        design1: { bg: '#0d6efd', text: '#ffffff', style: 'solid', desc: '로고 | 메뉴 좌측 | 로그인/회원가입' },
+        design2: { bg: '#6c757d', text: '#ffffff', style: 'solid', desc: '로고 | 메뉴 중앙 | 로그인/회원가입' },
+        design3: { bg: '#198754', text: '#ffffff', style: 'solid', desc: '로고 | 메뉴 우측 | 로그인/회원가입' },
+        design4: { bg: '#ffc107', text: '#000000', style: 'solid', desc: '메뉴 좌측 | 로고 중앙 | 로그인/회원가입' },
+        design5: { bg: '#dc3545', text: '#ffffff', style: 'solid', desc: '로고 | 검색창 | 로그인/회원가입 (하단 메뉴)' },
+        design6: { bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', text: '#ffffff', style: 'gradient', desc: '로고 중앙 (하단 메뉴 중앙)' },
+    },
+    footer: {
+        theme01: { bg: '#212529', text: '#ffffff', style: 'solid' },
+        theme02: { bg: '#343a40', text: '#ffffff', style: 'solid' },
+        theme03: { bg: '#495057', text: '#ffffff', style: 'solid' },
+        theme04: { bg: '#6c757d', text: '#ffffff', style: 'solid' },
+        theme05: { bg: '#adb5bd', text: '#000000', style: 'solid' },
+    }
+};
+
+function updateThemePreview(type, theme) {
+    const previewId = type === 'header' ? 'theme_top_preview' : 'theme_bottom_preview';
+    const previewElement = document.getElementById(previewId);
+    
+    if (!previewElement) {
+        console.error('Preview element not found:', previewId);
+        return;
+    }
+    
+    let container = previewElement.querySelector('.theme-preview-container');
+    
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'theme-preview-container';
+        previewElement.appendChild(container);
+    }
+    
+    // 로딩 표시
+    container.innerHTML = '<div class="text-center p-3"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+    
+    console.log('Updating preview:', type, theme);
+    console.log('Menu font settings:', {
+        size: document.getElementById('menu_font_size')?.value,
+        padding: document.getElementById('menu_font_padding')?.value,
+        weight: document.getElementById('menu_font_weight')?.value
+    });
+    
+    // 현재 입력된 색상 값 가져오기
+    const darkMode = document.getElementById('theme_dark_mode')?.value || 'light';
+    const isDark = darkMode === 'dark';
+    
+    // AJAX로 실제 헤더 미리보기 HTML 가져오기
+    const url = '{{ route("admin.settings.preview-header", ["site" => $site->slug]) }}';
+    const params = new URLSearchParams({
+        theme: theme,
+        type: type,
+        theme_dark_mode: darkMode
+    });
+    
+        // 현재 입력된 색상 값 추가
+        if (type === 'header') {
+            if (isDark) {
+                const darkHeaderText = document.querySelector('input[name="color_dark_header_text"]')?.value;
+                const darkHeaderBg = document.querySelector('input[name="color_dark_header_bg"]')?.value;
+                const darkPointMain = document.querySelector('input[name="color_dark_point_main"]')?.value;
+                if (darkHeaderText) params.append('color_dark_header_text', darkHeaderText);
+                if (darkHeaderBg) params.append('color_dark_header_bg', darkHeaderBg);
+                if (darkPointMain) params.append('color_dark_point_main', darkPointMain);
+            } else {
+                const lightHeaderText = document.querySelector('input[name="color_light_header_text"]')?.value;
+                const lightHeaderBg = document.querySelector('input[name="color_light_header_bg"]')?.value;
+                const lightPointMain = document.querySelector('input[name="color_light_point_main"]')?.value;
+                if (lightHeaderText) params.append('color_light_header_text', lightHeaderText);
+                if (lightHeaderBg) params.append('color_light_header_bg', lightHeaderBg);
+                if (lightPointMain) params.append('color_light_point_main', lightPointMain);
+            }
+            
+            // 최상단 헤더 표시 체크박스 값 추가
+            const topHeaderShowCheckbox = document.getElementById('theme_top_header_show');
+            const topHeaderShow = topHeaderShowCheckbox && topHeaderShowCheckbox.checked ? '1' : '0';
+            params.append('theme_top_header_show', topHeaderShow);
+            
+            // 로그인 버튼 표시 체크박스 값 추가
+            const topHeaderLoginShowCheckbox = document.getElementById('top_header_login_show');
+            const topHeaderLoginShow = topHeaderLoginShowCheckbox && topHeaderLoginShowCheckbox.checked ? '1' : '0';
+            params.append('top_header_login_show', topHeaderLoginShow);
+            
+            // 메뉴 로그인 표시 체크박스 값 추가
+            const menuLoginShowCheckbox = document.getElementById('menu_login_show');
+            const menuLoginShow = menuLoginShowCheckbox && menuLoginShowCheckbox.checked ? '1' : '0';
+            params.append('menu_login_show', menuLoginShow);
+            
+            // 그림자 체크박스 값 추가
+            const headerShadowCheckbox = document.getElementById('header_shadow');
+            const headerShadow = headerShadowCheckbox && headerShadowCheckbox.checked ? '1' : '0';
+            params.append('header_shadow', headerShadow);
+            
+            // 헤더 테두리 체크박스 값 추가
+            const headerBorderCheckbox = document.getElementById('header_border');
+            const headerBorder = headerBorderCheckbox && headerBorderCheckbox.checked ? '1' : '0';
+            params.append('header_border', headerBorder);
+            
+            // 헤더 테두리 두께 및 컬러 값 추가
+            if (headerBorder === '1') {
+                const headerBorderWidth = document.getElementById('header_border_width')?.value || '1';
+                const headerBorderColor = document.getElementById('header_border_color')?.value || '#dee2e6';
+                params.append('header_border_width', headerBorderWidth);
+                params.append('header_border_color', headerBorderColor);
+            }
+            
+            // 메뉴 폰트 설정 값 추가
+            const menuFontSize = document.getElementById('menu_font_size')?.value || '1.25rem';
+            const menuFontPadding = document.getElementById('menu_font_padding')?.value || '0.5rem';
+            const menuFontWeight = document.getElementById('menu_font_weight')?.value || '700';
+            params.append('menu_font_size', menuFontSize);
+            params.append('menu_font_padding', menuFontPadding);
+            params.append('menu_font_weight', menuFontWeight);
+    } else {
+        if (isDark) {
+            const darkFooterText = document.querySelector('input[name="color_dark_footer_text"]')?.value;
+            const darkFooterBg = document.querySelector('input[name="color_dark_footer_bg"]')?.value;
+            if (darkFooterText) params.append('color_dark_footer_text', darkFooterText);
+            if (darkFooterBg) params.append('color_dark_footer_bg', darkFooterBg);
+        } else {
+            const lightFooterText = document.querySelector('input[name="color_light_footer_text"]')?.value;
+            const lightFooterBg = document.querySelector('input[name="color_light_footer_bg"]')?.value;
+            if (lightFooterText) params.append('color_light_footer_text', lightFooterText);
+            if (lightFooterBg) params.append('color_light_footer_bg', lightFooterBg);
+        }
+    }
+    
+    // CSRF 토큰 가져오기
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    fetch(url + '?' + params.toString(), {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken || ''
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            return response.text().then(text => {
+                console.error('Error response:', text);
+                throw new Error('Network response was not ok: ' + response.status + ' - ' + text.substring(0, 100));
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Preview response received:', {
+            hasData: !!data,
+            hasHtml: !!(data && data.html),
+            htmlLength: data && data.html ? data.html.length : 0,
+            htmlPreview: data && data.html ? data.html.substring(0, 200) : 'N/A'
+        });
+        
+        if (data && data.html) {
+            // HTML이 비어있지 않은지 확인
+            const htmlContent = data.html.trim();
+            if (htmlContent.length > 0) {
+                try {
+                    // 기존 내용을 먼저 지우고 새로 설정
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = htmlContent;
+                    
+                    // CSS 파싱 오류 확인을 위해 스타일 태그 검사
+                    const styleTags = tempDiv.querySelectorAll('style');
+                    let hasStyleError = false;
+                    styleTags.forEach(style => {
+                        try {
+                            // 스타일이 유효한지 확인
+                            const testEl = document.createElement('div');
+                            testEl.style.cssText = style.textContent.split('{')[1]?.split('}')[0] || '';
+                        } catch (e) {
+                            console.warn('Potential CSS error detected:', e);
+                            hasStyleError = true;
+                        }
+                    });
+                    
+                    if (!hasStyleError) {
+                        container.innerHTML = '';
+                        container.innerHTML = htmlContent;
+                        console.log('Preview updated successfully, HTML length:', htmlContent.length);
+                        
+                        // 스타일이 제대로 적용되었는지 확인
+                        setTimeout(() => {
+                            const navLinks = container.querySelectorAll('.nav-link');
+                            console.log('Nav links found:', navLinks.length);
+                            if (navLinks.length > 0) {
+                                const computedStyle = window.getComputedStyle(navLinks[0]);
+                                console.log('First nav-link font-size:', computedStyle.fontSize);
+                                if (!computedStyle.fontSize || computedStyle.fontSize === '0px') {
+                                    console.error('Font size is invalid, reloading with defaults');
+                                    // 기본값으로 다시 로드
+                                    updateThemePreview(type, theme);
+                                }
+                            } else {
+                                console.warn('No nav links found in preview');
+                            }
+                        }, 100);
+                    } else {
+                        console.error('CSS error detected, using fallback');
+                        container.innerHTML = htmlContent; // 그래도 시도
+                    }
+                } catch (e) {
+                    console.error('Error setting innerHTML:', e, e.stack);
+                    // 에러 발생 시에도 기본 HTML은 표시
+                    try {
+                        container.innerHTML = htmlContent;
+                    } catch (e2) {
+                        container.innerHTML = '<div class="text-danger p-3">미리보기 표시 오류: ' + e.message + '</div>';
+                    }
+                }
+            } else {
+                console.error('Empty HTML in response');
+                container.innerHTML = '<div class="text-warning p-3">미리보기 HTML이 비어있습니다.</div>';
+            }
+        } else if (data && data.error) {
+            console.error('Server error:', data.error);
+            container.innerHTML = '<div class="text-danger p-3">미리보기 오류: ' + (data.message || data.error) + '</div>';
+        } else {
+            console.error('No HTML in response:', data);
+            container.innerHTML = '<div class="text-muted p-3">미리보기를 불러올 수 없습니다. (응답 데이터 없음)</div>';
+        }
+    })
+    .catch(error => {
+        console.error('Preview error:', error);
+        container.innerHTML = '<div class="text-danger p-3">미리보기를 불러올 수 없습니다.<br><small>' + error.message + '</small><br><button class="btn btn-sm btn-secondary mt-2" onclick="updateThemePreview(\'' + type + '\', \'' + theme + '\')">다시 시도</button></div>';
+    });
+}
+
+// URL 복사 함수
+function copyToClipboard(text, label) {
+    navigator.clipboard.writeText(text).then(function() {
+        alert(label + '이(가) 클립보드에 복사되었습니다.');
+    }, function(err) {
+        // 클립보드 API가 지원되지 않는 경우 대체 방법
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            alert(label + '이(가) 클립보드에 복사되었습니다.');
+        } catch (err) {
+            alert('복사에 실패했습니다. 수동으로 복사해주세요: ' + text);
+        }
+        document.body.removeChild(textArea);
+    });
+}
+
+// 모바일 헤더 미리보기 업데이트 함수
+function updateMobileHeaderPreview() {
+    const previewElement = document.getElementById('mobile_header_preview');
+    if (!previewElement) return;
+    
+    const theme = document.getElementById('mobile_header_theme')?.value || 'theme1';
+    const menuIcon = document.getElementById('mobile_menu_icon')?.value || 'bi-list';
+    const menuDirection = document.getElementById('mobile_menu_direction')?.value || 'top-to-bottom';
+    const menuIconBorder = document.getElementById('mobile_menu_icon_border')?.checked ? '1' : '0';
+    const menuLoginWidget = document.getElementById('mobile_menu_login_widget')?.checked ? '1' : '0';
+    
+    // AJAX로 미리보기 HTML 가져오기
+    const url = '{{ route("admin.settings.preview-mobile-header", ["site" => $site->slug]) }}';
+    const params = new URLSearchParams({
+        theme: theme,
+        menu_icon: menuIcon,
+        menu_direction: menuDirection,
+        menu_icon_border: menuIconBorder,
+        menu_login_widget: menuLoginWidget
+    });
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    previewElement.innerHTML = '<div class="text-center p-3"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+    
+    fetch(url + '?' + params.toString(), {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken || ''
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data && data.html) {
+            previewElement.innerHTML = data.html;
+            
+            // 미리보기 스크립트가 자동으로 메뉴를 닫도록 함
+            // 스크립트는 mobile-header-preview.blade.php에 포함되어 있음
+        } else {
+            previewElement.innerHTML = '<div class="text-danger p-3">미리보기를 불러올 수 없습니다.</div>';
+        }
+    })
+    .catch(error => {
+        console.error('Mobile header preview error:', error);
+        previewElement.innerHTML = '<div class="text-danger p-3">미리보기를 불러올 수 없습니다.</div>';
+    });
+}
+
+$(document).ready(function() {
+    // 툴팁 초기화
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // 모바일 헤더 미리보기 초기화
+    updateMobileHeaderPreview();
+    
+    // 모바일 헤더 설정 변경 시 미리보기 업데이트
+    $(document).on('change', '.mobile-header-preview-select, #mobile_menu_icon, #mobile_menu_direction, #mobile_menu_icon_border, #mobile_menu_login_widget', function() {
+        updateMobileHeaderPreview();
+    });
+    
+    // 헤더 테두리 체크박스 변경 시 설정 표시/숨김
+    $('#header_border').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#header_border_settings').show();
+        } else {
+            $('#header_border_settings').hide();
+        }
+        // 미리보기 업데이트
+        const headerSelect = document.getElementById('theme_top');
+        if (headerSelect && headerSelect.value) {
+            updateThemePreview('header', headerSelect.value);
+        }
+    });
+    
+    // 헤더 테두리 두께/컬러 변경 시 미리보기 업데이트
+    $('#header_border_width, #header_border_color').on('change', function() {
+        const headerSelect = document.getElementById('theme_top');
+        if (headerSelect && headerSelect.value) {
+            updateThemePreview('header', headerSelect.value);
+        }
+    });
+    
+    // 메뉴 폰트 설정 변경 시 미리보기 업데이트
+    $('#menu_font_size, #menu_font_padding, #menu_font_weight').on('change', function() {
+        const headerSelect = document.getElementById('theme_top');
+        if (headerSelect && headerSelect.value) {
+            updateThemePreview('header', headerSelect.value);
+        }
+    });
+    
+    // 그림자 체크박스 변경 시 미리보기 업데이트
+    $('#header_shadow').on('change', function() {
+        const headerSelect = document.getElementById('theme_top');
+        if (headerSelect && headerSelect.value) {
+            updateThemePreview('header', headerSelect.value);
+        }
+    });
+    
+    // 테마 form 제출 시 체크박스 처리
+    $('#themeForm').on('submit', function(e) {
+        // 기존 hidden input 모두 제거
+        $('input[name="theme_top_header_show"][type="hidden"]').remove();
+        $('input[name="top_header_login_show"][type="hidden"]').remove();
+        $('input[name="header_sticky"][type="hidden"]').remove();
+        $('input[name="menu_login_show"][type="hidden"]').remove();
+        $('input[name="header_shadow"][type="hidden"]').remove();
+        $('input[name="header_border"][type="hidden"]').remove();
+        
+        // 체크되지 않은 체크박스만 hidden input으로 값 전달
+        // 체크된 체크박스는 value="1"이 자동으로 전달됨
+        if (!$('#theme_top_header_show').is(':checked')) {
+            $(this).append('<input type="hidden" name="theme_top_header_show" value="0">');
+        }
+        
+        if (!$('#top_header_login_show').is(':checked')) {
+            $(this).append('<input type="hidden" name="top_header_login_show" value="0">');
+        }
+        
+        if (!$('#header_sticky').is(':checked')) {
+            $(this).append('<input type="hidden" name="header_sticky" value="0">');
+        }
+        
+        if (!$('#menu_login_show').is(':checked')) {
+            $(this).append('<input type="hidden" name="menu_login_show" value="0">');
+        }
+        
+        if (!$('#header_shadow').is(':checked')) {
+            $(this).append('<input type="hidden" name="header_shadow" value="0">');
+        }
+        
+        if (!$('#header_border').is(':checked')) {
+            $(this).append('<input type="hidden" name="header_border" value="0">');
+        }
+    });
+
+    // 게시판 form 제출 시 체크박스 처리
+    $('#boardForm').on('submit', function(e) {
+        // 기존 hidden input 모두 제거
+        $('input[name="show_views"][type="hidden"]').remove();
+        $('input[name="show_datetime"][type="hidden"]').remove();
+        
+        // 체크되지 않은 체크박스만 hidden input으로 값 전달
+        if (!$('#show_views').is(':checked')) {
+            $(this).append('<input type="hidden" name="show_views" value="0">');
+        }
+        
+        if (!$('#show_datetime').is(':checked')) {
+            $(this).append('<input type="hidden" name="show_datetime" value="0">');
+        }
+    });
+
+    // 기능 ON/OFF form 제출 시 체크박스 처리
+    $('#featureForm').on('submit', function(e) {
+        // 기존 hidden input 모두 제거
+        $('input[name="show_visitor_count"][type="hidden"]').remove();
+        $('input[name="email_notification"][type="hidden"]').remove();
+        $('input[name="general_login"][type="hidden"]').remove();
+        
+        // 체크되지 않은 체크박스만 hidden input으로 값 전달
+        if (!$('#show_visitor_count').is(':checked')) {
+            $(this).append('<input type="hidden" name="show_visitor_count" value="0">');
+        }
+        
+        if (!$('#email_notification').is(':checked')) {
+            $(this).append('<input type="hidden" name="email_notification" value="0">');
+        }
+        
+        if (!$('#general_login').is(':checked')) {
+            $(this).append('<input type="hidden" name="general_login" value="0">');
+        }
+    });
+
+    // 방문자수 증가 버튼 클릭
+    $('#increaseVisitorBtn').on('click', function(e) {
+        e.preventDefault();
+        var adjustValue = parseInt($('#visitor_count_adjust').val()) || 0;
+        
+        if (adjustValue <= 0) {
+            alert('1 이상의 숫자를 입력해주세요.');
+            return;
+        }
+        
+        if (!confirm('방문자수를 ' + adjustValue + '만큼 증가시키시겠습니까?')) {
+            return;
+        }
+        
+        // AJAX로 방문자수 증가 요청
+        $.ajax({
+            url: '{{ route("admin.settings.increase-visitor", ["site" => $site->slug]) }}',
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                amount: adjustValue
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert('방문자수가 ' + adjustValue + '만큼 증가되었습니다.');
+                    $('#visitor_count_adjust').val(0);
+                } else {
+                    alert('방문자수 증가에 실패했습니다: ' + (response.message || '알 수 없는 오류'));
+                }
+            },
+            error: function(xhr) {
+                var errorMessage = '방문자수 증가에 실패했습니다.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                alert(errorMessage);
+            }
+        });
+    });
+
+    // 로고 타입 변경 시 알림 표시/숨김 및 이미지 업로드 영역 제어
+    function toggleLogoType() {
+        var logoType = $('#logo_type').val();
+        var $logoImageArea = $('[data-type="logo"]').closest('td');
+        var $logoDarkImageArea = $('[data-type="logo_dark"]').closest('td');
+        var $desktopSize = $('#logo_desktop_size').closest('td');
+        var $mobileSize = $('#logo_mobile_size').closest('td');
+        
+        if (logoType === 'text') {
+            $('#logo-text-notice').slideDown();
+            $logoImageArea.hide();
+            $logoDarkImageArea.hide();
+            $desktopSize.hide();
+            $mobileSize.hide();
+        } else {
+            $('#logo-text-notice').slideUp();
+            $logoImageArea.show();
+            $logoDarkImageArea.show();
+            $desktopSize.show();
+            $mobileSize.show();
+        }
+    }
+
+    $('#logo_type').on('change', toggleLogoType);
+    toggleLogoType(); // 초기 상태 확인
+
+    // 초기 미리보기는 서버 사이드에서 렌더링되므로 초기화 불필요
+    // 디자인 변경 시에만 AJAX로 업데이트
+
+    // 테마 선택 시 미리보기 업데이트
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('theme-preview-select')) {
+            const type = e.target.getAttribute('data-type');
+            const targetId = e.target.id;
+            
+            // 메뉴 폰트 설정 드롭다운인 경우 현재 선택된 테마를 사용
+            if (targetId === 'menu_font_size' || targetId === 'menu_font_padding' || targetId === 'menu_font_weight') {
+                const headerSelect = document.getElementById('theme_top');
+                const theme = headerSelect ? headerSelect.value : 'design1';
+                console.log('Menu font setting changed:', targetId, 'using theme:', theme);
+                updateThemePreview(type, theme);
+            } else {
+                // 일반 테마 선택인 경우
+                const theme = e.target.value;
+                console.log('Theme changed:', type, theme);
+                updateThemePreview(type, theme);
+            }
+        }
+    });
+    
+    // 다크모드 변경 시 미리보기 업데이트
+    const darkModeSelect = document.getElementById('theme_dark_mode');
+    if (darkModeSelect) {
+        darkModeSelect.addEventListener('change', function() {
+            const headerSelect = document.getElementById('theme_top');
+            if (headerSelect && headerSelect.value) {
+                updateThemePreview('header', headerSelect.value);
+            }
+            const footerSelect = document.getElementById('theme_bottom');
+            if (footerSelect && footerSelect.value) {
+                updateThemePreview('footer', footerSelect.value);
+            }
+        });
+    }
+    
+    // 색상 변경 시 미리보기 업데이트
+    document.addEventListener('change', function(e) {
+        if (e.target.type === 'color') {
+            const headerSelect = document.getElementById('theme_top');
+            if (headerSelect && headerSelect.value) {
+                updateThemePreview('header', headerSelect.value);
+            }
+            const footerSelect = document.getElementById('theme_bottom');
+            if (footerSelect && footerSelect.value) {
+                updateThemePreview('footer', footerSelect.value);
+            }
+        }
+    });
+    
+    // 최상단 헤더 표시 체크박스 변경 시 미리보기 업데이트
+    const topHeaderShowCheckbox = document.getElementById('theme_top_header_show');
+    if (topHeaderShowCheckbox) {
+        topHeaderShowCheckbox.addEventListener('change', function() {
+            const headerSelect = document.getElementById('theme_top');
+            if (headerSelect && headerSelect.value) {
+                updateThemePreview('header', headerSelect.value);
+            }
+        });
+    }
+    
+    // 로그인 버튼 표시 체크박스 변경 시 미리보기 업데이트
+    const topHeaderLoginShowCheckbox = document.getElementById('top_header_login_show');
+    if (topHeaderLoginShowCheckbox) {
+        topHeaderLoginShowCheckbox.addEventListener('change', function() {
+            const headerSelect = document.getElementById('theme_top');
+            if (headerSelect && headerSelect.value) {
+                updateThemePreview('header', headerSelect.value);
+            }
+        });
+    }
+    
+    // 메뉴 로그인 표시 체크박스 변경 시 미리보기 업데이트
+    const menuLoginShowCheckbox = document.getElementById('menu_login_show');
+    if (menuLoginShowCheckbox) {
+        menuLoginShowCheckbox.addEventListener('change', function() {
+            const headerSelect = document.getElementById('theme_top');
+            if (headerSelect && headerSelect.value) {
+                updateThemePreview('header', headerSelect.value);
+            }
+        });
+    }
+
+    // 이미지 업로드 함수
+    function uploadImage(file, $uploadArea) {
+        if (!file) return;
+
+        var type = $uploadArea.data('type');
+        var inputName = $uploadArea.data('input');
+        var $input = $('#' + inputName);
+
+        // FormData 생성
+        var formData = new FormData();
+        formData.append('image', file);
+        formData.append('type', type);
+        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+        // 업로드 중 표시
+        $uploadArea.html('<div class="image-upload-btn"><i class="bi bi-hourglass-split"></i><span>업로드 중...</span></div>');
+
+        // AJAX 업로드
+        $.ajax({
+            url: '{{ route("admin.settings.upload-image", ["site" => $site->slug]) }}',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.url) {
+                    // 이미지 미리보기 표시
+                    $uploadArea.addClass('has-image');
+                    var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
+                    var previewStyle = type === 'favicon' ? 'style="max-height: 60px;"' : '';
+                    var uploadBtnStyle = type === 'favicon' ? 'style="padding: 0.5rem;"><i class="bi bi-cloud-upload"></i><span style="font-size: 0.75rem;">업로드</span>' : '><i class="bi bi-cloud-upload"></i><span>업로드</span>';
+                    
+                    // HTML 재생성 (hidden input 포함)
+                    $uploadArea.html(
+                        '<img src="' + response.url + '" alt="' + type + '" class="image-preview" ' + previewStyle + '>' +
+                        '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">' +
+                        '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="' + response.url + '">'
+                    );
+                    
+                    // hidden input 값 업데이트 (이미 존재하는 경우)
+                    if ($input.length) {
+                        $input.val(response.url);
+                    }
+                } else {
+                    alert('이미지 업로드에 실패했습니다.');
+                    resetUploadArea($uploadArea);
+                }
+            },
+            error: function(xhr) {
+                var errorMessage = '이미지 업로드에 실패했습니다.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                }
+                alert(errorMessage);
+                resetUploadArea($uploadArea);
+            }
+        });
+    }
+
+    // 업로드 영역 초기화 함수
+    function resetUploadArea($area) {
+        var type = $area.data('type');
+        var inputName = $area.data('input');
+        var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
+        var uploadBtnStyle = type === 'favicon' ? 'style="padding: 0.5rem;"><i class="bi bi-cloud-upload"></i><span style="font-size: 0.75rem;">업로드</span>' : '><i class="bi bi-cloud-upload"></i><span>업로드</span>';
+        
+        $area.removeClass('has-image');
+        $area.html(
+            '<div class="image-upload-btn" ' + uploadBtnStyle + '</div>' +
+            '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">' +
+            '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="">'
+        );
+        
+        // hidden input 값 초기화
+        var $input = $('#' + inputName);
+        if ($input.length) {
+            $input.val('');
+        }
+    }
+
+    // 이미지 업로드 영역 클릭 (이벤트 위임 사용)
+    $(document).on('click', '.image-upload-area', function(e) {
+        // 이미지 미리보기 클릭은 제외
+        if ($(e.target).hasClass('image-preview')) {
+            return;
+        }
+        // 파일 input 자체를 클릭한 경우는 제외
+        if ($(e.target).hasClass('hidden-file-input')) {
+            return;
+        }
+        // 업로드 버튼이나 빈 영역을 클릭한 경우에만 파일 선택 창 열기
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).find('.hidden-file-input').trigger('click');
+    });
+
+    // 파일 input 클릭 시 이벤트 전파 중지
+    $(document).on('click', '.hidden-file-input', function(e) {
+        e.stopPropagation();
+    });
+
+    // 파일 선택 시 업로드 (이벤트 위임 사용)
+    $(document).on('change', '.hidden-file-input', function(e) {
+        e.stopPropagation();
+        var file = e.target.files[0];
+        if (!file) return;
+
+        var $uploadArea = $(this).closest('.image-upload-area');
+        uploadImage(file, $uploadArea);
+    });
+
+    // 이미지 클릭 시 삭제 옵션 (이벤트 위임 사용)
+    $(document).on('click', '.image-preview', function(e) {
+        e.stopPropagation();
+        if (confirm('이미지를 삭제하시겠습니까?')) {
+            var $uploadArea = $(this).closest('.image-upload-area');
+            var inputName = $uploadArea.data('input');
+            var $input = $('#' + inputName);
+            var type = $uploadArea.data('type');
+            var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
+            var uploadBtnStyle = type === 'favicon' ? 'style="padding: 0.5rem;"><i class="bi bi-cloud-upload"></i><span style="font-size: 0.75rem;">업로드</span>' : '><i class="bi bi-cloud-upload"></i><span>업로드</span>';
+            
+            $uploadArea.removeClass('has-image');
+            $uploadArea.html(
+                '<div class="image-upload-btn" ' + uploadBtnStyle + '</div>' +
+                '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">' +
+                '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="">'
+            );
+            
+            // hidden input 값 초기화
+            if ($input.length) {
+                $input.val('');
+            }
+        }
+    });
+});
+</script>
+@endpush

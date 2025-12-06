@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class VerifySiteUser
+{
+    /**
+     * Handle an incoming request.
+     * 사이트 접근 시 로그인된 사용자가 해당 사이트의 사용자인지 확인합니다.
+     * 다른 사이트의 사용자가 접근하면 자동으로 로그아웃하고 해당 사이트의 로그인 페이지로 리다이렉트합니다.
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        // Site가 route parameter로 있는 경우에만 체크
+        if ($request->route('site')) {
+            $site = $request->route('site');
+            
+            // 로그인된 사용자가 있는 경우
+            if (auth()->check()) {
+                $user = auth()->user();
+                
+                // 마스터 관리자는 모든 사이트에 접근 가능 (SSO 로그인 시 세션에 저장된 정보 확인)
+                $isMasterUser = session('is_master_user', false) || auth('master')->check();
+                
+                // 마스터 관리자가 아니고, 사용자가 해당 사이트의 사용자가 아닌 경우
+                if (!$isMasterUser && $user->site_id !== $site->id) {
+                    // 로그아웃 처리
+                    auth()->logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                    
+                    // 해당 사이트의 로그인 페이지로 리다이렉트
+                    return redirect()->route('login', ['site' => $site->slug])
+                        ->with('error', '다른 사이트의 계정으로 로그인되어 있습니다. 해당 사이트의 계정으로 다시 로그인해주세요.');
+                }
+            }
+        }
+
+        return $next($request);
+    }
+}
+
+

@@ -1,0 +1,388 @@
+@extends('layouts.admin')
+
+@section('title', '배너')
+@section('page-title', '배너')
+@section('page-subtitle', '배너 위치별 설정을 관리할 수 있습니다')
+
+
+@section('content')
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-image me-2"></i>배너 위치별 설정</h5>
+    </div>
+    <div class="card-body">
+        <form id="bannerSettingsForm">
+            @csrf
+            {{-- 통일된 여백 설정 테이블 --}}
+            <div class="card mb-4" style="background-color: #f8f9fa;">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="bi bi-layout-text-window me-2"></i>배너 여백 설정</h6>
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            <label class="form-label mb-0"><strong>여백</strong></label>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label mb-1">데스크탑 (px)</label>
+                            <select class="form-select" name="banner_desktop_gap" id="banner_desktop_gap">
+                                @for($i = 0; $i <= 50; $i += 2)
+                                    <option value="{{ $i }}" {{ ($site->getSetting('banner_desktop_gap', 16) == $i) ? 'selected' : '' }}>{{ $i }}px</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label mb-1">모바일 (px)</label>
+                            <select class="form-select" name="banner_mobile_gap" id="banner_mobile_gap">
+                                @for($i = 0; $i <= 30; $i += 2)
+                                    <option value="{{ $i }}" {{ ($site->getSetting('banner_mobile_gap', 8) == $i) ? 'selected' : '' }}>{{ $i }}px</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+                    <small class="text-muted d-block mt-2">
+                        <i class="bi bi-info-circle me-1"></i>슬라이드 타입 배너에는 여백이 적용되지 않습니다.
+                    </small>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 120px; text-align: center;">위치</th>
+                            <th style="width: 100px; text-align: center;">등록 개수</th>
+                            <th style="width: 120px; text-align: center;">노출 타입</th>
+                            <th style="width: 100px; text-align: center;">정렬</th>
+                            <th colspan="2" style="text-align: center;">한줄당 개수(가로)</th>
+                            <th colspan="2" style="text-align: center;">세로줄 수(0설정시 전체 보기)</th>
+                            <th style="width: 100px; text-align: center;">상세</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th style="width: 100px; text-align: center;">데스크탑</th>
+                            <th style="width: 100px; text-align: center;">모바일</th>
+                            <th style="width: 100px; text-align: center;">데스크탑</th>
+                            <th style="width: 100px; text-align: center;">모바일</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($bannerLocations as $key => $location)
+                            @php
+                                $settings = $bannerSettings[$key];
+                            @endphp
+                            <tr>
+                                <td style="text-align: center; vertical-align: middle; font-weight: 500;">
+                                    {{ $location['name'] }}
+                                    @if(in_array($key, ['mobile_menu_top', 'mobile_menu_bottom']))
+                                        <i class="bi bi-question-circle ms-1" 
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="top" 
+                                           title="{{ $location['description'] ?? '' }}"
+                                           style="cursor: help; color: #6c757d;"></i>
+                                    @endif
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <span class="badge bg-secondary">{{ $settings['count'] }}</span>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <select class="form-select form-select-sm" 
+                                            name="banner_{{ $key }}_exposure_type" 
+                                            id="banner_{{ $key }}_exposure_type">
+                                        <option value="basic" {{ $settings['exposure_type'] == 'basic' ? 'selected' : '' }}>기본타입</option>
+                                        <option value="slide" {{ $settings['exposure_type'] == 'slide' ? 'selected' : '' }}>슬라이드타입</option>
+                                    </select>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <select class="form-select form-select-sm" 
+                                            name="banner_{{ $key }}_sort" 
+                                            id="banner_{{ $key }}_sort">
+                                        <option value="created" {{ $settings['sort'] == 'created' ? 'selected' : '' }}>생성순</option>
+                                        <option value="random" {{ $settings['sort'] == 'random' ? 'selected' : '' }}>랜덤</option>
+                                    </select>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    @if(in_array($key, ['mobile_menu_top', 'mobile_menu_bottom']))
+                                        <span class="text-muted">-</span>
+                                        <input type="hidden" 
+                                               name="banner_{{ $key }}_desktop_per_line" 
+                                               value="{{ $settings['desktop_per_line'] }}">
+                                    @else
+                                        <input type="number" 
+                                               class="form-control form-control-sm text-center banner-per-line-input" 
+                                               name="banner_{{ $key }}_desktop_per_line" 
+                                               id="banner_{{ $key }}_desktop_per_line"
+                                               data-location="{{ $key }}"
+                                               value="{{ $settings['desktop_per_line'] }}" 
+                                               min="1"
+                                               {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                    @endif
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <input type="number" 
+                                           class="form-control form-control-sm text-center banner-per-line-input" 
+                                           name="banner_{{ $key }}_mobile_per_line" 
+                                           id="banner_{{ $key }}_mobile_per_line"
+                                           data-location="{{ $key }}"
+                                           value="{{ $settings['mobile_per_line'] }}" 
+                                           min="1"
+                                           {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    @if(in_array($key, ['mobile_menu_top', 'mobile_menu_bottom']))
+                                        <span class="text-muted">-</span>
+                                        <input type="hidden" 
+                                               name="banner_{{ $key }}_desktop_rows" 
+                                               value="{{ $settings['desktop_rows'] }}">
+                                    @else
+                                        <input type="number" 
+                                               class="form-control form-control-sm text-center banner-rows-input" 
+                                               name="banner_{{ $key }}_desktop_rows" 
+                                               id="banner_{{ $key }}_desktop_rows"
+                                               data-location="{{ $key }}"
+                                               value="{{ $settings['desktop_rows'] }}" 
+                                               min="0"
+                                               {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                    @endif
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <input type="number" 
+                                           class="form-control form-control-sm text-center banner-rows-input" 
+                                           name="banner_{{ $key }}_mobile_rows" 
+                                           id="banner_{{ $key }}_mobile_rows"
+                                           data-location="{{ $key }}"
+                                           value="{{ $settings['mobile_rows'] }}" 
+                                           min="0"
+                                           {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <a href="{{ route('admin.banners.detail', ['site' => $site->slug, 'location' => $key]) }}" 
+                                       class="btn btn-sm btn-info">
+                                        <i class="bi bi-list-ul"></i> 상세
+                                    </a>
+                                </td>
+                            </tr>
+                            {{-- 슬라이드 설정 행 (슬라이드 타입일 때만 표시) --}}
+                            <tr class="banner-slide-settings-row" data-location="{{ $key }}" style="display: {{ $settings['exposure_type'] == 'slide' ? 'table-row' : 'none' }};">
+                                <td colspan="2" style="text-align: right; vertical-align: middle; font-weight: 500;">
+                                    슬라이드 설정:
+                                </td>
+                                <td colspan="7" style="text-align: left; vertical-align: middle;">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <label for="banner_{{ $key }}_slide_interval" class="mb-0">간격(초):</label>
+                                            <input type="number" 
+                                                   class="form-control form-control-sm text-center banner-slide-interval" 
+                                                   name="banner_{{ $key }}_slide_interval" 
+                                                   id="banner_{{ $key }}_slide_interval"
+                                                   data-location="{{ $key }}"
+                                                   value="{{ $settings['slide_interval'] ?? 3 }}" 
+                                                   min="1"
+                                                   style="width: 80px;"
+                                                   {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <label class="mb-0">방향:</label>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="btn-group banner-slide-direction" role="group" data-location="{{ $key }}">
+                                                    <input type="radio" 
+                                                           class="btn-check" 
+                                                           name="banner_{{ $key }}_slide_direction" 
+                                                           id="banner_{{ $key }}_slide_direction_left" 
+                                                           value="left"
+                                                           {{ ($settings['slide_direction'] ?? '') == 'left' ? 'checked' : '' }}
+                                                           {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                                    <label class="btn btn-sm btn-outline-secondary" for="banner_{{ $key }}_slide_direction_left" title="좌측">
+                                                        <i class="bi bi-arrow-left"></i>
+                                                    </label>
+                                                    
+                                                    <input type="radio" 
+                                                           class="btn-check" 
+                                                           name="banner_{{ $key }}_slide_direction" 
+                                                           id="banner_{{ $key }}_slide_direction_right" 
+                                                           value="right"
+                                                           {{ ($settings['slide_direction'] ?? '') == 'right' ? 'checked' : '' }}
+                                                           {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                                    <label class="btn btn-sm btn-outline-secondary" for="banner_{{ $key }}_slide_direction_right" title="우측">
+                                                        <i class="bi bi-arrow-right"></i>
+                                                    </label>
+                                                    
+                                                    <input type="radio" 
+                                                           class="btn-check" 
+                                                           name="banner_{{ $key }}_slide_direction" 
+                                                           id="banner_{{ $key }}_slide_direction_up" 
+                                                           value="up"
+                                                           {{ ($settings['slide_direction'] ?? '') == 'up' ? 'checked' : '' }}
+                                                           {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                                    <label class="btn btn-sm btn-outline-secondary" for="banner_{{ $key }}_slide_direction_up" title="위">
+                                                        <i class="bi bi-arrow-up"></i>
+                                                    </label>
+                                                    
+                                                    <input type="radio" 
+                                                           class="btn-check" 
+                                                           name="banner_{{ $key }}_slide_direction" 
+                                                           id="banner_{{ $key }}_slide_direction_down" 
+                                                           value="down"
+                                                           {{ ($settings['slide_direction'] ?? '') == 'down' ? 'checked' : '' }}
+                                                           {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                                    <label class="btn btn-sm btn-outline-secondary" for="banner_{{ $key }}_slide_direction_down" title="아래">
+                                                        <i class="bi bi-arrow-down"></i>
+                                                    </label>
+                                                    
+                                                    <input type="radio" 
+                                                           class="btn-check" 
+                                                           name="banner_{{ $key }}_slide_direction" 
+                                                           id="banner_{{ $key }}_slide_direction_none" 
+                                                           value=""
+                                                           {{ ($settings['slide_direction'] ?? '') == '' ? 'checked' : '' }}
+                                                           {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                                    <label class="btn btn-sm btn-outline-secondary" for="banner_{{ $key }}_slide_direction_none" title="없음 (페이드)">
+                                                        <i class="bi bi-x"></i>
+                                                    </label>
+                                                </div>
+                                                <i class="bi bi-question-circle" 
+                                                   data-bs-toggle="tooltip" 
+                                                   data-bs-placement="top" 
+                                                   title="슬라이드 방향을 선택하세요. 좌측/우측/위/아래는 해당 방향으로 슬라이드되며, 선택하지 않으면 페이드 인/아웃 효과로 전환됩니다."></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-4 text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i>저장
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('bannerSettingsForm');
+    
+    // 노출 타입 변경 시 입력 필드 활성화/비활성화 및 슬라이드 설정 행 표시/숨김
+    document.querySelectorAll('[id^="banner_"][id$="_exposure_type"]').forEach(function(select) {
+        const location = select.id.replace('banner_', '').replace('_exposure_type', '');
+        
+        function toggleSlideFields() {
+            const isSlide = select.value === 'slide';
+            const perLineInputs = document.querySelectorAll(`.banner-per-line-input[data-location="${location}"]`);
+            const rowsInputs = document.querySelectorAll(`.banner-rows-input[data-location="${location}"]`);
+            const intervalInput = document.querySelector(`.banner-slide-interval[data-location="${location}"]`);
+            const directionGroup = document.querySelector(`.banner-slide-direction[data-location="${location}"]`);
+            const slideSettingsRow = document.querySelector(`.banner-slide-settings-row[data-location="${location}"]`);
+            
+            // 한줄당 개수, 세로줄 수 입력 필드
+            perLineInputs.forEach(input => {
+                input.disabled = isSlide;
+                if (isSlide) {
+                    input.style.opacity = '0.5';
+                    input.style.cursor = 'not-allowed';
+                } else {
+                    input.style.opacity = '1';
+                    input.style.cursor = 'default';
+                }
+            });
+            
+            rowsInputs.forEach(input => {
+                input.disabled = isSlide;
+                if (isSlide) {
+                    input.style.opacity = '0.5';
+                    input.style.cursor = 'not-allowed';
+                } else {
+                    input.style.opacity = '1';
+                    input.style.cursor = 'default';
+                }
+            });
+            
+            // 슬라이드 설정 필드
+            if (intervalInput) {
+                intervalInput.disabled = !isSlide;
+                if (!isSlide) {
+                    intervalInput.style.opacity = '0.5';
+                    intervalInput.style.cursor = 'not-allowed';
+                } else {
+                    intervalInput.style.opacity = '1';
+                    intervalInput.style.cursor = 'default';
+                }
+            }
+            
+            if (directionGroup) {
+                const radios = directionGroup.querySelectorAll('input[type="radio"]');
+                radios.forEach(radio => {
+                    radio.disabled = !isSlide;
+                });
+                const labels = directionGroup.querySelectorAll('label');
+                labels.forEach(label => {
+                    if (!isSlide) {
+                        label.style.opacity = '0.5';
+                        label.style.cursor = 'not-allowed';
+                    } else {
+                        label.style.opacity = '1';
+                        label.style.cursor = 'pointer';
+                    }
+                });
+            }
+            
+            // 슬라이드 설정 행 표시/숨김
+            if (slideSettingsRow) {
+                slideSettingsRow.style.display = isSlide ? 'table-row' : 'none';
+            }
+        }
+        
+        // 초기 상태 설정
+        toggleSlideFields();
+        
+        // 변경 이벤트 리스너
+        select.addEventListener('change', toggleSlideFields);
+    });
+    
+    // Tooltip 초기화
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // 폼 제출
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('{{ route("admin.banners.update", ["site" => $site->slug]) }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('배너 설정이 저장되었습니다.');
+                location.reload();
+            } else {
+                alert('오류가 발생했습니다: ' + (data.message || '알 수 없는 오류'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('오류가 발생했습니다.');
+        });
+    });
+    
+});
+</script>
+@endpush
+@endsection
+
