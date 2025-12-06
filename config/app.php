@@ -73,6 +73,24 @@ return [
     |
     */
     
+    /*
+    |--------------------------------------------------------------------------
+    | Nameservers
+    |--------------------------------------------------------------------------
+    |
+    | Nameservers for custom domain configuration.
+    | Cloudflare를 사용하는 경우, 각 도메인마다 고유한 네임서버가 할당됩니다.
+    | 사용자가 Cloudflare에 도메인을 추가한 후 해당 네임서버를 확인하여
+    | 도메인 제공업체에서 변경해야 합니다.
+    |
+    | 일반적인 Cloudflare 네임서버 예시:
+    | - alice.ns.cloudflare.com
+    | - bob.ns.cloudflare.com
+    |
+    | .env 파일에서 설정하거나, Cloudflare API를 통해 동적으로 가져올 수 있습니다.
+    |
+    */
+    
     'nameservers' => [
         env('NAMESERVER_1', 'ns1.cloudflare.com'),
         env('NAMESERVER_2', 'ns2.cloudflare.com'),

@@ -36,7 +36,12 @@
                                         <div class="card-body">
                                             <h5 class="card-title">
                                                 @if($userSite->slug)
-                                                    <a href="{{ route('home', ['site' => $userSite->slug]) }}" class="text-decoration-none">
+                                                    @php
+                                                        $siteUrl = $userSite->domain 
+                                                            ? 'https://' . $userSite->domain 
+                                                            : 'https://' . $userSite->slug . '.' . config('app.master_domain', 'seoomweb.com');
+                                                    @endphp
+                                                    <a href="{{ $siteUrl }}" target="_blank" class="text-decoration-none">
                                                         {{ $userSite->name }}
                                                     </a>
                                                 @else
@@ -199,7 +204,12 @@
                                                 <div class="d-flex flex-column gap-2">
                                                     <div class="d-flex gap-2">
                                                         @if($userSite->slug)
-                                                            <a href="{{ route('home', ['site' => $userSite->slug]) }}" class="btn btn-sm btn-outline-primary flex-fill" target="_blank">
+                                                            @php
+                                                                $siteUrl = $userSite->domain 
+                                                                    ? 'https://' . $userSite->domain 
+                                                                    : 'https://' . $userSite->slug . '.' . config('app.master_domain', 'seoomweb.com');
+                                                            @endphp
+                                                            <a href="{{ $siteUrl }}" class="btn btn-sm btn-outline-primary flex-fill" target="_blank">
                                                                 <i class="bi bi-box-arrow-up-right me-1"></i>사이트 보기
                                                             </a>
                                                             @if(auth()->user()->canManage() || $userSite->users()->where('id', auth()->id())->exists())
