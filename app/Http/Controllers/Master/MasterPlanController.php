@@ -58,10 +58,10 @@ class MasterPlanController extends Controller
      */
     public function create()
     {
-        // 상위 플랜의 기능 가져오기 (기본 플랜과 브랜드 플랜)
+        // 상위 플랜의 기능 가져오기 (랜딩페이지와 브랜드 플랜)
         $parentPlansFeatures = [];
         
-        // 기본 플랜(랜딩페이지) 기능 가져오기
+        // 랜딩페이지 플랜 기능 가져오기
         $landingPlan = Plan::where('type', 'landing')->first();
         if ($landingPlan) {
             $parentPlansFeatures['landing'] = $landingPlan->features ?? [];
@@ -99,16 +99,10 @@ class MasterPlanController extends Controller
             'traffic_limit_mb' => 'nullable|integer|min:0',
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
-            'is_default' => 'boolean',
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
-        }
-
-        // 기본 플랜이 설정되면 다른 플랜의 is_default를 false로 변경
-        if ($request->boolean('is_default')) {
-            Plan::where('is_default', true)->update(['is_default' => false]);
         }
 
         // features 구조화
@@ -157,7 +151,6 @@ class MasterPlanController extends Controller
             'limits' => $limits,
             'sort_order' => $request->sort_order ?? 0,
             'is_active' => $request->boolean('is_active', true),
-            'is_default' => $request->boolean('is_default', false),
         ]);
 
         return redirect()->route('master.plans.show', $plan->id)
@@ -188,7 +181,7 @@ class MasterPlanController extends Controller
         $parentPlansFeatures = [];
         
         if ($plan->type === 'brand' || $plan->type === 'community') {
-            // 기본 플랜(랜딩페이지) 기능 가져오기
+            // 랜딩페이지 플랜 기능 가져오기
             $landingPlan = Plan::where('type', 'landing')->first();
             if ($landingPlan) {
                 $parentPlansFeatures['landing'] = $landingPlan->features ?? [];
@@ -234,7 +227,6 @@ class MasterPlanController extends Controller
             'traffic_limit_mb' => 'nullable|integer|min:0',
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
-            'is_default' => 'boolean',
         ]);
 
         if ($validator->fails()) {
@@ -246,11 +238,6 @@ class MasterPlanController extends Controller
         if ($actualType === 'plan') {
             // 기존 plan의 type 사용 (플랜 이름으로 구분하므로 type은 변경하지 않음)
             $actualType = $plan->type;
-        }
-
-        // 기본 플랜이 설정되면 다른 플랜의 is_default를 false로 변경
-        if ($request->boolean('is_default') && !$plan->is_default) {
-            Plan::where('is_default', true)->update(['is_default' => false]);
         }
 
         // features 구조화
@@ -301,7 +288,6 @@ class MasterPlanController extends Controller
             'limits' => !empty($limits) ? $limits : $plan->limits,
             'sort_order' => $request->sort_order ?? $plan->sort_order,
             'is_active' => $request->boolean('is_active', $plan->is_active),
-            'is_default' => $request->boolean('is_default', $plan->is_default),
         ]);
 
         return redirect()->route('master.plans.show', $plan->id)

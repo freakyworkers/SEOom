@@ -22,7 +22,6 @@ class Plan extends Model
         'limits',
         'sort_order',
         'is_active',
-        'is_default',
         'traffic_limit_mb',
     ];
 
@@ -32,7 +31,6 @@ class Plan extends Model
         'features' => 'array',
         'limits' => 'array',
         'is_active' => 'boolean',
-        'is_default' => 'boolean',
         'sort_order' => 'integer',
     ];
 

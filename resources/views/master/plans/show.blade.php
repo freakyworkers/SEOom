@@ -16,9 +16,6 @@
                     <dt class="col-sm-3">플랜 이름</dt>
                     <dd class="col-sm-9">
                         {{ $plan->name }}
-                        @if($plan->is_default)
-                            <span class="badge bg-primary ms-2">기본 플랜</span>
-                        @endif
                     </dd>
 
                     <dt class="col-sm-3">슬러그</dt>

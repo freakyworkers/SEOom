@@ -26,30 +26,17 @@
             <div class="row">
                 @foreach($freePlans as $plan)
                     <div class="col-md-4 mb-4">
-                <div class="card h-100 {{ $plan->is_default ? 'border-primary' : '' }}" style="{{ $plan->is_default ? 'border-width: 2px;' : '' }}">
-                    @if($plan->is_default)
-                        <div class="card-header bg-primary text-white">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span><i class="bi bi-star-fill me-1"></i>기본 플랜</span>
-                                @if($plan->is_active)
-                                    <span class="badge bg-light text-dark">활성</span>
-                                @else
-                                    <span class="badge bg-secondary">비활성</span>
-                                @endif
-                            </div>
+                <div class="card h-100">
+                    <div class="card-header bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">{{ $plan->type_name }}</span>
+                            @if($plan->is_active)
+                                <span class="badge bg-success">활성</span>
+                            @else
+                                <span class="badge bg-secondary">비활성</span>
+                            @endif
                         </div>
-                    @else
-                        <div class="card-header bg-white">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-muted">{{ $plan->type_name }}</span>
-                                @if($plan->is_active)
-                                    <span class="badge bg-success">활성</span>
-                                @else
-                                    <span class="badge bg-secondary">비활성</span>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
+                    </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ $plan->name }}</h5>
                         @if($plan->description)

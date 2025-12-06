@@ -161,17 +161,6 @@
                         <label class="form-check-label" for="is_active">활성화</label>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" 
-                               type="checkbox" 
-                               id="is_default" 
-                               name="is_default" 
-                               value="1"
-                               {{ old('is_default') ? 'checked' : '' }}>
-                        <label class="form-check-label" for="is_default">기본 플랜</label>
-                    </div>
-                </div>
             </div>
 
             <hr class="my-4">
