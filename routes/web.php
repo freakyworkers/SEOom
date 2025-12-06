@@ -671,6 +671,7 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
     // User Profile Routes
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [\App\Http\Controllers\UserController::class, 'profile'])->name('users.profile');
+        Route::put('/profile', [\App\Http\Controllers\UserController::class, 'updateProfile'])->name('users.profile.update');
         Route::get('/my-sites', [\App\Http\Controllers\UserMySitesController::class, 'index'])->name('users.my-sites');
         Route::get('/my-sites/change-plan', [\App\Http\Controllers\UserMySitesController::class, 'showChangePlan'])->name('user-sites.change-plan');
         Route::get('/my-sites/{userSite}/change-plan', [\App\Http\Controllers\UserMySitesController::class, 'showChangePlan'])->name('user-sites.change-plan-site');

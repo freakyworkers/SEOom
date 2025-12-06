@@ -240,6 +240,74 @@ class UserController extends Controller
     }
 
     /**
+     * Update user profile information.
+     */
+    public function updateProfile(Request $request, Site $site)
+    {
+        $user = auth()->user();
+        
+        // 사용자가 해당 사이트에 속하는지 확인
+        if ($user->site_id !== $site->id) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => '권한이 없습니다.',
+                ], 403);
+            }
+            abort(403);
+        }
+
+        $rules = [
+            'name' => 'required|string|max:255',
+            'nickname' => 'nullable|string|max:255|unique:users,nickname,' . $user->id . ',id,site_id,' . $site->id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id . ',id,site_id,' . $site->id,
+            'phone' => 'nullable|string|max:20',
+        ];
+
+        // 비밀번호가 입력된 경우에만 검증
+        if ($request->filled('password')) {
+            $rules['password'] = 'required|string|min:8|confirmed';
+        }
+
+        try {
+            $request->validate($rules);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => '입력 정보를 확인해주세요.',
+                    'errors' => $e->errors(),
+                ], 422);
+            }
+            throw $e;
+        }
+
+        $updateData = [
+            'name' => $request->name,
+            'nickname' => $request->nickname,
+            'email' => $request->email,
+            'phone' => $request->phone,
+        ];
+
+        // 비밀번호가 입력된 경우에만 업데이트
+        if ($request->filled('password')) {
+            $updateData['password'] = \Hash::make($request->password);
+        }
+
+        $user->update($updateData);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => '정보가 성공적으로 변경되었습니다.',
+            ]);
+        }
+
+        return redirect()->route('users.profile', ['site' => $site->slug ?? 'default'])
+            ->with('success', '정보가 성공적으로 변경되었습니다.');
+    }
+
+    /**
      * Calculate actual storage usage for a site (MB).
      */
     protected function calculateStorageUsage(Site $site): int

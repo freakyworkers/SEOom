@@ -9,17 +9,21 @@
             <div class="card-header bg-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0"><i class="bi bi-person-circle me-2"></i>내정보</h4>
-                    <a href="#" class="btn btn-sm btn-outline-primary">
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                         <i class="bi bi-pencil-square me-1"></i>정보변경
-                    </a>
+                    </button>
                 </div>
             </div>
             <div class="card-body">
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
-                            <td style="width: 150px;"><strong>닉네임</strong></td>
+                            <td style="width: 150px;"><strong>이름</strong></td>
                             <td>{{ $user->name }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 150px;"><strong>닉네임</strong></td>
+                            <td>{{ $user->nickname ?? '-' }}</td>
                         </tr>
                         <tr>
                             <td><strong>포인트</strong></td>
@@ -98,7 +102,7 @@
                 </a>
             </div>
             <div class="col-6 col-md-4">
-                <a href="#" class="text-decoration-none">
+                <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                     <div class="card shadow-sm h-100 profile-menu-card">
                         <div class="card-body text-center p-4">
                             <div class="mb-3">
@@ -329,6 +333,99 @@
 }
 </style>
 
+<!-- 정보변경 모달 -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">
+                    <i class="bi bi-pencil-square me-2"></i>정보변경
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editProfileForm" method="POST" action="{{ route('users.profile.update', ['site' => $site->slug ?? 'default']) }}">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_name" class="form-label">이름 <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               class="form-control @error('name') is-invalid @enderror" 
+                               id="edit_name" 
+                               name="name" 
+                               value="{{ old('name', $user->name) }}" 
+                               required>
+                        @error('name')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_nickname" class="form-label">닉네임</label>
+                        <input type="text" 
+                               class="form-control @error('nickname') is-invalid @enderror" 
+                               id="edit_nickname" 
+                               name="nickname" 
+                               value="{{ old('nickname', $user->nickname) }}">
+                        @error('nickname')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_email" class="form-label">이메일 <span class="text-danger">*</span></label>
+                        <input type="email" 
+                               class="form-control @error('email') is-invalid @enderror" 
+                               id="edit_email" 
+                               name="email" 
+                               value="{{ old('email', $user->email) }}" 
+                               required>
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_phone" class="form-label">전화번호</label>
+                        <input type="text" 
+                               class="form-control @error('phone') is-invalid @enderror" 
+                               id="edit_phone" 
+                               name="phone" 
+                               value="{{ old('phone', $user->phone) }}">
+                        @error('phone')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_password" class="form-label">비밀번호 변경</label>
+                        <input type="password" 
+                               class="form-control @error('password') is-invalid @enderror" 
+                               id="edit_password" 
+                               name="password" 
+                               placeholder="변경하지 않으려면 비워두세요">
+                        <small class="form-text text-muted">비밀번호를 변경하지 않으려면 비워두세요.</small>
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_password_confirmation" class="form-label">비밀번호 확인</label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="edit_password_confirmation" 
+                               name="password_confirmation" 
+                               placeholder="비밀번호 확인">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                        저장
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- 포인트 내역 모달 -->
 <div class="modal fade" id="pointHistoryModal" tabindex="-1" aria-labelledby="pointHistoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -438,6 +535,65 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         });
     }
+});
+
+// 정보변경 폼 제출 처리
+document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const spinner = submitBtn.querySelector('.spinner-border');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    // 버튼 비활성화 및 로딩 표시
+    submitBtn.disabled = true;
+    spinner.classList.remove('d-none');
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 성공 메시지 표시
+            alert(data.message || '정보가 성공적으로 변경되었습니다.');
+            // 페이지 새로고침
+            window.location.reload();
+        } else {
+            // 에러 처리
+            if (data.errors) {
+                // 폼 에러 표시
+                Object.keys(data.errors).forEach(key => {
+                    const input = form.querySelector(`[name="${key}"]`);
+                    if (input) {
+                        input.classList.add('is-invalid');
+                        const feedback = input.parentElement.querySelector('.invalid-feedback') || document.createElement('div');
+                        feedback.className = 'invalid-feedback';
+                        feedback.textContent = data.errors[key][0];
+                        if (!input.parentElement.querySelector('.invalid-feedback')) {
+                            input.parentElement.appendChild(feedback);
+                        }
+                    }
+                });
+            }
+            alert(data.message || '정보 변경 중 오류가 발생했습니다.');
+            submitBtn.disabled = false;
+            spinner.classList.add('d-none');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('정보 변경 중 오류가 발생했습니다.');
+        submitBtn.disabled = false;
+        spinner.classList.add('d-none');
+    });
 });
 </script>
 @endsection
