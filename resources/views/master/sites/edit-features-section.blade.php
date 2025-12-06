@@ -18,7 +18,8 @@
                         @php
                             // 항상 직접 가져오기 (전달된 값이 없거나 잘못된 경우 대비)
                             // SiteSetting의 getValueAttribute가 이미 JSON을 디코딩하므로 배열로 반환됨
-                            $customFeatures = $site->getSetting('custom_features', null);
+                            // 사이트 생성 페이지에서는 $site가 없을 수 있음
+                            $customFeatures = isset($site) && $site ? $site->getSetting('custom_features', null) : null;
                             $customFeaturesArray = null;
                             if ($customFeatures !== null) {
                                 if (is_array($customFeatures)) {
@@ -375,7 +376,7 @@
                     <div class="card-body">
                         @php
                             $planLimits = $currentPlan ? ($currentPlan->limits ?? []) : [];
-                            $customLimits = $customFeaturesArray['limits'] ?? $planLimits;
+                            $customLimits = (is_array($customFeaturesArray) && isset($customFeaturesArray['limits'])) ? $customFeaturesArray['limits'] : $planLimits;
                             $oldLimits = old('custom_limits', $customLimits);
                         @endphp
                         <div class="row">
