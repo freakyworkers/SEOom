@@ -391,6 +391,23 @@
                                 • <strong>Cloudflare:</strong> 대시보드 → DNS → 레코드 추가<br>
                                 • <strong>기타:</strong> 도메인 관리 페이지에서 "DNS 설정" 또는 "네임서버 설정" 메뉴 찾기
                             </div>
+                            
+                            <div class="mt-3 alert alert-success">
+                                <strong><i class="bi bi-check-circle me-1"></i>도메인 연결 후 접근 방법:</strong><br>
+                                <div class="mt-2">
+                                    <strong>✅ 올바른 접근 방법:</strong><br>
+                                    • <strong>서브도메인:</strong> <code>{{ $userSite->slug }}.{{ config('app.master_domain', 'seoomweb.com') }}</code><br>
+                                    @if($userSite->domain)
+                                        • <strong>커스텀 도메인:</strong> <code>{{ $userSite->domain }}</code> 또는 <code>www.{{ $userSite->domain }}</code>
+                                    @else
+                                        • <strong>커스텀 도메인:</strong> 도메인 연결 후 <code>example.com</code> 형태로 직접 접근 가능
+                                    @endif
+                                </div>
+                                <div class="mt-2">
+                                    <strong>❌ 권장하지 않는 방법:</strong><br>
+                                    • <code>{{ config('app.master_domain', 'seoomweb.com') }}/site/{{ $userSite->slug }}</code> (하위 호환용, 도메인 연결 후에는 사용하지 않음)
+                                </div>
+                            </div>
                         </div>
                     @endif
                 </div>
