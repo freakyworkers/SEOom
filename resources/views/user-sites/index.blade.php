@@ -608,17 +608,33 @@
                 </div>
                 <div class="card">
                     <div class="card-body">
-                        @foreach(config('app.nameservers', ['ns1.cloudflare.com', 'ns2.cloudflare.com']) as $index => $nameserver)
-                            <div class="mb-2">
-                                <strong>네임서버 {{ $index + 1 }}:</strong>
-                                <code class="ms-2" style="font-size: 1.1em;">{{ $nameserver }}</code>
-                                <button type="button" 
-                                        class="btn btn-sm btn-outline-secondary ms-2" 
-                                        onclick="copyToClipboard('{{ $nameserver }}', this)">
-                                    <i class="bi bi-clipboard me-1"></i>복사
-                                </button>
+                        @php
+                            // 실제 할당된 네임서버가 있으면 사용, 없으면 기본값 사용
+                            $nameservers = $userSite->nameservers ?? config('app.nameservers', ['ns1.cloudflare.com', 'ns2.cloudflare.com']);
+                            if (is_string($nameservers)) {
+                                $nameservers = json_decode($nameservers, true) ?? [];
+                            }
+                            if (empty($nameservers)) {
+                                $nameservers = config('app.nameservers', ['ns1.cloudflare.com', 'ns2.cloudflare.com']);
+                            }
+                        @endphp
+                        @if(!empty($nameservers))
+                            @foreach($nameservers as $index => $nameserver)
+                                <div class="mb-2">
+                                    <strong>네임서버 {{ $index + 1 }}:</strong>
+                                    <code class="ms-2" style="font-size: 1.1em;">{{ $nameserver }}</code>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-secondary ms-2" 
+                                            onclick="copyToClipboard('{{ $nameserver }}', this)">
+                                        <i class="bi bi-clipboard me-1"></i>복사
+                                    </button>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="text-muted">
+                                네임서버 정보를 불러오는 중입니다...
                             </div>
-                        @endforeach
+                        @endif
                     </div>
                 </div>
                 <div class="mt-3">

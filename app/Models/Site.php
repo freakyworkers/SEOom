@@ -24,11 +24,14 @@ class Site extends Model
         'traffic_used_mb',
         'traffic_limit_mb',
         'traffic_reset_date',
+        'cloudflare_zone_id',
+        'nameservers',
     ];
 
     protected $casts = [
         'status' => 'string',
         'is_master_site' => 'boolean',
+        'nameservers' => 'array',
     ];
 
     /**

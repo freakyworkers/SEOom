@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use App\Models\Plan;
 use App\Models\AddonProduct;
 use App\Models\UserAddon;
+use App\Services\CloudflareService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -528,6 +529,9 @@ class UserMySitesController extends Controller
 
         // 도메인 정규화 (www 제거, 소문자 변환, 공백 제거)
         $domain = $request->input('domain');
+        $cloudflareZoneId = null;
+        $nameservers = null;
+        
         if ($domain) {
             $domain = strtolower(trim($domain));
             $domain = preg_replace('/^www\./', '', $domain);
@@ -541,14 +545,38 @@ class UserMySitesController extends Controller
             if ($existingSite) {
                 return back()->withErrors(['domain' => '이 도메인은 이미 다른 사이트에서 사용 중입니다.'])->withInput();
             }
+
+            // Cloudflare에 도메인 추가 (자동화)
+            $cloudflareService = app(CloudflareService::class);
+            if ($cloudflareService->isEnabled()) {
+                try {
+                    $result = $cloudflareService->addDomain($domain);
+                    if ($result) {
+                        $cloudflareZoneId = $result['zone_id'];
+                        $nameservers = $result['nameservers'];
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Failed to add domain to Cloudflare', [
+                        'domain' => $domain,
+                        'error' => $e->getMessage(),
+                    ]);
+                    // Cloudflare 추가 실패해도 도메인은 저장 (수동 설정 가능)
+                }
+            }
         }
 
         $userSite->update([
             'domain' => $domain ?: null,
+            'cloudflare_zone_id' => $cloudflareZoneId,
+            'nameservers' => $nameservers ? json_encode($nameservers) : null,
         ]);
 
+        $message = $domain 
+            ? '도메인이 성공적으로 연결되었습니다.' . ($nameservers ? ' 네임서버 정보를 확인하세요.' : '') 
+            : '도메인이 제거되었습니다.';
+
         return redirect()->route('users.my-sites', ['site' => $site->slug])
-            ->with('success', $domain ? '도메인이 성공적으로 연결되었습니다.' : '도메인이 제거되었습니다.');
+            ->with('success', $message);
     }
 
     /**

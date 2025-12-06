@@ -49,6 +49,12 @@ return [
         'redirect' => env('KAKAO_REDIRECT_URI'),
     ],
 
+    'cloudflare' => [
+        'enabled' => env('CLOUDFLARE_ENABLED', false),
+        'api_token' => env('CLOUDFLARE_API_TOKEN'),
+        'account_id' => env('CLOUDFLARE_ACCOUNT_ID'),
+    ],
+
 ];
 
 
