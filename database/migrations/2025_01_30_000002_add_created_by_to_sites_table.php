@@ -12,7 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sites', function (Blueprint $table) {
-            $table->foreignId('created_by')->nullable()->after('is_master_site')->constrained('users')->onDelete('set null');
+            // is_master_site 컬럼이 있으면 그 뒤에, 없으면 status 컬럼 뒤에 추가
+            if (Schema::hasColumn('sites', 'is_master_site')) {
+                $table->foreignId('created_by')->nullable()->after('is_master_site')->constrained('users')->onDelete('set null');
+            } elseif (Schema::hasColumn('sites', 'status')) {
+                $table->foreignId('created_by')->nullable()->after('status')->constrained('users')->onDelete('set null');
+            } else {
+                $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            }
         });
     }
 
