@@ -13,10 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         // 기존 사이트에 플랜에 맞는 트래픽 제한 적용
-        $sites = DB::table('sites')
-            ->where('is_master_site', false)
-            ->whereNotNull('plan')
-            ->get();
+        $query = DB::table('sites')->whereNotNull('plan');
+        
+        // is_master_site 컬럼이 있으면 마스터 사이트 제외
+        if (Schema::hasColumn('sites', 'is_master_site')) {
+            $query->where('is_master_site', false);
+        }
+        
+        $sites = $query->get();
 
         foreach ($sites as $site) {
             // 플랜 정보 가져오기
@@ -42,12 +46,17 @@ return new class extends Migration
     public function down(): void
     {
         // 롤백 시 트래픽 제한 제거
-        DB::table('sites')
-            ->where('is_master_site', false)
-            ->update([
-                'traffic_limit_mb' => null,
-                'traffic_reset_date' => null,
-            ]);
+        $query = DB::table('sites');
+        
+        // is_master_site 컬럼이 있으면 마스터 사이트 제외
+        if (Schema::hasColumn('sites', 'is_master_site')) {
+            $query->where('is_master_site', false);
+        }
+        
+        $query->update([
+            'traffic_limit_mb' => null,
+            'traffic_reset_date' => null,
+        ]);
     }
 };
 

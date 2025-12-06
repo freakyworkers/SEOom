@@ -24,14 +24,18 @@ return new class extends Migration
             ->toArray();
         
         // 서버 용량 플랜 구독 사이트가 아닌 모든 사이트의 storage_limit_mb와 traffic_limit_mb를 null로 설정
-        DB::table('sites')
-            ->where('is_master_site', false)
-            ->whereNotIn('id', $serverCapacitySiteIds)
-            ->update([
-                'storage_limit_mb' => null,
-                'traffic_limit_mb' => null,
-                'updated_at' => now(),
-            ]);
+        $query = DB::table('sites')->whereNotIn('id', $serverCapacitySiteIds);
+        
+        // is_master_site 컬럼이 있으면 마스터 사이트 제외
+        if (Schema::hasColumn('sites', 'is_master_site')) {
+            $query->where('is_master_site', false);
+        }
+        
+        $query->update([
+            'storage_limit_mb' => null,
+            'traffic_limit_mb' => null,
+            'updated_at' => now(),
+        ]);
     }
 
     /**
