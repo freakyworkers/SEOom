@@ -1250,7 +1250,10 @@
             <strong>도메인 연결 안내:</strong> 커스텀 도메인을 연결하려면 도메인 제공업체에서 네임서버를 변경해야 합니다.
         </div>
         
-        <form method="POST" action="{{ route('user-sites.update-domain', ['site' => \App\Models\Site::getMasterSite()->slug, 'userSite' => $site->slug]) }}" class="mb-4">
+        @php
+            $masterSite = \App\Models\Site::getMasterSite();
+        @endphp
+        <form method="POST" action="{{ route('user-sites.update-domain', ['site' => $masterSite ? $masterSite->slug : 'master', 'userSite' => $site->slug]) }}" class="mb-4">
             @csrf
             @method('PUT')
             <label class="form-label fw-bold">도메인 설정</label>
@@ -1334,6 +1337,11 @@
         <div class="alert alert-success">
             <i class="bi bi-check-circle me-1"></i>
             <strong>팁:</strong> 네임서버를 변경하면 DNS 레코드를 하나하나 설정할 필요 없이 자동으로 연결됩니다. 변경 후 적용까지 보통 5분~24시간 정도 소요됩니다.
+        </div>
+        
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            <strong>중요:</strong> 도메인을 먼저 입력하고 저장해야 Cloudflare에 자동으로 추가되고 네임서버 정보가 생성됩니다. 도메인을 저장한 후 위의 네임서버 정보를 도메인 제공업체에서 변경하세요.
         </div>
     </div>
 </div>
