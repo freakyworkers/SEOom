@@ -2239,141 +2239,54 @@ $(document).ready(function() {
         }
     }
 
-    // 이미지 업로드 영역 클릭 핸들러 (이벤트 위임 사용 - 가장 확실한 방법)
-    // document에 직접 이벤트 위임하여 동적으로 추가되는 요소도 자동 처리
+    // 이미지 업로드 영역 클릭 핸들러 - 간단하고 확실한 방법
     $(document).on('click', '.image-upload-area', function(e) {
         var target = e.target;
-        var area = this; // 네이티브 DOM 요소
+        var $area = $(this);
         
         // 이미지 미리보기 클릭은 제외 (삭제 기능)
-        if (target.classList && target.classList.contains('image-preview')) {
-            return;
-        }
-        // 이미지 미리보기 내부 요소 클릭도 제외
-        if (target.closest && target.closest('.image-preview')) {
+        if ($(target).hasClass('image-preview') || $(target).closest('.image-preview').length > 0) {
             return;
         }
         
-        // 파일 input 자체를 클릭한 경우는 제외 (브라우저 기본 동작 사용)
-        if (target.classList && target.classList.contains('hidden-file-input')) {
-            return;
-        }
-        if (target.tagName === 'INPUT' && target.type === 'file') {
+        // 파일 input 자체를 클릭한 경우는 제외
+        if ($(target).hasClass('hidden-file-input') || target.tagName === 'INPUT') {
             return;
         }
         
-        // 업로드 버튼, 아이콘, 텍스트, 또는 빈 영역을 클릭한 경우 파일 선택 창 열기
-        var fileInput = area.querySelector('.hidden-file-input');
+        // 파일 input 찾아서 클릭
+        var fileInput = $area.find('.hidden-file-input')[0];
         if (fileInput) {
             e.preventDefault();
             e.stopPropagation();
-            
-            // 약간의 지연을 두고 클릭 (다른 이벤트와의 충돌 방지)
-            setTimeout(function() {
-                // 네이티브 DOM 요소로 직접 클릭
-                if (fileInput && fileInput.click) {
-                    fileInput.click();
-                }
-            }, 50);
+            // 즉시 클릭 (setTimeout 제거)
+            fileInput.click();
         }
     });
-    
-    // 네이티브 JavaScript로도 백업 이벤트 리스너 추가 (jQuery가 로드되지 않은 경우 대비)
-    // jQuery가 있는 경우에는 네이티브 핸들러를 등록하지 않음 (충돌 방지)
-    (function() {
-        // jQuery가 이미 로드되어 있으면 네이티브 핸들러는 등록하지 않음
-        if (typeof jQuery !== 'undefined' && typeof $ !== 'undefined') {
-            return;
-        }
-        
-        function handleImageUploadClick(e) {
-            var target = e.target;
-            var area = e.currentTarget;
-            
-            // 이미지 미리보기 클릭은 제외
-            if (target.classList.contains('image-preview') || target.closest('.image-preview')) {
-                return;
-            }
-            
-            // 파일 input 자체를 클릭한 경우는 제외
-            if (target.classList.contains('hidden-file-input') || target.tagName === 'INPUT') {
-                return;
-            }
-            
-            // 파일 input 찾아서 클릭
-            var fileInput = area.querySelector('.hidden-file-input');
-            if (fileInput) {
-                e.preventDefault();
-                e.stopPropagation();
-                fileInput.click();
-            }
-        }
-        
-        // 페이지 로드 시 모든 업로드 영역에 이벤트 핸들러 등록
-        function initImageUploadAreas() {
-            document.querySelectorAll('.image-upload-area').forEach(function(area) {
-                // 중복 등록 방지
-                if (!area._nativeUploadHandler) {
-                    area._nativeUploadHandler = handleImageUploadClick;
-                    // bubble phase에서 실행 (jQuery와 충돌 방지)
-                    area.addEventListener('click', handleImageUploadClick, false);
-                }
-            });
-        }
-        
-        // DOMContentLoaded 또는 이미 로드된 경우 즉시 실행
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initImageUploadAreas);
-        } else {
-            initImageUploadAreas();
-        }
-        
-        // MutationObserver로 동적으로 추가되는 요소 감지
-        if (typeof MutationObserver !== 'undefined') {
-            var observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    mutation.addedNodes.forEach(function(node) {
-                        if (node.nodeType === 1) { // Element node
-                            if (node.classList && node.classList.contains('image-upload-area')) {
-                                if (!node._nativeUploadHandler) {
-                                    node._nativeUploadHandler = handleImageUploadClick;
-                                    node.addEventListener('click', handleImageUploadClick, false);
-                                }
-                            }
-                            // 자식 요소 중 업로드 영역 찾기
-                            var uploadAreas = node.querySelectorAll && node.querySelectorAll('.image-upload-area');
-                            if (uploadAreas && uploadAreas.length > 0) {
-                                uploadAreas.forEach(function(area) {
-                                    if (!area._nativeUploadHandler) {
-                                        area._nativeUploadHandler = handleImageUploadClick;
-                                        area.addEventListener('click', handleImageUploadClick, false);
-                                    }
-                                });
-                            }
-                        }
-                    });
-                });
-            });
-            
-            // body 전체 감시
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-        }
-    })();
 
-    // 업로드 버튼 직접 클릭 핸들러 (추가 보장)
+    // 업로드 버튼 직접 클릭 핸들러 (우선순위 높음)
     $(document).on('click', '.image-upload-btn', function(e) {
         e.preventDefault();
         e.stopPropagation();
         var $area = $(this).closest('.image-upload-area');
         var fileInput = $area.find('.hidden-file-input')[0];
         if (fileInput) {
-            setTimeout(function() {
-                fileInput.click();
-            }, 10);
+            // 즉시 클릭
+            fileInput.click();
         }
+        return false;
+    });
+    
+    // 업로드 버튼 내부 아이콘/텍스트 클릭 핸들러
+    $(document).on('click', '.image-upload-btn i, .image-upload-btn span', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $area = $(this).closest('.image-upload-area');
+        var fileInput = $area.find('.hidden-file-input')[0];
+        if (fileInput) {
+            fileInput.click();
+        }
+        return false;
     });
 
     // 파일 input 클릭 시 이벤트 전파 중지 (이미지 업로드 영역 클릭 이벤트와 충돌 방지)
