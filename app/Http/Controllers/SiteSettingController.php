@@ -6,6 +6,7 @@ use App\Services\SiteSettingService;
 use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class SiteSettingController extends Controller
 {
@@ -342,7 +343,8 @@ class SiteSettingController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => true,
-                'message' => $validator->errors()->first('image')
+                'message' => $validator->errors()->first('image'),
+                'errors' => $validator->errors()
             ], 422);
         }
 
@@ -363,6 +365,13 @@ class SiteSettingController extends Controller
                 'type' => $type
             ]);
         } catch (\Exception $e) {
+            \Log::error('Image upload failed', [
+                'site_id' => $site->id,
+                'type' => $request->input('type'),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return response()->json([
                 'error' => true,
                 'message' => '이미지 업로드 중 오류가 발생했습니다: ' . $e->getMessage()

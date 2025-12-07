@@ -2155,7 +2155,16 @@ $(document).ready(function() {
             data: formData,
             processData: false,
             contentType: false,
+            timeout: 30000, // 30초 타임아웃
             success: function(response) {
+                // 응답 검증
+                if (!response || response.error || !response.url) {
+                    var errorMessage = response && response.message ? response.message : '이미지 업로드에 실패했습니다.';
+                    alert(errorMessage);
+                    resetUploadArea($uploadArea);
+                    return;
+                }
+                
                 if (response.url) {
                     // 이미지 미리보기 표시
                     $uploadArea.addClass('has-image');
@@ -2181,11 +2190,24 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 var errorMessage = '이미지 업로드에 실패했습니다.';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                } else if (xhr.responseJSON && xhr.responseJSON.error) {
-                    errorMessage = xhr.responseJSON.error;
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.responseJSON.error) {
+                        errorMessage = xhr.responseJSON.error;
+                    } else if (xhr.responseJSON.errors && xhr.responseJSON.errors.image) {
+                        errorMessage = Array.isArray(xhr.responseJSON.errors.image) 
+                            ? xhr.responseJSON.errors.image[0] 
+                            : xhr.responseJSON.errors.image;
+                    }
+                } else if (xhr.status === 0) {
+                    errorMessage = '네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.';
+                } else if (xhr.status === 413) {
+                    errorMessage = '파일 크기가 너무 큽니다. (최대 5MB)';
+                } else if (xhr.status === 422) {
+                    errorMessage = '파일 형식이 올바르지 않습니다. (JPEG, PNG, JPG, GIF, WEBP, ICO만 가능)';
                 }
+                console.error('Image upload error:', xhr);
                 alert(errorMessage);
                 resetUploadArea($uploadArea);
             }
