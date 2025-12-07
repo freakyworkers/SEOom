@@ -191,8 +191,8 @@ class UserSiteController extends Controller
         // 세션 정리
         session()->forget(['pending_site_plan_id', 'pending_site_subscription_id']);
 
-        // 내 사이트 전체보기 페이지로 리다이렉트
-        return redirect()->route('users.my-sites', ['site' => $site->slug])
+        // 내 사이트 전체보기 페이지로 리다이렉트 (도메인 기반 라우트 사용)
+        return redirect()->route('users.my-sites')
             ->with('success', '사이트가 성공적으로 생성되었습니다.');
     }
 }
