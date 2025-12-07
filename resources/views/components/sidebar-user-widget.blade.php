@@ -2,6 +2,20 @@
     // 포인트 컬러 가져오기
     $pointColor = $themeDarkMode === 'dark' ? $site->getSetting('color_dark_point_main', '#ffffff') : $site->getSetting('color_light_point_main', '#0d6efd');
     
+    // 헤더 테두리 설정 가져오기
+    $headerBorder = $site->getSetting('header_border', '0') == '1';
+    $headerBorderWidth = $site->getSetting('header_border_width', '1');
+    $headerBorderColor = $site->getSetting('header_border_color', '#dee2e6');
+    
+    // 로그인 위젯 상단 테두리 스타일
+    $widgetTopBorderStyle = '';
+    if ($headerBorder) {
+        $widgetTopBorderStyle = "border-top: {$headerBorderWidth}px solid {$headerBorderColor};";
+    } else {
+        // 헤더 테두리가 없으면 포인트 컬러 테두리도 제거
+        $widgetTopBorderStyle = "border-top: none;";
+    }
+    
     // 사용자 정보
     $user = auth()->user();
     
@@ -82,7 +96,7 @@
     }
 @endphp
 
-<div class="card shadow-sm mb-3 sidebar-user-widget" style="border-top: 3px solid {{ $pointColor }};">
+<div class="card shadow-sm mb-3 sidebar-user-widget" style="{{ $widgetTopBorderStyle }}">
     @auth
         {{-- 로그인 후 위젯 --}}
         <div class="card-body p-3">
