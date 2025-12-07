@@ -307,6 +307,22 @@ class SiteSettingController extends Controller
         
         \Log::info('Settings to update', [
             'site_id' => $site->id,
+            'request_data_logo_fields' => [
+                'site_logo' => $request->input('site_logo'),
+                'site_logo_dark' => $request->input('site_logo_dark'),
+                'site_favicon' => $request->input('site_favicon'),
+                'og_image' => $request->input('og_image'),
+                'logo_type' => $request->input('logo_type'),
+            ],
+            'new_settings' => $newSettings,
+            'new_settings_keys' => array_keys($newSettings),
+            'logo_fields_in_new_settings' => [
+                'site_logo' => $newSettings['site_logo'] ?? 'not in newSettings',
+                'site_logo_dark' => $newSettings['site_logo_dark'] ?? 'not in newSettings',
+                'site_favicon' => $newSettings['site_favicon'] ?? 'not in newSettings',
+                'og_image' => $newSettings['og_image'] ?? 'not in newSettings',
+                'logo_type' => $newSettings['logo_type'] ?? 'not in newSettings',
+            ],
             'logo_fields_in_update' => [
                 'site_logo' => $settingsToUpdate['site_logo'] ?? 'not set',
                 'site_logo_dark' => $settingsToUpdate['site_logo_dark'] ?? 'not set',
@@ -314,7 +330,6 @@ class SiteSettingController extends Controller
                 'og_image' => $settingsToUpdate['og_image'] ?? 'not set',
                 'logo_type' => $settingsToUpdate['logo_type'] ?? 'not set',
             ],
-            'new_settings_keys' => array_keys($newSettings)
         ]);
         
         $this->settingService->setSettings($site->id, $settingsToUpdate);
