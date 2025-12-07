@@ -1672,6 +1672,36 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Upload params - type:', type, 'inputName:', inputName);
 
+        // FileReader로 즉시 미리보기 표시 (배너 이미지처럼)
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            // 즉시 미리보기 표시
+            $uploadArea.addClass('has-image');
+            var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block; width: auto; height: auto; margin: 0 auto;' : 'max-height: 120px; display: block; width: auto; height: auto; margin: 0 auto;';
+            var imageAlt = type === 'logo' ? '로고' : (type === 'logo_dark' ? '로고 (다크모드)' : (type === 'favicon' ? '파비콘' : 'OG 이미지'));
+            var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
+            
+            // 기존 내용 제거하고 미리보기 이미지와 파일 input 추가
+            var $img = $('<img>', {
+                'class': 'image-preview',
+                'src': e.target.result,
+                'alt': imageAlt,
+                'style': previewStyle
+            });
+            
+            var $fileInput = $('<input>', {
+                'type': 'file',
+                'class': 'hidden-file-input',
+                'accept': acceptType,
+                'data-type': type
+            });
+            
+            // 업로드 영역 내부의 hidden input은 제거 (form 내부의 hidden input만 사용)
+            $uploadArea.empty().append($img).append($fileInput);
+            console.log('Local preview displayed');
+        };
+        reader.readAsDataURL(file);
+
         // FormData 생성
         var formData = new FormData();
         formData.append('image', file);
@@ -1680,10 +1710,6 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('_token', csrfToken);
         
         console.log('FormData created, CSRF token:', csrfToken ? 'exists' : 'missing');
-
-        // 업로드 중 표시
-        $uploadArea.html('<div class="image-upload-btn"><i class="bi bi-hourglass-split"></i><span>업로드 중...</span></div>');
-        
         console.log('Starting AJAX upload to:', '{{ route("admin.settings.upload-image", ["site" => $site->slug]) }}');
 
         // AJAX 업로드
@@ -1696,14 +1722,11 @@ document.addEventListener('DOMContentLoaded', function() {
             timeout: 30000, // 30초 타임아웃
             success: function(response) {
                 console.log('Upload response received:', response);
-                console.log('Response type:', typeof response);
-                console.log('Response keys:', Object.keys(response || {}));
                 
                 // 응답 검증
                 if (!response) {
                     console.error('No response received');
                     alert('서버 응답을 받을 수 없습니다.');
-                    resetUploadArea($uploadArea);
                     return;
                 }
                 
@@ -1722,62 +1745,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // 이미지 미리보기 표시
+                // 서버 URL로 이미지 소스 업데이트
                 console.log('Upload success, URL:', response.url);
-                $uploadArea.addClass('has-image');
+                var $img = $uploadArea.find('.image-preview');
+                if ($img.length > 0) {
+                    $img.attr('src', response.url);
+                }
                 
-                var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block; width: auto; height: auto; margin: 0 auto;' : 'max-height: 120px; display: block; width: auto; height: auto; margin: 0 auto;';
-                
-                // 이미지 alt 텍스트
-                var imageAlt = type === 'logo' ? '로고' : (type === 'logo_dark' ? '로고 (다크모드)' : (type === 'favicon' ? '파비콘' : 'OG 이미지'));
-                
-                // accept 타입 설정
-                var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
-                
-                // jQuery를 사용하여 안전하게 이미지 요소 생성
-                var $img = $('<img>', {
-                    'class': 'image-preview',
-                    'src': response.url,
-                    'alt': imageAlt,
-                    'style': previewStyle
-                });
-                
-                // 파일 input 생성
-                var $fileInput = $('<input>', {
-                    'type': 'file',
-                    'class': 'hidden-file-input',
-                    'accept': acceptType,
-                    'data-type': type
-                });
-                
-                // 이미지 로드 이벤트
-                $img.on('load', function() {
-                    console.log('Image loaded successfully');
-                }).on('error', function() {
-                    console.error('Image load failed, URL:', response.url);
-                    alert('이미지를 불러올 수 없습니다. URL: ' + response.url);
-                    resetUploadArea($uploadArea);
-                });
-                
-                // 업로드 영역에 이미지와 파일 input 추가
-                console.log('Setting HTML to upload area');
-                $uploadArea.empty().append($img).append($fileInput);
-                
-                // 이미지가 이미 캐시된 경우 (즉시 로드 완료)
-                setTimeout(function() {
-                    var imgElement = $img[0];
-                    if (imgElement && imgElement.complete && imgElement.naturalHeight > 0) {
-                        console.log('Image already loaded from cache');
-                    } else if (imgElement && imgElement.complete && imgElement.naturalHeight === 0) {
-                        console.error('Image failed to load (naturalHeight is 0)');
-                        alert('이미지를 불러올 수 없습니다. URL: ' + response.url);
-                        resetUploadArea($uploadArea);
-                    }
-                }, 100);
-                
-                // hidden input 값 업데이트
+                // form 내부의 hidden input 값 업데이트
                 if ($input.length) {
                     $input.val(response.url);
+                    console.log('Hidden input updated:', inputName, response.url);
+                } else {
+                    console.warn('Hidden input not found:', inputName);
                 }
                 
                 console.log('Preview update completed');
@@ -1821,15 +1801,15 @@ document.addEventListener('DOMContentLoaded', function() {
         var uploadBtnStyle = type === 'favicon' ? 'style="padding: 0.5rem;"><i class="bi bi-cloud-upload"></i><span style="font-size: 0.75rem;">업로드</span>' : '><i class="bi bi-cloud-upload"></i><span>업로드</span>';
         
         $area.removeClass('has-image');
+        // 업로드 영역 내부의 hidden input은 제거 (form 내부의 hidden input만 사용)
         $area.html(
             '<div class="image-upload-btn" ' + uploadBtnStyle + '</div>' +
-            '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">' +
-            '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="">'
+            '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">'
         );
         
         // 이벤트 위임을 사용하므로 자동으로 처리됨
         
-        // hidden input 값 초기화
+        // form 내부의 hidden input 값 초기화
         var $input = $('#' + inputName);
         if ($input.length) {
             $input.val('');
@@ -1852,12 +1832,13 @@ document.addEventListener('DOMContentLoaded', function() {
             var uploadBtnStyle = type === 'favicon' ? 'style="padding: 0.5rem;"><i class="bi bi-cloud-upload"></i><span style="font-size: 0.75rem;">업로드</span>' : '><i class="bi bi-cloud-upload"></i><span>업로드</span>';
             
             $area.removeClass('has-image');
+            // 업로드 영역 내부의 hidden input은 제거 (form 내부의 hidden input만 사용)
             $area.html(
                 '<div class="image-upload-btn" ' + uploadBtnStyle + '</div>' +
-                '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">' +
-                '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="">'
+                '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">'
             );
             
+            // form 내부의 hidden input 값 초기화
             if ($input.length) {
                 $input.val('');
             }
