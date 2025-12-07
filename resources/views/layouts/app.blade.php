@@ -6,6 +6,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     @php
+        // $site 변수가 없으면 기본값 사용
+        if (!isset($site) || !$site) {
+            $site = \App\Models\Site::getMasterSite();
+        }
+        
+        // 여전히 $site가 없으면 에러 발생
+        if (!$site) {
+            throw new \Exception('Site not found in layout');
+        }
+        
         $siteName = $site->getSetting('site_name', $site->name ?? 'SEOom Builder');
         $siteDescription = $site->getSetting('site_description', '');
         $siteKeywords = $site->getSetting('site_keywords', '');
