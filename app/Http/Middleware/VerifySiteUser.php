@@ -26,6 +26,17 @@ class VerifySiteUser
                 // 마스터 관리자는 모든 사이트에 접근 가능 (SSO 로그인 시 세션에 저장된 정보 확인)
                 $isMasterUser = session('is_master_user', false) || auth('master')->check();
                 
+                // 사이트를 생성한 사용자도 마스터 사용자로 간주 (my-sites 라우트 접근용)
+                if (!$isMasterUser && $site->isMasterSite()) {
+                    // 마스터 사이트에 접근하는 경우, 사용자가 다른 사이트를 생성한 경우 허용
+                    $userSites = \App\Models\Site::where('created_by', $user->id)
+                        ->where('is_master_site', false)
+                        ->exists();
+                    if ($userSites) {
+                        $isMasterUser = true;
+                    }
+                }
+                
                 // 마스터 관리자가 아니고, 사용자가 해당 사이트의 사용자가 아닌 경우
                 if (!$isMasterUser && $user->site_id !== $site->id) {
                     // 로그아웃 처리
