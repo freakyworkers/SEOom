@@ -2508,6 +2508,20 @@ $(document).ready(function() {
         });
     });
 
+    // settingsForm 제출 시 로그 및 확인
+    $('#settingsForm').on('submit', function(e) {
+        console.log('Settings form submitting...');
+        console.log('Form data:', {
+            site_logo: $('#site_logo').val(),
+            site_logo_dark: $('#site_logo_dark').val(),
+            site_favicon: $('#site_favicon').val(),
+            og_image: $('#og_image').val(),
+            logo_type: $('#logo_type').val(),
+            logo_desktop_size: $('#logo_desktop_size').val(),
+            logo_mobile_size: $('#logo_mobile_size').val()
+        });
+    });
+
     // 로고 타입 변경 시 알림 표시/숨김 및 이미지 업로드 영역 제어
     function toggleLogoType() {
         var logoType = $('#logo_type').val();
