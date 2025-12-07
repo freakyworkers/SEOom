@@ -1253,7 +1253,7 @@
         @php
             $masterSite = \App\Models\Site::getMasterSite();
         @endphp
-        <form method="POST" action="{{ route('user-sites.update-domain', ['site' => $masterSite ? $masterSite->slug : 'master', 'userSite' => $site->slug]) }}" class="mb-4">
+        <form method="POST" action="{{ route('user-sites.update-domain', ['site' => $masterSite ? $masterSite->slug : 'master', 'userSite' => $site->slug]) }}" id="domainForm" class="mb-4">
             @csrf
             @method('PUT')
             <label class="form-label fw-bold">도메인 설정</label>
@@ -1264,10 +1264,11 @@
                        id="domain"
                        value="{{ old('domain', $site->domain) }}"
                        placeholder="예: example.com">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="domainSubmitBtn">
                     <i class="bi bi-check-circle me-1"></i>저장
                 </button>
             </div>
+            <div id="domainError" class="invalid-feedback d-block" style="display: none;"></div>
             @error('domain')
                 <div class="invalid-feedback d-block">{{ $message }}</div>
             @enderror
@@ -1306,7 +1307,7 @@
                 </button>
             </label>
             <div class="card bg-light">
-                <div class="card-body">
+                <div class="card-body" id="nameserversContainer">
                     @if(!empty($nameservers))
                         @foreach($nameservers as $index => $nameserver)
                             <div class="mb-2 d-flex align-items-center">
@@ -1321,7 +1322,7 @@
                         @endforeach
                     @else
                         <div class="text-muted">
-                            네임서버 정보를 불러오는 중입니다...
+                            도메인을 입력하고 저장하면 네임서버 정보가 나타납니다.
                         </div>
                     @endif
                 </div>
@@ -1351,6 +1352,115 @@
 
 @push('scripts')
 <script>
+// 도메인 저장 폼 AJAX 처리
+document.addEventListener('DOMContentLoaded', function() {
+    const domainForm = document.getElementById('domainForm');
+    if (domainForm) {
+        domainForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('domainSubmitBtn');
+            const originalText = submitBtn.innerHTML;
+            const domainInput = document.getElementById('domain');
+            const errorDiv = document.getElementById('domainError');
+            const nameserversContainer = document.getElementById('nameserversContainer');
+            
+            // 버튼 비활성화 및 로딩 표시
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>저장 중...';
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+            
+            const formData = new FormData(this);
+            const url = this.action;
+            
+            fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || '저장에 실패했습니다.');
+                    }).catch(() => {
+                        return response.text().then(text => {
+                            throw new Error('저장에 실패했습니다: ' + text.substring(0, 100));
+                        });
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // 성공 메시지 표시
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                    alertDiv.innerHTML = `
+                        <i class="bi bi-check-circle me-2"></i>${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    domainForm.insertAdjacentElement('beforebegin', alertDiv);
+                    
+                    // 3초 후 자동으로 알림 제거
+                    setTimeout(() => {
+                        alertDiv.remove();
+                    }, 3000);
+                    
+                    // 네임서버 정보 업데이트
+                    if (data.nameservers && data.nameservers.length > 0) {
+                        let nameserversHtml = '';
+                        data.nameservers.forEach((nameserver, index) => {
+                            nameserversHtml += `
+                                <div class="mb-2 d-flex align-items-center">
+                                    <strong class="me-2">네임서버 ${index + 1}:</strong>
+                                    <code class="flex-grow-1 ms-2" style="font-size: 1.1em; background-color: white; padding: 0.5rem; border-radius: 0.25rem;">${nameserver}</code>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-secondary ms-2" 
+                                            onclick="copyNameserverToClipboard('${nameserver}', this)">
+                                        <i class="bi bi-clipboard me-1"></i>복사
+                                    </button>
+                                </div>
+                            `;
+                        });
+                        nameserversContainer.innerHTML = nameserversHtml;
+                    } else {
+                        nameserversContainer.innerHTML = '<div class="text-muted">도메인을 입력하고 저장하면 네임서버 정보가 나타납니다.</div>';
+                    }
+                    
+                    // 도메인 정보 업데이트 (필요시)
+                    if (data.domain) {
+                        const domainInfo = domainForm.querySelector('.form-text');
+                        if (domainInfo) {
+                            domainInfo.innerHTML = `
+                                현재 연결된 도메인: <strong>${data.domain}</strong> | 
+                                <a href="https://${data.domain}" target="_blank" class="text-decoration-none">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i>확인
+                                </a>
+                            `;
+                        }
+                    }
+                } else {
+                    throw new Error(data.message || '저장에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            });
+        });
+    }
+});
+
 // 테마 미리보기 데이터
 const themePreviews = {
     header: {

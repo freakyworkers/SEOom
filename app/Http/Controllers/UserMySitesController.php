@@ -584,7 +584,17 @@ class UserMySitesController extends Controller
             ? '도메인이 성공적으로 연결되었습니다.' . ($nameservers ? ' 네임서버 정보를 확인하세요.' : '') 
             : '도메인이 제거되었습니다.';
 
-        // 사이트 설정 페이지로 명시적으로 리다이렉트
+        // AJAX 요청인 경우 JSON 응답 반환
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'domain' => $domain,
+                'nameservers' => $nameservers ?: []
+            ]);
+        }
+
+        // 일반 요청인 경우 리다이렉트
         return redirect()->route('admin.settings', ['site' => $userSite->slug])
             ->with('success', $message);
     }
