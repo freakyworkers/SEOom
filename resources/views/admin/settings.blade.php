@@ -1631,8 +1631,8 @@ function updateThemePreview(type, theme) {
         theme_dark_mode: darkMode
     });
     
-        // 현재 입력된 색상 값 추가
-        if (previewType === 'header') {
+    // 현재 입력된 색상 값 추가
+    if (previewType === 'header') {
             if (isDark) {
                 var darkHeaderTextEl = document.querySelector('input[name="color_dark_header_text"]');
                 var darkHeaderBgEl = document.querySelector('input[name="color_dark_header_bg"]');
