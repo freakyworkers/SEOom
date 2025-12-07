@@ -336,45 +336,75 @@ class SiteSettingController extends Controller
      */
     public function uploadImage(Request $request, Site $site)
     {
-        \Log::info('Image upload request received', [
-            'site_id' => $site->id,
-            'has_file' => $request->hasFile('image'),
-            'type' => $request->input('type'),
-            'all_data' => $request->all()
-        ]);
-
-        $validator = Validator::make($request->all(), [
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp,ico|max:5120', // 5MB max
-            'type' => 'required|in:logo,logo_dark,favicon,og_image', // 업로드 타입
-        ]);
-
-        if ($validator->fails()) {
-            \Log::error('Image upload validation failed', [
+        // 파일이 있는지 먼저 확인
+        if (!$request->hasFile('image')) {
+            \Log::error('Image file not found in request', [
                 'site_id' => $site->id,
-                'errors' => $validator->errors()->toArray(),
-                'request_data' => $request->all()
+                'type' => $request->input('type'),
+                'all_files' => array_keys($request->allFiles()),
+                'has_image' => $request->hasFile('image')
             ]);
             
             return response()->json([
                 'error' => true,
-                'message' => $validator->errors()->first('image') ?: '이미지 업로드 검증에 실패했습니다.',
-                'errors' => $validator->errors()
+                'message' => '이미지 파일을 찾을 수 없습니다.'
             ], 422);
         }
 
+        $file = $request->file('image');
+        
+        // 파일 유효성 검사
+        if (!$file->isValid()) {
+            \Log::error('Image file is not valid', [
+                'site_id' => $site->id,
+                'type' => $request->input('type'),
+                'error' => $file->getError(),
+                'error_message' => $file->getErrorMessage()
+            ]);
+            
+            return response()->json([
+                'error' => true,
+                'message' => '이미지 파일이 유효하지 않습니다: ' . $file->getErrorMessage()
+            ], 422);
+        }
+
+        // 타입 검증
+        $type = $request->input('type');
+        if (!in_array($type, ['logo', 'logo_dark', 'favicon', 'og_image'])) {
+            return response()->json([
+                'error' => true,
+                'message' => '잘못된 이미지 타입입니다.'
+            ], 422);
+        }
+
+        // 파일 크기 검사 (5MB = 5120KB)
+        $maxSize = 5120 * 1024; // 5MB in bytes
+        if ($file->getSize() > $maxSize) {
+            return response()->json([
+                'error' => true,
+                'message' => '파일 크기가 너무 큽니다. (최대 5MB)'
+            ], 422);
+        }
+
+        // MIME 타입 검사
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/x-icon', 'image/vnd.microsoft.icon'];
+        $mimeType = $file->getMimeType();
+        if (!in_array($mimeType, $allowedMimes)) {
+            return response()->json([
+                'error' => true,
+                'message' => '지원하지 않는 파일 형식입니다. (JPEG, PNG, GIF, WEBP, ICO만 가능)'
+            ], 422);
+        }
+
+        \Log::info('Image upload request validated', [
+            'site_id' => $site->id,
+            'type' => $type,
+            'file_name' => $file->getClientOriginalName(),
+            'file_size' => $file->getSize(),
+            'mime_type' => $mimeType
+        ]);
+
         try {
-            $file = $request->file('image');
-            if (!$file) {
-                \Log::error('Image file not found in request', [
-                    'site_id' => $site->id,
-                    'request_files' => $request->allFiles()
-                ]);
-                
-                return response()->json([
-                    'error' => true,
-                    'message' => '이미지 파일을 찾을 수 없습니다.'
-                ], 422);
-            }
 
             $type = $request->input('type');
             $directory = 'site-assets/' . $site->id;
