@@ -8,65 +8,108 @@
     @php
         // $site 변수가 없으면 기본값 사용
         if (!isset($site) || !$site) {
-            $site = \App\Models\Site::getMasterSite();
+            try {
+                $site = \App\Models\Site::getMasterSite();
+            } catch (\Exception $e) {
+                // 마스터 사이트를 찾을 수 없으면 기본값 사용
+                $site = null;
+            }
         }
         
-        // 여전히 $site가 없으면 에러 발생
+        // 여전히 $site가 없으면 기본값으로 처리
         if (!$site) {
-            throw new \Exception('Site not found in layout');
-        }
-        
-        $siteName = $site->getSetting('site_name', $site->name ?? 'SEOom Builder');
-        $siteDescription = $site->getSetting('site_description', '');
-        $siteKeywords = $site->getSetting('site_keywords', '');
-        $siteLogo = $site->getSetting('site_logo', '');
-        $siteFavicon = $site->getSetting('site_favicon', '');
-        $ogImage = $site->getSetting('og_image', $siteLogo);
-        $logoType = $site->getSetting('logo_type', 'image');
-        $logoDesktopSize = $site->getSetting('logo_desktop_size', '300');
-        $logoMobileSize = $site->getSetting('logo_mobile_size', '200');
-        
-        // 테마 설정
-        $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
-        $themeTop = $site->getSetting('theme_top', 'design1');
-        $themeTopHeaderShow = $site->getSetting('theme_top_header_show', '0');
-        $headerSticky = $site->getSetting('header_sticky', '0');
-        $themeBottom = $site->getSetting('theme_bottom', 'theme03');
-        $themeMain = $site->getSetting('theme_main', 'round');
-        $themeFullWidth = $site->getSetting('theme_full_width', '0') == '1';
-        
-        // 사이드 위젯 기능이 없는 플랜의 경우 사이드바를 'none'으로 강제 설정
-        if (!$site->hasFeature('sidebar_widgets')) {
-            $themeSidebar = 'none';
-            // 설정도 강제로 업데이트
-            $site->setSetting('theme_sidebar', 'none');
+            $siteName = 'SEOom Builder';
+            $siteDescription = '';
+            $siteKeywords = '';
+            $siteLogo = '';
+            $siteFavicon = '';
+            $ogImage = '';
+            $logoType = 'image';
+            $logoDesktopSize = '300';
+            $logoMobileSize = '200';
+            $themeDarkMode = 'light';
+            $themeTop = 'design1';
+            $themeTopHeaderShow = '0';
+            $headerSticky = '0';
+            $themeBottom = 'theme03';
+            $themeMain = 'round';
+            $themeFullWidth = false;
+            $themeSidebar = 'left';
         } else {
-            $themeSidebar = $site->getSetting('theme_sidebar', 'left');
+            $siteName = $site->getSetting('site_name', $site->name ?? 'SEOom Builder');
+            $siteDescription = $site->getSetting('site_description', '');
+            $siteKeywords = $site->getSetting('site_keywords', '');
+            $siteLogo = $site->getSetting('site_logo', '');
+            $siteFavicon = $site->getSetting('site_favicon', '');
+            $ogImage = $site->getSetting('og_image', $siteLogo);
+            $logoType = $site->getSetting('logo_type', 'image');
+            $logoDesktopSize = $site->getSetting('logo_desktop_size', '300');
+            $logoMobileSize = $site->getSetting('logo_mobile_size', '200');
+            
+            // 테마 설정
+            $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
+            $themeTop = $site->getSetting('theme_top', 'design1');
+            $themeTopHeaderShow = $site->getSetting('theme_top_header_show', '0');
+            $headerSticky = $site->getSetting('header_sticky', '0');
+            $themeBottom = $site->getSetting('theme_bottom', 'theme03');
+            $themeMain = $site->getSetting('theme_main', 'round');
+            $themeFullWidth = $site->getSetting('theme_full_width', '0') == '1';
+            
+            // 사이드 위젯 기능이 없는 플랜의 경우 사이드바를 'none'으로 강제 설정
+            if (!$site->hasFeature('sidebar_widgets')) {
+                $themeSidebar = 'none';
+                // 설정도 강제로 업데이트
+                $site->setSetting('theme_sidebar', 'none');
+            } else {
+                $themeSidebar = $site->getSetting('theme_sidebar', 'left');
+            }
+            
+            // 색상 설정 (라이트 모드)
+            $colorLightHeaderText = $site->getSetting('color_light_header_text', '#000000');
+            $colorLightHeaderBg = $site->getSetting('color_light_header_bg', '#ffffff');
+            $colorLightFooterText = $site->getSetting('color_light_footer_text', '#000000');
+            $colorLightFooterBg = $site->getSetting('color_light_footer_bg', '#f8f9fa');
+            $colorLightBodyText = $site->getSetting('color_light_body_text', '#000000');
+            $colorLightBodyBg = $site->getSetting('color_light_body_bg', '#f8f9fa');
+            $colorLightPointMain = $site->getSetting('color_light_point_main', '#0d6efd');
+            $colorLightPointBg = $site->getSetting('color_light_point_bg', '#000000');
+            
+            // 색상 설정 (다크 모드)
+            $colorDarkHeaderText = $site->getSetting('color_dark_header_text', '#ffffff');
+            $colorDarkHeaderBg = $site->getSetting('color_dark_header_bg', '#000000');
+            $colorDarkFooterText = $site->getSetting('color_dark_footer_text', '#ffffff');
+            $colorDarkFooterBg = $site->getSetting('color_dark_footer_bg', '#000000');
+            $colorDarkBodyText = $site->getSetting('color_dark_body_text', '#ffffff');
+            $colorDarkBodyBg = $site->getSetting('color_dark_body_bg', '#000000');
+            $colorDarkPointMain = $site->getSetting('color_dark_point_main', '#ffffff');
+            $colorDarkPointBg = $site->getSetting('color_dark_point_bg', '#212529');
+            
+            // 폰트 설정
+            $fontDesign = $site->getSetting('font_design', 'noto-sans');
+            $fontSize = $site->getSetting('font_size', 'normal');
         }
         
-        // 색상 설정 (라이트 모드)
-        $colorLightHeaderText = $site->getSetting('color_light_header_text', '#000000');
-        $colorLightHeaderBg = $site->getSetting('color_light_header_bg', '#ffffff');
-        $colorLightFooterText = $site->getSetting('color_light_footer_text', '#000000');
-        $colorLightFooterBg = $site->getSetting('color_light_footer_bg', '#f8f9fa');
-        $colorLightBodyText = $site->getSetting('color_light_body_text', '#000000');
-        $colorLightBodyBg = $site->getSetting('color_light_body_bg', '#f8f9fa');
-        $colorLightPointMain = $site->getSetting('color_light_point_main', '#0d6efd');
-        $colorLightPointBg = $site->getSetting('color_light_point_bg', '#000000');
-        
-        // 색상 설정 (다크 모드)
-        $colorDarkHeaderText = $site->getSetting('color_dark_header_text', '#ffffff');
-        $colorDarkHeaderBg = $site->getSetting('color_dark_header_bg', '#000000');
-        $colorDarkFooterText = $site->getSetting('color_dark_footer_text', '#ffffff');
-        $colorDarkFooterBg = $site->getSetting('color_dark_footer_bg', '#000000');
-        $colorDarkBodyText = $site->getSetting('color_dark_body_text', '#ffffff');
-        $colorDarkBodyBg = $site->getSetting('color_dark_body_bg', '#000000');
-        $colorDarkPointMain = $site->getSetting('color_dark_point_main', '#ffffff');
-        $colorDarkPointBg = $site->getSetting('color_dark_point_bg', '#212529');
-        
-        // 폰트 설정
-        $fontDesign = $site->getSetting('font_design', 'noto-sans');
-        $fontSize = $site->getSetting('font_size', 'normal');
+        // $site가 없을 때 기본 색상 및 폰트 설정
+        if (!$site) {
+            $colorLightHeaderText = '#000000';
+            $colorLightHeaderBg = '#ffffff';
+            $colorLightFooterText = '#000000';
+            $colorLightFooterBg = '#f8f9fa';
+            $colorLightBodyText = '#000000';
+            $colorLightBodyBg = '#f8f9fa';
+            $colorLightPointMain = '#0d6efd';
+            $colorLightPointBg = '#000000';
+            $colorDarkHeaderText = '#ffffff';
+            $colorDarkHeaderBg = '#000000';
+            $colorDarkFooterText = '#ffffff';
+            $colorDarkFooterBg = '#000000';
+            $colorDarkBodyText = '#ffffff';
+            $colorDarkBodyBg = '#000000';
+            $colorDarkPointMain = '#ffffff';
+            $colorDarkPointBg = '#212529';
+            $fontDesign = 'noto-sans';
+            $fontSize = 'normal';
+        }
     @endphp
     
     <!-- SEO Meta Tags -->
