@@ -574,8 +574,11 @@ class UserMySitesController extends Controller
         $userSite->update([
             'domain' => $domain ?: null,
             'cloudflare_zone_id' => $cloudflareZoneId,
-            'nameservers' => $nameservers ? json_encode($nameservers) : null,
+            'nameservers' => $nameservers ?: null, // Eloquent가 자동으로 JSON으로 변환 (casts 사용)
         ]);
+        
+        // 사이트 객체 새로고침 (캐시된 데이터 제거)
+        $userSite->refresh();
 
         $message = $domain 
             ? '도메인이 성공적으로 연결되었습니다.' . ($nameservers ? ' 네임서버 정보를 확인하세요.' : '') 
