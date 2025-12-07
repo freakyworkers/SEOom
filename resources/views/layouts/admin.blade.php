@@ -150,6 +150,7 @@
             
             <div class="sidebar-menu">
                 <ul class="nav flex-column">
+                {{-- 1. 대시보드 --}}
                 @if($site->hasFeature('dashboard'))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.dashboard') || request()->routeIs('master.admin.dashboard') ? 'active' : '' }}" 
@@ -158,6 +159,8 @@
                     </a>
                 </li>
                 @endif
+
+                {{-- 2. 사용자 관련 --}}
                 @if($site->hasFeature('users'))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.users') || request()->routeIs('master.admin.users') ? 'active' : '' }}" 
@@ -174,6 +177,24 @@
                     </a>
                 </li>
                 @endif
+                @if($site->hasFeature('user_ranks'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.user-ranks.*') || request()->routeIs('master.admin.user-ranks.*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.user-ranks') : route('admin.user-ranks', ['site' => $site->slug]) }}">
+                        <i class="bi bi-trophy me-2"></i>회원등급
+                    </a>
+                </li>
+                @endif
+                @if($site->hasFeature('attendance'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.attendance.*') || request()->routeIs('master.admin.attendance.*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.attendance.index') : route('admin.attendance.index', ['site' => $site->slug]) }}">
+                        <i class="bi bi-calendar-check me-2"></i>출첵
+                    </a>
+                </li>
+                @endif
+
+                {{-- 3. 커뮤니케이션 --}}
                 @if($site->hasFeature('mail_settings'))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.mail-settings') || request()->routeIs('master.admin.mail-settings') ? 'active' : '' }}" 
@@ -182,6 +203,118 @@
                     </a>
                 </li>
                 @endif
+                @if($site->hasFeature('messages'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.messages.*') || request()->routeIs('master.admin.messages.*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.messages.index') : route('admin.messages.index', ['site' => $site->slug]) }}">
+                        <i class="bi bi-envelope me-2"></i>쪽지 관리
+                    </a>
+                </li>
+                @endif
+                @if($site->hasFeature('chat_widget'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.chat*') || request()->routeIs('master.admin.chat*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.chat.index') : route('admin.chat.index', ['site' => $site->slug]) }}">
+                        <i class="bi bi-chat-dots me-2"></i>채팅
+                    </a>
+                </li>
+                @endif
+
+                {{-- 4. 콘텐츠 관리 --}}
+                @if($site->hasFeature('boards'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.boards') || request()->routeIs('master.admin.boards') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.boards') : route('admin.boards', ['site' => $site->slug]) }}">
+                        <i class="bi bi-grid me-2"></i>게시판 관리
+                    </a>
+                </li>
+                @endif
+                @if($site->hasFeature('posts'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.posts') || request()->routeIs('master.admin.posts') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.posts') : route('admin.posts', ['site' => $site->slug]) }}">
+                        <i class="bi bi-file-text me-2"></i>게시글 관리
+                    </a>
+                </li>
+                @endif
+                @if($site->hasFeature('custom_pages'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.custom-pages*') || request()->routeIs('master.admin.custom-pages*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.custom-pages') : route('admin.custom-pages', ['site' => $site->slug]) }}">
+                        <i class="bi bi-file-earmark-text me-2"></i>커스텀 페이지
+                    </a>
+                </li>
+                @endif
+
+                {{-- 5. 포인트/이벤트 --}}
+                @if($site->hasFeature('point_exchange'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.point-exchange.*') || request()->routeIs('master.admin.point-exchange.*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.point-exchange.index') : route('admin.point-exchange.index', ['site' => $site->slug]) }}">
+                        <i class="bi bi-currency-exchange me-2"></i>포인트 교환
+                    </a>
+                </li>
+                @endif
+                @if($site->hasFeature('event_application'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.event-application.*') || request()->routeIs('master.admin.event-application.*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.event-application.index') : route('admin.event-application.index', ['site' => $site->slug]) }}">
+                        <i class="bi bi-calendar-event me-2"></i>신청형 이벤트
+                    </a>
+                </li>
+                @endif
+
+                {{-- 6. 디자인/UI --}}
+                @if($site->hasFeature('menus'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.menus.*') || request()->routeIs('master.admin.menus.*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.menus') : route('admin.menus', ['site' => $site->slug]) }}">
+                        <i class="bi bi-list-ul me-2"></i>메뉴 설정
+                    </a>
+                </li>
+                @endif
+                @if($site->hasFeature('toggle_menus'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.toggle-menus*') || request()->routeIs('master.admin.toggle-menus*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.toggle-menus') : route('admin.toggle-menus', ['site' => $site->slug]) }}">
+                        <i class="bi bi-list-nested me-2"></i>토글 메뉴
+                    </a>
+                </li>
+                @endif
+                @if($site->hasFeature('banners'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.banners.*') || request()->routeIs('master.admin.banners.*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.banners.index') : route('admin.banners.index', ['site' => $site->slug]) }}">
+                        <i class="bi bi-image me-2"></i>배너
+                    </a>
+                </li>
+                @endif
+                @if($site->hasFeature('popups'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.popups.*') || request()->routeIs('master.admin.popups.*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.popups.index') : route('admin.popups.index', ['site' => $site->slug]) }}">
+                        <i class="bi bi-window me-2"></i>팝업
+                    </a>
+                </li>
+                @endif
+                @if($site->hasFeature('sidebar_widgets'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.sidebar-widgets') || request()->routeIs('master.admin.sidebar-widgets') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.sidebar-widgets') : route('admin.sidebar-widgets', ['site' => $site->slug]) }}">
+                        <i class="bi bi-layout-sidebar me-2"></i>사이드 위젯
+                    </a>
+                </li>
+                @endif
+                @if($site->hasFeature('main_widgets'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.main-widgets') || request()->routeIs('master.admin.main-widgets') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.main-widgets') : route('admin.main-widgets', ['site' => $site->slug]) }}">
+                        <i class="bi bi-grid me-2"></i>메인 위젯
+                    </a>
+                </li>
+                @endif
+
+                {{-- 7. 기능/통합 --}}
                 @if($site->hasFeature('contact_forms'))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.contact-forms.*') || request()->routeIs('master.admin.contact-forms.*') ? 'active' : '' }}" 
@@ -206,86 +339,8 @@
                     </a>
                 </li>
                 @endif
-                @if($site->hasFeature('user_ranks'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.user-ranks.*') || request()->routeIs('master.admin.user-ranks.*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.user-ranks') : route('admin.user-ranks', ['site' => $site->slug]) }}">
-                        <i class="bi bi-trophy me-2"></i>회원등급
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('boards'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.boards') || request()->routeIs('master.admin.boards') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.boards') : route('admin.boards', ['site' => $site->slug]) }}">
-                        <i class="bi bi-grid me-2"></i>게시판 관리
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('posts'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.posts') || request()->routeIs('master.admin.posts') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.posts') : route('admin.posts', ['site' => $site->slug]) }}">
-                        <i class="bi bi-file-text me-2"></i>게시글 관리
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('attendance'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.attendance.*') || request()->routeIs('master.admin.attendance.*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.attendance.index') : route('admin.attendance.index', ['site' => $site->slug]) }}">
-                        <i class="bi bi-calendar-check me-2"></i>출첵
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('point_exchange'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.point-exchange.*') || request()->routeIs('master.admin.point-exchange.*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.point-exchange.index') : route('admin.point-exchange.index', ['site' => $site->slug]) }}">
-                        <i class="bi bi-currency-exchange me-2"></i>포인트 교환
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('event_application'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.event-application.*') || request()->routeIs('master.admin.event-application.*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.event-application.index') : route('admin.event-application.index', ['site' => $site->slug]) }}">
-                        <i class="bi bi-calendar-event me-2"></i>신청형 이벤트
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('menus'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.menus.*') || request()->routeIs('master.admin.menus.*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.menus') : route('admin.menus', ['site' => $site->slug]) }}">
-                        <i class="bi bi-list-ul me-2"></i>메뉴 설정
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('messages'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.messages.*') || request()->routeIs('master.admin.messages.*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.messages.index') : route('admin.messages.index', ['site' => $site->slug]) }}">
-                        <i class="bi bi-envelope me-2"></i>쪽지 관리
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('banners'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.banners.*') || request()->routeIs('master.admin.banners.*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.banners.index') : route('admin.banners.index', ['site' => $site->slug]) }}">
-                        <i class="bi bi-image me-2"></i>배너
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('popups'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.popups.*') || request()->routeIs('master.admin.popups.*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.popups.index') : route('admin.popups.index', ['site' => $site->slug]) }}">
-                        <i class="bi bi-window me-2"></i>팝업
-                    </a>
-                </li>
-                @endif
+
+                {{-- 8. 보안/관리 --}}
                 @if($site->hasFeature('blocked_ips'))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.blocked-ips.*') || request()->routeIs('master.admin.blocked-ips.*') ? 'active' : '' }}" 
@@ -294,6 +349,16 @@
                     </a>
                 </li>
                 @endif
+                @if($site->hasFeature('chat_widget') || $site->hasFeature('boards'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.reports*') || request()->routeIs('master.admin.reports*') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.reports.index') : route('admin.reports.index', ['site' => $site->slug]) }}">
+                        <i class="bi bi-flag me-2"></i>신고
+                    </a>
+                </li>
+                @endif
+
+                {{-- 9. 고급 설정 --}}
                 @if($site->hasFeature('custom_code'))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.custom-codes*') || request()->routeIs('master.admin.custom-codes*') ? 'active' : '' }}" 
@@ -318,54 +383,8 @@
                     </a>
                 </li>
                 @endif
-                @if($site->hasFeature('sidebar_widgets'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.sidebar-widgets') || request()->routeIs('master.admin.sidebar-widgets') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.sidebar-widgets') : route('admin.sidebar-widgets', ['site' => $site->slug]) }}">
-                        <i class="bi bi-layout-sidebar me-2"></i>사이드 위젯
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('main_widgets'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.main-widgets') || request()->routeIs('master.admin.main-widgets') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.main-widgets') : route('admin.main-widgets', ['site' => $site->slug]) }}">
-                        <i class="bi bi-grid me-2"></i>메인 위젯
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('custom_pages'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.custom-pages*') || request()->routeIs('master.admin.custom-pages*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.custom-pages') : route('admin.custom-pages', ['site' => $site->slug]) }}">
-                        <i class="bi bi-file-earmark-text me-2"></i>커스텀 페이지
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('chat_widget'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.chat*') || request()->routeIs('master.admin.chat*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.chat.index') : route('admin.chat.index', ['site' => $site->slug]) }}">
-                        <i class="bi bi-chat-dots me-2"></i>채팅
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('chat_widget') || $site->hasFeature('boards'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.reports*') || request()->routeIs('master.admin.reports*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.reports.index') : route('admin.reports.index', ['site' => $site->slug]) }}">
-                        <i class="bi bi-flag me-2"></i>신고
-                    </a>
-                </li>
-                @endif
-                @if($site->hasFeature('toggle_menus'))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.toggle-menus*') || request()->routeIs('master.admin.toggle-menus*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.toggle-menus') : route('admin.toggle-menus', ['site' => $site->slug]) }}">
-                        <i class="bi bi-list-nested me-2"></i>토글 메뉴
-                    </a>
-                </li>
-                @endif
+
+                {{-- 10. 사이트로 돌아가기 --}}
                 <li class="nav-item mt-4">
                     <a class="nav-link" href="{{ $site->isMasterSite() ? '/' : route('home', ['site' => $site->slug]) }}">
                         <i class="bi bi-arrow-left me-2"></i>사이트로 돌아가기
