@@ -239,7 +239,11 @@
     
     <!-- Google Analytics -->
     @php
-        $googleAnalyticsId = $site->getSetting('google_analytics_id', '');
+        try {
+            $googleAnalyticsId = (isset($site) && $site && $site->id) ? $site->getSetting('google_analytics_id', '') : '';
+        } catch (\Exception $e) {
+            $googleAnalyticsId = '';
+        }
     @endphp
     @if(!empty($googleAnalyticsId))
         <!-- Google tag (gtag.js) -->
@@ -591,7 +595,7 @@
     {{-- 커스텀 코드: HEAD 태그 안 --}}
     @php
         try {
-            $customCodeHead = \Illuminate\Support\Facades\Schema::hasTable('custom_codes') ? \App\Models\CustomCode::getByLocation($site->id, 'head') : null;
+            $customCodeHead = (isset($site) && $site && $site->id && \Illuminate\Support\Facades\Schema::hasTable('custom_codes')) ? \App\Models\CustomCode::getByLocation($site->id, 'head') : null;
         } catch (\Exception $e) {
             $customCodeHead = null;
         }
@@ -603,7 +607,7 @@
     {{-- 커스텀 코드: 추가 CSS --}}
     @php
         try {
-            $customCodeHeadCss = \Illuminate\Support\Facades\Schema::hasTable('custom_codes') ? \App\Models\CustomCode::getByLocation($site->id, 'head_css') : null;
+            $customCodeHeadCss = (isset($site) && $site && $site->id && \Illuminate\Support\Facades\Schema::hasTable('custom_codes')) ? \App\Models\CustomCode::getByLocation($site->id, 'head_css') : null;
         } catch (\Exception $e) {
             $customCodeHeadCss = null;
         }
@@ -617,7 +621,7 @@
     {{-- 커스텀 코드: JavaScript --}}
     @php
         try {
-            $customCodeHeadJs = \Illuminate\Support\Facades\Schema::hasTable('custom_codes') ? \App\Models\CustomCode::getByLocation($site->id, 'head_js') : null;
+            $customCodeHeadJs = (isset($site) && $site && $site->id && \Illuminate\Support\Facades\Schema::hasTable('custom_codes')) ? \App\Models\CustomCode::getByLocation($site->id, 'head_js') : null;
         } catch (\Exception $e) {
             $customCodeHeadJs = null;
         }
