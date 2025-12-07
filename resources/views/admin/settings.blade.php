@@ -90,14 +90,12 @@
         cursor: pointer;
         z-index: 10;
     }
-    .image-upload-area.has-image .hidden-file-input {
-        z-index: 1;
-        pointer-events: none;
-    }
     .image-upload-area.has-image .image-preview {
         position: relative;
-        z-index: 2;
-        pointer-events: auto;
+        z-index: 1;
+        display: block;
+        width: 100%;
+        height: auto;
     }
     .theme-preview {
         margin-top: 1rem;
@@ -2192,10 +2190,9 @@ $(document).ready(function() {
                     var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
                     var previewStyle = type === 'favicon' ? 'style="max-height: 60px;"' : '';
                     
-                    // HTML 재생성 (hidden input 포함)
+                    // HTML 재생성 (이미지가 있을 때는 파일 input 제거 - 이미지 클릭 시 동적 생성)
                     $uploadArea.html(
                         '<img src="' + response.url + '" alt="' + type + '" class="image-preview" ' + previewStyle + '>' +
-                        '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">' +
                         '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="' + response.url + '">'
                     );
                     
@@ -2286,11 +2283,35 @@ $(document).ready(function() {
                 $input.val('');
             }
         } else {
-            // 교체 - 파일 input 클릭
-            var fileInput = $area.find('.hidden-file-input')[0];
-            if (fileInput) {
-                fileInput.click();
-            }
+            // 교체 - 파일 input 동적 생성 후 클릭
+            var type = $area.data('type');
+            var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
+            
+            // 기존 파일 input 제거
+            $area.find('.hidden-file-input').remove();
+            
+            // 새 파일 input 생성 및 추가
+            var $fileInput = $('<input>', {
+                type: 'file',
+                class: 'hidden-file-input',
+                accept: acceptType,
+                'data-type': type
+            });
+            
+            $area.append($fileInput);
+            
+            // 파일 선택 후 업로드 처리
+            $fileInput.on('change', function() {
+                var file = this.files[0];
+                if (file) {
+                    uploadImage(file, $area);
+                }
+            });
+            
+            // 파일 input 클릭
+            setTimeout(function() {
+                $fileInput[0].click();
+            }, 10);
         }
         return false;
     });
