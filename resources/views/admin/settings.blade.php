@@ -1402,109 +1402,109 @@ var uploadImageRoute = @json(route('admin.settings.upload-image', ['site' => $si
 document.addEventListener('DOMContentLoaded', function() {
     const domainForm = document.getElementById('domainForm');
     if (domainForm) {
-        domainForm.addEventListener('submit', function(e) {
+        domainForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const submitBtn = document.getElementById('domainSubmitBtn');
-            const originalText = submitBtn.innerHTML;
+            const originalText = submitBtn ? submitBtn.innerHTML : '';
             const domainInput = document.getElementById('domain');
             const errorDiv = document.getElementById('domainError');
             const nameserversContainer = document.getElementById('nameserversContainer');
-            
-            // 버튼 비활성화 및 로딩 표시
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>저장 중...';
-            errorDiv.style.display = 'none';
-            errorDiv.textContent = '';
-            
-            const formData = new FormData(this);
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>저장 중...';
+            }
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+                errorDiv.textContent = '';
+            }
+
+            const formData = new FormData(domainForm);
+
             // data-action-url 속성에서 URL 가져오기 (없으면 action 속성 사용)
-            let url = this.getAttribute('data-action-url') || this.action;
-            
+            let url = domainForm.getAttribute('data-action-url') || domainForm.action || '';
+
             // URL이 상대 경로인 경우 절대 경로로 변환
             if (url && !url.startsWith('http') && !url.startsWith('//')) {
-                if (url.startsWith('/')) {
-                    url = window.location.origin + url;
-                } else {
-                    url = window.location.origin + '/' + url;
-                }
+                url = url.startsWith('/') ? window.location.origin + url : window.location.origin + '/' + url;
             }
-            
+
             // URL이 비어있거나 잘못된 경우 기본 URL 사용
             if (!url || url.includes('/login')) {
-                // 기본 URL 생성: /site/{masterSiteSlug}/my-sites/{siteSlug}/domain
                 const currentPath = window.location.pathname;
                 const pathMatch = currentPath.match(/\/site\/([^\/]+)\/admin\/settings/);
                 if (pathMatch) {
                     const siteSlug = pathMatch[1];
-                    // 마스터 사이트 slug 가져오기 (현재 사이트가 마스터가 아닌 경우)
                     const masterSiteSlug = 'master'; // 기본값
-                    url = window.location.origin + '/site/' + masterSiteSlug + '/my-sites/' + siteSlug + '/domain';
+                    url = `${window.location.origin}/site/${masterSiteSlug}/my-sites/${siteSlug}/domain`;
                 } else {
                     console.error('Failed to determine site slug from URL');
+                    if (errorDiv) {
+                        errorDiv.textContent = '도메인 저장 경로를 찾을 수 없습니다.';
+                        errorDiv.style.display = 'block';
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
                     return;
                 }
             }
-            
-            // 디버깅: URL 확인
+
             console.log('Domain update URL:', url);
-            
-            fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'X-CSRF-TOKEN': (function() { var meta = document.querySelector('meta[name="csrf-token"]'); return meta ? meta.getAttribute('content') : null; })() || '{{ csrf_token() }}',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-            .then(function(response) {
-                if (!response.ok) {
-                    // 응답을 복제하여 여러 번 읽을 수 있도록 함
-                    const clonedResponse = response.clone();
-                    return response.json().then(function(data) {
-                        const errorMessage = data.message || data.error || '저장에 실패했습니다.';
-                        console.error('Domain update error:', data);
-                        throw new Error(errorMessage);
-                    }).catch(function() {
-                        return clonedResponse.text().then(function(text) {
-                            console.error('Domain update error (text):', text);
-                            // HTML 응답인 경우 에러 메시지 추출 시도
-                            const errorMatch = text.match(/<title>([^<]+)<\/title>/i) || text.match(/The\s+\w+\s+method\s+is\s+not\s+supported[^<]*/i);
-                            const errorMessage = errorMatch ? errorMatch[0] : '저장에 실패했습니다: ' + text.substring(0, 200);
-                            throw new Error(errorMessage);
-                        });
-                    });
+
+            try {
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRF-TOKEN': (function() { var meta = document.querySelector('meta[name="csrf-token"]'); return meta ? meta.getAttribute('content') : null; })() || '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch (jsonError) {
+                    console.error('Domain update JSON parse error:', jsonError);
                 }
-                return response.json();
-            })
-            .then(function(data) {
-                if (data.success) {
-                    // 도메인 입력 필드 업데이트
-                    if (domainInput && data.domain !== undefined) {
-                        domainInput.value = data.domain || '';
-                    }
-                    
-                    // 성공 메시지 표시
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-success alert-dismissible fade show';
-                    alertDiv.innerHTML = `
+
+                if (!response.ok || !data) {
+                    const errorMessage = (data && (data.message || data.error)) || '저장에 실패했습니다.';
+                    throw new Error(errorMessage);
+                }
+
+                if (!data.success) {
+                    throw new Error(data.message || '저장에 실패했습니다.');
+                }
+
+                // 도메인 입력 필드 업데이트
+                if (domainInput && data.domain !== undefined) {
+                    domainInput.value = data.domain || '';
+                }
+
+                // 성공 메시지 표시
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                alertDiv.innerHTML = `
                         <i class="bi bi-check-circle me-2"></i>${data.message}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     `;
-                    domainForm.insertAdjacentElement('beforebegin', alertDiv);
-                    
-                    // 3초 후 자동으로 알림 제거
-                    setTimeout(function() {
-                        alertDiv.remove();
-                    }, 3000);
-                    
-                    // 네임서버 정보 업데이트
-                    if (nameserversContainer) {
-                        if (data.nameservers && data.nameservers.length > 0) {
-                            let nameserversHtml = '';
-                            data.nameservers.forEach((nameserver, index) => {
-                                nameserversHtml += `
+                domainForm.insertAdjacentElement('beforebegin', alertDiv);
+
+                setTimeout(function() {
+                    alertDiv.remove();
+                }, 3000);
+
+                // 네임서버 정보 업데이트
+                if (nameserversContainer) {
+                    if (data.nameservers && data.nameservers.length > 0) {
+                        let nameserversHtml = '';
+                        data.nameservers.forEach((nameserver, index) => {
+                            nameserversHtml += `
                                     <div class="mb-2 d-flex align-items-center">
                                         <strong class="me-2">네임서버 ${index + 1}:</strong>
                                         <code class="flex-grow-1 ms-2" style="font-size: 1.1em; background-color: white; padding: 0.5rem; border-radius: 0.25rem;">${nameserver}</code>
@@ -1520,54 +1520,56 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         nameserversContainer.innerHTML = '<div class="text-muted">도메인을 입력하고 저장하면 네임서버 정보가 나타납니다.</div>';
                     }
-                    
-                    // 도메인 정보 업데이트
-                    const domainInfo = domainForm.querySelector('.form-text');
-                    if (domainInfo) {
-                        if (data.domain) {
-                            domainInfo.innerHTML = `
+                }
+
+                // 도메인 정보 업데이트
+                const domainInfo = domainForm.querySelector('.form-text');
+                if (domainInfo) {
+                    if (data.domain) {
+                        domainInfo.innerHTML = `
                                 현재 연결된 도메인: <strong>${data.domain}</strong> | 
                                 <a href="https://${data.domain}" target="_blank" class="text-decoration-none">
                                     <i class="bi bi-box-arrow-up-right me-1"></i>확인
                                 </a>
                             `;
-                        } else {
-                            const siteSlug = '{{ $site->slug }}';
-                            const masterDomain = '{{ config("app.master_domain", "seoomweb.com") }}';
-                            domainInfo.innerHTML = `
+                    } else {
+                        const siteSlug = '{{ $site->slug }}';
+                        const masterDomain = '{{ config("app.master_domain", "seoomweb.com") }}';
+                        domainInfo.innerHTML = `
                                 서브도메인: <strong>${siteSlug}.${masterDomain}</strong><br>
                                 <strong>도메인을 입력하고 저장하면 자동으로 Cloudflare에 추가되고 DNS 레코드가 생성됩니다.</strong>
                             `;
-                        }
                     }
-                    
-                    // 네임서버 섹션 표시/숨김 처리
-                    const nameserverSection = document.querySelector('[ref="e577"]');
-                    if (nameserverSection) {
-                        if (data.domain && data.nameservers && data.nameservers.length > 0) {
-                            nameserverSection.style.display = 'block';
-                        } else if (!data.domain) {
-                            nameserverSection.style.display = 'none';
-                        }
-                    }
-                    
-                    // 페이지 새로고침 (최신 데이터 반영)
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 2000);
-                } else {
-                    throw new Error(data.message || '저장에 실패했습니다.');
                 }
-            })
-            .catch(function(error) {
-                errorDiv.textContent = error.message;
-                errorDiv.style.display = 'block';
-                console.error('Error:', error);
-            })
-            .finally(function() {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            });
+
+                // 네임서버 섹션 표시/숨김 처리
+                const nameserverSection = document.querySelector('[ref="e577"]');
+                if (nameserverSection) {
+                    if (data.domain && data.nameservers && data.nameservers.length > 0) {
+                        nameserverSection.style.display = 'block';
+                    } else if (!data.domain) {
+                        nameserverSection.style.display = 'none';
+                    }
+                }
+
+                // 페이지 새로고침 (최신 데이터 반영)
+                setTimeout(function() {
+                    window.location.reload();
+                }, 2000);
+            } catch (error) {
+                console.error('Domain update error:', error);
+                if (errorDiv) {
+                    errorDiv.textContent = error && error.message ? error.message : '저장에 실패했습니다.';
+                    errorDiv.style.display = 'block';
+                } else {
+                    alert(error && error.message ? error.message : '저장에 실패했습니다.');
+                }
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            }
         });
     }
     
@@ -1676,8 +1678,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Upload params - type:', type, 'inputName:', inputName);
 
         // FileReader로 즉시 미리보기 표시 (배너 이미지처럼)
+        console.log('Creating FileReader for preview...');
         var reader = new FileReader();
         reader.onload = function(e) {
+            console.log('FileReader onload triggered');
             // 즉시 미리보기 표시
             $uploadArea.addClass('has-image');
             var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block; width: auto; height: auto; margin: 0 auto;' : 'max-height: 120px; display: block; width: auto; height: auto; margin: 0 auto;';
@@ -1702,6 +1706,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 'style': previewStyle
             });
             
+            // 이미지 로드 확인
+            $img.on('load', function() {
+                console.log('Preview image loaded successfully');
+            }).on('error', function() {
+                console.error('Preview image failed to load');
+            });
+            
             var $fileInput = $('<input>', {
                 'type': 'file',
                 'class': 'hidden-file-input',
@@ -1711,7 +1722,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 업로드 영역 내부의 hidden input은 제거 (form 내부의 hidden input만 사용)
             $uploadArea.empty().append($img).append($fileInput);
-            console.log('Local preview displayed');
+            console.log('Local preview displayed, image src:', e.target.result.substring(0, 50) + '...');
+        };
+        reader.onerror = function(e) {
+            console.error('FileReader error:', e);
+            alert('파일을 읽는 중 오류가 발생했습니다.');
         };
         reader.readAsDataURL(file);
 
@@ -1910,7 +1925,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 파일 선택 시 업로드 (이벤트 위임 사용)
     $(document).on('change', '.hidden-file-input', function(e) {
         e.stopPropagation();
+        e.preventDefault();
         console.log('File input changed');
+        
         var file = this.files[0];
         if (!file) {
             console.log('No file selected');
@@ -1920,10 +1937,21 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('File selected:', file.name, file.size, file.type);
         var $uploadArea = $(this).closest('.image-upload-area');
         console.log('Upload area found:', $uploadArea.length);
+        
         if ($uploadArea.length === 0) {
             console.error('Upload area not found!');
+            alert('업로드 영역을 찾을 수 없습니다.');
             return;
         }
+        
+        // uploadImage 함수가 정의되어 있는지 확인
+        if (typeof uploadImage !== 'function') {
+            console.error('uploadImage function is not defined!');
+            alert('이미지 업로드 함수를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+            return;
+        }
+        
+        console.log('Calling uploadImage function...');
         uploadImage(file, $uploadArea);
     });
 
