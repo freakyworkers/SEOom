@@ -1372,7 +1372,13 @@ document.addEventListener('DOMContentLoaded', function() {
             errorDiv.textContent = '';
             
             const formData = new FormData(this);
-            const url = this.action;
+            // action URL을 절대 경로로 변환
+            let url = this.action;
+            if (url.startsWith('/')) {
+                url = window.location.origin + url;
+            } else if (!url.startsWith('http')) {
+                url = window.location.origin + '/' + url;
+            }
             
             fetch(url, {
                 method: 'PUT',
