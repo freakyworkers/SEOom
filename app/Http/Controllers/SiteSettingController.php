@@ -118,6 +118,9 @@ class SiteSettingController extends Controller
             $footerPreviewHtml = '<div class="text-danger p-3">미리보기 렌더링 오류: ' . htmlspecialchars($e->getMessage()) . '</div>';
         }
 
+        // 사이트 객체 새로고침 (최신 데이터 반영)
+        $site->refresh();
+        
         return view('admin.settings', compact('site', 'settings', 'headerPreviewHtml', 'footerPreviewHtml'));
     }
 

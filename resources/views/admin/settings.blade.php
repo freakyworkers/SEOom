@@ -1453,6 +1453,11 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 if (data.success) {
+                    // 도메인 입력 필드 업데이트
+                    if (domainInput && data.domain !== undefined) {
+                        domainInput.value = data.domain || '';
+                    }
+                    
                     // 성공 메시지 표시
                     const alertDiv = document.createElement('div');
                     alertDiv.className = 'alert alert-success alert-dismissible fade show';
@@ -1468,15 +1473,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, 3000);
                     
                     // 네임서버 정보 업데이트
-                    if (data.nameservers && data.nameservers.length > 0) {
-                        let nameserversHtml = '';
-                        data.nameservers.forEach((nameserver, index) => {
-                            nameserversHtml += `
-                                <div class="mb-2 d-flex align-items-center">
-                                    <strong class="me-2">네임서버 ${index + 1}:</strong>
-                                    <code class="flex-grow-1 ms-2" style="font-size: 1.1em; background-color: white; padding: 0.5rem; border-radius: 0.25rem;">${nameserver}</code>
-                                    <button type="button" 
-                                            class="btn btn-sm btn-outline-secondary ms-2" 
+                    if (nameserversContainer) {
+                        if (data.nameservers && data.nameservers.length > 0) {
+                            let nameserversHtml = '';
+                            data.nameservers.forEach((nameserver, index) => {
+                                nameserversHtml += `
+                                    <div class="mb-2 d-flex align-items-center">
+                                        <strong class="me-2">네임서버 ${index + 1}:</strong>
+                                        <code class="flex-grow-1 ms-2" style="font-size: 1.1em; background-color: white; padding: 0.5rem; border-radius: 0.25rem;">${nameserver}</code>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-secondary ms-2" 
                                             onclick="copyNameserverToClipboard('${nameserver}', this)">
                                         <i class="bi bi-clipboard me-1"></i>복사
                                     </button>
@@ -1488,18 +1494,40 @@ document.addEventListener('DOMContentLoaded', function() {
                         nameserversContainer.innerHTML = '<div class="text-muted">도메인을 입력하고 저장하면 네임서버 정보가 나타납니다.</div>';
                     }
                     
-                    // 도메인 정보 업데이트 (필요시)
-                    if (data.domain) {
-                        const domainInfo = domainForm.querySelector('.form-text');
-                        if (domainInfo) {
+                    // 도메인 정보 업데이트
+                    const domainInfo = domainForm.querySelector('.form-text');
+                    if (domainInfo) {
+                        if (data.domain) {
                             domainInfo.innerHTML = `
                                 현재 연결된 도메인: <strong>${data.domain}</strong> | 
                                 <a href="https://${data.domain}" target="_blank" class="text-decoration-none">
                                     <i class="bi bi-box-arrow-up-right me-1"></i>확인
                                 </a>
                             `;
+                        } else {
+                            const siteSlug = '{{ $site->slug }}';
+                            const masterDomain = '{{ config("app.master_domain", "seoomweb.com") }}';
+                            domainInfo.innerHTML = `
+                                서브도메인: <strong>${siteSlug}.${masterDomain}</strong><br>
+                                <strong>도메인을 입력하고 저장하면 자동으로 Cloudflare에 추가되고 DNS 레코드가 생성됩니다.</strong>
+                            `;
                         }
                     }
+                    
+                    // 네임서버 섹션 표시/숨김 처리
+                    const nameserverSection = document.querySelector('[ref="e577"]');
+                    if (nameserverSection) {
+                        if (data.domain && data.nameservers && data.nameservers.length > 0) {
+                            nameserverSection.style.display = 'block';
+                        } else if (!data.domain) {
+                            nameserverSection.style.display = 'none';
+                        }
+                    }
+                    
+                    // 페이지 새로고침 (최신 데이터 반영)
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 } else {
                     throw new Error(data.message || '저장에 실패했습니다.');
                 }
