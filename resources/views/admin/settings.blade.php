@@ -1449,7 +1449,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch(url, {
                 method: 'PUT',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': (function() { var meta = document.querySelector('meta[name="csrf-token"]'); return meta ? meta.getAttribute('content') : null; })() || '{{ csrf_token() }}',
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'
                 },
@@ -1613,10 +1613,14 @@ function updateThemePreview(type, theme) {
     container.innerHTML = '<div class="text-center p-3"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div></div>';
     
     console.log('Updating preview:', previewType, previewTheme);
-    console.log('Menu font settings - size:', document.getElementById('menu_font_size')?.value, 'padding:', document.getElementById('menu_font_padding')?.value, 'weight:', document.getElementById('menu_font_weight')?.value);
+    var menuFontSizeEl = document.getElementById('menu_font_size');
+    var menuFontPaddingEl = document.getElementById('menu_font_padding');
+    var menuFontWeightEl = document.getElementById('menu_font_weight');
+    console.log('Menu font settings - size:', menuFontSizeEl ? menuFontSizeEl.value : null, 'padding:', menuFontPaddingEl ? menuFontPaddingEl.value : null, 'weight:', menuFontWeightEl ? menuFontWeightEl.value : null);
     
     // 현재 입력된 색상 값 가져오기
-    const darkMode = document.getElementById('theme_dark_mode')?.value || 'light';
+    var themeDarkModeEl = document.getElementById('theme_dark_mode');
+    const darkMode = (themeDarkModeEl && themeDarkModeEl.value) ? themeDarkModeEl.value : 'light';
     const isDark = darkMode === 'dark';
     
     // AJAX로 실제 헤더 미리보기 HTML 가져오기
@@ -1630,16 +1634,22 @@ function updateThemePreview(type, theme) {
         // 현재 입력된 색상 값 추가
         if (previewType === 'header') {
             if (isDark) {
-                const darkHeaderText = document.querySelector('input[name="color_dark_header_text"]')?.value;
-                const darkHeaderBg = document.querySelector('input[name="color_dark_header_bg"]')?.value;
-                const darkPointMain = document.querySelector('input[name="color_dark_point_main"]')?.value;
+                var darkHeaderTextEl = document.querySelector('input[name="color_dark_header_text"]');
+                var darkHeaderBgEl = document.querySelector('input[name="color_dark_header_bg"]');
+                var darkPointMainEl = document.querySelector('input[name="color_dark_point_main"]');
+                const darkHeaderText = darkHeaderTextEl ? darkHeaderTextEl.value : null;
+                const darkHeaderBg = darkHeaderBgEl ? darkHeaderBgEl.value : null;
+                const darkPointMain = darkPointMainEl ? darkPointMainEl.value : null;
                 if (darkHeaderText) params.append('color_dark_header_text', darkHeaderText);
                 if (darkHeaderBg) params.append('color_dark_header_bg', darkHeaderBg);
                 if (darkPointMain) params.append('color_dark_point_main', darkPointMain);
             } else {
-                const lightHeaderText = document.querySelector('input[name="color_light_header_text"]')?.value;
-                const lightHeaderBg = document.querySelector('input[name="color_light_header_bg"]')?.value;
-                const lightPointMain = document.querySelector('input[name="color_light_point_main"]')?.value;
+                var lightHeaderTextEl = document.querySelector('input[name="color_light_header_text"]');
+                var lightHeaderBgEl = document.querySelector('input[name="color_light_header_bg"]');
+                var lightPointMainEl = document.querySelector('input[name="color_light_point_main"]');
+                const lightHeaderText = lightHeaderTextEl ? lightHeaderTextEl.value : null;
+                const lightHeaderBg = lightHeaderBgEl ? lightHeaderBgEl.value : null;
+                const lightPointMain = lightPointMainEl ? lightPointMainEl.value : null;
                 if (lightHeaderText) params.append('color_light_header_text', lightHeaderText);
                 if (lightHeaderBg) params.append('color_light_header_bg', lightHeaderBg);
                 if (lightPointMain) params.append('color_light_point_main', lightPointMain);
@@ -1672,35 +1682,45 @@ function updateThemePreview(type, theme) {
             
             // 헤더 테두리 두께 및 컬러 값 추가
             if (headerBorder === '1') {
-                const headerBorderWidth = document.getElementById('header_border_width')?.value || '1';
-                const headerBorderColor = document.getElementById('header_border_color')?.value || '#dee2e6';
+                var headerBorderWidthEl = document.getElementById('header_border_width');
+                var headerBorderColorEl = document.getElementById('header_border_color');
+                const headerBorderWidth = (headerBorderWidthEl && headerBorderWidthEl.value) ? headerBorderWidthEl.value : '1';
+                const headerBorderColor = (headerBorderColorEl && headerBorderColorEl.value) ? headerBorderColorEl.value : '#dee2e6';
                 params.append('header_border_width', headerBorderWidth);
                 params.append('header_border_color', headerBorderColor);
             }
             
             // 메뉴 폰트 설정 값 추가
-            const menuFontSize = document.getElementById('menu_font_size')?.value || '1.25rem';
-            const menuFontPadding = document.getElementById('menu_font_padding')?.value || '0.5rem';
-            const menuFontWeight = document.getElementById('menu_font_weight')?.value || '700';
+            var menuFontSizeEl2 = document.getElementById('menu_font_size');
+            var menuFontPaddingEl2 = document.getElementById('menu_font_padding');
+            var menuFontWeightEl2 = document.getElementById('menu_font_weight');
+            const menuFontSize = (menuFontSizeEl2 && menuFontSizeEl2.value) ? menuFontSizeEl2.value : '1.25rem';
+            const menuFontPadding = (menuFontPaddingEl2 && menuFontPaddingEl2.value) ? menuFontPaddingEl2.value : '0.5rem';
+            const menuFontWeight = (menuFontWeightEl2 && menuFontWeightEl2.value) ? menuFontWeightEl2.value : '700';
             params.append('menu_font_size', menuFontSize);
             params.append('menu_font_padding', menuFontPadding);
             params.append('menu_font_weight', menuFontWeight);
     } else {
         if (isDark) {
-            const darkFooterText = document.querySelector('input[name="color_dark_footer_text"]')?.value;
-            const darkFooterBg = document.querySelector('input[name="color_dark_footer_bg"]')?.value;
+            var darkFooterTextEl = document.querySelector('input[name="color_dark_footer_text"]');
+            var darkFooterBgEl = document.querySelector('input[name="color_dark_footer_bg"]');
+            const darkFooterText = darkFooterTextEl ? darkFooterTextEl.value : null;
+            const darkFooterBg = darkFooterBgEl ? darkFooterBgEl.value : null;
             if (darkFooterText) params.append('color_dark_footer_text', darkFooterText);
             if (darkFooterBg) params.append('color_dark_footer_bg', darkFooterBg);
         } else {
-            const lightFooterText = document.querySelector('input[name="color_light_footer_text"]')?.value;
-            const lightFooterBg = document.querySelector('input[name="color_light_footer_bg"]')?.value;
+            var lightFooterTextEl = document.querySelector('input[name="color_light_footer_text"]');
+            var lightFooterBgEl = document.querySelector('input[name="color_light_footer_bg"]');
+            const lightFooterText = lightFooterTextEl ? lightFooterTextEl.value : null;
+            const lightFooterBg = lightFooterBgEl ? lightFooterBgEl.value : null;
             if (lightFooterText) params.append('color_light_footer_text', lightFooterText);
             if (lightFooterBg) params.append('color_light_footer_bg', lightFooterBg);
         }
     }
     
     // CSRF 토큰 가져오기
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    var csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : null;
     
     fetch(url + '?' + params.toString(), {
         method: 'GET',
@@ -1782,7 +1802,8 @@ function updateThemePreview(type, theme) {
                     try {
                         container.innerHTML = htmlContent;
                     } catch (e2) {
-                        container.innerHTML = '<div class="text-danger p-3">미리보기 표시 오류: ' + e.message + '</div>';
+                        var errorMsg = (e && e.message) ? String(e.message).replace(/</g, '&lt;').replace(/>/g, '&gt;') : '알 수 없는 오류';
+                        container.innerHTML = '<div class="text-danger p-3">미리보기 표시 오류: ' + errorMsg + '</div>';
                     }
                 }
             } else {
@@ -1833,11 +1854,16 @@ function updateMobileHeaderPreview() {
     const previewElement = document.getElementById('mobile_header_preview');
     if (!previewElement) return;
     
-    const theme = document.getElementById('mobile_header_theme')?.value || 'theme1';
-    const menuIcon = document.getElementById('mobile_menu_icon')?.value || 'bi-list';
-    const menuDirection = document.getElementById('mobile_menu_direction')?.value || 'top-to-bottom';
-    const menuIconBorder = document.getElementById('mobile_menu_icon_border')?.checked ? '1' : '0';
-    const menuLoginWidget = document.getElementById('mobile_menu_login_widget')?.checked ? '1' : '0';
+    var mobileHeaderThemeEl = document.getElementById('mobile_header_theme');
+    var mobileMenuIconEl = document.getElementById('mobile_menu_icon');
+    var mobileMenuDirectionEl = document.getElementById('mobile_menu_direction');
+    var mobileMenuIconBorderEl = document.getElementById('mobile_menu_icon_border');
+    var mobileMenuLoginWidgetEl = document.getElementById('mobile_menu_login_widget');
+    const theme = (mobileHeaderThemeEl && mobileHeaderThemeEl.value) ? mobileHeaderThemeEl.value : 'theme1';
+    const menuIcon = (mobileMenuIconEl && mobileMenuIconEl.value) ? mobileMenuIconEl.value : 'bi-list';
+    const menuDirection = (mobileMenuDirectionEl && mobileMenuDirectionEl.value) ? mobileMenuDirectionEl.value : 'top-to-bottom';
+    const menuIconBorder = (mobileMenuIconBorderEl && mobileMenuIconBorderEl.checked) ? '1' : '0';
+    const menuLoginWidget = (mobileMenuLoginWidgetEl && mobileMenuLoginWidgetEl.checked) ? '1' : '0';
     
     // AJAX로 미리보기 HTML 가져오기
     const url = '{{ route("admin.settings.preview-mobile-header", ["site" => $site->slug]) }}';
@@ -1849,7 +1875,8 @@ function updateMobileHeaderPreview() {
         menu_login_widget: menuLoginWidget
     });
     
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    var csrfTokenMeta2 = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfTokenMeta2 ? csrfTokenMeta2.getAttribute('content') : null;
     
     previewElement.innerHTML = '<div class="text-center p-3"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div></div>';
     
