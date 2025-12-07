@@ -2520,7 +2520,19 @@ $(document).ready(function() {
     // settingsForm 제출 시 로그 및 확인
     $('#settingsForm').on('submit', function(e) {
         console.log('Settings form submitting...');
-        console.log('Form data:', {
+        var formData = new FormData(this);
+        console.log('Form action:', this.action);
+        console.log('Form method:', this.method);
+        
+        // 모든 form 데이터 확인
+        var allFormData = {};
+        for (var pair of formData.entries()) {
+            allFormData[pair[0]] = pair[1];
+        }
+        console.log('All form data:', allFormData);
+        
+        // 로고 관련 필드만 확인
+        console.log('Logo-related fields:', {
             site_logo: $('#site_logo').val(),
             site_logo_dark: $('#site_logo_dark').val(),
             site_favicon: $('#site_favicon').val(),
@@ -2528,6 +2540,14 @@ $(document).ready(function() {
             logo_type: $('#logo_type').val(),
             logo_desktop_size: $('#logo_desktop_size').val(),
             logo_mobile_size: $('#logo_mobile_size').val()
+        });
+        
+        // hidden input 요소 확인
+        console.log('Hidden input elements:', {
+            site_logo: document.getElementById('site_logo'),
+            site_logo_dark: document.getElementById('site_logo_dark'),
+            site_favicon: document.getElementById('site_favicon'),
+            og_image: document.getElementById('og_image')
         });
     });
 
