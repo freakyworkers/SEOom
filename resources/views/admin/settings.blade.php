@@ -1252,9 +1252,25 @@
         
         @php
             $masterSite = \App\Models\Site::getMasterSite();
-            $updateDomainUrl = route('user-sites.update-domain', ['site' => $masterSite ? $masterSite->slug : 'master', 'userSite' => $site->slug]);
+            // 마스터 사이트가 없으면 현재 사이트가 마스터 사이트인지 확인
+            if (!$masterSite) {
+                $masterSite = $site->isMasterSite() ? $site : null;
+            }
+            // 마스터 사이트 slug 사용 (없으면 'master' 기본값)
+            $masterSiteSlug = $masterSite ? $masterSite->slug : 'master';
+            try {
+                $updateDomainUrl = route('user-sites.update-domain', ['site' => $masterSiteSlug, 'userSite' => $site->slug]);
+            } catch (\Exception $e) {
+                // 라우트 생성 실패 시 로그 기록
+                \Log::error('Failed to generate domain update route', [
+                    'masterSiteSlug' => $masterSiteSlug,
+                    'userSiteSlug' => $site->slug,
+                    'error' => $e->getMessage()
+                ]);
+                $updateDomainUrl = '/site/' . $masterSiteSlug . '/my-sites/' . $site->slug . '/domain';
+            }
         @endphp
-        <form method="POST" action="{{ $updateDomainUrl }}" id="domainForm" class="mb-4" data-action-url="{{ $updateDomainUrl }}">
+        <form method="POST" action="{{ $updateDomainUrl }}" id="domainForm" class="mb-4" data-action-url="{{ url($updateDomainUrl) }}">
             @csrf
             @method('PUT')
             <label class="form-label fw-bold">도메인 설정</label>
@@ -1375,7 +1391,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(this);
             // data-action-url 속성에서 URL 가져오기 (없으면 action 속성 사용)
             let url = this.getAttribute('data-action-url') || this.action;
-            // 절대 URL이 아니면 변환
+            
+            // URL이 상대 경로인 경우 절대 경로로 변환
             if (url && !url.startsWith('http') && !url.startsWith('//')) {
                 if (url.startsWith('/')) {
                     url = window.location.origin + url;
@@ -1383,6 +1400,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     url = window.location.origin + '/' + url;
                 }
             }
+            
+            // 디버깅: URL 확인
+            console.log('Domain update URL:', url);
             
             fetch(url, {
                 method: 'PUT',
@@ -1398,10 +1418,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     // 응답을 복제하여 여러 번 읽을 수 있도록 함
                     const clonedResponse = response.clone();
                     return response.json().then(data => {
-                        throw new Error(data.message || '저장에 실패했습니다.');
+                        const errorMessage = data.message || data.error || '저장에 실패했습니다.';
+                        console.error('Domain update error:', data);
+                        throw new Error(errorMessage);
                     }).catch(() => {
                         return clonedResponse.text().then(text => {
-                            throw new Error('저장에 실패했습니다: ' + text.substring(0, 100));
+                            console.error('Domain update error (text):', text);
+                            // HTML 응답인 경우 에러 메시지 추출 시도
+                            const errorMatch = text.match(/<title>([^<]+)<\/title>/i) || text.match(/The\s+\w+\s+method\s+is\s+not\s+supported[^<]*/i);
+                            const errorMessage = errorMatch ? errorMatch[0] : '저장에 실패했습니다: ' + text.substring(0, 200);
+                            throw new Error(errorMessage);
                         });
                     });
                 }
