@@ -1269,8 +1269,10 @@
                 ]);
                 $updateDomainUrl = '/site/' . $masterSiteSlug . '/my-sites/' . $site->slug . '/domain';
             }
+            // 절대 URL 생성
+            $updateDomainUrlAbsolute = url($updateDomainUrl);
         @endphp
-        <form method="POST" action="{{ $updateDomainUrl }}" id="domainForm" class="mb-4" data-action-url="{{ url($updateDomainUrl) }}">
+        <form method="POST" action="{{ $updateDomainUrlAbsolute }}" id="domainForm" class="mb-4" data-action-url="{{ $updateDomainUrlAbsolute }}">
             @csrf
             @method('PUT')
             <label class="form-label fw-bold">도메인 설정</label>
@@ -1398,6 +1400,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     url = window.location.origin + url;
                 } else {
                     url = window.location.origin + '/' + url;
+                }
+            }
+            
+            // URL이 비어있거나 잘못된 경우 기본 URL 사용
+            if (!url || url.includes('/login')) {
+                // 기본 URL 생성: /site/{masterSiteSlug}/my-sites/{siteSlug}/domain
+                const currentPath = window.location.pathname;
+                const pathMatch = currentPath.match(/\/site\/([^\/]+)\/admin\/settings/);
+                if (pathMatch) {
+                    const siteSlug = pathMatch[1];
+                    // 마스터 사이트 slug 가져오기 (현재 사이트가 마스터가 아닌 경우)
+                    const masterSiteSlug = 'master'; // 기본값
+                    url = window.location.origin + '/site/' + masterSiteSlug + '/my-sites/' + siteSlug + '/domain';
+                } else {
+                    console.error('Failed to determine site slug from URL');
+                    return;
                 }
             }
             
