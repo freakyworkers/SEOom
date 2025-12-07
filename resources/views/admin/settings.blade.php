@@ -1252,8 +1252,9 @@
         
         @php
             $masterSite = \App\Models\Site::getMasterSite();
+            $updateDomainUrl = url(route('user-sites.update-domain', ['site' => $masterSite ? $masterSite->slug : 'master', 'userSite' => $site->slug], false));
         @endphp
-        <form method="POST" action="{{ route('user-sites.update-domain', ['site' => $masterSite ? $masterSite->slug : 'master', 'userSite' => $site->slug]) }}" id="domainForm" class="mb-4">
+        <form method="POST" action="{{ $updateDomainUrl }}" id="domainForm" class="mb-4">
             @csrf
             @method('PUT')
             <label class="form-label fw-bold">도메인 설정</label>
