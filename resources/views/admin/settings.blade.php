@@ -1818,11 +1818,12 @@ function updateThemePreview(type, theme) {
             container.innerHTML = '<div class="text-muted p-3">미리보기를 불러올 수 없습니다. (응답 데이터 없음)</div>';
         }
     })
-    .catch(error => {
+    .catch(function(error) {
         console.error('Preview error:', error);
         var typeEscaped = (previewType || '').replace(/'/g, "\\'");
         var themeEscaped = (previewTheme || '').replace(/'/g, "\\'");
-        container.innerHTML = '<div class="text-danger p-3">미리보기를 불러올 수 없습니다.<br><small>' + (error.message || '알 수 없는 오류') + '</small><br><button class="btn btn-sm btn-secondary mt-2" onclick="updateThemePreview(\'' + typeEscaped + '\', \'' + themeEscaped + '\')">다시 시도</button></div>';
+        var errorMessage = error && error.message ? String(error.message) : '알 수 없는 오류';
+        container.innerHTML = '<div class="text-danger p-3">미리보기를 불러올 수 없습니다.<br><small>' + errorMessage + '</small><br><button class="btn btn-sm btn-secondary mt-2" onclick="updateThemePreview(\'' + typeEscaped + '\', \'' + themeEscaped + '\')">다시 시도</button></div>';
     });
 }
 
@@ -2226,73 +2227,84 @@ $(document).ready(function() {
             contentType: false,
             timeout: 30000, // 30초 타임아웃
             success: function(response) {
-                console.log('Upload response:', response);
+                console.log('Upload response received:', response);
+                console.log('Response type:', typeof response);
+                console.log('Response keys:', Object.keys(response || {}));
                 
                 // 응답 검증
-                if (!response || response.error || !response.url) {
-                    var errorMessage = response && response.message ? response.message : '이미지 업로드에 실패했습니다.';
+                if (!response) {
+                    console.error('No response received');
+                    alert('서버 응답을 받을 수 없습니다.');
+                    resetUploadArea($uploadArea);
+                    return;
+                }
+                
+                if (response.error) {
+                    var errorMessage = response.message || '이미지 업로드에 실패했습니다.';
                     console.error('Upload error:', errorMessage);
                     alert(errorMessage);
                     resetUploadArea($uploadArea);
                     return;
                 }
                 
-                if (response.url) {
-                    console.log('Upload success, URL:', response.url);
-                    console.log('Upload area before update:', $uploadArea[0]);
-                    
-                    // 이미지 미리보기 표시
-                    $uploadArea.addClass('has-image');
-                    var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
-                    var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block !important; width: auto; height: auto; margin: 0 auto;' : 'max-height: 120px; display: block !important; width: auto; height: auto; margin: 0 auto;';
-                    
-                    // HTML 직접 생성 (더 확실한 방법)
-                    var imgHtml = '<img src="' + response.url + '" alt="' + type + '" class="image-preview" style="' + previewStyle + '">';
-                    var hiddenInputHtml = '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="' + response.url.replace(/"/g, '&quot;') + '">';
-                    
-                    console.log('Generated HTML:', imgHtml);
-                    $uploadArea.html(imgHtml + hiddenInputHtml);
-                    console.log('Upload area after update:', $uploadArea[0]);
-                    console.log('Upload area HTML:', $uploadArea.html());
-                    
-                    // 이미지 요소 확인
+                if (!response.url) {
+                    console.error('No URL in response:', response);
+                    alert('이미지 URL을 받을 수 없습니다.');
+                    resetUploadArea($uploadArea);
+                    return;
+                }
+                
+                // 이미지 미리보기 표시
+                console.log('Upload success, URL:', response.url);
+                $uploadArea.addClass('has-image');
+                
+                var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block; width: auto; height: auto; margin: 0 auto;' : 'max-height: 120px; display: block; width: auto; height: auto; margin: 0 auto;';
+                
+                // 이미지 URL 이스케이프
+                var imageUrl = String(response.url).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                var imageAlt = String(type).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                
+                // HTML 직접 생성
+                var imgHtml = '<img src="' + imageUrl + '" alt="' + imageAlt + '" class="image-preview" style="' + previewStyle + '">';
+                var hiddenInputValue = String(response.url).replace(/"/g, '&quot;');
+                var hiddenInputHtml = '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="' + hiddenInputValue + '">';
+                
+                console.log('Setting HTML to upload area');
+                $uploadArea.html(imgHtml + hiddenInputHtml);
+                
+                // 이미지 요소 확인 및 로드 이벤트
+                setTimeout(function() {
                     var $img = $uploadArea.find('.image-preview');
                     console.log('Image element found:', $img.length);
+                    
                     if ($img.length > 0) {
-                        console.log('Image src:', $img.attr('src'));
-                        console.log('Image element:', $img[0]);
+                        var imgElement = $img[0];
+                        console.log('Image src:', imgElement.src);
                         
-                        // 이미지 로드 확인
-                        $img.on('load', function() {
-                            console.log('Image loaded successfully:', response.url);
-                            console.log('Image dimensions:', $img.width(), 'x', $img.height());
+                        // 이미지 로드 이벤트
+                        $(imgElement).on('load', function() {
+                            console.log('Image loaded successfully');
                         }).on('error', function() {
-                            console.error('Image load failed:', response.url);
-                            console.error('Image element:', this);
-                            alert('이미지를 불러올 수 없습니다. URL: ' + response.url);
+                            console.error('Image load failed, URL:', imgElement.src);
+                            alert('이미지를 불러올 수 없습니다. URL: ' + imgElement.src);
                             resetUploadArea($uploadArea);
                         });
                         
-                        // 이미지가 이미 로드되어 있는 경우 (캐시)
-                        if ($img[0].complete && $img[0].naturalHeight !== 0) {
-                            console.log('Image already loaded (cached)');
+                        // 이미 캐시된 경우
+                        if (imgElement.complete && imgElement.naturalHeight > 0) {
+                            console.log('Image already loaded from cache');
                         }
                     } else {
-                        console.error('Image element not found after HTML update!');
+                        console.error('Image element not found!');
                     }
-                    
-                    // hidden input 값 업데이트 (이미 존재하는 경우)
-                    if ($input.length) {
-                        $input.val(response.url);
-                        console.log('Hidden input updated:', $input.val());
-                    }
-                    
-                    console.log('Preview update completed');
-                } else {
-                    console.error('No URL in response');
-                    alert('이미지 업로드에 실패했습니다.');
-                    resetUploadArea($uploadArea);
+                }, 100);
+                
+                // hidden input 값 업데이트
+                if ($input.length) {
+                    $input.val(response.url);
                 }
+                
+                console.log('Preview update completed');
             },
             error: function(xhr, status, error) {
                 console.error('AJAX error - Status:', status, 'Error:', error);
