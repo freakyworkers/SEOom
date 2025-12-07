@@ -219,8 +219,19 @@ class SiteUsageService
     {
         $currentMonth = now()->startOfMonth()->toDateString();
         
+        // Get traffic_reset_date as string for comparison
+        $resetDate = null;
+        if ($site->traffic_reset_date) {
+            // If it's a Carbon instance, format it; if it's a string, use it directly
+            if (is_object($site->traffic_reset_date) && method_exists($site->traffic_reset_date, 'format')) {
+                $resetDate = $site->traffic_reset_date->format('Y-m-d');
+            } else {
+                $resetDate = is_string($site->traffic_reset_date) ? $site->traffic_reset_date : (string) $site->traffic_reset_date;
+            }
+        }
+        
         // If traffic_reset_date is null or different from current month, reset
-        if (!$site->traffic_reset_date || $site->traffic_reset_date->format('Y-m-d') !== $currentMonth) {
+        if (!$resetDate || $resetDate !== $currentMonth) {
             $site->update([
                 'traffic_used_mb' => 0,
                 'traffic_reset_date' => $currentMonth,

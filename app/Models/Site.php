@@ -32,6 +32,7 @@ class Site extends Model
         'status' => 'string',
         'is_master_site' => 'boolean',
         'nameservers' => 'array',
+        'traffic_reset_date' => 'date',
     ];
 
     /**
