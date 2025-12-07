@@ -172,5 +172,38 @@ class Board extends Model
     {
         return $this->hasMany(Topic::class)->ordered();
     }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Update storage when board is created, updated, or deleted
+        static::saved(function ($board) {
+            if ($board->site_id && $board->site) {
+                try {
+                    dispatch(function() use ($board) {
+                        app(\App\Services\SiteUsageService::class)->recalculateStorage($board->site);
+                    })->afterResponse();
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to update storage for board: ' . $e->getMessage());
+                }
+            }
+        });
+
+        static::deleted(function ($board) {
+            if ($board->site_id && $board->site) {
+                try {
+                    dispatch(function() use ($board) {
+                        app(\App\Services\SiteUsageService::class)->recalculateStorage($board->site);
+                    })->afterResponse();
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to update storage for deleted board: ' . $e->getMessage());
+                }
+            }
+        });
+    }
 }
 

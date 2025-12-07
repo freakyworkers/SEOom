@@ -80,5 +80,38 @@ class Comment extends Model
     {
         return $query->whereNull('parent_id');
     }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Update storage when comment is created, updated, or deleted
+        static::saved(function ($comment) {
+            if ($comment->site_id && $comment->site) {
+                try {
+                    dispatch(function() use ($comment) {
+                        app(\App\Services\SiteUsageService::class)->recalculateStorage($comment->site);
+                    })->afterResponse();
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to update storage for comment: ' . $e->getMessage());
+                }
+            }
+        });
+
+        static::deleted(function ($comment) {
+            if ($comment->site_id && $comment->site) {
+                try {
+                    dispatch(function() use ($comment) {
+                        app(\App\Services\SiteUsageService::class)->recalculateStorage($comment->site);
+                    })->afterResponse();
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to update storage for deleted comment: ' . $e->getMessage());
+                }
+            }
+        });
+    }
 }
 

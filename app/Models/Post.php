@@ -93,6 +93,41 @@ class Post extends Model
     }
 
     /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Update storage when post is created, updated, or deleted
+        static::saved(function ($post) {
+            if ($post->site_id && $post->site) {
+                try {
+                    // Recalculate storage asynchronously to avoid blocking the request
+                    dispatch(function() use ($post) {
+                        app(\App\Services\SiteUsageService::class)->recalculateStorage($post->site);
+                    })->afterResponse();
+                } catch (\Exception $e) {
+                    // Silently fail to avoid breaking the request
+                    \Log::warning('Failed to update storage for post: ' . $e->getMessage());
+                }
+            }
+        });
+
+        static::deleted(function ($post) {
+            if ($post->site_id && $post->site) {
+                try {
+                    dispatch(function() use ($post) {
+                        app(\App\Services\SiteUsageService::class)->recalculateStorage($post->site);
+                    })->afterResponse();
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to update storage for deleted post: ' . $e->getMessage());
+                }
+            }
+        });
+    }
+
+    /**
      * Get top-level comments (not replies).
      */
     public function topLevelComments()

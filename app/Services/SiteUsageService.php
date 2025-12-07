@@ -99,16 +99,19 @@ class SiteUsageService
 
     /**
      * Recalculate and update storage usage for a site
+     * Includes both file storage and database storage
      * 
      * @param Site $site
-     * @return int Storage usage in MB
+     * @return float Storage usage in MB
      */
-    public function recalculateStorage(Site $site): int
+    public function recalculateStorage(Site $site): float
     {
         $totalSize = 0;
         $basePath = storage_path('app/public');
         
         try {
+            // ===== FILE STORAGE =====
+            
             // 1. Post Attachments - 데이터베이스에서 파일 크기 합계
             $postAttachmentsSize = \App\Models\PostAttachment::whereHas('post', function($query) use ($site) {
                 $query->where('site_id', $site->id);
@@ -171,12 +174,182 @@ class SiteUsageService
                 }
             }
             
+            // ===== DATABASE STORAGE =====
+            
+            // 8. Posts - 게시글 내용 (title, content, code, bookmark_items 등)
+            $postsSize = DB::table('posts')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(title), 0) + 
+                    COALESCE(LENGTH(content), 0) + 
+                    COALESCE(LENGTH(code), 0) + 
+                    COALESCE(LENGTH(bookmark_items), 0) + 
+                    COALESCE(LENGTH(thumbnail_path), 0) +
+                    COALESCE(LENGTH(external_url), 0) +
+                    COALESCE(LENGTH(link), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $postsSize;
+            
+            // 9. Boards - 게시판 설정 데이터
+            $boardsSize = DB::table('boards')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(name), 0) + 
+                    COALESCE(LENGTH(description), 0) + 
+                    COALESCE(LENGTH(post_template), 0) + 
+                    COALESCE(LENGTH(footer_content), 0) + 
+                    COALESCE(LENGTH(banned_words), 0) + 
+                    COALESCE(LENGTH(qa_statuses), 0) +
+                    COALESCE(LENGTH(header_image_path), 0) +
+                    COALESCE(LENGTH(seo_title), 0) +
+                    COALESCE(LENGTH(seo_description), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $boardsSize;
+            
+            // 10. Comments - 댓글 내용
+            $commentsSize = DB::table('comments')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(COALESCE(LENGTH(content), 0)) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $commentsSize;
+            
+            // 11. Custom Codes - 커스텀 코드
+            $customCodesSize = DB::table('custom_codes')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(COALESCE(LENGTH(code), 0)) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $customCodesSize;
+            
+            // 12. Custom Pages - 커스텀 페이지 내용
+            $customPagesSize = DB::table('custom_pages')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(title), 0) + 
+                    COALESCE(LENGTH(content), 0) + 
+                    COALESCE(LENGTH(slug), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $customPagesSize;
+            
+            // 13. Site Settings - 사이트 설정
+            $siteSettingsSize = DB::table('site_settings')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(key), 0) + 
+                    COALESCE(LENGTH(value), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $siteSettingsSize;
+            
+            // 14. Menus - 메뉴 설정
+            $menusSize = DB::table('menus')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(name), 0) + 
+                    COALESCE(LENGTH(url), 0) + 
+                    COALESCE(LENGTH(icon), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $menusSize;
+            
+            // 15. Sidebar Widgets - 사이드바 위젯 설정
+            $sidebarWidgetsSize = DB::table('sidebar_widgets')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(type), 0) + 
+                    COALESCE(LENGTH(title), 0) + 
+                    COALESCE(LENGTH(content), 0) + 
+                    COALESCE(LENGTH(config), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $sidebarWidgetsSize;
+            
+            // 16. Main Widgets - 메인 위젯 설정
+            $mainWidgetsSize = DB::table('main_widgets')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(type), 0) + 
+                    COALESCE(LENGTH(title), 0) + 
+                    COALESCE(LENGTH(content), 0) + 
+                    COALESCE(LENGTH(config), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $mainWidgetsSize;
+            
+            // 17. Messages - 쪽지 내용
+            $messagesSize = DB::table('messages')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(subject), 0) + 
+                    COALESCE(LENGTH(content), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $messagesSize;
+            
+            // 18. Notifications - 알림 데이터
+            $notificationsSize = DB::table('notifications')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(type), 0) + 
+                    COALESCE(LENGTH(data), 0) + 
+                    COALESCE(LENGTH(read_at), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $notificationsSize;
+            
+            // 19. Users - 사용자 프로필 데이터 (사이트별)
+            $usersSize = DB::table('users')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(name), 0) + 
+                    COALESCE(LENGTH(email), 0) + 
+                    COALESCE(LENGTH(bio), 0) + 
+                    COALESCE(LENGTH(avatar_path), 0) +
+                    COALESCE(LENGTH(social_id), 0) +
+                    COALESCE(LENGTH(social_provider), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $usersSize;
+            
+            // 20. Contact Forms & Submissions - 컨텍트폼 데이터
+            $contactFormsSize = DB::table('contact_forms')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(name), 0) + 
+                    COALESCE(LENGTH(config), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $contactFormsSize;
+            
+            $contactSubmissionsSize = DB::table('contact_form_submissions')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(data), 0) + 
+                    COALESCE(LENGTH(ip_address), 0) + 
+                    COALESCE(LENGTH(user_agent), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $contactSubmissionsSize;
+            
+            // 21. Maps - 지도 설정
+            $mapsSize = DB::table('maps')
+                ->where('site_id', $site->id)
+                ->selectRaw('SUM(
+                    COALESCE(LENGTH(name), 0) + 
+                    COALESCE(LENGTH(address), 0) + 
+                    COALESCE(LENGTH(config), 0)
+                ) as total_size')
+                ->value('total_size') ?? 0;
+            $totalSize += $mapsSize;
+            
         } catch (\Exception $e) {
             Log::error('Error calculating storage usage for site ' . $site->id . ': ' . $e->getMessage());
         }
         
-        // Convert bytes to MB
-        $storageUsedMB = (int) round($totalSize / 1024 / 1024);
+        // Convert bytes to MB (keep 4 decimal places for accuracy)
+        $storageUsedMB = round($totalSize / 1024 / 1024, 4);
         
         // Update site
         $site->update(['storage_used_mb' => $storageUsedMB]);
