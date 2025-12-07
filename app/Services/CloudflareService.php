@@ -191,7 +191,7 @@ class CloudflareService
         $records = [
             [
                 'type' => 'A',
-                'name' => '@',
+                'name' => '', // 빈 문자열로 보내면 Cloudflare가 루트 도메인으로 인식
                 'content' => $serverIp,
                 'proxied' => true,
                 'ttl' => 1, // Auto
