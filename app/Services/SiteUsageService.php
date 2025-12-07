@@ -27,12 +27,16 @@ class SiteUsageService
             $this->checkAndResetTraffic($site);
 
             // Convert bytes to MB and add to current usage
-            $mbToAdd = round($bytes / 1024 / 1024, 2);
+            // Use 4 decimal places for more accurate tracking of small traffic
+            $mbToAdd = round($bytes / 1024 / 1024, 4);
             
-            // Use atomic update to prevent race conditions
-            DB::table('sites')
-                ->where('id', $siteId)
-                ->increment('traffic_used_mb', $mbToAdd);
+            // Only update if mbToAdd is greater than 0 (avoid unnecessary updates)
+            if ($mbToAdd > 0) {
+                // Use atomic update to prevent race conditions
+                DB::table('sites')
+                    ->where('id', $siteId)
+                    ->increment('traffic_used_mb', $mbToAdd);
+            }
 
             Log::debug('Traffic updated', [
                 'site_id' => $siteId,
