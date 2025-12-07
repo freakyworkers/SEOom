@@ -248,27 +248,6 @@
 
 @push('styles')
 <style>
-    /* 내 홈페이지 카드 높이 문제 해결 */
-    main.container .row.position-relative {
-        min-height: 1px !important;
-    }
-    main.container .col-md-9,
-    main.container .col-12 {
-        min-height: 1px !important;
-    }
-    .card.shadow-sm {
-        display: block !important;
-        min-height: auto !important;
-    }
-    .card-body {
-        display: block !important;
-        min-height: auto !important;
-    }
-    .row {
-        display: flex !important;
-        flex-wrap: wrap !important;
-    }
-    
     a.btn.btn-outline-secondary.plan-change-btn,
     a.btn.btn-outline-secondary.server-upgrade-btn {
         background-color: #f8f9fa !important;
