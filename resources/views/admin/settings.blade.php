@@ -1678,7 +1678,17 @@ document.addEventListener('DOMContentLoaded', function() {
             // 즉시 미리보기 표시
             $uploadArea.addClass('has-image');
             var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block; width: auto; height: auto; margin: 0 auto;' : 'max-height: 120px; display: block; width: auto; height: auto; margin: 0 auto;';
-            var imageAlt = type === 'logo' ? '로고' : (type === 'logo_dark' ? '로고 (다크모드)' : (type === 'favicon' ? '파비콘' : 'OG 이미지'));
+            
+            // 이미지 alt 텍스트 설정
+            var imageAlt = '로고';
+            if (type === 'logo_dark') {
+                imageAlt = '로고 (다크모드)';
+            } else if (type === 'favicon') {
+                imageAlt = '파비콘';
+            } else if (type === 'og_image') {
+                imageAlt = 'OG 이미지';
+            }
+            
             var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
             
             // 기존 내용 제거하고 미리보기 이미지와 파일 input 추가
@@ -1876,6 +1886,18 @@ document.addEventListener('DOMContentLoaded', function() {
         return false;
     });
 
+    // 이미지 업로드 영역 클릭 시 파일 선택 창 열기
+    $(document).on('click', '.image-upload-area', function(e) {
+        // 이미지나 파일 input을 클릭한 경우는 제외
+        if ($(e.target).hasClass('image-preview') || $(e.target).hasClass('hidden-file-input')) {
+            return;
+        }
+        var $fileInput = $(this).find('.hidden-file-input');
+        if ($fileInput.length > 0) {
+            $fileInput[0].click();
+        }
+    });
+
     // 파일 input 클릭 시 이벤트 전파 중지 (이미지 업로드 영역 클릭 이벤트와 충돌 방지)
     $(document).on('click', '.hidden-file-input', function(e) {
         e.stopPropagation();
@@ -1886,7 +1908,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $(document).on('change', '.hidden-file-input', function(e) {
         e.stopPropagation();
         console.log('File input changed');
-        var file = e.target.files[0];
+        var file = this.files[0];
         if (!file) {
             console.log('No file selected');
             return;
@@ -1895,6 +1917,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('File selected:', file.name, file.size, file.type);
         var $uploadArea = $(this).closest('.image-upload-area');
         console.log('Upload area found:', $uploadArea.length);
+        if ($uploadArea.length === 0) {
+            console.error('Upload area not found!');
+            return;
+        }
         uploadImage(file, $uploadArea);
     });
 
