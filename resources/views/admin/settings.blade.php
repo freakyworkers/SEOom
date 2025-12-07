@@ -2521,18 +2521,15 @@ $(document).ready(function() {
     $('#settingsForm').on('submit', function(e) {
         console.log('Settings form submitting...');
         var formData = new FormData(this);
-        console.log('Form action:', this.action);
-        console.log('Form method:', this.method);
         
         // 모든 form 데이터 확인
         var allFormData = {};
         for (var pair of formData.entries()) {
             allFormData[pair[0]] = pair[1];
         }
-        console.log('All form data:', allFormData);
         
         // 로고 관련 필드만 확인
-        console.log('Logo-related fields:', {
+        var logoFields = {
             site_logo: $('#site_logo').val(),
             site_logo_dark: $('#site_logo_dark').val(),
             site_favicon: $('#site_favicon').val(),
@@ -2540,15 +2537,49 @@ $(document).ready(function() {
             logo_type: $('#logo_type').val(),
             logo_desktop_size: $('#logo_desktop_size').val(),
             logo_mobile_size: $('#logo_mobile_size').val()
-        });
+        };
         
-        // hidden input 요소 확인
-        console.log('Hidden input elements:', {
-            site_logo: document.getElementById('site_logo'),
-            site_logo_dark: document.getElementById('site_logo_dark'),
-            site_favicon: document.getElementById('site_favicon'),
-            og_image: document.getElementById('og_image')
-        });
+        // localStorage에 로그 저장 (새로고침 후에도 확인 가능)
+        var logData = {
+            timestamp: new Date().toISOString(),
+            formAction: this.action,
+            formMethod: this.method,
+            allFormData: allFormData,
+            logoFields: logoFields,
+            hiddenInputs: {
+                site_logo: $('#site_logo').val(),
+                site_logo_dark: $('#site_logo_dark').val(),
+                site_favicon: $('#site_favicon').val(),
+                og_image: $('#og_image').val()
+            }
+        };
+        
+        localStorage.setItem('lastSettingsFormSubmit', JSON.stringify(logData));
+        console.log('Settings form submit data saved to localStorage');
+        console.log('Form action:', this.action);
+        console.log('Form method:', this.method);
+        console.log('All form data:', allFormData);
+        console.log('Logo-related fields:', logoFields);
+    });
+    
+    // 페이지 로드 시 이전 제출 로그 확인
+    $(document).ready(function() {
+        var lastSubmit = localStorage.getItem('lastSettingsFormSubmit');
+        if (lastSubmit) {
+            try {
+                var logData = JSON.parse(lastSubmit);
+                console.log('=== Last Settings Form Submit (from localStorage) ===');
+                console.log('Timestamp:', logData.timestamp);
+                console.log('Form Action:', logData.formAction);
+                console.log('Form Method:', logData.formMethod);
+                console.log('All Form Data:', logData.allFormData);
+                console.log('Logo Fields:', logData.logoFields);
+                console.log('Hidden Inputs:', logData.hiddenInputs);
+                console.log('==================================================');
+            } catch (e) {
+                console.error('Error parsing last submit log:', e);
+            }
+        }
     });
 
     // 로고 타입 변경 시 알림 표시/숨김 및 이미지 업로드 영역 제어
