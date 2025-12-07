@@ -1229,14 +1229,12 @@
     $isFreePlan = $hasSubscription && $site->subscription->plan && $site->subscription->plan->billing_type === 'free';
     $canUseDomain = $hasSubscription && $isActive && !$isFreePlan;
     
-    // 네임서버 정보 가져오기
+    // 네임서버 정보 가져오기 (실제 저장된 네임서버만 사용, 기본값 사용 안 함)
     $nameservers = $site->nameservers ?? [];
     if (is_string($nameservers)) {
         $nameservers = json_decode($nameservers, true) ?? [];
     }
-    if (empty($nameservers)) {
-        $nameservers = config('app.nameservers', ['ns1.cloudflare.com', 'ns2.cloudflare.com']);
-    }
+    // 기본값을 사용하지 않음 - 실제 네임서버가 있을 때만 표시
 @endphp
 
 @if($canUseDomain)
