@@ -527,10 +527,9 @@ class UserMySitesController extends Controller
         
         // 권한 확인: 사이트를 생성한 사용자이거나, 해당 사이트의 관리자이거나, 마스터 사용자
         $isSiteCreator = $userSite->created_by === $user->id;
-        $isSiteAdmin = $userSite->users()
-            ->where('id', $user->id)
-            ->where('role', 'admin')
-            ->exists();
+        
+        // 해당 사이트의 관리자인지 확인 (사이트에 속하고 role이 'admin'인 경우)
+        $isSiteAdmin = ($user->site_id === $userSite->id) && ($user->role === 'admin' || $user->canManage());
         
         if (!$isMasterUser && !$isSiteCreator && !$isSiteAdmin) {
             abort(403, '이 사이트를 변경할 권한이 없습니다.');
