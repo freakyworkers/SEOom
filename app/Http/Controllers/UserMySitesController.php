@@ -581,6 +581,16 @@ class UserMySitesController extends Controller
             ? '도메인이 성공적으로 연결되었습니다.' . ($nameservers ? ' 네임서버 정보를 확인하세요.' : '') 
             : '도메인이 제거되었습니다.';
 
+        // 요청이 어디서 왔는지 확인하여 적절한 곳으로 리다이렉트
+        // 사이트 설정 페이지에서 온 경우 현재 사이트 설정으로, 그 외에는 내 사이트 전체보기로
+        $referer = $request->headers->get('referer');
+        if ($referer && strpos($referer, '/admin/settings') !== false) {
+            // 사이트 설정 페이지에서 온 경우
+            return redirect()->route('admin.settings', ['site' => $userSite->slug])
+                ->with('success', $message);
+        }
+        
+        // 그 외의 경우 (내 사이트 전체보기 페이지에서 온 경우)
         return redirect()->route('users.my-sites', ['site' => $site->slug])
             ->with('success', $message);
     }
