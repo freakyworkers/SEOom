@@ -81,7 +81,14 @@
         width: 100px;
     }
     .hidden-file-input {
-        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 10;
     }
     .theme-preview {
         margin-top: 1rem;
@@ -2239,52 +2246,24 @@ $(document).ready(function() {
         }
     }
 
-    // 이미지 업로드 영역 클릭 핸들러 - 간단하고 확실한 방법
-    $(document).on('click', '.image-upload-area', function(e) {
-        var target = e.target;
-        var $area = $(this);
-        
-        // 이미지 미리보기 클릭은 제외 (삭제 기능)
-        if ($(target).hasClass('image-preview') || $(target).closest('.image-preview').length > 0) {
-            return;
-        }
-        
-        // 파일 input 자체를 클릭한 경우는 제외
-        if ($(target).hasClass('hidden-file-input') || target.tagName === 'INPUT') {
-            return;
-        }
-        
-        // 파일 input 찾아서 클릭
-        var fileInput = $area.find('.hidden-file-input')[0];
-        if (fileInput) {
-            e.preventDefault();
-            e.stopPropagation();
-            // 즉시 클릭 (setTimeout 제거)
-            fileInput.click();
-        }
-    });
-
-    // 업로드 버튼 직접 클릭 핸들러 (우선순위 높음)
-    $(document).on('click', '.image-upload-btn', function(e) {
+    // 이미지 미리보기 클릭 시 삭제 (파일 input 클릭은 브라우저가 자동 처리)
+    $(document).on('click', '.image-preview', function(e) {
         e.preventDefault();
         e.stopPropagation();
         var $area = $(this).closest('.image-upload-area');
-        var fileInput = $area.find('.hidden-file-input')[0];
-        if (fileInput) {
-            // 즉시 클릭
-            fileInput.click();
-        }
-        return false;
-    });
-    
-    // 업로드 버튼 내부 아이콘/텍스트 클릭 핸들러
-    $(document).on('click', '.image-upload-btn i, .image-upload-btn span', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var $area = $(this).closest('.image-upload-area');
-        var fileInput = $area.find('.hidden-file-input')[0];
-        if (fileInput) {
-            fileInput.click();
+        if (confirm('이미지를 삭제하시겠습니까?')) {
+            var inputName = $area.data('input');
+            var $input = $('#' + inputName);
+            var type = $area.data('type');
+            var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
+            var uploadBtnStyle = type === 'favicon' ? 'style="padding: 0.5rem;"><i class="bi bi-cloud-upload"></i><span style="font-size: 0.75rem;">업로드</span>' : '><i class="bi bi-cloud-upload"></i><span>업로드</span>';
+            
+            $area.removeClass('has-image');
+            $area.html(
+                '<div class="image-upload-btn" ' + uploadBtnStyle + '</div>' +
+                '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">' +
+                '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="">'
+            );
         }
         return false;
     });
