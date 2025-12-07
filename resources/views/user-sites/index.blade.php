@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '내 홈페이지 - ' . $site->name)
+@section('title', '내 홈페이지' . (isset($site) && $site ? ' - ' . $site->name : ''))
 
 @section('content')
 <div class="container py-5">
