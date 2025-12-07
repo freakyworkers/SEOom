@@ -193,14 +193,14 @@ class CloudflareService
                 'type' => 'A',
                 'name' => '', // 빈 문자열로 보내면 Cloudflare가 루트 도메인으로 인식
                 'content' => $serverIp,
-                'proxied' => true,
+                'proxied' => false, // 프록시 비활성화 (서버에 SSL이 없을 수 있으므로)
                 'ttl' => 1, // Auto
             ],
             [
                 'type' => 'A',
                 'name' => 'www',
                 'content' => $serverIp,
-                'proxied' => true,
+                'proxied' => false, // 프록시 비활성화
                 'ttl' => 1, // Auto
             ],
         ];
