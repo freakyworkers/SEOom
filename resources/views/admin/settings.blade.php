@@ -1221,6 +1221,105 @@
         </form>
     </div>
 </div>
+
+{{-- 도메인 연결 섹션 (유료 플랜만) --}}
+@php
+    $hasSubscription = $site->subscription;
+    $isActive = $hasSubscription && $site->subscription->status === 'active';
+    $isFreePlan = $hasSubscription && $site->subscription->plan && $site->subscription->plan->billing_type === 'free';
+    $canUseDomain = $hasSubscription && $isActive && !$isFreePlan;
+    
+    // 네임서버 정보 가져오기
+    $nameservers = $site->nameservers ?? [];
+    if (is_string($nameservers)) {
+        $nameservers = json_decode($nameservers, true) ?? [];
+    }
+    if (empty($nameservers)) {
+        $nameservers = config('app.nameservers', ['ns1.cloudflare.com', 'ns2.cloudflare.com']);
+    }
+@endphp
+
+@if($canUseDomain)
+<div class="card shadow-sm settings-section">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-globe me-2"></i>도메인 연결</h5>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>도메인 연결 안내:</strong> 커스텀 도메인을 연결하려면 도메인 제공업체에서 네임서버를 변경해야 합니다.
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label fw-bold">현재 도메인</label>
+            <div class="input-group">
+                <input type="text" 
+                       class="form-control" 
+                       value="{{ $site->domain ?: '도메인이 연결되지 않았습니다' }}" 
+                       readonly>
+                @if($site->domain)
+                    <a href="https://{{ $site->domain }}" target="_blank" class="btn btn-outline-primary">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>확인
+                    </a>
+                @endif
+            </div>
+            <small class="form-text text-muted">
+                @if($site->domain)
+                    현재 연결된 도메인: <strong>{{ $site->domain }}</strong>
+                @else
+                    서브도메인: <strong>{{ $site->slug }}.{{ config('app.master_domain', 'seoomweb.com') }}</strong>
+                @endif
+            </small>
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                <i class="bi bi-server me-1"></i>네임서버 정보
+                <button type="button" 
+                        class="btn btn-sm btn-link p-0 ms-1" 
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="top"
+                        title="도메인 제공업체(가비아, 후이즈 등)에서 이 네임서버로 변경하세요.">
+                    <i class="bi bi-question-circle text-primary"></i>
+                </button>
+            </label>
+            <div class="card bg-light">
+                <div class="card-body">
+                    @if(!empty($nameservers))
+                        @foreach($nameservers as $index => $nameserver)
+                            <div class="mb-2 d-flex align-items-center">
+                                <strong class="me-2">네임서버 {{ $index + 1 }}:</strong>
+                                <code class="flex-grow-1 ms-2" style="font-size: 1.1em; background-color: white; padding: 0.5rem; border-radius: 0.25rem;">{{ $nameserver }}</code>
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-secondary ms-2" 
+                                        onclick="copyToClipboard('{{ $nameserver }}', this)">
+                                    <i class="bi bi-clipboard me-1"></i>복사
+                                </button>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="text-muted">
+                            네임서버 정보를 불러오는 중입니다...
+                        </div>
+                    @endif
+                </div>
+            </div>
+            <small class="form-text text-muted mt-2">
+                <strong>도메인 제공업체별 설정 위치:</strong><br>
+                • <strong>가비아:</strong> 마이 가비아 → 도메인 → 네임서버 설정<br>
+                • <strong>후이즈:</strong> 도메인 관리 → 네임서버 설정<br>
+                • <strong>기타:</strong> 도메인 관리 페이지에서 "네임서버 설정" 또는 "네임서버 변경" 메뉴 찾기
+            </small>
+        </div>
+        
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle me-1"></i>
+            <strong>팁:</strong> 네임서버를 변경하면 DNS 레코드를 하나하나 설정할 필요 없이 자동으로 연결됩니다. 변경 후 적용까지 보통 5분~24시간 정도 소요됩니다.
+        </div>
+    </div>
+</div>
+@endif
+
 @endsection
 
 @push('scripts')

@@ -220,12 +220,11 @@
                                                             <span class="btn btn-sm btn-outline-secondary flex-fill disabled">슬러그 없음</span>
                                                         @endif
                                                     </div>
-                                                    <button type="button" 
-                                                            class="btn btn-sm btn-outline-info w-100" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#domainModal{{ $userSite->id }}">
-                                                        <i class="bi bi-globe me-1"></i>도메인 연결
-                                                    </button>
+                                                    @if($hasSubscription && !$isFreePlan)
+                                                        <a href="{{ route('admin.settings', ['site' => $userSite->slug]) }}" class="btn btn-sm btn-outline-info w-100">
+                                                            <i class="bi bi-globe me-1"></i>도메인 연결
+                                                        </a>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
