@@ -2523,6 +2523,5 @@ $(document).ready(function() {
             document.body.removeChild(textArea);
         });
     };
-});
 </script>
 @endpush
