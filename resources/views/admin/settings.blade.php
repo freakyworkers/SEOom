@@ -1567,6 +1567,47 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    // 네임서버 복사 기능 (버튼 스타일 변경)
+    window.copyNameserverToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(function() {
+            const originalHtml = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-check me-1"></i>복사됨';
+            button.classList.remove('btn-outline-secondary');
+            button.classList.add('btn-success');
+            
+            setTimeout(function() {
+                button.innerHTML = originalHtml;
+                button.classList.remove('btn-success');
+                button.classList.add('btn-outline-secondary');
+            }, 2000);
+        }).catch(function(err) {
+            // 클립보드 API가 지원되지 않는 경우 대체 방법
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                const originalHtml = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check me-1"></i>복사됨';
+                button.classList.remove('btn-outline-secondary');
+                button.classList.add('btn-success');
+                
+                setTimeout(function() {
+                    button.innerHTML = originalHtml;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-outline-secondary');
+                }, 2000);
+            } catch (err) {
+                alert('복사에 실패했습니다. 수동으로 복사해주세요: ' + text);
+            }
+            document.body.removeChild(textArea);
+        });
+    };
 });
 
 // 테마 미리보기 데이터
