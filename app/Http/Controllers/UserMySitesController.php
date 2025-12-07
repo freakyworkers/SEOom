@@ -22,10 +22,15 @@ class UserMySitesController extends Controller
     /**
      * Display a listing of the user's sites.
      */
-    public function index(Site $site)
+    public function index(Request $request, Site $site = null)
     {
+        // 도메인 기반 접근 시 미들웨어에서 설정한 site 사용
+        if (!$site) {
+            $site = $request->attributes->get('site');
+        }
+        
         // 마스터 사이트인지 확인
-        if (!$site->isMasterSite()) {
+        if (!$site || !$site->isMasterSite()) {
             abort(404);
         }
 
