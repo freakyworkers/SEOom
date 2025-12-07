@@ -2339,6 +2339,9 @@ $(document).ready(function() {
                 '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="">'
             );
             
+            // 새로 생성된 업로드 영역에 이벤트 핸들러 재등록
+            setupImageUploadArea($uploadArea[0]);
+            
             // hidden input 값 초기화
             if ($input.length) {
                 $input.val('');
