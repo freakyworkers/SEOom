@@ -2268,8 +2268,12 @@ $(document).ready(function() {
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
-            // 네이티브 DOM 요소로 직접 클릭
-            fileInput.click();
+            
+            // 약간의 지연을 두고 클릭 (다른 이벤트와의 충돌 방지)
+            setTimeout(function() {
+                // 네이티브 DOM 요소로 직접 클릭
+                fileInput.click();
+            }, 10);
         }
     });
     
