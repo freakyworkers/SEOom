@@ -1784,12 +1784,22 @@
                 }
                 
                 // form 내부의 hidden input 값 업데이트
+                var $settingsForm = $('#settingsForm');
+                var inputInForm = $settingsForm.find('#' + inputName).length > 0;
+                
                 if ($input.length) {
                     $input.val(response.url);
                     console.log('Hidden input updated:', inputName, response.url);
                     console.log('Hidden input value after update:', $input.val());
                     console.log('Hidden input element:', $input[0]);
-                    console.log('Hidden input is in form:', $('#settingsForm').find('#' + inputName).length > 0);
+                    console.log('Hidden input is in form:', inputInForm);
+                    
+                    // form 내부에 없으면 form으로 이동
+                    if (!inputInForm && $settingsForm.length > 0) {
+                        console.log('Moving hidden input into form...');
+                        $input.detach().appendTo($settingsForm);
+                        console.log('Hidden input moved to form. Now in form:', $settingsForm.find('#' + inputName).length > 0);
+                    }
                 } else {
                     console.error('Hidden input not found by ID:', inputName, 'Trying to find by name attribute...');
                     // name 속성으로도 찾기 시도
@@ -1797,19 +1807,30 @@
                     if ($inputByName.length) {
                         $inputByName.val(response.url);
                         console.log('Hidden input found by name and updated:', inputName, response.url);
-                        console.log('Hidden input element:', $inputByName[0]);
-                        console.log('Hidden input is in form:', $('#settingsForm').find('input[name="' + inputName + '"]').length > 0);
+                        var inputByNameInForm = $settingsForm.find('input[name="' + inputName + '"]').length > 0;
+                        console.log('Hidden input is in form:', inputByNameInForm);
+                        
+                        // form 내부에 없으면 form으로 이동
+                        if (!inputByNameInForm && $settingsForm.length > 0) {
+                            console.log('Moving hidden input into form...');
+                            $inputByName.detach().appendTo($settingsForm);
+                            console.log('Hidden input moved to form. Now in form:', $settingsForm.find('input[name="' + inputName + '"]').length > 0);
+                        }
                     } else {
                         console.error('Hidden input not found by name either:', inputName);
                         // 직접 생성하여 form에 추가
-                        var $newInput = $('<input>', {
-                            type: 'hidden',
-                            name: inputName,
-                            id: inputName,
-                            value: response.url
-                        });
-                        $('#settingsForm').append($newInput);
-                        console.log('Created new hidden input and added to form:', inputName, response.url);
+                        if ($settingsForm.length > 0) {
+                            var $newInput = $('<input>', {
+                                type: 'hidden',
+                                name: inputName,
+                                id: inputName,
+                                value: response.url
+                            });
+                            $settingsForm.append($newInput);
+                            console.log('Created new hidden input and added to form:', inputName, response.url);
+                        } else {
+                            console.error('settingsForm not found!');
+                        }
                     }
                 }
                 
