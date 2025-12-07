@@ -2243,29 +2243,33 @@ $(document).ready(function() {
     // document에 직접 이벤트 위임하여 동적으로 추가되는 요소도 자동 처리
     $(document).on('click', '.image-upload-area', function(e) {
         var target = e.target;
-        var $area = $(this);
+        var area = this; // 네이티브 DOM 요소
         
         // 이미지 미리보기 클릭은 제외 (삭제 기능)
-        if ($(target).hasClass('image-preview') || $(target).closest('.image-preview').length) {
+        if (target.classList && target.classList.contains('image-preview')) {
+            return;
+        }
+        // 이미지 미리보기 내부 요소 클릭도 제외
+        if (target.closest && target.closest('.image-preview')) {
             return;
         }
         
         // 파일 input 자체를 클릭한 경우는 제외 (브라우저 기본 동작 사용)
-        if ($(target).hasClass('hidden-file-input') || $(target).is('input[type="file"]')) {
+        if (target.classList && target.classList.contains('hidden-file-input')) {
+            return;
+        }
+        if (target.tagName === 'INPUT' && target.type === 'file') {
             return;
         }
         
         // 업로드 버튼, 아이콘, 텍스트, 또는 빈 영역을 클릭한 경우 파일 선택 창 열기
-        var $fileInput = $area.find('.hidden-file-input');
-        if ($fileInput.length > 0) {
+        var fileInput = area.querySelector('.hidden-file-input');
+        if (fileInput) {
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
             // 네이티브 DOM 요소로 직접 클릭
-            var fileInputElement = $fileInput[0];
-            if (fileInputElement) {
-                fileInputElement.click();
-            }
+            fileInput.click();
         }
     });
     
