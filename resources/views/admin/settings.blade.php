@@ -1395,11 +1395,14 @@
 
 @push('scripts')
 <script>
-// 라우트 URL 변수 설정 (JavaScript 오류 방지)
-var uploadImageRoute = @json(route('admin.settings.upload-image', ['site' => $site->slug]));
+(function() {
+    'use strict';
+    
+    // 라우트 URL 변수 설정 (JavaScript 오류 방지)
+    var uploadImageRoute = @json(route('admin.settings.upload-image', ['site' => $site->slug]));
 
-// 도메인 저장 폼 AJAX 처리
-document.addEventListener('DOMContentLoaded', function() {
+    // 도메인 저장 폼 AJAX 처리
+    document.addEventListener('DOMContentLoaded', function() {
     const domainForm = document.getElementById('domainForm');
     if (domainForm) {
         domainForm.addEventListener('submit', async function(e) {
@@ -1995,7 +1998,8 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.removeChild(textArea);
         });
     };
-});
+    }); // DOMContentLoaded 끝
+})(); // 즉시 실행 함수 끝
 
 // 테마 미리보기 데이터
 const themePreviews = {
