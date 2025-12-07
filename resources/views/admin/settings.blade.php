@@ -1731,17 +1731,17 @@ function updateThemePreview(type, theme) {
         },
         credentials: 'same-origin'
     })
-    .then(response => {
+    .then(function(response) {
         console.log('Response status:', response.status);
         if (!response.ok) {
-            return response.text().then(text => {
+            return response.text().then(function(text) {
                 console.error('Error response:', text);
                 throw new Error('Network response was not ok: ' + response.status + ' - ' + text.substring(0, 100));
             });
         }
         return response.json();
     })
-    .then(data => {
+    .then(function(data) {
         console.log('Preview response received - hasData:', !!data, 'hasHtml:', !!(data && data.html), 'htmlLength:', data && data.html ? data.html.length : 0);
         
         if (data && data.html) {
@@ -1756,7 +1756,7 @@ function updateThemePreview(type, theme) {
                     // CSS 파싱 오류 확인을 위해 스타일 태그 검사
                     const styleTags = tempDiv.querySelectorAll('style');
                     let hasStyleError = false;
-                    styleTags.forEach(style => {
+                    styleTags.forEach(function(style) {
                         try {
                             // 스타일이 유효한지 확인
                             const testEl = document.createElement('div');
@@ -1777,7 +1777,7 @@ function updateThemePreview(type, theme) {
                         console.log('Preview updated successfully, HTML length:', htmlContent.length);
                         
                         // 스타일이 제대로 적용되었는지 확인
-                        setTimeout(() => {
+                        setTimeout(function() {
                             const navLinks = container.querySelectorAll('.nav-link');
                             console.log('Nav links found:', navLinks.length);
                             if (navLinks.length > 0) {
