@@ -2243,13 +2243,10 @@ $(document).ready(function() {
 
     // 이미지 업로드 영역 클릭 핸들러 함수 (네이티브 JavaScript 사용)
     function setupImageUploadArea(element) {
-        // 기존 이벤트 리스너 제거
-        var newElement = element.cloneNode(true);
-        element.parentNode.replaceChild(newElement, element);
-        element = newElement;
+        if (!element) return;
         
-        // 네이티브 이벤트 리스너 추가
-        element.addEventListener('click', function(e) {
+        // 기존 이벤트 리스너가 있으면 제거 (중복 방지)
+        var newHandler = function(e) {
             var target = e.target;
             
             // 이미지 미리보기 클릭은 제외 (삭제 기능)
@@ -2270,39 +2267,57 @@ $(document).ready(function() {
                 e.stopImmediatePropagation();
                 fileInput.click();
             }
-        }, true); // capture phase에서 실행하여 다른 이벤트보다 먼저 처리
+        };
+        
+        // 기존 핸들러 제거를 위해 데이터 속성 사용
+        if (element._uploadHandler) {
+            element.removeEventListener('click', element._uploadHandler, true);
+        }
+        element._uploadHandler = newHandler;
+        element.addEventListener('click', newHandler, true); // capture phase에서 실행
     }
     
     // 페이지 로드 시 모든 업로드 영역에 이벤트 핸들러 등록
-    document.querySelectorAll('.image-upload-area').forEach(function(area) {
-        setupImageUploadArea(area);
-    });
+    function initImageUploadAreas() {
+        document.querySelectorAll('.image-upload-area').forEach(function(area) {
+            setupImageUploadArea(area);
+        });
+    }
+    
+    // DOMContentLoaded 또는 이미 로드된 경우 즉시 실행
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initImageUploadAreas);
+    } else {
+        initImageUploadAreas();
+    }
     
     // MutationObserver로 동적으로 추가되는 요소 감지
-    var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            mutation.addedNodes.forEach(function(node) {
-                if (node.nodeType === 1) { // Element node
-                    if (node.classList && node.classList.contains('image-upload-area')) {
-                        setupImageUploadArea(node);
+    if (typeof MutationObserver !== 'undefined') {
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1) { // Element node
+                        if (node.classList && node.classList.contains('image-upload-area')) {
+                            setupImageUploadArea(node);
+                        }
+                        // 자식 요소 중 업로드 영역 찾기
+                        var uploadAreas = node.querySelectorAll && node.querySelectorAll('.image-upload-area');
+                        if (uploadAreas && uploadAreas.length > 0) {
+                            uploadAreas.forEach(function(area) {
+                                setupImageUploadArea(area);
+                            });
+                        }
                     }
-                    // 자식 요소 중 업로드 영역 찾기
-                    var uploadAreas = node.querySelectorAll && node.querySelectorAll('.image-upload-area');
-                    if (uploadAreas) {
-                        uploadAreas.forEach(function(area) {
-                            setupImageUploadArea(area);
-                        });
-                    }
-                }
+                });
             });
         });
-    });
-    
-    // body 전체 감시
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+        
+        // body 전체 감시
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
 
     // 파일 input 클릭 시 이벤트 전파 중지 (이미지 업로드 영역 클릭 이벤트와 충돌 방지)
     $(document).on('click', '.hidden-file-input', function(e) {
