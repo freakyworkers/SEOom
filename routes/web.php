@@ -616,6 +616,33 @@ Route::middleware('web')->group(function () {
         ->name('social.callback');
 });
 
+// 도메인 기반 접근을 위한 라우트 그룹 (미들웨어에서 site가 설정된 경우)
+Route::middleware(['block.ip', 'verify.site.user'])->group(function () {
+    Route::get('/my-sites', function (Request $request) {
+        $site = $request->attributes->get('site');
+        if (!$site || !$site->isMasterSite()) {
+            abort(404);
+        }
+        return app(\App\Http\Controllers\UserMySitesController::class)->index($request, $site);
+    })->name('users.my-sites.domain-based');
+    
+    Route::get('/profile', function (Request $request) {
+        $site = $request->attributes->get('site');
+        if (!$site) {
+            abort(404);
+        }
+        return app(\App\Http\Controllers\UserController::class)->profile($site);
+    })->middleware('auth')->name('users.profile.domain-based');
+    
+    Route::get('/create-site', function (Request $request) {
+        $site = $request->attributes->get('site');
+        if (!$site || !$site->isMasterSite()) {
+            abort(404);
+        }
+        return app(\App\Http\Controllers\UserSiteController::class)->selectPlan($site);
+    })->middleware('auth')->name('user-sites.select-plan.domain-based');
+});
+
 // Site-based routes (멀티테넌트 구조 - slug 사용)
 Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->group(function () {
     
