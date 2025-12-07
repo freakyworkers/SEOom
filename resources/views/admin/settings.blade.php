@@ -1385,10 +1385,12 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => {
                 if (!response.ok) {
+                    // 응답을 복제하여 여러 번 읽을 수 있도록 함
+                    const clonedResponse = response.clone();
                     return response.json().then(data => {
                         throw new Error(data.message || '저장에 실패했습니다.');
                     }).catch(() => {
-                        return response.text().then(text => {
+                        return clonedResponse.text().then(text => {
                             throw new Error('저장에 실패했습니다: ' + text.substring(0, 100));
                         });
                     });
