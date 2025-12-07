@@ -3,17 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Site;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class RobotsController extends Controller
 {
     /**
      * Generate robots.txt
+     * 도메인 기반으로 사이트를 자동으로 찾습니다.
      */
-    public function index(Site $site)
+    public function index(Request $request)
     {
+        // 도메인 기반으로 사이트 찾기
+        $site = $request->attributes->get('site');
+        
+        // 사이트를 찾을 수 없으면 404
+        if (!$site) {
+            abort(404, 'Site not found');
+        }
+        
         $customRobotsTxt = $site->getSetting('robots_txt', '');
-        $sitemapUrl = route('sitemap', ['site' => $site->slug]);
+        
+        // 깔끔한 사이트맵 URL 사용
+        $sitemapUrl = url('/sitemap.xml');
         
         // 사용자가 커스텀 robots.txt를 입력한 경우 사용
         if (!empty($customRobotsTxt)) {
@@ -37,10 +49,20 @@ class RobotsController extends Controller
     /**
      * Download robots.txt as file
      */
-    public function download(Site $site)
+    public function download(Request $request)
     {
+        // 도메인 기반으로 사이트 찾기
+        $site = $request->attributes->get('site');
+        
+        // 사이트를 찾을 수 없으면 404
+        if (!$site) {
+            abort(404, 'Site not found');
+        }
+        
         $customRobotsTxt = $site->getSetting('robots_txt', '');
-        $sitemapUrl = route('sitemap', ['site' => $site->slug]);
+        
+        // 깔끔한 사이트맵 URL 사용
+        $sitemapUrl = url('/sitemap.xml');
         
         // 사용자가 커스텀 robots.txt를 입력한 경우 사용
         if (!empty($customRobotsTxt)) {

@@ -5,17 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\Site;
 use App\Models\Board;
 use App\Models\Post;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class SitemapController extends Controller
 {
     /**
      * Generate sitemap.xml
+     * 도메인 기반으로 사이트를 자동으로 찾습니다.
      */
-    public function index(Site $site)
+    public function index(Request $request)
     {
+        // 도메인 기반으로 사이트 찾기
+        $site = $request->attributes->get('site');
+        
+        // 사이트를 찾을 수 없으면 404
+        if (!$site) {
+            abort(404, 'Site not found');
+        }
+        
         $baseUrl = url('/');
-        $siteUrl = route('home', ['site' => $site->slug]);
+        
+        // 도메인 기반 접근인 경우 직접 URL 사용, 아니면 route 사용
+        if ($site->domain && $request->getHost() === $site->domain) {
+            $siteUrl = url('/');
+        } else {
+            $siteUrl = route('home', ['site' => $site->slug]);
+        }
         
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";

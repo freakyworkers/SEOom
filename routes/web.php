@@ -52,6 +52,10 @@ Route::get('/', function (Request $request) {
     return view('welcome');
 });
 
+// SEO Routes - 도메인 기반 (site/{site} prefix 없이)
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/robots.txt', [\App\Http\Controllers\RobotsController::class, 'index'])->name('robots');
+
 // 마스터 사이트 인증 라우트 (루트 경로)
 Route::middleware('web')->group(function () {
     $masterSite = \App\Models\Site::getMasterSite();
@@ -663,10 +667,8 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
     Route::post('/api/chat/report', [ChatController::class, 'reportMessage'])->name('api.chat.report');
     Route::post('/api/chat/block', [ChatController::class, 'blockUser'])->name('api.chat.block');
     
-    // SEO Routes
-    Route::get('/robots.txt', [\App\Http\Controllers\RobotsController::class, 'index'])->name('robots');
+    // SEO Routes (sitemap.xml과 robots.txt는 루트 레벨로 이동)
     Route::get('/robots.txt/download', [\App\Http\Controllers\RobotsController::class, 'download'])->name('robots.download');
-    Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
     Route::get('/rss.xml', [\App\Http\Controllers\RssController::class, 'index'])->name('rss');
     Route::get('/ads.txt', [\App\Http\Controllers\AdsController::class, 'index'])->name('ads');
 
