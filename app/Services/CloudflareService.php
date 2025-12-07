@@ -47,6 +47,9 @@ class CloudflareService
                 // 기존 Zone에도 DNS 레코드 추가 (없는 경우)
                 $this->addDnsRecords($zoneId, $domain);
                 
+                // SSL/TLS 모드를 "가변"으로 설정
+                $this->setSslMode($zoneId, 'flexible');
+                
                 return [
                     'zone_id' => $zoneId,
                     'nameservers' => $nameservers,
@@ -73,6 +76,9 @@ class CloudflareService
                     
                     // Add DNS records
                     $this->addDnsRecords($zoneId, $domain);
+                    
+                    // SSL/TLS 모드를 "가변"으로 설정
+                    $this->setSslMode($zoneId, 'flexible');
                     
                     return [
                         'zone_id' => $zoneId,
