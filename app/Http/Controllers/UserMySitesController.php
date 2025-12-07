@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use App\Models\Plan;
 use App\Models\AddonProduct;
 use App\Models\UserAddon;
+use App\Models\User;
 use App\Services\CloudflareService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -607,6 +608,70 @@ class UserMySitesController extends Controller
 
         return redirect()->route('users.my-sites', ['site' => $site->slug])
             ->with('success', '도메인이 제거되었습니다.');
+    }
+
+    /**
+     * SSO to site admin - 일반 사용자가 자신이 만든 사이트의 관리자로 자동 로그인
+     */
+    public function ssoToSiteAdmin(Site $site, Site $userSite)
+    {
+        $user = Auth::user();
+        
+        // 마스터 사이트인지 확인
+        if (!$site || !$site->isMasterSite()) {
+            abort(404);
+        }
+        
+        // 사용자가 소유한 사이트인지 확인
+        if ($userSite->created_by !== $user->id) {
+            abort(403, '이 사이트에 대한 접근 권한이 없습니다.');
+        }
+        
+        // 해당 사이트의 관리자 계정 찾기
+        $admin = $userSite->users()
+            ->where('role', 'admin')
+            ->first();
+        
+        // 관리자 계정이 없으면 현재 사용자의 이메일로 관리자 계정 찾기 또는 생성
+        if (!$admin) {
+            $admin = $userSite->users()
+                ->where('email', $user->email)
+                ->first();
+            
+            if (!$admin) {
+                // 관리자 계정 생성
+                $admin = User::create([
+                    'site_id' => $userSite->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'username' => $user->username,
+                    'nickname' => $user->nickname ?? '운영자',
+                    'password' => \Illuminate\Support\Facades\Hash::make(uniqid()), // 임시 비밀번호
+                    'role' => 'admin',
+                ]);
+            } else {
+                // 역할을 관리자로 업데이트
+                if ($admin->role !== 'admin') {
+                    $admin->update(['role' => 'admin']);
+                }
+            }
+        }
+        
+        // 기존 세션에 마스터 사용자 정보 저장 (일반 사용자에서 온 경우)
+        session(['is_sso_user' => true, 'sso_user_id' => $user->id, 'sso_from_site' => $site->id]);
+        
+        // 관리자 계정으로 로그인
+        Auth::login($admin);
+        
+        // 세션 재생성
+        request()->session()->regenerate();
+        
+        // 세션에 SSO 정보 다시 저장 (세션 재생성 후)
+        session(['is_sso_user' => true, 'sso_user_id' => $user->id, 'sso_from_site' => $site->id]);
+        
+        // 사이트 설정 페이지로 리다이렉트
+        return redirect()->route('admin.settings', ['site' => $userSite->slug])
+            ->with('success', '관리자 페이지로 이동했습니다.');
     }
 }
 

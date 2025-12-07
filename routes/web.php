@@ -706,6 +706,7 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
         Route::post('/my-sites/change-plan', [\App\Http\Controllers\UserMySitesController::class, 'changePlan'])->name('user-sites.change-plan-process');
         Route::get('/my-sites/{userSite}/server-upgrade', [\App\Http\Controllers\UserMySitesController::class, 'showServerUpgrade'])->name('user-sites.server-upgrade');
         Route::get('/my-sites/{userSite}/addons', [\App\Http\Controllers\UserMySitesController::class, 'showAddons'])->name('user-sites.addons');
+        Route::get('/my-sites/{userSite}/sso', [\App\Http\Controllers\UserMySitesController::class, 'ssoToSiteAdmin'])->name('user-sites.sso');
         Route::put('/my-sites/{userSite}/domain', [\App\Http\Controllers\UserMySitesController::class, 'updateDomain'])->name('user-sites.update-domain');
         Route::delete('/my-sites/{userSite}/domain', [\App\Http\Controllers\UserMySitesController::class, 'removeDomain'])->name('user-sites.remove-domain');
         Route::get('/point-history', [\App\Http\Controllers\UserController::class, 'pointHistory'])->name('users.point-history');

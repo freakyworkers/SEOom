@@ -221,7 +221,7 @@
                                                         @endif
                                                     </div>
                                                     @if($hasSubscription && !$isFreePlan)
-                                                        <a href="{{ route('admin.settings', ['site' => $userSite->slug]) }}" class="btn btn-sm btn-outline-info w-100">
+                                                        <a href="{{ route('user-sites.sso', ['site' => $site->slug, 'userSite' => $userSite->slug]) }}" class="btn btn-sm btn-outline-info w-100">
                                                             <i class="bi bi-globe me-1"></i>도메인 연결
                                                         </a>
                                                     @endif
