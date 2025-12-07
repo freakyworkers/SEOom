@@ -1395,6 +1395,9 @@
 
 @push('scripts')
 <script>
+// 라우트 URL 변수 설정 (JavaScript 오류 방지)
+var uploadImageRoute = @json(route('admin.settings.upload-image', ['site' => $site->slug]));
+
 // 도메인 저장 폼 AJAX 처리
 document.addEventListener('DOMContentLoaded', function() {
     const domainForm = document.getElementById('domainForm');
@@ -1720,11 +1723,11 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('_token', csrfToken);
         
         console.log('FormData created, CSRF token:', csrfToken ? 'exists' : 'missing');
-        console.log('Starting AJAX upload to:', '{{ route("admin.settings.upload-image", ["site" => $site->slug]) }}');
+        console.log('Starting AJAX upload to:', uploadImageRoute);
 
         // AJAX 업로드
         $.ajax({
-            url: '{{ route("admin.settings.upload-image", ["site" => $site->slug]) }}',
+            url: uploadImageRoute,
             method: 'POST',
             data: formData,
             processData: false,
