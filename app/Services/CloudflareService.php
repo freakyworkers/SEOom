@@ -136,9 +136,30 @@ class CloudflareService
             if ($response->successful()) {
                 $data = $response->json();
                 if ($data['success'] ?? false) {
-                    return $data['result']['name_servers'] ?? [];
+                    $nameservers = $data['result']['name_servers'] ?? [];
+                    
+                    // 디버깅: 네임서버 정보 로깅
+                    if (empty($nameservers)) {
+                        Log::warning('Cloudflare zone has no nameservers', [
+                            'zone_id' => $zoneId,
+                            'response_data' => $data['result'] ?? null,
+                        ]);
+                    } else {
+                        Log::info('Cloudflare nameservers retrieved', [
+                            'zone_id' => $zoneId,
+                            'nameservers' => $nameservers,
+                        ]);
+                    }
+                    
+                    return $nameservers;
                 }
             }
+
+            Log::error('Failed to get nameservers from Cloudflare', [
+                'zone_id' => $zoneId,
+                'status' => $response->status(),
+                'response' => $response->json(),
+            ]);
 
             return [];
         } catch (\Exception $e) {
