@@ -1252,9 +1252,9 @@
         
         @php
             $masterSite = \App\Models\Site::getMasterSite();
-            $updateDomainUrl = url(route('user-sites.update-domain', ['site' => $masterSite ? $masterSite->slug : 'master', 'userSite' => $site->slug], false));
+            $updateDomainUrl = route('user-sites.update-domain', ['site' => $masterSite ? $masterSite->slug : 'master', 'userSite' => $site->slug]);
         @endphp
-        <form method="POST" action="{{ $updateDomainUrl }}" id="domainForm" class="mb-4">
+        <form method="POST" action="{{ $updateDomainUrl }}" id="domainForm" class="mb-4" data-action-url="{{ $updateDomainUrl }}">
             @csrf
             @method('PUT')
             <label class="form-label fw-bold">도메인 설정</label>
@@ -1373,12 +1373,15 @@ document.addEventListener('DOMContentLoaded', function() {
             errorDiv.textContent = '';
             
             const formData = new FormData(this);
-            // action URL을 절대 경로로 변환
-            let url = this.action;
-            if (url.startsWith('/')) {
-                url = window.location.origin + url;
-            } else if (!url.startsWith('http')) {
-                url = window.location.origin + '/' + url;
+            // data-action-url 속성에서 URL 가져오기 (없으면 action 속성 사용)
+            let url = this.getAttribute('data-action-url') || this.action;
+            // 절대 URL이 아니면 변환
+            if (url && !url.startsWith('http') && !url.startsWith('//')) {
+                if (url.startsWith('/')) {
+                    url = window.location.origin + url;
+                } else {
+                    url = window.location.origin + '/' + url;
+                }
             }
             
             fetch(url, {
