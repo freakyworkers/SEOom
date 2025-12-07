@@ -185,9 +185,15 @@
     
     <!-- 검색 엔진 인증 메타 태그 -->
     @php
-        $googleVerification = $site ? $site->getSetting('google_site_verification', '') : '';
-        $naverVerification = $site ? $site->getSetting('naver_site_verification', '') : '';
-        $daumVerification = $site ? $site->getSetting('daum_site_verification', '') : '';
+        try {
+            $googleVerification = (isset($site) && $site && $site->id) ? $site->getSetting('google_site_verification', '') : '';
+            $naverVerification = (isset($site) && $site && $site->id) ? $site->getSetting('naver_site_verification', '') : '';
+            $daumVerification = (isset($site) && $site && $site->id) ? $site->getSetting('daum_site_verification', '') : '';
+        } catch (\Exception $e) {
+            $googleVerification = '';
+            $naverVerification = '';
+            $daumVerification = '';
+        }
     @endphp
     @if(!empty($googleVerification))
         <meta name="google-site-verification" content="{{ $googleVerification }}">
