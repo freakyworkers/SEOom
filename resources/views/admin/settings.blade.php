@@ -2147,20 +2147,35 @@ $(document).ready(function() {
 
     // 이미지 업로드 함수
     function uploadImage(file, $uploadArea) {
-        if (!file) return;
+        console.log('uploadImage called', file, $uploadArea);
+        if (!file) {
+            console.error('No file provided');
+            return;
+        }
+        if (!$uploadArea || $uploadArea.length === 0) {
+            console.error('No upload area found');
+            return;
+        }
 
         var type = $uploadArea.data('type');
         var inputName = $uploadArea.data('input');
         var $input = $('#' + inputName);
+        
+        console.log('Upload params:', { type: type, inputName: inputName });
 
         // FormData 생성
         var formData = new FormData();
         formData.append('image', file);
         formData.append('type', type);
-        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+        formData.append('_token', csrfToken);
+        
+        console.log('FormData created, CSRF token:', csrfToken ? 'exists' : 'missing');
 
         // 업로드 중 표시
         $uploadArea.html('<div class="image-upload-btn"><i class="bi bi-hourglass-split"></i><span>업로드 중...</span></div>');
+        
+        console.log('Starting AJAX upload to:', '{{ route("admin.settings.upload-image", ["site" => $site->slug]) }}');
 
         // AJAX 업로드
         $.ajax({
@@ -2188,12 +2203,33 @@ $(document).ready(function() {
                     // 이미지 미리보기 표시
                     $uploadArea.addClass('has-image');
                     var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
-                    var previewStyle = type === 'favicon' ? 'style="max-height: 60px;"' : '';
+                    var previewStyle = type === 'favicon' ? 'style="max-height: 60px; display: block; width: 100%;"' : 'style="display: block; width: 100%; max-height: 120px;"';
+                    
+                    // 이미지 요소 생성
+                    var $img = $('<img>', {
+                        src: response.url,
+                        alt: type,
+                        class: 'image-preview',
+                        style: previewStyle
+                    });
+                    
+                    // 이미지 로드 성공/실패 처리
+                    $img.on('load', function() {
+                        console.log('Image loaded successfully:', response.url);
+                    }).on('error', function() {
+                        console.error('Image load failed:', response.url);
+                        alert('이미지를 불러올 수 없습니다. URL: ' + response.url);
+                        resetUploadArea($uploadArea);
+                    });
                     
                     // HTML 재생성 (이미지가 있을 때는 파일 input 제거 - 이미지 클릭 시 동적 생성)
-                    $uploadArea.html(
-                        '<img src="' + response.url + '" alt="' + type + '" class="image-preview" ' + previewStyle + '>' +
-                        '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="' + response.url + '">'
+                    $uploadArea.html('').append($img).append(
+                        $('<input>', {
+                            type: 'hidden',
+                            name: inputName,
+                            id: inputName,
+                            value: response.url
+                        })
                     );
                     
                     // hidden input 값 업데이트 (이미 존재하는 경우)
@@ -2201,16 +2237,19 @@ $(document).ready(function() {
                         $input.val(response.url);
                     }
                     
-                    console.log('Preview updated successfully');
+                    console.log('Preview HTML updated, waiting for image load...');
                 } else {
                     console.error('No URL in response');
                     alert('이미지 업로드에 실패했습니다.');
                     resetUploadArea($uploadArea);
                 }
             },
-            error: function(xhr) {
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', { xhr: xhr, status: status, error: error });
+                console.error('Response:', xhr.responseText);
                 var errorMessage = '이미지 업로드에 실패했습니다.';
                 if (xhr.responseJSON) {
+                    console.error('Response JSON:', xhr.responseJSON);
                     if (xhr.responseJSON.message) {
                         errorMessage = xhr.responseJSON.message;
                     } else if (xhr.responseJSON.error) {
@@ -2226,8 +2265,10 @@ $(document).ready(function() {
                     errorMessage = '파일 크기가 너무 큽니다. (최대 5MB)';
                 } else if (xhr.status === 422) {
                     errorMessage = '파일 형식이 올바르지 않습니다. (JPEG, PNG, JPG, GIF, WEBP, ICO만 가능)';
+                } else if (xhr.status === 500) {
+                    errorMessage = '서버 오류가 발생했습니다. 관리자에게 문의해주세요.';
                 }
-                console.error('Image upload error:', xhr);
+                console.error('Final error message:', errorMessage);
                 alert(errorMessage);
                 resetUploadArea($uploadArea);
             }
@@ -2325,10 +2366,16 @@ $(document).ready(function() {
     // 파일 선택 시 업로드 (이벤트 위임 사용)
     $(document).on('change', '.hidden-file-input', function(e) {
         e.stopPropagation();
+        console.log('File input changed');
         var file = e.target.files[0];
-        if (!file) return;
-
+        if (!file) {
+            console.log('No file selected');
+            return;
+        }
+        
+        console.log('File selected:', file.name, file.size, file.type);
         var $uploadArea = $(this).closest('.image-upload-area');
+        console.log('Upload area found:', $uploadArea.length);
         uploadImage(file, $uploadArea);
     });
 
