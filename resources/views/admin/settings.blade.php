@@ -1250,27 +1250,46 @@
             <strong>도메인 연결 안내:</strong> 커스텀 도메인을 연결하려면 도메인 제공업체에서 네임서버를 변경해야 합니다.
         </div>
         
-        <div class="mb-4">
-            <label class="form-label fw-bold">현재 도메인</label>
-            <div class="input-group">
+        <form method="POST" action="{{ route('user-sites.update-domain', ['site' => \App\Models\Site::getMasterSite()->slug, 'userSite' => $site->slug]) }}" class="mb-4">
+            @csrf
+            @method('PUT')
+            <label class="form-label fw-bold">도메인 설정</label>
+            <div class="input-group mb-2">
                 <input type="text" 
-                       class="form-control" 
-                       value="{{ $site->domain ?: '도메인이 연결되지 않았습니다' }}" 
-                       readonly>
-                @if($site->domain)
-                    <a href="https://{{ $site->domain }}" target="_blank" class="btn btn-outline-primary">
-                        <i class="bi bi-box-arrow-up-right me-1"></i>확인
-                    </a>
-                @endif
+                       class="form-control @error('domain') is-invalid @enderror" 
+                       name="domain" 
+                       id="domain"
+                       value="{{ old('domain', $site->domain) }}"
+                       placeholder="예: example.com">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>저장
+                </button>
             </div>
+            @error('domain')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
             <small class="form-text text-muted">
                 @if($site->domain)
-                    현재 연결된 도메인: <strong>{{ $site->domain }}</strong>
+                    현재 연결된 도메인: <strong>{{ $site->domain }}</strong> | 
+                    <a href="https://{{ $site->domain }}" target="_blank" class="text-decoration-none">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>확인
+                    </a>
                 @else
-                    서브도메인: <strong>{{ $site->slug }}.{{ config('app.master_domain', 'seoomweb.com') }}</strong>
+                    서브도메인: <strong>{{ $site->slug }}.{{ config('app.master_domain', 'seoomweb.com') }}</strong><br>
+                    <strong>도메인을 입력하고 저장하면 자동으로 Cloudflare에 추가되고 DNS 레코드가 생성됩니다.</strong>
                 @endif
             </small>
+        </form>
+        
+        @if($site->domain)
+        <div class="mb-4">
+            <label class="form-label fw-bold">현재 도메인</label>
+            <div class="alert alert-info mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                도메인: <strong>{{ $site->domain }}</strong>
+            </div>
         </div>
+        @endif
         
         <div class="mb-4">
             <label class="form-label fw-bold">
