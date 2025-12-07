@@ -2200,41 +2200,32 @@ $(document).ready(function() {
                     // 이미지 미리보기 표시
                     $uploadArea.addClass('has-image');
                     var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
-                    var previewStyle = type === 'favicon' ? 'style="max-height: 60px; display: block; width: 100%;"' : 'style="display: block; width: 100%; max-height: 120px;"';
+                    var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block; width: 100%;' : 'display: block; width: 100%; max-height: 120px;';
                     
-                    // 이미지 요소 생성
-                    var $img = $('<img>', {
-                        src: response.url,
-                        alt: type,
-                        class: 'image-preview',
-                        style: previewStyle
-                    });
+                    // HTML 직접 생성 (더 확실한 방법)
+                    var imgHtml = '<img src="' + response.url.replace(/'/g, "\\'") + '" alt="' + type + '" class="image-preview" style="' + previewStyle + '">';
+                    var hiddenInputHtml = '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="' + response.url.replace(/"/g, '&quot;') + '">';
                     
-                    // 이미지 로드 성공/실패 처리
-                    $img.on('load', function() {
-                        console.log('Image loaded successfully:', response.url);
-                    }).on('error', function() {
-                        console.error('Image load failed:', response.url);
-                        alert('이미지를 불러올 수 없습니다. URL: ' + response.url);
-                        resetUploadArea($uploadArea);
-                    });
+                    $uploadArea.html(imgHtml + hiddenInputHtml);
                     
-                    // HTML 재생성 (이미지가 있을 때는 파일 input 제거 - 이미지 클릭 시 동적 생성)
-                    $uploadArea.html('').append($img).append(
-                        $('<input>', {
-                            type: 'hidden',
-                            name: inputName,
-                            id: inputName,
-                            value: response.url
-                        })
-                    );
+                    // 이미지 로드 확인
+                    var $img = $uploadArea.find('.image-preview');
+                    if ($img.length) {
+                        $img.on('load', function() {
+                            console.log('Image loaded successfully:', response.url);
+                        }).on('error', function() {
+                            console.error('Image load failed:', response.url);
+                            alert('이미지를 불러올 수 없습니다. URL: ' + response.url);
+                            resetUploadArea($uploadArea);
+                        });
+                    }
                     
                     // hidden input 값 업데이트 (이미 존재하는 경우)
                     if ($input.length) {
                         $input.val(response.url);
                     }
                     
-                    console.log('Preview HTML updated, waiting for image load...');
+                    console.log('Preview HTML updated');
                 } else {
                     console.error('No URL in response');
                     alert('이미지 업로드에 실패했습니다.');
@@ -2376,32 +2367,6 @@ $(document).ready(function() {
         uploadImage(file, $uploadArea);
     });
 
-    // 이미지 클릭 시 삭제 옵션 (이벤트 위임 사용)
-    $(document).on('click', '.image-preview', function(e) {
-        e.stopPropagation();
-        if (confirm('이미지를 삭제하시겠습니까?')) {
-            var $uploadArea = $(this).closest('.image-upload-area');
-            var inputName = $uploadArea.data('input');
-            var $input = $('#' + inputName);
-            var type = $uploadArea.data('type');
-            var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
-            var uploadBtnStyle = type === 'favicon' ? 'style="padding: 0.5rem;"><i class="bi bi-cloud-upload"></i><span style="font-size: 0.75rem;">업로드</span>' : '><i class="bi bi-cloud-upload"></i><span>업로드</span>';
-            
-            $uploadArea.removeClass('has-image');
-            $uploadArea.html(
-                '<div class="image-upload-btn" ' + uploadBtnStyle + '</div>' +
-                '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">' +
-                '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="">'
-            );
-            
-            // 이벤트 위임을 사용하므로 자동으로 처리됨
-            
-            // hidden input 값 초기화
-            if ($input.length) {
-                $input.val('');
-            }
-        }
-    });
     
     // 네임서버 복사 기능 (버튼 스타일 변경)
     window.copyNameserverToClipboard = function(text, button) {
