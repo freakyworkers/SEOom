@@ -660,6 +660,21 @@
 
 @push('scripts')
 <script>
+    // 페이지 로드 후 높이 강제 계산
+    document.addEventListener('DOMContentLoaded', function() {
+        const card = document.querySelector('.card.shadow-sm');
+        if (card && card.offsetHeight === 0) {
+            // 강제로 높이 계산
+            card.style.minHeight = '1px';
+            const cardBody = card.querySelector('.card-body');
+            if (cardBody) {
+                cardBody.style.minHeight = '1px';
+            }
+            // 레이아웃 재계산
+            void card.offsetHeight;
+        }
+    });
+    
     // 네임서버 복사 기능
     function copyToClipboard(text, button) {
         navigator.clipboard.writeText(text).then(function() {
