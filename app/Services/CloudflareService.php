@@ -41,9 +41,14 @@ class CloudflareService
             // Check if domain already exists
             $existingZone = $this->getZoneByDomain($domain);
             if ($existingZone) {
-                $nameservers = $this->getNameservers($existingZone['id']);
+                $zoneId = $existingZone['id'];
+                $nameservers = $this->getNameservers($zoneId);
+                
+                // 기존 Zone에도 DNS 레코드 추가 (없는 경우)
+                $this->addDnsRecords($zoneId, $domain);
+                
                 return [
-                    'zone_id' => $existingZone['id'],
+                    'zone_id' => $zoneId,
                     'nameservers' => $nameservers,
                     'status' => 'existing',
                 ];
@@ -202,10 +207,31 @@ class CloudflareService
 
         foreach ($records as $record) {
             try {
-                Http::withHeaders([
+                $response = Http::withHeaders([
                     'Authorization' => 'Bearer ' . $this->apiToken,
                     'Content-Type' => 'application/json',
                 ])->post("{$this->apiUrl}/zones/{$zoneId}/dns_records", $record);
+                
+                if ($response->successful()) {
+                    $data = $response->json();
+                    if ($data['success'] ?? false) {
+                        Log::info('DNS record added successfully', [
+                            'zone_id' => $zoneId,
+                            'record' => $record,
+                        ]);
+                    } else {
+                        // 레코드가 이미 존재하는 경우 등 에러 처리
+                        $errors = $data['errors'] ?? [];
+                        $errorMessages = array_column($errors, 'message');
+                        if (!empty($errorMessages) && !str_contains(implode(' ', $errorMessages), 'already exists')) {
+                            Log::warning('Failed to add DNS record', [
+                                'zone_id' => $zoneId,
+                                'record' => $record,
+                                'errors' => $errorMessages,
+                            ]);
+                        }
+                    }
+                }
             } catch (\Exception $e) {
                 Log::error('Exception while adding DNS record', [
                     'zone_id' => $zoneId,
