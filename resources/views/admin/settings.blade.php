@@ -2554,6 +2554,32 @@ $(document).ready(function() {
     // settingsForm 제출 시 로그 및 확인
     $('#settingsForm').on('submit', function(e) {
         console.log('Settings form submitting...');
+        
+        // 폼 제출 전에 hidden input이 form 내부에 있는지 확인하고 없으면 추가
+        var logoFieldsToCheck = ['site_logo', 'site_logo_dark', 'site_favicon', 'og_image'];
+        logoFieldsToCheck.forEach(function(fieldName) {
+            var $input = $('#' + fieldName);
+            if ($input.length > 0) {
+                var inForm = $('#settingsForm').find('#' + fieldName).length > 0;
+                if (!inForm) {
+                    console.log('Moving ' + fieldName + ' into form before submit...');
+                    $input.detach().appendTo('#settingsForm');
+                }
+                console.log(fieldName + ' in form:', $('#settingsForm').find('#' + fieldName).length > 0, 'value:', $input.val());
+            } else {
+                // hidden input이 없으면 name으로 찾기
+                var $inputByName = $('input[name="' + fieldName + '"]');
+                if ($inputByName.length > 0) {
+                    var inFormByName = $('#settingsForm').find('input[name="' + fieldName + '"]').length > 0;
+                    if (!inFormByName) {
+                        console.log('Moving ' + fieldName + ' (by name) into form before submit...');
+                        $inputByName.detach().appendTo('#settingsForm');
+                    }
+                    console.log(fieldName + ' (by name) in form:', $('#settingsForm').find('input[name="' + fieldName + '"]').length > 0, 'value:', $inputByName.val());
+                }
+            }
+        });
+        
         var formData = new FormData(this);
         
         // 모든 form 데이터 확인
@@ -2572,6 +2598,32 @@ $(document).ready(function() {
             logo_desktop_size: $('#logo_desktop_size').val(),
             logo_mobile_size: $('#logo_mobile_size').val()
         };
+        
+        // site_logo가 allFormData에 없으면 추가
+        if (!allFormData.hasOwnProperty('site_logo') && logoFields.site_logo) {
+            console.log('site_logo not in formData, adding it...');
+            var $siteLogoInput = $('#site_logo');
+            if ($siteLogoInput.length === 0) {
+                // hidden input이 없으면 생성
+                $siteLogoInput = $('<input>', {
+                    type: 'hidden',
+                    name: 'site_logo',
+                    id: 'site_logo',
+                    value: logoFields.site_logo
+                });
+                $('#settingsForm').append($siteLogoInput);
+                console.log('Created and added site_logo input to form');
+            } else {
+                // 있으면 form 내부로 이동
+                if ($('#settingsForm').find('#site_logo').length === 0) {
+                    $siteLogoInput.detach().appendTo('#settingsForm');
+                    console.log('Moved site_logo input to form');
+                }
+            }
+            // formData에 추가
+            formData.append('site_logo', logoFields.site_logo);
+            allFormData['site_logo'] = logoFields.site_logo;
+        }
         
         // localStorage에 로그 저장 (새로고침 후에도 확인 가능)
         var logData = {
