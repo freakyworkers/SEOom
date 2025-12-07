@@ -6,6 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     @php
+        // 에러 발생 시에도 head가 렌더링되도록 최상위 try-catch
+        $layoutError = false;
         try {
             // $site 변수가 없으면 마스터 사이트 가져오기
             if (!isset($site) || !$site) {
