@@ -35,12 +35,24 @@
     .image-upload-area.has-image {
         border: 2px solid #dee2e6;
         padding: 0.5rem;
+        display: block;
+    }
+    .image-upload-area.has-image .image-preview {
+        display: block !important;
+        max-width: 100%;
+        max-height: 120px;
+        width: auto;
+        height: auto;
+        margin: 0 auto;
+        border-radius: 0.25rem;
+        cursor: pointer;
     }
     .image-preview {
         max-width: 100%;
         max-height: 120px;
         border-radius: 0.25rem;
         cursor: pointer;
+        display: block;
     }
     .image-preview:hover {
         opacity: 0.8;
@@ -2196,36 +2208,55 @@ $(document).ready(function() {
                 
                 if (response.url) {
                     console.log('Upload success, URL:', response.url);
+                    console.log('Upload area before update:', $uploadArea[0]);
                     
                     // 이미지 미리보기 표시
                     $uploadArea.addClass('has-image');
                     var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
-                    var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block; width: 100%;' : 'display: block; width: 100%; max-height: 120px;';
+                    var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block !important; width: auto; height: auto; margin: 0 auto;' : 'max-height: 120px; display: block !important; width: auto; height: auto; margin: 0 auto;';
                     
                     // HTML 직접 생성 (더 확실한 방법)
-                    var imgHtml = '<img src="' + response.url.replace(/'/g, "\\'") + '" alt="' + type + '" class="image-preview" style="' + previewStyle + '">';
+                    var imgHtml = '<img src="' + response.url + '" alt="' + type + '" class="image-preview" style="' + previewStyle + '">';
                     var hiddenInputHtml = '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="' + response.url.replace(/"/g, '&quot;') + '">';
                     
+                    console.log('Generated HTML:', imgHtml);
                     $uploadArea.html(imgHtml + hiddenInputHtml);
+                    console.log('Upload area after update:', $uploadArea[0]);
+                    console.log('Upload area HTML:', $uploadArea.html());
                     
-                    // 이미지 로드 확인
+                    // 이미지 요소 확인
                     var $img = $uploadArea.find('.image-preview');
-                    if ($img.length) {
+                    console.log('Image element found:', $img.length);
+                    if ($img.length > 0) {
+                        console.log('Image src:', $img.attr('src'));
+                        console.log('Image element:', $img[0]);
+                        
+                        // 이미지 로드 확인
                         $img.on('load', function() {
                             console.log('Image loaded successfully:', response.url);
+                            console.log('Image dimensions:', $img.width(), 'x', $img.height());
                         }).on('error', function() {
                             console.error('Image load failed:', response.url);
+                            console.error('Image element:', this);
                             alert('이미지를 불러올 수 없습니다. URL: ' + response.url);
                             resetUploadArea($uploadArea);
                         });
+                        
+                        // 이미지가 이미 로드되어 있는 경우 (캐시)
+                        if ($img[0].complete && $img[0].naturalHeight !== 0) {
+                            console.log('Image already loaded (cached)');
+                        }
+                    } else {
+                        console.error('Image element not found after HTML update!');
                     }
                     
                     // hidden input 값 업데이트 (이미 존재하는 경우)
                     if ($input.length) {
                         $input.val(response.url);
+                        console.log('Hidden input updated:', $input.val());
                     }
                     
-                    console.log('Preview HTML updated');
+                    console.log('Preview update completed');
                 } else {
                     console.error('No URL in response');
                     alert('이미지 업로드에 실패했습니다.');
