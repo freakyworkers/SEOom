@@ -2267,18 +2267,25 @@ $(document).ready(function() {
         if (fileInput) {
             e.preventDefault();
             e.stopPropagation();
-            e.stopImmediatePropagation();
             
             // 약간의 지연을 두고 클릭 (다른 이벤트와의 충돌 방지)
             setTimeout(function() {
                 // 네이티브 DOM 요소로 직접 클릭
-                fileInput.click();
-            }, 10);
+                if (fileInput && fileInput.click) {
+                    fileInput.click();
+                }
+            }, 50);
         }
     });
     
     // 네이티브 JavaScript로도 백업 이벤트 리스너 추가 (jQuery가 로드되지 않은 경우 대비)
+    // jQuery가 있는 경우에는 네이티브 핸들러를 등록하지 않음 (충돌 방지)
     (function() {
+        // jQuery가 이미 로드되어 있으면 네이티브 핸들러는 등록하지 않음
+        if (typeof jQuery !== 'undefined' && typeof $ !== 'undefined') {
+            return;
+        }
+        
         function handleImageUploadClick(e) {
             var target = e.target;
             var area = e.currentTarget;
@@ -2298,7 +2305,6 @@ $(document).ready(function() {
             if (fileInput) {
                 e.preventDefault();
                 e.stopPropagation();
-                e.stopImmediatePropagation();
                 fileInput.click();
             }
         }
@@ -2309,7 +2315,8 @@ $(document).ready(function() {
                 // 중복 등록 방지
                 if (!area._nativeUploadHandler) {
                     area._nativeUploadHandler = handleImageUploadClick;
-                    area.addEventListener('click', handleImageUploadClick, true);
+                    // bubble phase에서 실행 (jQuery와 충돌 방지)
+                    area.addEventListener('click', handleImageUploadClick, false);
                 }
             });
         }
@@ -2330,7 +2337,7 @@ $(document).ready(function() {
                             if (node.classList && node.classList.contains('image-upload-area')) {
                                 if (!node._nativeUploadHandler) {
                                     node._nativeUploadHandler = handleImageUploadClick;
-                                    node.addEventListener('click', handleImageUploadClick, true);
+                                    node.addEventListener('click', handleImageUploadClick, false);
                                 }
                             }
                             // 자식 요소 중 업로드 영역 찾기
@@ -2339,7 +2346,7 @@ $(document).ready(function() {
                                 uploadAreas.forEach(function(area) {
                                     if (!area._nativeUploadHandler) {
                                         area._nativeUploadHandler = handleImageUploadClick;
-                                        area.addEventListener('click', handleImageUploadClick, true);
+                                        area.addEventListener('click', handleImageUploadClick, false);
                                     }
                                 });
                             }
@@ -2356,10 +2363,22 @@ $(document).ready(function() {
         }
     })();
 
+    // 업로드 버튼 직접 클릭 핸들러 (추가 보장)
+    $(document).on('click', '.image-upload-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $area = $(this).closest('.image-upload-area');
+        var fileInput = $area.find('.hidden-file-input')[0];
+        if (fileInput) {
+            setTimeout(function() {
+                fileInput.click();
+            }, 10);
+        }
+    });
+
     // 파일 input 클릭 시 이벤트 전파 중지 (이미지 업로드 영역 클릭 이벤트와 충돌 방지)
     $(document).on('click', '.hidden-file-input', function(e) {
         e.stopPropagation();
-        e.stopImmediatePropagation();
         // 브라우저 기본 동작은 유지 (파일 선택 창 열기)
     });
 
