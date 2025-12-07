@@ -5,7 +5,7 @@
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="card shadow-sm">
+        <div class="card shadow-sm" style="display: block !important;">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">
                     <i class="bi bi-house-door me-2"></i>내 홈페이지
