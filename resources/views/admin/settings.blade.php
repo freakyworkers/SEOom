@@ -2252,15 +2252,25 @@ $(document).ready(function() {
         
         // 업로드 버튼, 아이콘, 텍스트, 또는 빈 영역을 클릭한 경우 파일 선택 창 열기
         var $fileInput = $area.find('.hidden-file-input');
-        if ($fileInput.length) {
+        if ($fileInput.length > 0) {
+            e.preventDefault();
             e.stopPropagation();
-            $fileInput[0].click(); // jQuery trigger 대신 네이티브 click 사용
+            e.stopImmediatePropagation();
+            // 네이티브 DOM 요소로 직접 클릭
+            var fileInputElement = $fileInput[0];
+            if (fileInputElement) {
+                // 짧은 딜레이 후 클릭 (이벤트 버블링 완료 후)
+                setTimeout(function() {
+                    fileInputElement.click();
+                }, 10);
+            }
         }
     });
 
     // 파일 input 클릭 시 이벤트 전파 중지 (이미지 업로드 영역 클릭 이벤트와 충돌 방지)
     $(document).on('click', '.hidden-file-input', function(e) {
         e.stopPropagation();
+        e.stopImmediatePropagation();
         // 브라우저 기본 동작은 유지 (파일 선택 창 열기)
     });
 
