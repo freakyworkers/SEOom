@@ -1589,7 +1589,11 @@ const themePreviews = {
 };
 
 function updateThemePreview(type, theme) {
-    const previewId = type === 'header' ? 'theme_top_preview' : 'theme_bottom_preview';
+    // 매개변수를 로컬 변수로 저장 (스코프 문제 방지)
+    var previewType = type;
+    var previewTheme = theme;
+    
+    const previewId = previewType === 'header' ? 'theme_top_preview' : 'theme_bottom_preview';
     const previewElement = document.getElementById(previewId);
     
     if (!previewElement) {
@@ -1608,7 +1612,7 @@ function updateThemePreview(type, theme) {
     // 로딩 표시
     container.innerHTML = '<div class="text-center p-3"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div></div>';
     
-    console.log('Updating preview:', type, theme);
+    console.log('Updating preview:', previewType, previewTheme);
     console.log('Menu font settings - size:', document.getElementById('menu_font_size')?.value, 'padding:', document.getElementById('menu_font_padding')?.value, 'weight:', document.getElementById('menu_font_weight')?.value);
     
     // 현재 입력된 색상 값 가져오기
@@ -1618,13 +1622,13 @@ function updateThemePreview(type, theme) {
     // AJAX로 실제 헤더 미리보기 HTML 가져오기
     const url = '{{ route("admin.settings.preview-header", ["site" => $site->slug]) }}';
     const params = new URLSearchParams({
-        theme: theme,
-        type: type,
+        theme: previewTheme,
+        type: previewType,
         theme_dark_mode: darkMode
     });
     
         // 현재 입력된 색상 값 추가
-        if (type === 'header') {
+        if (previewType === 'header') {
             if (isDark) {
                 const darkHeaderText = document.querySelector('input[name="color_dark_header_text"]')?.value;
                 const darkHeaderBg = document.querySelector('input[name="color_dark_header_bg"]')?.value;
@@ -1762,7 +1766,7 @@ function updateThemePreview(type, theme) {
                                 if (!computedStyle.fontSize || computedStyle.fontSize === '0px') {
                                     console.error('Font size is invalid, reloading with defaults');
                                     // 기본값으로 다시 로드
-                                    updateThemePreview(type, theme);
+                                    updateThemePreview(previewType, previewTheme);
                                 }
                             } else {
                                 console.warn('No nav links found in preview');
@@ -1795,8 +1799,8 @@ function updateThemePreview(type, theme) {
     })
     .catch(error => {
         console.error('Preview error:', error);
-        var typeEscaped = (type || '').replace(/'/g, "\\'");
-        var themeEscaped = (theme || '').replace(/'/g, "\\'");
+        var typeEscaped = (previewType || '').replace(/'/g, "\\'");
+        var themeEscaped = (previewTheme || '').replace(/'/g, "\\'");
         container.innerHTML = '<div class="text-danger p-3">미리보기를 불러올 수 없습니다.<br><small>' + (error.message || '알 수 없는 오류') + '</small><br><button class="btn btn-sm btn-secondary mt-2" onclick="updateThemePreview(\'' + typeEscaped + '\', \'' + themeEscaped + '\')">다시 시도</button></div>';
     });
 }
