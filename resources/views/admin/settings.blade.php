@@ -1492,7 +1492,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     domainForm.insertAdjacentElement('beforebegin', alertDiv);
                     
                     // 3초 후 자동으로 알림 제거
-                    setTimeout(() => {
+                    setTimeout(function() {
                         alertDiv.remove();
                     }, 3000);
                     
@@ -1549,7 +1549,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     // 페이지 새로고침 (최신 데이터 반영)
-                    setTimeout(() => {
+                    setTimeout(function() {
                         window.location.reload();
                     }, 2000);
                 } else {
@@ -1728,42 +1728,50 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block; width: auto; height: auto; margin: 0 auto;' : 'max-height: 120px; display: block; width: auto; height: auto; margin: 0 auto;';
                 
-                // 이미지 URL 이스케이프
-                var imageUrl = String(response.url).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                var imageAlt = String(type).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                // 이미지 alt 텍스트
+                var imageAlt = type === 'logo' ? '로고' : (type === 'logo_dark' ? '로고 (다크모드)' : (type === 'favicon' ? '파비콘' : 'OG 이미지'));
                 
-                // HTML 직접 생성
-                var imgHtml = '<img src="' + imageUrl + '" alt="' + imageAlt + '" class="image-preview" style="' + previewStyle + '">';
-                var hiddenInputValue = String(response.url).replace(/"/g, '&quot;');
-                var hiddenInputHtml = '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="' + hiddenInputValue + '">';
+                // accept 타입 설정
+                var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
                 
+                // jQuery를 사용하여 안전하게 이미지 요소 생성
+                var $img = $('<img>', {
+                    'class': 'image-preview',
+                    'src': response.url,
+                    'alt': imageAlt,
+                    'style': previewStyle
+                });
+                
+                // 파일 input 생성
+                var $fileInput = $('<input>', {
+                    'type': 'file',
+                    'class': 'hidden-file-input',
+                    'accept': acceptType,
+                    'data-type': type
+                });
+                
+                // 이미지 로드 이벤트
+                $img.on('load', function() {
+                    console.log('Image loaded successfully');
+                }).on('error', function() {
+                    console.error('Image load failed, URL:', response.url);
+                    alert('이미지를 불러올 수 없습니다. URL: ' + response.url);
+                    resetUploadArea($uploadArea);
+                });
+                
+                // 업로드 영역에 이미지와 파일 input 추가
                 console.log('Setting HTML to upload area');
-                $uploadArea.html(imgHtml + hiddenInputHtml);
+                $uploadArea.empty().append($img).append($fileInput);
                 
-                // 이미지 요소 확인 및 로드 이벤트
+                // 이미지가 이미 캐시된 경우 (즉시 로드 완료)
                 setTimeout(function() {
-                    var $img = $uploadArea.find('.image-preview');
-                    console.log('Image element found:', $img.length);
-                    
-                    if ($img.length > 0) {
-                        var imgElement = $img[0];
-                        console.log('Image src:', imgElement.src);
-                        
-                        // 이미지 로드 이벤트
-                        $(imgElement).on('load', function() {
-                            console.log('Image loaded successfully');
-                        }).on('error', function() {
-                            console.error('Image load failed, URL:', imgElement.src);
-                            alert('이미지를 불러올 수 없습니다. URL: ' + imgElement.src);
-                            resetUploadArea($uploadArea);
-                        });
-                        
-                        // 이미 캐시된 경우
-                        if (imgElement.complete && imgElement.naturalHeight > 0) {
-                            console.log('Image already loaded from cache');
-                        }
-                    } else {
-                        console.error('Image element not found!');
+                    var imgElement = $img[0];
+                    if (imgElement && imgElement.complete && imgElement.naturalHeight > 0) {
+                        console.log('Image already loaded from cache');
+                    } else if (imgElement && imgElement.complete && imgElement.naturalHeight === 0) {
+                        console.error('Image failed to load (naturalHeight is 0)');
+                        alert('이미지를 불러올 수 없습니다. URL: ' + response.url);
+                        resetUploadArea($uploadArea);
                     }
                 }, 100);
                 
