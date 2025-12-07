@@ -1597,11 +1597,7 @@ function updateThemePreview(type, theme) {
     container.innerHTML = '<div class="text-center p-3"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div></div>';
     
     console.log('Updating preview:', type, theme);
-    console.log('Menu font settings:', {
-        size: document.getElementById('menu_font_size')?.value,
-        padding: document.getElementById('menu_font_padding')?.value,
-        weight: document.getElementById('menu_font_weight')?.value
-    });
+    console.log('Menu font settings - size:', document.getElementById('menu_font_size')?.value, 'padding:', document.getElementById('menu_font_padding')?.value, 'weight:', document.getElementById('menu_font_weight')?.value);
     
     // 현재 입력된 색상 값 가져오기
     const darkMode = document.getElementById('theme_dark_mode')?.value || 'light';
@@ -1710,12 +1706,7 @@ function updateThemePreview(type, theme) {
         return response.json();
     })
     .then(data => {
-        console.log('Preview response received:', {
-            hasData: !!data,
-            hasHtml: !!(data && data.html),
-            htmlLength: data && data.html ? data.html.length : 0,
-            htmlPreview: data && data.html ? data.html.substring(0, 200) : 'N/A'
-        });
+        console.log('Preview response received - hasData:', !!data, 'hasHtml:', !!(data && data.html), 'htmlLength:', data && data.html ? data.html.length : 0);
         
         if (data && data.html) {
             // HTML이 비어있지 않은지 확인
@@ -2161,7 +2152,7 @@ $(document).ready(function() {
         var inputName = $uploadArea.data('input');
         var $input = $('#' + inputName);
         
-        console.log('Upload params:', { type: type, inputName: inputName });
+        console.log('Upload params - type:', type, 'inputName:', inputName);
 
         // FormData 생성
         var formData = new FormData();
@@ -2245,7 +2236,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                console.error('AJAX error:', { xhr: xhr, status: status, error: error });
+                console.error('AJAX error - Status:', status, 'Error:', error);
                 console.error('Response:', xhr.responseText);
                 var errorMessage = '이미지 업로드에 실패했습니다.';
                 if (xhr.responseJSON) {
