@@ -2237,23 +2237,31 @@ $(document).ready(function() {
 
     // 이미지 업로드 영역 클릭 (이벤트 위임 사용)
     $(document).on('click', '.image-upload-area', function(e) {
-        // 이미지 미리보기 클릭은 제외
-        if ($(e.target).hasClass('image-preview')) {
+        var $target = $(e.target);
+        var $area = $(this);
+        
+        // 이미지 미리보기 클릭은 제외 (삭제 기능)
+        if ($target.hasClass('image-preview') || $target.closest('.image-preview').length) {
             return;
         }
-        // 파일 input 자체를 클릭한 경우는 제외
-        if ($(e.target).hasClass('hidden-file-input')) {
+        
+        // 파일 input 자체를 클릭한 경우는 제외 (브라우저 기본 동작 사용)
+        if ($target.hasClass('hidden-file-input') || $target.is('input[type="file"]')) {
             return;
         }
-        // 업로드 버튼이나 빈 영역을 클릭한 경우에만 파일 선택 창 열기
-        e.preventDefault();
-        e.stopPropagation();
-        $(this).find('.hidden-file-input').trigger('click');
+        
+        // 업로드 버튼, 아이콘, 텍스트, 또는 빈 영역을 클릭한 경우 파일 선택 창 열기
+        var $fileInput = $area.find('.hidden-file-input');
+        if ($fileInput.length) {
+            e.stopPropagation();
+            $fileInput[0].click(); // jQuery trigger 대신 네이티브 click 사용
+        }
     });
 
-    // 파일 input 클릭 시 이벤트 전파 중지
+    // 파일 input 클릭 시 이벤트 전파 중지 (이미지 업로드 영역 클릭 이벤트와 충돌 방지)
     $(document).on('click', '.hidden-file-input', function(e) {
         e.stopPropagation();
+        // 브라우저 기본 동작은 유지 (파일 선택 창 열기)
     });
 
     // 파일 선택 시 업로드 (이벤트 위임 사용)
