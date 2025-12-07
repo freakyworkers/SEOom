@@ -2016,25 +2016,25 @@ function updateThemePreview(type, theme) {
     // 현재 입력된 색상 값 추가
     if (previewType === 'header') {
         if (isDark) {
-                var darkHeaderTextEl = document.querySelector('input[name="color_dark_header_text"]');
-                var darkHeaderBgEl = document.querySelector('input[name="color_dark_header_bg"]');
-                var darkPointMainEl = document.querySelector('input[name="color_dark_point_main"]');
-                const darkHeaderText = darkHeaderTextEl ? darkHeaderTextEl.value : null;
-                const darkHeaderBg = darkHeaderBgEl ? darkHeaderBgEl.value : null;
-                const darkPointMain = darkPointMainEl ? darkPointMainEl.value : null;
-                if (darkHeaderText) params.append('color_dark_header_text', darkHeaderText);
-                if (darkHeaderBg) params.append('color_dark_header_bg', darkHeaderBg);
-                if (darkPointMain) params.append('color_dark_point_main', darkPointMain);
-            } else {
-                var lightHeaderTextEl = document.querySelector('input[name="color_light_header_text"]');
-                var lightHeaderBgEl = document.querySelector('input[name="color_light_header_bg"]');
-                var lightPointMainEl = document.querySelector('input[name="color_light_point_main"]');
-                const lightHeaderText = lightHeaderTextEl ? lightHeaderTextEl.value : null;
-                const lightHeaderBg = lightHeaderBgEl ? lightHeaderBgEl.value : null;
-                const lightPointMain = lightPointMainEl ? lightPointMainEl.value : null;
-                if (lightHeaderText) params.append('color_light_header_text', lightHeaderText);
-                if (lightHeaderBg) params.append('color_light_header_bg', lightHeaderBg);
-                if (lightPointMain) params.append('color_light_point_main', lightPointMain);
+            var darkHeaderTextEl = document.querySelector('input[name="color_dark_header_text"]');
+            var darkHeaderBgEl = document.querySelector('input[name="color_dark_header_bg"]');
+            var darkPointMainEl = document.querySelector('input[name="color_dark_point_main"]');
+            const darkHeaderText = darkHeaderTextEl ? darkHeaderTextEl.value : null;
+            const darkHeaderBg = darkHeaderBgEl ? darkHeaderBgEl.value : null;
+            const darkPointMain = darkPointMainEl ? darkPointMainEl.value : null;
+            if (darkHeaderText) params.append('color_dark_header_text', darkHeaderText);
+            if (darkHeaderBg) params.append('color_dark_header_bg', darkHeaderBg);
+            if (darkPointMain) params.append('color_dark_point_main', darkPointMain);
+        } else {
+            var lightHeaderTextEl = document.querySelector('input[name="color_light_header_text"]');
+            var lightHeaderBgEl = document.querySelector('input[name="color_light_header_bg"]');
+            var lightPointMainEl = document.querySelector('input[name="color_light_point_main"]');
+            const lightHeaderText = lightHeaderTextEl ? lightHeaderTextEl.value : null;
+            const lightHeaderBg = lightHeaderBgEl ? lightHeaderBgEl.value : null;
+            const lightPointMain = lightPointMainEl ? lightPointMainEl.value : null;
+            if (lightHeaderText) params.append('color_light_header_text', lightHeaderText);
+            if (lightHeaderBg) params.append('color_light_header_bg', lightHeaderBg);
+            if (lightPointMain) params.append('color_light_point_main', lightPointMain);
         }
         
         // 최상단 헤더 표시 체크박스 값 추가
