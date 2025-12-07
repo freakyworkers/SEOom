@@ -336,22 +336,45 @@ class SiteSettingController extends Controller
      */
     public function uploadImage(Request $request, Site $site)
     {
+        \Log::info('Image upload request received', [
+            'site_id' => $site->id,
+            'type' => $request->input('type'),
+            'has_file' => $request->hasFile('image'),
+            'all_files_keys' => array_keys($request->allFiles()),
+            'request_method' => $request->method(),
+            'content_type' => $request->header('Content-Type'),
+            'content_length' => $request->header('Content-Length'),
+            'php_upload_max_filesize' => ini_get('upload_max_filesize'),
+            'php_post_max_size' => ini_get('post_max_size'),
+        ]);
+
         // 파일이 있는지 먼저 확인
         if (!$request->hasFile('image')) {
-            \Log::error('Image file not found in request', [
-                'site_id' => $site->id,
-                'type' => $request->input('type'),
-                'all_files' => array_keys($request->allFiles()),
-                'has_image' => $request->hasFile('image')
-            ]);
-            
-            return response()->json([
-                'error' => true,
-                'message' => '이미지 파일을 찾을 수 없습니다.'
-            ], 422);
+            // allFiles()로 직접 확인 시도
+            $allFiles = $request->allFiles();
+            if (isset($allFiles['image'])) {
+                \Log::info('File found in allFiles, using it directly', [
+                    'site_id' => $site->id,
+                    'file_class' => get_class($allFiles['image']),
+                ]);
+                $file = $allFiles['image'];
+            } else {
+                \Log::error('Image file not found in request', [
+                    'site_id' => $site->id,
+                    'type' => $request->input('type'),
+                    'all_files' => array_keys($allFiles),
+                    'has_image' => $request->hasFile('image'),
+                    'request_all' => array_keys($request->all())
+                ]);
+                
+                return response()->json([
+                    'error' => true,
+                    'message' => '이미지 파일을 찾을 수 없습니다. 파일 크기가 너무 크거나 서버 설정 문제일 수 있습니다.'
+                ], 422);
+            }
+        } else {
+            $file = $request->file('image');
         }
-
-        $file = $request->file('image');
         
         // 파일 유효성 검사
         if (!$file->isValid()) {
