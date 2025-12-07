@@ -1455,16 +1455,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: formData
             })
-            .then(response => {
+            .then(function(response) {
                 if (!response.ok) {
                     // 응답을 복제하여 여러 번 읽을 수 있도록 함
                     const clonedResponse = response.clone();
-                    return response.json().then(data => {
+                    return response.json().then(function(data) {
                         const errorMessage = data.message || data.error || '저장에 실패했습니다.';
                         console.error('Domain update error:', data);
                         throw new Error(errorMessage);
-                    }).catch(() => {
-                        return clonedResponse.text().then(text => {
+                    }).catch(function() {
+                        return clonedResponse.text().then(function(text) {
                             console.error('Domain update error (text):', text);
                             // HTML 응답인 경우 에러 메시지 추출 시도
                             const errorMatch = text.match(/<title>([^<]+)<\/title>/i) || text.match(/The\s+\w+\s+method\s+is\s+not\s+supported[^<]*/i);
@@ -1475,7 +1475,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 return response.json();
             })
-            .then(data => {
+            .then(function(data) {
                 if (data.success) {
                     // 도메인 입력 필드 업데이트
                     if (domainInput && data.domain !== undefined) {
@@ -1556,12 +1556,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error(data.message || '저장에 실패했습니다.');
                 }
             })
-            .catch(error => {
+            .catch(function(error) {
                 errorDiv.textContent = error.message;
                 errorDiv.style.display = 'block';
                 console.error('Error:', error);
             })
-            .finally(() => {
+            .finally(function() {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             });
@@ -1890,8 +1890,10 @@ function updateMobileHeaderPreview() {
         },
         credentials: 'same-origin'
     })
-    .then(response => response.json())
-    .then(data => {
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
         if (data && data.html) {
             previewElement.innerHTML = data.html;
             
@@ -1901,7 +1903,7 @@ function updateMobileHeaderPreview() {
             previewElement.innerHTML = '<div class="text-danger p-3">미리보기를 불러올 수 없습니다.</div>';
         }
     })
-    .catch(error => {
+    .catch(function(error) {
         console.error('Mobile header preview error:', error);
         previewElement.innerHTML = '<div class="text-danger p-3">미리보기를 불러올 수 없습니다.</div>';
     });
