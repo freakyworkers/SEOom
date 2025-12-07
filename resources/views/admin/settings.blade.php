@@ -2179,6 +2179,9 @@ $(document).ready(function() {
                         '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="' + response.url + '">'
                     );
                     
+                    // 새로 생성된 업로드 영역에 이벤트 핸들러 재등록
+                    setupImageUploadArea($uploadArea);
+                    
                     // hidden input 값 업데이트 (이미 존재하는 경우)
                     if ($input.length) {
                         $input.val(response.url);
@@ -2228,6 +2231,9 @@ $(document).ready(function() {
             '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="">'
         );
         
+        // 새로 생성된 업로드 영역에 이벤트 핸들러 재등록
+        setupImageUploadArea($area);
+        
         // hidden input 값 초기화
         var $input = $('#' + inputName);
         if ($input.length) {
@@ -2235,7 +2241,43 @@ $(document).ready(function() {
         }
     }
 
-    // 이미지 업로드 영역 클릭 (이벤트 위임 사용)
+    // 이미지 업로드 영역 클릭 핸들러 함수
+    function setupImageUploadArea($area) {
+        $area.off('click.imageUpload').on('click.imageUpload', function(e) {
+            var $target = $(e.target);
+            var $this = $(this);
+            
+            // 이미지 미리보기 클릭은 제외 (삭제 기능)
+            if ($target.hasClass('image-preview') || $target.closest('.image-preview').length) {
+                return;
+            }
+            
+            // 파일 input 자체를 클릭한 경우는 제외 (브라우저 기본 동작 사용)
+            if ($target.hasClass('hidden-file-input') || $target.is('input[type="file"]')) {
+                return;
+            }
+            
+            // 업로드 버튼, 아이콘, 텍스트, 또는 빈 영역을 클릭한 경우 파일 선택 창 열기
+            var $fileInput = $this.find('.hidden-file-input');
+            if ($fileInput.length > 0) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                // 네이티브 DOM 요소로 직접 클릭
+                var fileInputElement = $fileInput[0];
+                if (fileInputElement) {
+                    fileInputElement.click();
+                }
+            }
+        });
+    }
+    
+    // 페이지 로드 시 모든 업로드 영역에 이벤트 핸들러 등록
+    $('.image-upload-area').each(function() {
+        setupImageUploadArea($(this));
+    });
+    
+    // 동적으로 추가되는 요소를 위한 이벤트 위임 (백업)
     $(document).on('click', '.image-upload-area', function(e) {
         var $target = $(e.target);
         var $area = $(this);
@@ -2255,14 +2297,9 @@ $(document).ready(function() {
         if ($fileInput.length > 0) {
             e.preventDefault();
             e.stopPropagation();
-            e.stopImmediatePropagation();
-            // 네이티브 DOM 요소로 직접 클릭
             var fileInputElement = $fileInput[0];
             if (fileInputElement) {
-                // 짧은 딜레이 후 클릭 (이벤트 버블링 완료 후)
-                setTimeout(function() {
-                    fileInputElement.click();
-                }, 10);
+                fileInputElement.click();
             }
         }
     });
