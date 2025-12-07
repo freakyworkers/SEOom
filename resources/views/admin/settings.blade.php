@@ -1788,15 +1788,28 @@
                     $input.val(response.url);
                     console.log('Hidden input updated:', inputName, response.url);
                     console.log('Hidden input value after update:', $input.val());
+                    console.log('Hidden input element:', $input[0]);
+                    console.log('Hidden input is in form:', $('#settingsForm').find('#' + inputName).length > 0);
                 } else {
-                    console.error('Hidden input not found:', inputName, 'Trying to find by name attribute...');
+                    console.error('Hidden input not found by ID:', inputName, 'Trying to find by name attribute...');
                     // name 속성으로도 찾기 시도
                     var $inputByName = $('input[name="' + inputName + '"]');
                     if ($inputByName.length) {
                         $inputByName.val(response.url);
                         console.log('Hidden input found by name and updated:', inputName, response.url);
+                        console.log('Hidden input element:', $inputByName[0]);
+                        console.log('Hidden input is in form:', $('#settingsForm').find('input[name="' + inputName + '"]').length > 0);
                     } else {
                         console.error('Hidden input not found by name either:', inputName);
+                        // 직접 생성하여 form에 추가
+                        var $newInput = $('<input>', {
+                            type: 'hidden',
+                            name: inputName,
+                            id: inputName,
+                            value: response.url
+                        });
+                        $('#settingsForm').append($newInput);
+                        console.log('Created new hidden input and added to form:', inputName, response.url);
                     }
                 }
                 
@@ -2551,6 +2564,15 @@ $(document).ready(function() {
                 site_logo_dark: $('#site_logo_dark').val(),
                 site_favicon: $('#site_favicon').val(),
                 og_image: $('#og_image').val()
+            },
+            // site_logo가 allFormData에 포함되어 있는지 확인
+            site_logo_in_formData: allFormData.hasOwnProperty('site_logo') ? allFormData['site_logo'] : 'NOT FOUND',
+            // hidden input 요소 확인
+            site_logo_element: {
+                exists: $('#site_logo').length > 0,
+                value: $('#site_logo').val(),
+                name: $('#site_logo').attr('name'),
+                id: $('#site_logo').attr('id')
             }
         };
         
