@@ -244,6 +244,45 @@
         </div>
     </div>
 </div>
+
+{{-- 도메인 연결 모달 --}}
+@foreach($userSites as $userSite)
+<div class="modal fade" id="domainModal{{ $userSite->id }}" tabindex="-1" aria-labelledby="domainModalLabel{{ $userSite->id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="domainModalLabel{{ $userSite->id }}">
+                    <i class="bi bi-globe me-2"></i>도메인 연결
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ route('user-sites.update-domain', ['site' => $site->slug, 'userSite' => $userSite->slug]) }}">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="domain{{ $userSite->id }}" class="form-label">도메인</label>
+                        <input type="text" 
+                               class="form-control @error('domain') is-invalid @enderror" 
+                               id="domain{{ $userSite->id }}" 
+                               name="domain" 
+                               value="{{ old('domain', $userSite->domain) }}"
+                               placeholder="예: example.com">
+                        @error('domain')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
+
 @endsection
 
 @push('styles')
@@ -294,369 +333,6 @@
     }
 </style>
 @endpush
-
-{{-- 도메인 연결 모달 --}}
-@foreach($userSites as $userSite)
-<div class="modal fade" id="domainModal{{ $userSite->id }}" tabindex="-1" aria-labelledby="domainModalLabel{{ $userSite->id }}" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="domainModalLabel{{ $userSite->id }}">
-                    <i class="bi bi-globe me-2"></i>도메인 연결
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="POST" action="{{ route('user-sites.update-domain', ['site' => $site->slug, 'userSite' => $userSite->slug]) }}">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="domain{{ $userSite->id }}" class="form-label">
-                            도메인
-                            <button type="button" 
-                                    class="btn btn-sm btn-link p-0 ms-1" 
-                                    data-bs-toggle="tooltip" 
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    title="<strong>네임서버 정보</strong><br><br>다음 네임서버로 변경하세요:<br>@foreach(config('app.nameservers', []) as $nameserver)• {{ $nameserver }}<br>@endforeach<br>도메인 제공업체에서 네임서버 설정을 변경하면 자동으로 연결됩니다.">
-                                <i class="bi bi-question-circle text-primary"></i>
-                            </button>
-                        </label>
-                        <div class="input-group">
-                            <input type="text" 
-                                   class="form-control @error('domain') is-invalid @enderror" 
-                                   id="domain{{ $userSite->id }}" 
-                                   name="domain" 
-                                   value="{{ old('domain', $userSite->domain) }}"
-                                   placeholder="예: example.com">
-                            <button type="button" 
-                                    class="btn btn-outline-secondary" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#nameserverModal{{ $userSite->id }}">
-                                <i class="bi bi-question-circle me-1"></i>네임서버 확인
-                            </button>
-                        </div>
-                        @error('domain')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <small class="form-text text-muted">
-                            커스텀 도메인을 입력하세요. www는 제외하고 입력해주세요. (예: example.com)
-                        </small>
-                    </div>
-                    @if($userSite->domain)
-                        <div class="alert alert-warning">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            <strong>주의:</strong> 기존 도메인을 변경하면 DNS 설정을 다시 해야 할 수 있습니다.
-                        </div>
-                    @else
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle me-2"></i>
-                            <strong>도메인 연결 방법:</strong>
-                            <hr class="my-2">
-                            <div class="mb-2">
-                                <strong>1단계:</strong> 도메인을 입력하고 저장합니다.
-                            </div>
-                            <div class="mb-2">
-                                <strong>2단계:</strong> 도메인 옆 <button type="button" class="btn btn-sm btn-link p-0" data-bs-toggle="modal" data-bs-target="#nameserverModal{{ $userSite->id }}"><i class="bi bi-question-circle"></i></button> 버튼을 클릭하여 네임서버를 확인합니다.
-                            </div>
-                            <div class="mb-2">
-                                <strong>3단계:</strong> 도메인 제공업체(가비아, 후이즈 등)에서 네임서버를 변경합니다.
-                            </div>
-                            <div class="mt-3">
-                                <div class="card bg-light">
-                                    <div class="card-body p-3">
-                                        <h6 class="card-title mb-2">
-                                            <i class="bi bi-lightbulb me-1"></i>
-                                            <strong>간단한 방법 (권장)</strong>
-                                        </h6>
-                                        <p class="card-text small mb-0">
-                                            네임서버를 변경하면 DNS 레코드를 하나하나 설정할 필요 없이 자동으로 연결됩니다.<br>
-                                            도메인 제공업체에서 "네임서버 설정" 또는 "네임서버 변경" 메뉴를 찾아 위의 네임서버로 변경하세요.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-3">
-                                <details>
-                                    <summary class="text-muted small" style="cursor: pointer;">
-                                        <i class="bi bi-chevron-down me-1"></i>고급: DNS 레코드 직접 설정 (네임서버 변경이 불가능한 경우)
-                                    </summary>
-                                    <div class="mt-2">
-                                        <div class="mb-2">
-                                            <strong>3단계 (대안):</strong> 다음 중 하나의 방법을 선택하여 DNS 레코드를 추가합니다:
-                                        </div>
-                            
-                            <div class="card mb-2" style="background-color: #e7f3ff;">
-                                <div class="card-body p-3">
-                                    <h6 class="card-title mb-2">
-                                        <i class="bi bi-star-fill text-warning me-1"></i>
-                                        <strong>방법 1: CNAME 레코드 (권장)</strong>
-                                    </h6>
-                                    <div class="small">
-                                        <strong>설정 방법:</strong><br>
-                                        <div class="table-responsive mt-2">
-                                            <table class="table table-sm table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>타입</th>
-                                                        <th>이름</th>
-                                                        <th>값/대상</th>
-                                                        <th>TTL</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>CNAME</td>
-                                                        <td>@</td>
-                                                        <td><code>{{ config('app.master_domain', 'seoomweb.com') }}</code></td>
-                                                        <td>자동</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>CNAME</td>
-                                                        <td>www</td>
-                                                        <td><code>{{ config('app.master_domain', 'seoomweb.com') }}</code></td>
-                                                        <td>자동</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="mt-2">
-                                            <strong>설정 예시:</strong><br>
-                                            • 도메인이 <code>example.com</code>인 경우:<br>
-                                            &nbsp;&nbsp;- <code>@</code> → <code>{{ config('app.master_domain', 'seoomweb.com') }}</code><br>
-                                            &nbsp;&nbsp;- <code>www</code> → <code>{{ config('app.master_domain', 'seoomweb.com') }}</code>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 small text-success">
-                                        <i class="bi bi-check-circle me-1"></i>
-                                        <strong>장점:</strong> 설정이 간단하고, 서버 IP 변경 시 자동으로 적용됩니다.
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="card" style="background-color: #fff3cd;">
-                                <div class="card-body p-3">
-                                    <h6 class="card-title mb-2">
-                                        <strong>방법 2: A 레코드</strong>
-                                    </h6>
-                                    <div class="small">
-                                        <strong>설정 방법:</strong><br>
-                                        <div class="table-responsive mt-2">
-                                            <table class="table table-sm table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>타입</th>
-                                                        <th>이름</th>
-                                                        <th>값/대상</th>
-                                                        <th>TTL</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>A</td>
-                                                        <td>@</td>
-                                                        <td>
-                                                            @if(config('app.server_ip'))
-                                                                <code>{{ config('app.server_ip') }}</code>
-                                                            @else
-                                                                <span class="text-muted">서버 IP 주소</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>자동</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>A</td>
-                                                        <td>www</td>
-                                                        <td>
-                                                            @if(config('app.server_ip'))
-                                                                <code>{{ config('app.server_ip') }}</code>
-                                                            @else
-                                                                <span class="text-muted">서버 IP 주소</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>자동</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        @if(!config('app.server_ip'))
-                                            <div class="mt-2">
-                                                <strong><i class="bi bi-info-circle me-1"></i>서버 IP 주소 확인 방법:</strong><br>
-                                                • AWS EC2를 사용하는 경우: EC2 콘솔 → 인스턴스 → 퍼블릭 IPv4 주소 확인<br>
-                                                • 기타 서버: 서버 관리자에게 문의하거나 서버 정보에서 확인
-                                            </div>
-                                        @endif
-                                        <div class="mt-2">
-                                            <strong>설정 예시:</strong><br>
-                                            • 도메인이 <code>example.com</code>이고 서버 IP가 <code>54.180.2.108</code>인 경우:<br>
-                                            &nbsp;&nbsp;- <code>@</code> → <code>54.180.2.108</code><br>
-                                            &nbsp;&nbsp;- <code>www</code> → <code>54.180.2.108</code>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 small text-warning">
-                                        <i class="bi bi-exclamation-triangle me-1"></i>
-                                        <strong>참고:</strong> 서버 IP 주소가 변경되면 수동으로 업데이트해야 합니다.
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-3">
-                                <strong><i class="bi bi-question-circle me-1"></i>도메인 제공업체별 설정 위치:</strong>
-                                <div class="mt-2 small">
-                                    <div class="card">
-                                        <div class="card-body p-2">
-                                            <div class="mb-2">
-                                                <strong>가비아:</strong><br>
-                                                1. 마이 가비아 로그인<br>
-                                                2. 도메인 → 내 도메인 → DNS 관리<br>
-                                                3. 레코드 추가 버튼 클릭<br>
-                                                4. 위의 표에 따라 레코드 입력 후 저장
-                                            </div>
-                                            <hr class="my-2">
-                                            <div class="mb-2">
-                                                <strong>후이즈:</strong><br>
-                                                1. 후이즈 로그인<br>
-                                                2. 도메인 관리 → DNS 설정<br>
-                                                3. 레코드 추가 버튼 클릭<br>
-                                                4. 위의 표에 따라 레코드 입력 후 저장
-                                            </div>
-                                            <hr class="my-2">
-                                            <div class="mb-2">
-                                                <strong>Cloudflare:</strong><br>
-                                                1. Cloudflare 대시보드 로그인<br>
-                                                2. 도메인 선택 → DNS → 레코드<br>
-                                                3. 레코드 추가 버튼 클릭<br>
-                                                4. 위의 표에 따라 레코드 입력 후 저장
-                                            </div>
-                                            <hr class="my-2">
-                                            <div>
-                                                <strong>기타 제공업체:</strong><br>
-                                                도메인 관리 페이지에서 "DNS 설정", "네임서버 설정", "레코드 관리" 등의 메뉴를 찾아 위와 동일하게 설정하세요.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-3 alert alert-warning">
-                                <strong><i class="bi bi-clock me-1"></i>설정 적용 시간:</strong><br>
-                                • 네임서버 변경 후 적용까지 보통 <strong>5분~24시간</strong> 정도 소요됩니다.<br>
-                                • 설정 후 잠시 기다렸다가 도메인으로 접속해보세요.
-                            </div>
-                            
-                            <div class="mt-3 alert alert-success">
-                                <strong><i class="bi bi-check-circle me-1"></i>도메인 연결 후 접근 방법:</strong><br>
-                                <div class="mt-2">
-                                    <strong>✅ 올바른 접근 방법:</strong><br>
-                                    • <strong>서브도메인:</strong> <code>{{ $userSite->slug }}.{{ config('app.master_domain', 'seoomweb.com') }}</code><br>
-                                    @if($userSite->domain)
-                                        • <strong>커스텀 도메인:</strong> <code>{{ $userSite->domain }}</code> 또는 <code>www.{{ $userSite->domain }}</code>
-                                    @else
-                                        • <strong>커스텀 도메인:</strong> 도메인 연결 후 <code>example.com</code> 형태로 직접 접근 가능
-                                    @endif
-                                </div>
-                                <div class="mt-2">
-                                    <strong>❌ 권장하지 않는 방법:</strong><br>
-                                    • <code>{{ config('app.master_domain', 'seoomweb.com') }}/site/{{ $userSite->slug }}</code> (하위 호환용, 도메인 연결 후에는 사용하지 않음)
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-                <div class="modal-footer">
-                    @if($userSite->domain)
-                        <button type="button" 
-                                class="btn btn-danger me-auto" 
-                                onclick="if(confirm('정말 도메인을 제거하시겠습니까?')) { document.getElementById('removeDomainForm{{ $userSite->id }}').submit(); }">
-                            <i class="bi bi-trash me-1"></i>도메인 제거
-                        </button>
-                    @endif
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-circle me-1"></i>저장
-                    </button>
-                </div>
-            </form>
-            @if($userSite->domain)
-                <form id="removeDomainForm{{ $userSite->id }}" 
-                      method="POST" 
-                      action="{{ route('user-sites.remove-domain', ['site' => $site->slug, 'userSite' => $userSite->slug]) }}">
-                    @csrf
-                    @method('DELETE')
-                </form>
-            @endif
-        </div>
-    </div>
-</div>
-
-{{-- 네임서버 정보 모달 --}}
-<div class="modal fade" id="nameserverModal{{ $userSite->id }}" tabindex="-1" aria-labelledby="nameserverModalLabel{{ $userSite->id }}" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="nameserverModalLabel{{ $userSite->id }}">
-                    <i class="bi bi-server me-2"></i>네임서버 정보
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong>도메인 제공업체에서 다음 네임서버로 변경하세요:</strong>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        @php
-                            // 실제 할당된 네임서버가 있으면 사용, 없으면 기본값 사용
-                            $nameservers = $userSite->nameservers ?? config('app.nameservers', ['ns1.cloudflare.com', 'ns2.cloudflare.com']);
-                            if (is_string($nameservers)) {
-                                $nameservers = json_decode($nameservers, true) ?? [];
-                            }
-                            if (empty($nameservers)) {
-                                $nameservers = config('app.nameservers', ['ns1.cloudflare.com', 'ns2.cloudflare.com']);
-                            }
-                        @endphp
-                        @if(!empty($nameservers))
-                            @foreach($nameservers as $index => $nameserver)
-                                <div class="mb-2">
-                                    <strong>네임서버 {{ $index + 1 }}:</strong>
-                                    <code class="ms-2" style="font-size: 1.1em;">{{ $nameserver }}</code>
-                                    <button type="button" 
-                                            class="btn btn-sm btn-outline-secondary ms-2" 
-                                            onclick="copyToClipboard('{{ $nameserver }}', this)">
-                                        <i class="bi bi-clipboard me-1"></i>복사
-                                    </button>
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="text-muted">
-                                네임서버 정보를 불러오는 중입니다...
-                            </div>
-                        @endif
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <strong><i class="bi bi-question-circle me-1"></i>도메인 제공업체별 설정 위치:</strong>
-                    <div class="mt-2 small">
-                        <ul class="list-unstyled">
-                            <li><strong>가비아:</strong> 마이 가비아 → 도메인 → 네임서버 설정</li>
-                            <li><strong>후이즈:</strong> 도메인 관리 → 네임서버 설정</li>
-                            <li><strong>기타:</strong> 도메인 관리 페이지에서 "네임서버 설정" 또는 "네임서버 변경" 메뉴 찾기</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="mt-3 alert alert-success">
-                    <i class="bi bi-check-circle me-1"></i>
-                    <strong>팁:</strong> 네임서버를 변경하면 DNS 레코드를 하나하나 설정할 필요 없이 자동으로 연결됩니다.
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-            </div>
-        </div>
-    </div>
-</div>
-@endforeach
 
 @push('scripts')
 <script>
