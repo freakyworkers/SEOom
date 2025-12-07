@@ -335,30 +335,86 @@ class SiteSettingController extends Controller
      */
     public function uploadImage(Request $request, Site $site)
     {
+        \Log::info('Image upload request received', [
+            'site_id' => $site->id,
+            'has_file' => $request->hasFile('image'),
+            'type' => $request->input('type'),
+            'all_data' => $request->all()
+        ]);
+
         $validator = Validator::make($request->all(), [
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp,ico|max:5120', // 5MB max
             'type' => 'required|in:logo,logo_dark,favicon,og_image', // 업로드 타입
         ]);
 
         if ($validator->fails()) {
+            \Log::error('Image upload validation failed', [
+                'site_id' => $site->id,
+                'errors' => $validator->errors()->toArray(),
+                'request_data' => $request->all()
+            ]);
+            
             return response()->json([
                 'error' => true,
-                'message' => $validator->errors()->first('image'),
+                'message' => $validator->errors()->first('image') ?: '이미지 업로드 검증에 실패했습니다.',
                 'errors' => $validator->errors()
             ], 422);
         }
 
         try {
             $file = $request->file('image');
+            if (!$file) {
+                \Log::error('Image file not found in request', [
+                    'site_id' => $site->id,
+                    'request_files' => $request->allFiles()
+                ]);
+                
+                return response()->json([
+                    'error' => true,
+                    'message' => '이미지 파일을 찾을 수 없습니다.'
+                ], 422);
+            }
+
             $type = $request->input('type');
             $directory = 'site-assets/' . $site->id;
+            
+            \Log::info('Starting file upload', [
+                'site_id' => $site->id,
+                'type' => $type,
+                'directory' => $directory,
+                'file_name' => $file->getClientOriginalName(),
+                'file_size' => $file->getSize(),
+                'mime_type' => $file->getMimeType()
+            ]);
+            
+            // 디렉토리 생성
+            \Storage::disk('public')->makeDirectory($directory);
             
             // FileUploadService 사용
             $fileUploadService = app(\App\Services\FileUploadService::class);
             $result = $fileUploadService->upload($file, $directory);
 
+            if (!$result || !isset($result['file_path'])) {
+                \Log::error('FileUploadService returned invalid result', [
+                    'site_id' => $site->id,
+                    'result' => $result
+                ]);
+                
+                return response()->json([
+                    'error' => true,
+                    'message' => '파일 업로드 결과를 받을 수 없습니다.'
+                ], 500);
+            }
+
             // 절대 URL 생성
             $url = asset('storage/' . $result['file_path']);
+
+            \Log::info('Image upload successful', [
+                'site_id' => $site->id,
+                'type' => $type,
+                'url' => $url,
+                'file_path' => $result['file_path']
+            ]);
 
             return response()->json([
                 'url' => $url,
@@ -369,7 +425,9 @@ class SiteSettingController extends Controller
                 'site_id' => $site->id,
                 'type' => $request->input('type'),
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ]);
             
             return response()->json([
