@@ -90,6 +90,15 @@
         cursor: pointer;
         z-index: 10;
     }
+    .image-upload-area.has-image .hidden-file-input {
+        z-index: 1;
+        pointer-events: none;
+    }
+    .image-upload-area.has-image .image-preview {
+        position: relative;
+        z-index: 2;
+        pointer-events: auto;
+    }
     .theme-preview {
         margin-top: 1rem;
         padding: 1rem;
@@ -2164,20 +2173,24 @@ $(document).ready(function() {
             contentType: false,
             timeout: 30000, // 30초 타임아웃
             success: function(response) {
+                console.log('Upload response:', response);
+                
                 // 응답 검증
                 if (!response || response.error || !response.url) {
                     var errorMessage = response && response.message ? response.message : '이미지 업로드에 실패했습니다.';
+                    console.error('Upload error:', errorMessage);
                     alert(errorMessage);
                     resetUploadArea($uploadArea);
                     return;
                 }
                 
                 if (response.url) {
+                    console.log('Upload success, URL:', response.url);
+                    
                     // 이미지 미리보기 표시
                     $uploadArea.addClass('has-image');
                     var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
                     var previewStyle = type === 'favicon' ? 'style="max-height: 60px;"' : '';
-                    var uploadBtnStyle = type === 'favicon' ? 'style="padding: 0.5rem;"><i class="bi bi-cloud-upload"></i><span style="font-size: 0.75rem;">업로드</span>' : '><i class="bi bi-cloud-upload"></i><span>업로드</span>';
                     
                     // HTML 재생성 (hidden input 포함)
                     $uploadArea.html(
@@ -2186,13 +2199,14 @@ $(document).ready(function() {
                         '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="' + response.url + '">'
                     );
                     
-                    // 이벤트 위임을 사용하므로 자동으로 처리됨
-                    
                     // hidden input 값 업데이트 (이미 존재하는 경우)
                     if ($input.length) {
                         $input.val(response.url);
                     }
+                    
+                    console.log('Preview updated successfully');
                 } else {
+                    console.error('No URL in response');
                     alert('이미지 업로드에 실패했습니다.');
                     resetUploadArea($uploadArea);
                 }
@@ -2246,12 +2260,15 @@ $(document).ready(function() {
         }
     }
 
-    // 이미지 미리보기 클릭 시 삭제 (파일 input 클릭은 브라우저가 자동 처리)
+    // 이미지 미리보기 클릭 시 삭제 또는 교체
     $(document).on('click', '.image-preview', function(e) {
         e.preventDefault();
         e.stopPropagation();
         var $area = $(this).closest('.image-upload-area');
-        if (confirm('이미지를 삭제하시겠습니까?')) {
+        var action = confirm('이미지를 삭제하시겠습니까?\n\n취소를 누르면 이미지를 교체할 수 있습니다.');
+        
+        if (action) {
+            // 삭제
             var inputName = $area.data('input');
             var $input = $('#' + inputName);
             var type = $area.data('type');
@@ -2264,6 +2281,16 @@ $(document).ready(function() {
                 '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">' +
                 '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="">'
             );
+            
+            if ($input.length) {
+                $input.val('');
+            }
+        } else {
+            // 교체 - 파일 input 클릭
+            var fileInput = $area.find('.hidden-file-input')[0];
+            if (fileInput) {
+                fileInput.click();
+            }
         }
         return false;
     });
