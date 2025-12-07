@@ -296,32 +296,79 @@ function saveMap() {
     const formData = new FormData(form);
     const mapId = document.getElementById('map_id').value;
     
+    // 필수 필드 검증
+    const name = document.getElementById('map_name').value.trim();
+    const mapType = document.getElementById('map_type').value;
+    const address = document.getElementById('map_address').value.trim();
+    
+    if (!name) {
+        alert('지도 이름을 입력해주세요.');
+        document.getElementById('map_name').focus();
+        return;
+    }
+    
+    if (!mapType) {
+        alert('지도 타입을 선택해주세요.');
+        document.getElementById('map_type').focus();
+        return;
+    }
+    
+    if (!address) {
+        alert('주소를 입력해주세요.');
+        document.getElementById('map_address').focus();
+        return;
+    }
+    
     const url = mapId 
         ? '{{ route("admin.maps.update", ["site" => $site->slug, "map" => ":id"]) }}'.replace(':id', mapId)
         : '{{ route("admin.maps.store", ["site" => $site->slug]) }}';
     
-    const method = mapId ? 'PUT' : 'POST';
+    // PUT 메서드 사용 시 _method 필드 추가
+    if (mapId) {
+        formData.append('_method', 'PUT');
+    }
     
     fetch(url, {
-        method: method,
+        method: 'POST',
         body: formData,
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             'X-Requested-With': 'XMLHttpRequest'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        // 응답 타입 확인
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return response.json();
+        } else {
+            return response.text().then(text => {
+                throw new Error('서버 오류가 발생했습니다.');
+            });
+        }
+    })
     .then(data => {
         if (data.success) {
             alert(data.message);
             location.reload();
         } else {
-            alert('오류: ' + (data.message || '알 수 없는 오류'));
+            // Validation 오류 처리
+            let errorMessage = '오류가 발생했습니다.';
+            if (data.message) {
+                errorMessage = data.message;
+            } else if (data.errors) {
+                const errorMessages = [];
+                for (const field in data.errors) {
+                    errorMessages.push(data.errors[field].join(', '));
+                }
+                errorMessage = errorMessages.join('\n');
+            }
+            alert('오류: ' + errorMessage);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('저장 중 오류가 발생했습니다.');
+        alert('저장 중 오류가 발생했습니다: ' + error.message);
     });
 }
 

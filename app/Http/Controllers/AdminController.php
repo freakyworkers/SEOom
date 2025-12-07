@@ -4371,26 +4371,39 @@ class AdminController extends Controller
      */
     public function mapsStore(Site $site, Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'map_type' => 'required|in:google,kakao,naver',
-            'address' => 'required|string|max:500',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'zoom' => 'nullable|integer|min:1|max:20',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'map_type' => 'required|in:google,kakao,naver',
+                'address' => 'required|string|max:500',
+                'latitude' => 'nullable|numeric',
+                'longitude' => 'nullable|numeric',
+                'zoom' => 'nullable|integer|min:1|max:20',
+            ]);
 
-        $map = Map::create([
-            'site_id' => $site->id,
-            'name' => $request->name,
-            'map_type' => $request->map_type,
-            'address' => $request->address,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'zoom' => $request->zoom ?? 15,
-        ]);
+            $map = Map::create([
+                'site_id' => $site->id,
+                'name' => $validated['name'],
+                'map_type' => $validated['map_type'],
+                'address' => $validated['address'],
+                'latitude' => $validated['latitude'] ?? null,
+                'longitude' => $validated['longitude'] ?? null,
+                'zoom' => $validated['zoom'] ?? 15,
+            ]);
 
-        return response()->json(['success' => true, 'message' => '지도가 생성되었습니다.', 'map' => $map]);
+            return response()->json(['success' => true, 'message' => '지도가 생성되었습니다.', 'map' => $map]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => '입력한 정보를 확인해주세요.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => '지도 생성 중 오류가 발생했습니다: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -4431,25 +4444,38 @@ class AdminController extends Controller
             abort(403);
         }
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'map_type' => 'required|in:google,kakao,naver',
-            'address' => 'required|string|max:500',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'zoom' => 'nullable|integer|min:1|max:20',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'map_type' => 'required|in:google,kakao,naver',
+                'address' => 'required|string|max:500',
+                'latitude' => 'nullable|numeric',
+                'longitude' => 'nullable|numeric',
+                'zoom' => 'nullable|integer|min:1|max:20',
+            ]);
 
-        $map->update([
-            'name' => $request->name,
-            'map_type' => $request->map_type,
-            'address' => $request->address,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'zoom' => $request->zoom ?? 15,
-        ]);
+            $map->update([
+                'name' => $validated['name'],
+                'map_type' => $validated['map_type'],
+                'address' => $validated['address'],
+                'latitude' => $validated['latitude'] ?? null,
+                'longitude' => $validated['longitude'] ?? null,
+                'zoom' => $validated['zoom'] ?? 15,
+            ]);
 
-        return response()->json(['success' => true, 'message' => '지도가 업데이트되었습니다.', 'map' => $map]);
+            return response()->json(['success' => true, 'message' => '지도가 업데이트되었습니다.', 'map' => $map]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => '입력한 정보를 확인해주세요.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => '지도 업데이트 중 오류가 발생했습니다: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
