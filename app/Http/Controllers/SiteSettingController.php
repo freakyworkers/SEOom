@@ -28,6 +28,9 @@ class SiteSettingController extends Controller
      */
     public function index(Site $site)
     {
+        // 최신 데이터를 가져오기 위해 사이트 객체 새로고침
+        $site->refresh();
+        
         $settings = $this->settingService->getSettingsBySite($site->id);
         
         // 미리보기용 데이터 준비
