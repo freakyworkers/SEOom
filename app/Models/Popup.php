@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Services\SiteUsageService;
 
 class Popup extends Model
 {
@@ -29,6 +30,52 @@ class Popup extends Model
         'order' => 'integer',
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // When popup image is updated, update storage
+        static::saved(function ($popup) {
+            if ($popup->site_id && $popup->image_path) {
+                $filePath = storage_path('app/public/' . $popup->image_path);
+                if (file_exists($filePath)) {
+                    $fileSize = filesize($filePath);
+                    // Only update if this is a new image (not just an update)
+                    if ($popup->wasRecentlyCreated || $popup->wasChanged('image_path')) {
+                        // If image_path changed, subtract old size
+                        if ($popup->wasChanged('image_path') && $popup->getOriginal('image_path')) {
+                            $oldPath = storage_path('app/public/' . $popup->getOriginal('image_path'));
+                            if (file_exists($oldPath)) {
+                                app(SiteUsageService::class)->updateStorage(
+                                    $popup->site_id,
+                                    -filesize($oldPath)
+                                );
+                            }
+                        }
+                        // Add new size
+                        app(SiteUsageService::class)->updateStorage($popup->site_id, $fileSize);
+                    }
+                }
+            }
+        });
+
+        // When popup is deleted, subtract from storage
+        static::deleted(function ($popup) {
+            if ($popup->site_id && $popup->image_path) {
+                $filePath = storage_path('app/public/' . $popup->image_path);
+                if (file_exists($filePath)) {
+                    app(SiteUsageService::class)->updateStorage(
+                        $popup->site_id,
+                        -filesize($filePath)
+                    );
+                }
+            }
+        });
+    }
 
     /**
      * Get the site that owns the popup.

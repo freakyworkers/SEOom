@@ -26,6 +26,12 @@ class Kernel extends ConsoleKernel
         
         // 매시간 24시간 이상 된 채팅 메시지 삭제 (auto_delete_24h 활성화된 사이트만)
         $schedule->command('chat:delete-old-messages')->hourly();
+        
+        // 매월 1일 자정에 트래픽 사용량 리셋
+        $schedule->command('sites:reset-traffic')->monthly();
+        
+        // 매일 새벽 3시에 모든 사이트의 저장 용량 재계산 (정확도 보장)
+        $schedule->command('sites:calculate-storage-usage')->dailyAt('03:00');
     }
 
     /**

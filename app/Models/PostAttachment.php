@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Services\SiteUsageService;
 
 class PostAttachment extends Model
 {
@@ -23,6 +24,34 @@ class PostAttachment extends Model
         'file_size' => 'integer',
         'order' => 'integer',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // When attachment is created, add to storage
+        static::created(function ($attachment) {
+            if ($attachment->post && $attachment->post->site_id && $attachment->file_size) {
+                app(SiteUsageService::class)->updateStorage(
+                    $attachment->post->site_id,
+                    $attachment->file_size
+                );
+            }
+        });
+
+        // When attachment is deleted, subtract from storage
+        static::deleted(function ($attachment) {
+            if ($attachment->post && $attachment->post->site_id && $attachment->file_size) {
+                app(SiteUsageService::class)->updateStorage(
+                    $attachment->post->site_id,
+                    -$attachment->file_size
+                );
+            }
+        });
+    }
 
     /**
      * Get the post that owns the attachment.
