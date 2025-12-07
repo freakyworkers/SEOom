@@ -2015,7 +2015,7 @@ function updateThemePreview(type, theme) {
     
     // 현재 입력된 색상 값 추가
     if (previewType === 'header') {
-            if (isDark) {
+        if (isDark) {
                 var darkHeaderTextEl = document.querySelector('input[name="color_dark_header_text"]');
                 var darkHeaderBgEl = document.querySelector('input[name="color_dark_header_bg"]');
                 var darkPointMainEl = document.querySelector('input[name="color_dark_point_main"]');
@@ -2035,53 +2035,53 @@ function updateThemePreview(type, theme) {
                 if (lightHeaderText) params.append('color_light_header_text', lightHeaderText);
                 if (lightHeaderBg) params.append('color_light_header_bg', lightHeaderBg);
                 if (lightPointMain) params.append('color_light_point_main', lightPointMain);
-            }
-            
-            // 최상단 헤더 표시 체크박스 값 추가
-            const topHeaderShowCheckbox = document.getElementById('theme_top_header_show');
-            const topHeaderShow = topHeaderShowCheckbox && topHeaderShowCheckbox.checked ? '1' : '0';
-            params.append('theme_top_header_show', topHeaderShow);
-            
-            // 로그인 버튼 표시 체크박스 값 추가
-            const topHeaderLoginShowCheckbox = document.getElementById('top_header_login_show');
-            const topHeaderLoginShow = topHeaderLoginShowCheckbox && topHeaderLoginShowCheckbox.checked ? '1' : '0';
-            params.append('top_header_login_show', topHeaderLoginShow);
-            
-            // 메뉴 로그인 표시 체크박스 값 추가
-            const menuLoginShowCheckbox = document.getElementById('menu_login_show');
-            const menuLoginShow = menuLoginShowCheckbox && menuLoginShowCheckbox.checked ? '1' : '0';
-            params.append('menu_login_show', menuLoginShow);
-            
-            // 그림자 체크박스 값 추가
-            const headerShadowCheckbox = document.getElementById('header_shadow');
-            const headerShadow = headerShadowCheckbox && headerShadowCheckbox.checked ? '1' : '0';
-            params.append('header_shadow', headerShadow);
-            
-            // 헤더 테두리 체크박스 값 추가
-            const headerBorderCheckbox = document.getElementById('header_border');
-            const headerBorder = headerBorderCheckbox && headerBorderCheckbox.checked ? '1' : '0';
-            params.append('header_border', headerBorder);
-            
-            // 헤더 테두리 두께 및 컬러 값 추가
-            if (headerBorder === '1') {
-                var headerBorderWidthEl = document.getElementById('header_border_width');
-                var headerBorderColorEl = document.getElementById('header_border_color');
-                const headerBorderWidth = (headerBorderWidthEl && headerBorderWidthEl.value) ? headerBorderWidthEl.value : '1';
-                const headerBorderColor = (headerBorderColorEl && headerBorderColorEl.value) ? headerBorderColorEl.value : '#dee2e6';
-                params.append('header_border_width', headerBorderWidth);
-                params.append('header_border_color', headerBorderColor);
-            }
-            
-            // 메뉴 폰트 설정 값 추가
-            var menuFontSizeEl2 = document.getElementById('menu_font_size');
-            var menuFontPaddingEl2 = document.getElementById('menu_font_padding');
-            var menuFontWeightEl2 = document.getElementById('menu_font_weight');
-            const menuFontSize = (menuFontSizeEl2 && menuFontSizeEl2.value) ? menuFontSizeEl2.value : '1.25rem';
-            const menuFontPadding = (menuFontPaddingEl2 && menuFontPaddingEl2.value) ? menuFontPaddingEl2.value : '0.5rem';
-            const menuFontWeight = (menuFontWeightEl2 && menuFontWeightEl2.value) ? menuFontWeightEl2.value : '700';
-            params.append('menu_font_size', menuFontSize);
-            params.append('menu_font_padding', menuFontPadding);
-            params.append('menu_font_weight', menuFontWeight);
+        }
+        
+        // 최상단 헤더 표시 체크박스 값 추가
+        const topHeaderShowCheckbox = document.getElementById('theme_top_header_show');
+        const topHeaderShow = topHeaderShowCheckbox && topHeaderShowCheckbox.checked ? '1' : '0';
+        params.append('theme_top_header_show', topHeaderShow);
+        
+        // 로그인 버튼 표시 체크박스 값 추가
+        const topHeaderLoginShowCheckbox = document.getElementById('top_header_login_show');
+        const topHeaderLoginShow = topHeaderLoginShowCheckbox && topHeaderLoginShowCheckbox.checked ? '1' : '0';
+        params.append('top_header_login_show', topHeaderLoginShow);
+        
+        // 메뉴 로그인 표시 체크박스 값 추가
+        const menuLoginShowCheckbox = document.getElementById('menu_login_show');
+        const menuLoginShow = menuLoginShowCheckbox && menuLoginShowCheckbox.checked ? '1' : '0';
+        params.append('menu_login_show', menuLoginShow);
+        
+        // 그림자 체크박스 값 추가
+        const headerShadowCheckbox = document.getElementById('header_shadow');
+        const headerShadow = headerShadowCheckbox && headerShadowCheckbox.checked ? '1' : '0';
+        params.append('header_shadow', headerShadow);
+        
+        // 헤더 테두리 체크박스 값 추가
+        const headerBorderCheckbox = document.getElementById('header_border');
+        const headerBorder = headerBorderCheckbox && headerBorderCheckbox.checked ? '1' : '0';
+        params.append('header_border', headerBorder);
+        
+        // 헤더 테두리 두께 및 컬러 값 추가
+        if (headerBorder === '1') {
+            var headerBorderWidthEl = document.getElementById('header_border_width');
+            var headerBorderColorEl = document.getElementById('header_border_color');
+            const headerBorderWidth = (headerBorderWidthEl && headerBorderWidthEl.value) ? headerBorderWidthEl.value : '1';
+            const headerBorderColor = (headerBorderColorEl && headerBorderColorEl.value) ? headerBorderColorEl.value : '#dee2e6';
+            params.append('header_border_width', headerBorderWidth);
+            params.append('header_border_color', headerBorderColor);
+        }
+        
+        // 메뉴 폰트 설정 값 추가
+        var menuFontSizeEl2 = document.getElementById('menu_font_size');
+        var menuFontPaddingEl2 = document.getElementById('menu_font_padding');
+        var menuFontWeightEl2 = document.getElementById('menu_font_weight');
+        const menuFontSize = (menuFontSizeEl2 && menuFontSizeEl2.value) ? menuFontSizeEl2.value : '1.25rem';
+        const menuFontPadding = (menuFontPaddingEl2 && menuFontPaddingEl2.value) ? menuFontPaddingEl2.value : '0.5rem';
+        const menuFontWeight = (menuFontWeightEl2 && menuFontWeightEl2.value) ? menuFontWeightEl2.value : '700';
+        params.append('menu_font_size', menuFontSize);
+        params.append('menu_font_padding', menuFontPadding);
+        params.append('menu_font_weight', menuFontWeight);
     } else {
         if (isDark) {
             var darkFooterTextEl = document.querySelector('input[name="color_dark_footer_text"]');
