@@ -1724,7 +1724,11 @@ function updateThemePreview(type, theme) {
                         try {
                             // 스타일이 유효한지 확인
                             const testEl = document.createElement('div');
-                            testEl.style.cssText = style.textContent.split('{')[1]?.split('}')[0] || '';
+                            const styleContent = style.textContent.split('{');
+                            if (styleContent.length > 1) {
+                                const styleBody = styleContent[1].split('}')[0] || '';
+                                testEl.style.cssText = styleBody;
+                            }
                         } catch (e) {
                             console.warn('Potential CSS error detected:', e);
                             hasStyleError = true;
@@ -1779,7 +1783,9 @@ function updateThemePreview(type, theme) {
     })
     .catch(error => {
         console.error('Preview error:', error);
-        container.innerHTML = '<div class="text-danger p-3">미리보기를 불러올 수 없습니다.<br><small>' + error.message + '</small><br><button class="btn btn-sm btn-secondary mt-2" onclick="updateThemePreview(\'' + type + '\', \'' + theme + '\')">다시 시도</button></div>';
+        var typeEscaped = (type || '').replace(/'/g, "\\'");
+        var themeEscaped = (theme || '').replace(/'/g, "\\'");
+        container.innerHTML = '<div class="text-danger p-3">미리보기를 불러올 수 없습니다.<br><small>' + (error.message || '알 수 없는 오류') + '</small><br><button class="btn btn-sm btn-secondary mt-2" onclick="updateThemePreview(\'' + typeEscaped + '\', \'' + themeEscaped + '\')">다시 시도</button></div>';
     });
 }
 
