@@ -584,9 +584,9 @@ class UserMySitesController extends Controller
             ? '도메인이 성공적으로 연결되었습니다.' . ($nameservers ? ' 네임서버 정보를 확인하세요.' : '') 
             : '도메인이 제거되었습니다.';
 
-        // 현재 페이지로 돌아가기 (사이트 설정 페이지에서 온 경우)
-        // back()을 사용하면 referer를 자동으로 확인하여 적절한 페이지로 리다이렉트
-        return back()->with('success', $message);
+        // 사이트 설정 페이지로 명시적으로 리다이렉트
+        return redirect()->route('admin.settings', ['site' => $userSite->slug])
+            ->with('success', $message);
     }
 
     /**
