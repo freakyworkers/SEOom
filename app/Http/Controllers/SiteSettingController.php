@@ -280,6 +280,10 @@ class SiteSettingController extends Controller
             elseif (in_array($key, ['menu_font_size', 'menu_font_padding', 'menu_font_weight', 'mobile_header_theme', 'mobile_menu_icon', 'mobile_menu_direction'])) {
                 $newSettings[$key] = $value ?? '';
             }
+            // 로고 관련 필드는 빈 값이어도 포함 (이미지 URL이 명시적으로 설정될 수 있음)
+            elseif (in_array($key, ['site_logo', 'site_logo_dark', 'site_favicon', 'og_image', 'logo_type'])) {
+                $newSettings[$key] = $value ?? '';
+            }
             // 기타 필드: 빈 값이 아닌 경우만 포함
             elseif ($value !== null && $value !== '') {
                 $newSettings[$key] = $value;

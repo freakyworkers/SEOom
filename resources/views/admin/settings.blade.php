@@ -1787,8 +1787,17 @@
                 if ($input.length) {
                     $input.val(response.url);
                     console.log('Hidden input updated:', inputName, response.url);
+                    console.log('Hidden input value after update:', $input.val());
                 } else {
-                    console.warn('Hidden input not found:', inputName);
+                    console.error('Hidden input not found:', inputName, 'Trying to find by name attribute...');
+                    // name 속성으로도 찾기 시도
+                    var $inputByName = $('input[name="' + inputName + '"]');
+                    if ($inputByName.length) {
+                        $inputByName.val(response.url);
+                        console.log('Hidden input found by name and updated:', inputName, response.url);
+                    } else {
+                        console.error('Hidden input not found by name either:', inputName);
+                    }
                 }
                 
                 console.log('Preview update completed');
