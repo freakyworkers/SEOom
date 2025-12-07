@@ -359,5 +359,58 @@ class CloudflareService
             return [];
         });
     }
+
+    /**
+     * Set SSL/TLS mode for a zone
+     * 
+     * @param string $zoneId
+     * @param string $mode 'off', 'flexible', 'full', 'strict'
+     * @return bool
+     */
+    protected function setSslMode(string $zoneId, string $mode = 'flexible'): bool
+    {
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->apiToken,
+                'Content-Type' => 'application/json',
+            ])->patch("{$this->apiUrl}/zones/{$zoneId}/settings/ssl", [
+                'value' => $mode,
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if ($data['success'] ?? false) {
+                    Log::info('SSL/TLS mode set successfully', [
+                        'zone_id' => $zoneId,
+                        'mode' => $mode,
+                    ]);
+                    return true;
+                } else {
+                    Log::warning('Failed to set SSL/TLS mode', [
+                        'zone_id' => $zoneId,
+                        'mode' => $mode,
+                        'response' => $data,
+                    ]);
+                }
+            } else {
+                Log::error('Failed to set SSL/TLS mode', [
+                    'zone_id' => $zoneId,
+                    'mode' => $mode,
+                    'status' => $response->status(),
+                    'response' => $response->json(),
+                ]);
+            }
+
+            return false;
+        } catch (\Exception $e) {
+            Log::error('Exception while setting SSL/TLS mode', [
+                'zone_id' => $zoneId,
+                'mode' => $mode,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
 }
 
