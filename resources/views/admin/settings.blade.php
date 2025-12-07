@@ -2687,16 +2687,18 @@ $(document).ready(function() {
         
         if (logoType === 'text') {
             $('#logo-text-notice').slideDown();
-            $logoImageArea.hide();
-            $logoDarkImageArea.hide();
-            $desktopSize.hide();
-            $mobileSize.hide();
+            // td는 유지하되 내용만 숨기기 (테이블 레이아웃 유지)
+            $logoImageArea.css('visibility', 'hidden').css('min-width', $logoImageArea.width() + 'px');
+            $logoDarkImageArea.css('visibility', 'hidden').css('min-width', $logoDarkImageArea.width() + 'px');
+            $desktopSize.css('visibility', 'hidden').css('min-width', $desktopSize.width() + 'px');
+            $mobileSize.css('visibility', 'hidden').css('min-width', $mobileSize.width() + 'px');
         } else {
             $('#logo-text-notice').slideUp();
-            $logoImageArea.show();
-            $logoDarkImageArea.show();
-            $desktopSize.show();
-            $mobileSize.show();
+            // visibility와 min-width 제거하여 다시 표시
+            $logoImageArea.css('visibility', '').css('min-width', '');
+            $logoDarkImageArea.css('visibility', '').css('min-width', '');
+            $desktopSize.css('visibility', '').css('min-width', '');
+            $mobileSize.css('visibility', '').css('min-width', '');
         }
     }
 
