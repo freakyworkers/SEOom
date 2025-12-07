@@ -15,6 +15,11 @@ class VerifySiteUser
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // my-sites 라우트는 특별 처리 (사용자가 자신이 만든 사이트를 관리하기 위해 마스터 사이트에 접근)
+        if ($request->is('site/*/my-sites*')) {
+            return $next($request);
+        }
+        
         // Site가 route parameter로 있는 경우에만 체크
         if ($request->route('site')) {
             $site = $request->route('site');
