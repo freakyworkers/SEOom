@@ -3,28 +3,6 @@
 {{-- 타이틀을 설정하지 않으면 사이트 이름이 기본 타이틀로 표시됩니다 --}}
 
 @section('content')
-{{-- 마스터 사이트이고 로그인된 경우 사이트 생성 버튼 표시 --}}
-@if($site->isMasterSite() && auth()->check())
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm border-primary">
-                <div class="card-body text-center py-4">
-                    <h3 class="mb-3">
-                        <i class="bi bi-rocket-takeoff text-primary me-2"></i>
-                        나만의 홈페이지를 만들어보세요!
-                    </h3>
-                    <p class="text-muted mb-4">
-                        회원가입 후 간단한 정보만 입력하면 바로 홈페이지를 생성할 수 있습니다.
-                    </p>
-                    <a href="{{ route('user-sites.select-plan', ['site' => $site->slug]) }}" class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-circle me-2"></i>새 사이트 만들기
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-@endif
-
 {{-- 메인 위젯 표시 --}}
 @if(isset($mainWidgetContainers) && $mainWidgetContainers->isNotEmpty())
     @foreach($mainWidgetContainers as $container)
