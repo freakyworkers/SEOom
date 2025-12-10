@@ -28,6 +28,70 @@ class UserController extends Controller
             'messages' => $user->messages_count, // Placeholder for future implementation
         ];
 
+        // 회원등급 및 경험치 정보 가져오기
+        $userRank = null;
+        $nextRank = null;
+        $currentExp = 0;
+        $requiredExp = 100;
+        $expPercentage = 0;
+        
+        if (\Illuminate\Support\Facades\Schema::hasTable('user_ranks')) {
+            $userRank = $user->getUserRank($site->id);
+            
+            if ($userRank) {
+                $criteriaType = $site->getSetting('rank_criteria_type', 'current_points');
+                
+                // 사용자의 현재 기준 값
+                if ($criteriaType === 'current_points' || $criteriaType === 'max_points') {
+                    $currentValue = $user->points ?? 0;
+                } elseif ($criteriaType === 'post_count') {
+                    $currentValue = $user->posts()->where('site_id', $site->id)->count();
+                } else {
+                    $currentValue = 0;
+                }
+                
+                // 다음 등급 찾기
+                $nextRanks = \App\Models\UserRank::where('site_id', $site->id)
+                    ->where('criteria_type', $criteriaType)
+                    ->where('criteria_value', '>', $userRank->criteria_value)
+                    ->orderBy('criteria_value', 'asc')
+                    ->get();
+                
+                if ($nextRanks->isNotEmpty()) {
+                    $nextRank = $nextRanks->first();
+                    $currentExp = $currentValue - $userRank->criteria_value;
+                    $requiredExp = $nextRank->criteria_value - $userRank->criteria_value;
+                } else {
+                    // 최고 등급인 경우
+                    $currentExp = $currentValue - $userRank->criteria_value;
+                    $requiredExp = 1; // 0으로 나누기 방지
+                }
+                
+                $expPercentage = $requiredExp > 0 ? min(100, ($currentExp / $requiredExp) * 100) : 100;
+            } else {
+                // 등급이 없는 경우 (가장 낮은 등급 미만)
+                $criteriaType = $site->getSetting('rank_criteria_type', 'current_points');
+                $firstRank = \App\Models\UserRank::where('site_id', $site->id)
+                    ->where('criteria_type', $criteriaType)
+                    ->orderBy('criteria_value', 'asc')
+                    ->first();
+                
+                if ($firstRank) {
+                    if ($criteriaType === 'current_points' || $criteriaType === 'max_points') {
+                        $currentValue = $user->points ?? 0;
+                    } elseif ($criteriaType === 'post_count') {
+                        $currentValue = $user->posts()->where('site_id', $site->id)->count();
+                    } else {
+                        $currentValue = 0;
+                    }
+                    
+                    $currentExp = $currentValue;
+                    $requiredExp = $firstRank->criteria_value;
+                    $expPercentage = $requiredExp > 0 ? min(100, ($currentExp / $requiredExp) * 100) : 0;
+                }
+            }
+        }
+
         // 마스터 사이트인 경우 사용자가 만든 사이트 목록 가져오기
         $userSites = collect([]);
         if ($site->isMasterSite()) {
@@ -68,7 +132,7 @@ class UserController extends Controller
             }
         }
 
-        return view('users.profile', compact('site', 'user', 'stats', 'userSites'));
+        return view('users.profile', compact('site', 'user', 'stats', 'userSites', 'userRank', 'currentExp', 'requiredExp', 'expPercentage', 'nextRank'));
     }
 
     /**

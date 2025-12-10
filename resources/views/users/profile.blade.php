@@ -15,6 +15,26 @@
                 </div>
             </div>
             <div class="card-body">
+                @php
+                    // 마이페이지 설정 가져오기
+                    $showExperience = $site->getSetting('my_page_show_experience', true);
+                    $showRank = $site->getSetting('my_page_show_rank', true);
+                    $showPoints = $site->getSetting('my_page_show_points', true);
+                    
+                    // 사이드바 위젯 설정도 확인 (위젯에서 비활성화되면 마이페이지에도 표시 안됨)
+                    $sidebarShowExperience = $site->getSetting('sidebar_widget_show_experience', true);
+                    $sidebarShowRank = $site->getSetting('sidebar_widget_show_rank', true);
+                    $sidebarShowPoints = $site->getSetting('sidebar_widget_show_points', true);
+                    
+                    // 실제 표시 여부 결정
+                    $displayExperience = $showExperience && $sidebarShowExperience;
+                    $displayRank = $showRank && $sidebarShowRank;
+                    $displayPoints = $showPoints && $sidebarShowPoints;
+                    
+                    // 포인트 컬러 가져오기
+                    $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
+                    $pointColor = $themeDarkMode === 'dark' ? $site->getSetting('color_dark_point_main', '#ffffff') : $site->getSetting('color_light_point_main', '#0d6efd');
+                @endphp
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
@@ -25,17 +45,67 @@
                             <td style="width: 150px;"><strong>닉네임</strong></td>
                             <td>{{ $user->nickname ?? '-' }}</td>
                         </tr>
+                        @if($displayExperience)
+                        <tr>
+                            <td><strong>경험치</strong></td>
+                            <td>
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span>{{ number_format($expPercentage ?? 0, 1) }}%</span>
+                                        @if(isset($nextRank))
+                                            <small class="text-muted">다음 등급까지: {{ number_format($requiredExp - $currentExp) }}</small>
+                                        @endif
+                                    </div>
+                                    <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e9ecef;">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ $expPercentage ?? 0 }}%; background-color: {{ $pointColor }}; border-radius: 5px;" aria-valuenow="{{ $expPercentage ?? 0 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        @endif
+                        @if($displayRank)
+                        <tr>
+                            <td><strong>회원등급</strong></td>
+                            <td>
+                                @php
+                                    $adminIcon = $site->getSetting('admin_icon_path', '');
+                                    $managerIcon = $site->getSetting('manager_icon_path', '');
+                                    $displayType = $site->getSetting('rank_display_type', 'icon');
+                                @endphp
+                                @if($user->isAdmin() && $adminIcon)
+                                    <img src="{{ asset('storage/' . $adminIcon) }}" alt="Admin" style="width: 24px; height: 24px; object-fit: contain; vertical-align: middle; margin-right: 8px;">
+                                    <strong>관리자</strong>
+                                @elseif($user->isManager() && $managerIcon)
+                                    <img src="{{ asset('storage/' . $managerIcon) }}" alt="Manager" style="width: 24px; height: 24px; object-fit: contain; vertical-align: middle; margin-right: 8px;">
+                                    <strong>매니저</strong>
+                                @elseif($userRank)
+                                    @if($displayType === 'icon' && $userRank->icon_path)
+                                        <img src="{{ asset('storage/' . $userRank->icon_path) }}" alt="{{ $userRank->name }}" style="width: 24px; height: 24px; object-fit: contain; vertical-align: middle; margin-right: 8px;">
+                                        <strong>{{ $userRank->name }}</strong>
+                                    @elseif($displayType === 'color' && $userRank->color)
+                                        <span style="color: {{ $userRank->color }}; font-weight: bold; margin-right: 8px;">{{ $userRank->name }}</span>
+                                    @else
+                                        <strong>{{ $userRank->name }}</strong>
+                                    @endif
+                                @else
+                                    <strong>일반회원</strong>
+                                @endif
+                            </td>
+                        </tr>
+                        @endif
+                        @if($displayPoints)
                         <tr>
                             <td><strong>포인트</strong></td>
                             <td>
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <span>{{ number_format($user->points ?? 0) }}P</span>
+                                    <span style="color: {{ $pointColor }}; font-weight: bold;">{{ number_format($user->points ?? 0) }}P</span>
                                     <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#pointHistoryModal">
                                         <i class="bi bi-clock-history me-1"></i>포인트내역
                                     </button>
                                 </div>
                             </td>
                         </tr>
+                        @endif
                         <tr>
                             <td><strong>게시글</strong></td>
                             <td>{{ number_format($stats['posts']) }}개</td>
@@ -54,7 +124,17 @@
         </div>
 
         <!-- 메뉴 버튼 영역 -->
+        @php
+            // 마이페이지 하단 메뉴 설정 가져오기
+            $showNotifications = $site->getSetting('my_page_show_notifications', true);
+            $showMessages = $site->getSetting('my_page_show_messages', true);
+            $showEditProfile = $site->getSetting('my_page_show_edit_profile', true);
+            $showMyPosts = $site->getSetting('my_page_show_my_posts', true);
+            $showSavedPosts = $site->getSetting('my_page_show_saved_posts', true);
+            $showMyComments = $site->getSetting('my_page_show_my_comments', true);
+        @endphp
         <div class="row g-3">
+            @if($showNotifications)
             <div class="col-6 col-md-4">
                 <a href="{{ route('notifications.index', ['site' => $site->slug ?? 'default']) }}" class="text-decoration-none">
                     <div class="card shadow-sm h-100 profile-menu-card">
@@ -78,6 +158,8 @@
                     </div>
                 </a>
             </div>
+            @endif
+            @if($showMessages)
             <div class="col-6 col-md-4">
                 <a href="{{ route('messages.index', ['site' => $site->slug ?? 'default']) }}" class="text-decoration-none">
                     <div class="card shadow-sm h-100 profile-menu-card">
@@ -101,6 +183,8 @@
                     </div>
                 </a>
             </div>
+            @endif
+            @if($showEditProfile)
             <div class="col-6 col-md-4">
                 <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                     <div class="card shadow-sm h-100 profile-menu-card">
@@ -113,6 +197,8 @@
                     </div>
                 </a>
             </div>
+            @endif
+            @if($showMyPosts)
             <div class="col-6 col-md-4">
                 <a href="{{ route('users.my-posts', ['site' => $site->slug ?? 'default']) }}" class="text-decoration-none">
                     <div class="card shadow-sm h-100 profile-menu-card">
@@ -125,6 +211,8 @@
                     </div>
                 </a>
             </div>
+            @endif
+            @if($showSavedPosts)
             <div class="col-6 col-md-4">
                 <a href="{{ route('users.saved-posts', ['site' => $site->slug ?? 'default']) }}" class="text-decoration-none">
                     <div class="card shadow-sm h-100 profile-menu-card">
@@ -137,6 +225,8 @@
                     </div>
                 </a>
             </div>
+            @endif
+            @if($showMyComments)
             <div class="col-6 col-md-4">
                 <a href="{{ route('users.my-comments', ['site' => $site->slug ?? 'default']) }}" class="text-decoration-none">
                     <div class="card shadow-sm h-100 profile-menu-card">
@@ -149,6 +239,7 @@
                     </div>
                 </a>
             </div>
+            @endif
         </div>
 
         @if($site->isMasterSite() && isset($userSites))
@@ -457,10 +548,19 @@
 document.addEventListener('DOMContentLoaded', function() {
     const pointHistoryModal = document.getElementById('pointHistoryModal');
     const pointHistoryContent = document.getElementById('pointHistoryContent');
+    const editProfileModal = document.getElementById('editProfileModal');
     
     // URL 해시가 #point-history인 경우 모달 자동 열기
     if (window.location.hash === '#point-history') {
         const modal = new bootstrap.Modal(pointHistoryModal);
+        modal.show();
+        // 해시 제거 (모달이 닫힌 후에도 해시가 남아있지 않도록)
+        history.replaceState(null, null, window.location.pathname);
+    }
+    
+    // URL 해시가 #edit-profile인 경우 정보변경 모달 자동 열기
+    if (window.location.hash === '#edit-profile' && editProfileModal) {
+        const modal = new bootstrap.Modal(editProfileModal);
         modal.show();
         // 해시 제거 (모달이 닫힌 후에도 해시가 남아있지 않도록)
         history.replaceState(null, null, window.location.pathname);

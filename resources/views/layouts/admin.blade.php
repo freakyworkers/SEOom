@@ -243,6 +243,14 @@
                     </a>
                 </li>
                 @endif
+                @if($site->hasFeature('users'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.my-page-settings') || request()->routeIs('master.admin.my-page-settings') ? 'active' : '' }}" 
+                       href="{{ $site->isMasterSite() ? route('master.admin.my-page-settings') : route('admin.my-page-settings', ['site' => $site->slug]) }}">
+                        <i class="bi bi-person-circle me-2"></i>마이페이지
+                    </a>
+                </li>
+                @endif
                 @if($site->hasFeature('attendance'))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.attendance.*') || request()->routeIs('master.admin.attendance.*') ? 'active' : '' }}" 

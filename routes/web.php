@@ -214,6 +214,14 @@ Route::middleware('web')->group(function () {
                 return app(\App\Http\Controllers\AdminController::class)->userRanksDelete($masterSite, $userRank);
             })->name('master.admin.user-ranks.delete');
             
+            // My Page Settings
+            Route::get('/my-page-settings', function () use ($masterSite) {
+                return app(\App\Http\Controllers\AdminController::class)->myPageSettings($masterSite);
+            })->name('master.admin.my-page-settings');
+            Route::put('/my-page-settings', function (Request $request) use ($masterSite) {
+                return app(\App\Http\Controllers\AdminController::class)->updateMyPageSettings($masterSite, $request);
+            })->name('master.admin.my-page-settings.update');
+            
             // Crawlers
             Route::get('/crawlers', function () use ($masterSite) {
                 return app(\App\Http\Controllers\AdminController::class)->crawlersIndex($masterSite);
@@ -856,6 +864,10 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
         Route::post('/user-ranks/store', [AdminController::class, 'userRanksStore'])->name('admin.user-ranks.store');
         Route::post('/user-ranks/update', [AdminController::class, 'userRanksUpdate'])->name('admin.user-ranks.update');
         Route::delete('/user-ranks/{userRank}', [AdminController::class, 'userRanksDelete'])->name('admin.user-ranks.delete');
+        
+        // My Page Settings
+        Route::get('/my-page-settings', [AdminController::class, 'myPageSettings'])->name('admin.my-page-settings');
+        Route::put('/my-page-settings', [AdminController::class, 'updateMyPageSettings'])->name('admin.my-page-settings.update');
         
         // Crawler management routes
         Route::get('/crawlers', [AdminController::class, 'crawlersIndex'])->name('admin.crawlers.index');

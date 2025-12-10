@@ -17,6 +17,9 @@ yarn-error.log
 /.idea
 /.vscode
 
+# 배포 정보 (민감한 정보 포함)
+DEPLOYMENT_INFO.md
+
 
 
 

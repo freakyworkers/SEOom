@@ -111,7 +111,22 @@
                 </form>
             </div>
             
+            @php
+                // 마이페이지 설정 가져오기
+                $showExperience = $site->getSetting('sidebar_widget_show_experience', true);
+                $showRank = $site->getSetting('sidebar_widget_show_rank', true);
+                $showPoints = $site->getSetting('sidebar_widget_show_points', true);
+                $showNotifications = $site->getSetting('sidebar_widget_show_notifications', true);
+                $showMessages = $site->getSetting('sidebar_widget_show_messages', true);
+                $showMyPosts = $site->getSetting('sidebar_widget_show_my_posts', true);
+                $showProfile = $site->getSetting('sidebar_widget_show_profile', true);
+                $showEditProfile = $site->getSetting('sidebar_widget_show_edit_profile', true);
+                $showSavedPosts = $site->getSetting('sidebar_widget_show_saved_posts', true);
+                $showMyComments = $site->getSetting('sidebar_widget_show_my_comments', true);
+            @endphp
+            
             {{-- 경험치 바 --}}
+            @if($showExperience)
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <small class="text-muted">경험치</small>
@@ -121,9 +136,12 @@
                     <div class="progress-bar" role="progressbar" style="width: {{ $expPercentage }}%; background-color: {{ $pointColor }}; border-radius: 4px;" aria-valuenow="{{ $expPercentage }}" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
+            @endif
             
             {{-- 회원등급 및 포인트 --}}
+            @if($showRank || $showPoints)
             <div class="mb-3">
+                @if($showRank)
                 <div class="d-flex align-items-center mb-2">
                     @php
                         $adminIcon = $site->getSetting('admin_icon_path', '');
@@ -150,39 +168,56 @@
                         <small class="text-muted"><strong>일반회원</strong></small>
                     @endif
                 </div>
+                @endif
+                @if($showPoints)
                 <div class="d-flex align-items-center">
                     <small class="text-muted">포인트: <strong style="color: {{ $pointColor }};">{{ number_format($user->points ?? 0) }}</strong></small>
                 </div>
+                @endif
             </div>
+            @endif
             
             {{-- 하단 버튼들 --}}
+            @php
+                $menuItems = [];
+                if ($showNotifications) {
+                    $menuItems[] = ['route' => 'notifications.index', 'icon' => 'bi-bell-fill', 'title' => '알림', 'badge' => $unreadNotificationCount];
+                }
+                if ($showMessages) {
+                    $menuItems[] = ['route' => 'messages.index', 'icon' => 'bi-envelope-fill', 'title' => '쪽지', 'badge' => $unreadMessageCount];
+                }
+                if ($showMyPosts) {
+                    $menuItems[] = ['route' => 'users.my-posts', 'icon' => 'bi-file-text-fill', 'title' => '내게시글', 'badge' => 0];
+                }
+                if ($showProfile) {
+                    $menuItems[] = ['route' => 'users.profile', 'icon' => 'bi-person-circle', 'title' => '내정보', 'badge' => 0];
+                }
+                if ($showEditProfile) {
+                    $menuItems[] = ['route' => 'users.profile', 'icon' => 'bi-pencil-square', 'title' => '정보변경', 'badge' => 0, 'hash' => '#edit-profile'];
+                }
+                if ($showSavedPosts) {
+                    $menuItems[] = ['route' => 'users.saved-posts', 'icon' => 'bi-bookmark-fill', 'title' => '저장한글', 'badge' => 0];
+                }
+                if ($showMyComments) {
+                    $menuItems[] = ['route' => 'users.my-comments', 'icon' => 'bi-chat-dots-fill', 'title' => '내댓글', 'badge' => 0];
+                }
+            @endphp
+            @if(count($menuItems) > 0)
             <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                <a href="{{ route('notifications.index', ['site' => $site->slug ?? 'default']) }}" class="text-decoration-none text-center sidebar-widget-btn position-relative" style="flex: 1;" title="알림">
-                    <i class="bi bi-bell-fill d-block mb-1" style="font-size: 1.25rem; color: #6c757d;"></i>
-                    @if($unreadNotificationCount > 0)
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.25em 0.4em;">
-                            {{ $unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount }}
-                        </span>
+                @foreach($menuItems as $item)
+                    @if($item['route'])
+                        <a href="{{ route($item['route'], ['site' => $site->slug ?? 'default']) }}{{ isset($item['hash']) ? $item['hash'] : '' }}" class="text-decoration-none text-center sidebar-widget-btn position-relative" style="flex: 1;" title="{{ $item['title'] }}">
+                            <i class="bi {{ $item['icon'] }} d-block mb-1" style="font-size: 1.25rem; color: #6c757d;"></i>
+                            @if($item['badge'] > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.25em 0.4em;">
+                                    {{ $item['badge'] > 99 ? '99+' : $item['badge'] }}
+                                </span>
+                            @endif
+                        </a>
                     @endif
-                </a>
-                <a href="{{ route('messages.index', ['site' => $site->slug ?? 'default']) }}" class="text-decoration-none text-center sidebar-widget-btn position-relative" style="flex: 1;" title="쪽지">
-                    <i class="bi bi-envelope-fill d-block mb-1" style="font-size: 1.25rem; color: #6c757d;"></i>
-                    @if($unreadMessageCount > 0)
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.25em 0.4em;">
-                            {{ $unreadMessageCount > 99 ? '99+' : $unreadMessageCount }}
-                        </span>
-                    @endif
-                </a>
-                <a href="#" class="text-decoration-none text-center sidebar-widget-btn" style="flex: 1;" title="내게시글">
-                    <i class="bi bi-file-text-fill d-block mb-1" style="font-size: 1.25rem; color: #6c757d;"></i>
-                </a>
-                <a href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}" class="text-decoration-none text-center sidebar-widget-btn" style="flex: 1;" title="내정보">
-                    <i class="bi bi-person-circle d-block mb-1" style="font-size: 1.25rem; color: #6c757d;"></i>
-                </a>
-                <a href="#" class="text-decoration-none text-center sidebar-widget-btn" style="flex: 1;" title="정보변경">
-                    <i class="bi bi-pencil-square d-block mb-1" style="font-size: 1.25rem; color: #6c757d;"></i>
-                </a>
+                @endforeach
             </div>
+            @endif
             
             {{-- 관리자 페이지 링크 (관리자만 표시) --}}
             @php
