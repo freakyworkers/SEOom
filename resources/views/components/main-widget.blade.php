@@ -3258,6 +3258,46 @@
                 @endif
                 @break
 
+            @case('create_site')
+                @php
+                    // 마스터 사이트에서만 표시
+                    if (!$site->isMasterSite()) {
+                        break;
+                    }
+                    
+                    $createSiteSettings = $widgetSettings;
+                    $title = $createSiteSettings['title'] ?? '나만의 홈페이지를 만들어보세요!';
+                    $description = $createSiteSettings['description'] ?? '회원가입 후 간단한 정보만 입력하면 바로 홈페이지를 생성할 수 있습니다.';
+                    $buttonText = $createSiteSettings['button_text'] ?? '새 사이트 만들기';
+                    $buttonLink = $createSiteSettings['button_link'] ?? route('user-sites.select-plan', ['site' => $site->slug]);
+                    $showOnlyWhenLoggedIn = $createSiteSettings['show_only_when_logged_in'] ?? true;
+                    $backgroundColor = $createSiteSettings['background_color'] ?? '#007bff';
+                    $textColor = $createSiteSettings['text_color'] ?? '#ffffff';
+                    $buttonColor = $createSiteSettings['button_color'] ?? '#ffffff';
+                    $buttonBgColor = $createSiteSettings['button_bg_color'] ?? '#0056b3';
+                    $icon = $createSiteSettings['icon'] ?? 'bi-rocket-takeoff';
+                @endphp
+                
+                @if(!$showOnlyWhenLoggedIn || auth()->check())
+                    <div class="mb-3">
+                        <div class="card shadow-sm border-primary" style="background-color: {{ $backgroundColor }}; border-color: {{ $backgroundColor }} !important;">
+                            <div class="card-body text-center py-4" style="color: {{ $textColor }};">
+                                <h3 class="mb-3" style="color: {{ $textColor }};">
+                                    <i class="bi {{ $icon }} me-2"></i>
+                                    {{ $title }}
+                                </h3>
+                                <p class="mb-4" style="color: {{ $textColor }}; opacity: 0.9;">
+                                    {{ $description }}
+                                </p>
+                                <a href="{{ $buttonLink }}" class="btn btn-lg" style="background-color: {{ $buttonBgColor }}; color: {{ $buttonColor }}; border-color: {{ $buttonBgColor }};">
+                                    <i class="bi bi-plus-circle me-2"></i>{{ $buttonText }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+                @break
+
             @default
                 <p class="text-muted mb-0">위젯 타입을 확인할 수 없습니다.</p>
         @endswitch

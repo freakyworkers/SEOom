@@ -353,8 +353,13 @@ class Site extends Model
     /**
      * Check if site has a specific main widget type.
      */
-    public function hasMainWidgetType(string $widgetType): bool
+public function hasMainWidgetType(string $widgetType): bool
     {
+        // create_site 위젯은 마스터 사이트에서만 사용 가능
+        if ($widgetType === 'create_site') {
+            return $this->isMasterSite();
+        }
+        
         // 마스터 사이트는 모든 위젯 타입 사용 가능
         if ($this->isMasterSite()) {
             return true;
@@ -384,6 +389,11 @@ class Site extends Model
      */
     public function hasCustomPageWidgetType(string $widgetType): bool
     {
+        // create_site 위젯은 마스터 사이트에서만 사용 가능
+        if ($widgetType === 'create_site') {
+            return $this->isMasterSite();
+        }
+        
         // 마스터 사이트는 모든 위젯 타입 사용 가능
         if ($this->isMasterSite()) {
             return true;

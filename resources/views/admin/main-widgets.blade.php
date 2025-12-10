@@ -799,6 +799,104 @@
                         </select>
                         <small class="text-muted">사용할 지도를 선택하세요.</small>
                     </div>
+                    <div class="mb-3" id="edit_main_widget_create_site_container" style="display: none;">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>마스터 사이트 전용 위젯</strong><br>
+                            이 위젯은 마스터 사이트에서만 사용할 수 있으며, 로그인한 사용자에게 사이트 생성 안내를 표시합니다.
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_create_site_title" class="form-label">제목</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="edit_main_widget_create_site_title" 
+                                   name="create_site_title" 
+                                   placeholder="나만의 홈페이지를 만들어보세요!"
+                                   value="나만의 홈페이지를 만들어보세요!">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_create_site_description" class="form-label">설명</label>
+                            <textarea class="form-control" 
+                                      id="edit_main_widget_create_site_description" 
+                                      name="create_site_description" 
+                                      rows="2"
+                                      placeholder="회원가입 후 간단한 정보만 입력하면 바로 홈페이지를 생성할 수 있습니다.">회원가입 후 간단한 정보만 입력하면 바로 홈페이지를 생성할 수 있습니다.</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_create_site_button_text" class="form-label">버튼 텍스트</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="edit_main_widget_create_site_button_text" 
+                                   name="create_site_button_text" 
+                                   placeholder="새 사이트 만들기"
+                                   value="새 사이트 만들기">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_create_site_button_link" class="form-label">버튼 링크</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="edit_main_widget_create_site_button_link" 
+                                   name="create_site_button_link" 
+                                   placeholder="{{ route('user-sites.select-plan', ['site' => $site->slug]) }}"
+                                   value="{{ route('user-sites.select-plan', ['site' => $site->slug]) }}">
+                            <small class="text-muted">사이트 생성 페이지 링크를 입력하세요.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_create_site_icon" class="form-label">아이콘</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="edit_main_widget_create_site_icon" 
+                                   name="create_site_icon" 
+                                   placeholder="bi-rocket-takeoff"
+                                   value="bi-rocket-takeoff">
+                            <small class="text-muted">Bootstrap Icons 클래스 이름을 입력하세요 (예: bi-rocket-takeoff)</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_create_site_background_color" class="form-label">배경색</label>
+                            <input type="color" 
+                                   class="form-control form-control-color" 
+                                   id="edit_main_widget_create_site_background_color" 
+                                   name="create_site_background_color" 
+                                   value="#007bff">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_create_site_text_color" class="form-label">텍스트 색상</label>
+                            <input type="color" 
+                                   class="form-control form-control-color" 
+                                   id="edit_main_widget_create_site_text_color" 
+                                   name="create_site_text_color" 
+                                   value="#ffffff">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_create_site_button_bg_color" class="form-label">버튼 배경색</label>
+                            <input type="color" 
+                                   class="form-control form-control-color" 
+                                   id="edit_main_widget_create_site_button_bg_color" 
+                                   name="create_site_button_bg_color" 
+                                   value="#0056b3">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_create_site_button_color" class="form-label">버튼 텍스트 색상</label>
+                            <input type="color" 
+                                   class="form-control form-control-color" 
+                                   id="edit_main_widget_create_site_button_color" 
+                                   name="create_site_button_color" 
+                                   value="#ffffff">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="edit_main_widget_create_site_show_only_when_logged_in" 
+                                       name="create_site_show_only_when_logged_in"
+                                       checked>
+                                <label class="form-check-label" for="edit_main_widget_create_site_show_only_when_logged_in">
+                                    로그인한 사용자에게만 표시
+                                </label>
+                            </div>
+                            <small class="text-muted">체크 해제 시 로그인하지 않은 사용자에게도 표시됩니다.</small>
+                        </div>
+                    </div>
                     <div class="mb-3" id="edit_main_widget_title_container_main">
                         <label for="edit_main_widget_title" class="form-label">
                             위젯 제목
@@ -1559,6 +1657,8 @@ function editMainWidget(widgetId) {
             if (contactFormContainer) contactFormContainer.style.display = 'none';
             const mapContainer = document.getElementById('edit_main_widget_map_container');
             if (mapContainer) mapContainer.style.display = 'none';
+            const createSiteContainer = document.getElementById('edit_main_widget_create_site_container');
+            if (createSiteContainer) createSiteContainer.style.display = 'none';
             const toggleMenuContainer = document.getElementById('edit_main_widget_toggle_menu_container');
             if (toggleMenuContainer) toggleMenuContainer.style.display = 'none';
             const titleInput = document.getElementById('edit_main_widget_title');
@@ -1870,6 +1970,42 @@ function editMainWidget(widgetId) {
                 }
                 if (document.getElementById('edit_main_widget_title')) {
                     document.getElementById('edit_main_widget_title').value = title;
+                }
+            } else if (widgetType === 'create_site') {
+                if (createSiteContainer) createSiteContainer.style.display = 'block';
+                if (titleContainer) titleContainer.style.display = 'block';
+                if (document.getElementById('edit_main_widget_create_site_title')) {
+                    document.getElementById('edit_main_widget_create_site_title').value = settings.title || '나만의 홈페이지를 만들어보세요!';
+                }
+                if (document.getElementById('edit_main_widget_create_site_description')) {
+                    document.getElementById('edit_main_widget_create_site_description').value = settings.description || '회원가입 후 간단한 정보만 입력하면 바로 홈페이지를 생성할 수 있습니다.';
+                }
+                if (document.getElementById('edit_main_widget_create_site_button_text')) {
+                    document.getElementById('edit_main_widget_create_site_button_text').value = settings.button_text || '새 사이트 만들기';
+                }
+                if (document.getElementById('edit_main_widget_create_site_button_link')) {
+                    document.getElementById('edit_main_widget_create_site_button_link').value = settings.button_link || '{{ route('user-sites.select-plan', ['site' => $site->slug]) }}';
+                }
+                if (document.getElementById('edit_main_widget_create_site_icon')) {
+                    document.getElementById('edit_main_widget_create_site_icon').value = settings.icon || 'bi-rocket-takeoff';
+                }
+                if (document.getElementById('edit_main_widget_create_site_background_color')) {
+                    document.getElementById('edit_main_widget_create_site_background_color').value = settings.background_color || '#007bff';
+                }
+                if (document.getElementById('edit_main_widget_create_site_text_color')) {
+                    document.getElementById('edit_main_widget_create_site_text_color').value = settings.text_color || '#ffffff';
+                }
+                if (document.getElementById('edit_main_widget_create_site_button_bg_color')) {
+                    document.getElementById('edit_main_widget_create_site_button_bg_color').value = settings.button_bg_color || '#0056b3';
+                }
+                if (document.getElementById('edit_main_widget_create_site_button_color')) {
+                    document.getElementById('edit_main_widget_create_site_button_color').value = settings.button_color || '#ffffff';
+                }
+                if (document.getElementById('edit_main_widget_create_site_show_only_when_logged_in')) {
+                    document.getElementById('edit_main_widget_create_site_show_only_when_logged_in').checked = settings.show_only_when_logged_in !== false;
+                }
+                if (document.getElementById('edit_main_widget_title')) {
+                    document.getElementById('edit_main_widget_title').value = title || '';
                 }
             } else {
                 if (titleContainer) titleContainer.style.display = 'block';
@@ -2919,6 +3055,28 @@ function saveMainWidgetSettings() {
         if (mapId) {
             settings.map_id = parseInt(mapId);
         }
+    } else if (widgetType === 'create_site') {
+        const title = document.getElementById('edit_main_widget_create_site_title')?.value || '나만의 홈페이지를 만들어보세요!';
+        const description = document.getElementById('edit_main_widget_create_site_description')?.value || '회원가입 후 간단한 정보만 입력하면 바로 홈페이지를 생성할 수 있습니다.';
+        const buttonText = document.getElementById('edit_main_widget_create_site_button_text')?.value || '새 사이트 만들기';
+        const buttonLink = document.getElementById('edit_main_widget_create_site_button_link')?.value || '{{ route('user-sites.select-plan', ['site' => $site->slug]) }}';
+        const icon = document.getElementById('edit_main_widget_create_site_icon')?.value || 'bi-rocket-takeoff';
+        const backgroundColor = document.getElementById('edit_main_widget_create_site_background_color')?.value || '#007bff';
+        const textColor = document.getElementById('edit_main_widget_create_site_text_color')?.value || '#ffffff';
+        const buttonBgColor = document.getElementById('edit_main_widget_create_site_button_bg_color')?.value || '#0056b3';
+        const buttonColor = document.getElementById('edit_main_widget_create_site_button_color')?.value || '#ffffff';
+        const showOnlyWhenLoggedIn = document.getElementById('edit_main_widget_create_site_show_only_when_logged_in')?.checked !== false;
+        
+        settings.title = title;
+        settings.description = description;
+        settings.button_text = buttonText;
+        settings.button_link = buttonLink;
+        settings.icon = icon;
+        settings.background_color = backgroundColor;
+        settings.text_color = textColor;
+        settings.button_bg_color = buttonBgColor;
+        settings.button_color = buttonColor;
+        settings.show_only_when_logged_in = showOnlyWhenLoggedIn;
     }
     
     // settings를 JSON으로 추가 (빈 객체가 아닌 경우에만)

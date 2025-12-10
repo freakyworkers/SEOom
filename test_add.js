@@ -1,114 +1,111 @@
 
-// 라우트 URL 변수 설정 (JavaScript 오류 방지)
-var uploadImageRoute = @json(route('admin.settings.upload-image', ['site' => $site->slug]));
-
 // 도메인 저장 폼 AJAX 처리
 document.addEventListener('DOMContentLoaded', function() {
     const domainForm = document.getElementById('domainForm');
     if (domainForm) {
-        domainForm.addEventListener('submit', async function(e) {
+        domainForm.addEventListener('submit', function(e) {
             e.preventDefault();
-
+            
             const submitBtn = document.getElementById('domainSubmitBtn');
-            const originalText = submitBtn ? submitBtn.innerHTML : '';
+            const originalText = submitBtn.innerHTML;
             const domainInput = document.getElementById('domain');
             const errorDiv = document.getElementById('domainError');
             const nameserversContainer = document.getElementById('nameserversContainer');
-
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>저장 중...';
-            }
-            if (errorDiv) {
-                errorDiv.style.display = 'none';
-                errorDiv.textContent = '';
-            }
-
-            const formData = new FormData(domainForm);
-
+            
+            // 버튼 비활성화 및 로딩 표시
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>저장 중...';
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+            
+            const formData = new FormData(this);
             // data-action-url 속성에서 URL 가져오기 (없으면 action 속성 사용)
-            let url = domainForm.getAttribute('data-action-url') || domainForm.action || '';
-
+            let url = this.getAttribute('data-action-url') || this.action;
+            
             // URL이 상대 경로인 경우 절대 경로로 변환
             if (url && !url.startsWith('http') && !url.startsWith('//')) {
-                url = url.startsWith('/') ? window.location.origin + url : window.location.origin + '/' + url;
+                if (url.startsWith('/')) {
+                    url = window.location.origin + url;
+                } else {
+                    url = window.location.origin + '/' + url;
+                }
             }
-
+            
             // URL이 비어있거나 잘못된 경우 기본 URL 사용
             if (!url || url.includes('/login')) {
+                // 기본 URL 생성: /site/{masterSiteSlug}/my-sites/{siteSlug}/domain
                 const currentPath = window.location.pathname;
                 const pathMatch = currentPath.match(/\/site\/([^\/]+)\/admin\/settings/);
                 if (pathMatch) {
                     const siteSlug = pathMatch[1];
+                    // 마스터 사이트 slug 가져오기 (현재 사이트가 마스터가 아닌 경우)
                     const masterSiteSlug = 'master'; // 기본값
-                    url = `${window.location.origin}/site/${masterSiteSlug}/my-sites/${siteSlug}/domain`;
+                    url = window.location.origin + '/site/' + masterSiteSlug + '/my-sites/' + siteSlug + '/domain';
                 } else {
                     console.error('Failed to determine site slug from URL');
-                    if (errorDiv) {
-                        errorDiv.textContent = '도메인 저장 경로를 찾을 수 없습니다.';
-                        errorDiv.style.display = 'block';
-                    }
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
-                    }
                     return;
                 }
             }
-
+            
+            // 디버깅: URL 확인
             console.log('Domain update URL:', url);
-
-            try {
-                const response = await fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'X-CSRF-TOKEN': (function() { var meta = document.querySelector('meta[name="csrf-token"]'); return meta ? meta.getAttribute('content') : null; })() || '{{ csrf_token() }}',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                });
-
-                let data = null;
-                try {
-                    data = await response.json();
-                } catch (jsonError) {
-                    console.error('Domain update JSON parse error:', jsonError);
+            
+            fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': (function() { var meta = document.querySelector('meta[name="csrf-token"]'); return meta ? meta.getAttribute('content') : null; })() || '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    // 응답을 복제하여 여러 번 읽을 수 있도록 함
+                    const clonedResponse = response.clone();
+                    return response.json().then(function(data) {
+                        const errorMessage = data.message || data.error || '저장에 실패했습니다.';
+                        console.error('Domain update error:', data);
+                        throw new Error(errorMessage);
+                    }).catch(function() {
+                        return clonedResponse.text().then(function(text) {
+                            console.error('Domain update error (text):', text);
+                            // HTML 응답인 경우 에러 메시지 추출 시도
+                            const errorMatch = text.match(/<title>([^<]+)<\/title>/i) || text.match(/The\s+\w+\s+method\s+is\s+not\s+supported[^<]*/i);
+                            const errorMessage = errorMatch ? errorMatch[0] : '저장에 실패했습니다: ' + text.substring(0, 200);
+                            throw new Error(errorMessage);
+                        });
+                    });
                 }
-
-                if (!response.ok || !data) {
-                    const errorMessage = (data && (data.message || data.error)) || '저장에 실패했습니다.';
-                    throw new Error(errorMessage);
-                }
-
-                if (!data.success) {
-                    throw new Error(data.message || '저장에 실패했습니다.');
-                }
-
-                // 도메인 입력 필드 업데이트
-                if (domainInput && data.domain !== undefined) {
-                    domainInput.value = data.domain || '';
-                }
-
-                // 성공 메시지 표시
-                const alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-success alert-dismissible fade show';
-                alertDiv.innerHTML = `
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    // 도메인 입력 필드 업데이트
+                    if (domainInput && data.domain !== undefined) {
+                        domainInput.value = data.domain || '';
+                    }
+                    
+                    // 성공 메시지 표시
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                    alertDiv.innerHTML = `
                         <i class="bi bi-check-circle me-2"></i>${data.message}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     `;
-                domainForm.insertAdjacentElement('beforebegin', alertDiv);
-
-                setTimeout(function() {
-                    alertDiv.remove();
-                }, 3000);
-
-                // 네임서버 정보 업데이트
-                if (nameserversContainer) {
-                    if (data.nameservers && data.nameservers.length > 0) {
-                        let nameserversHtml = '';
-                        data.nameservers.forEach((nameserver, index) => {
-                            nameserversHtml += `
+                    domainForm.insertAdjacentElement('beforebegin', alertDiv);
+                    
+                    // 3초 후 자동으로 알림 제거
+                    setTimeout(function() {
+                        alertDiv.remove();
+                    }, 3000);
+                    
+                    // 네임서버 정보 업데이트
+                    if (nameserversContainer) {
+                        if (data.nameservers && data.nameservers.length > 0) {
+                            let nameserversHtml = '';
+                            data.nameservers.forEach((nameserver, index) => {
+                                nameserversHtml += `
                                     <div class="mb-2 d-flex align-items-center">
                                         <strong class="me-2">네임서버 ${index + 1}:</strong>
                                         <code class="flex-grow-1 ms-2" style="font-size: 1.1em; background-color: white; padding: 0.5rem; border-radius: 0.25rem;">${nameserver}</code>
@@ -124,56 +121,54 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         nameserversContainer.innerHTML = '<div class="text-muted">도메인을 입력하고 저장하면 네임서버 정보가 나타납니다.</div>';
                     }
-                }
-
-                // 도메인 정보 업데이트
-                const domainInfo = domainForm.querySelector('.form-text');
-                if (domainInfo) {
-                    if (data.domain) {
-                        domainInfo.innerHTML = `
+                    
+                    // 도메인 정보 업데이트
+                    const domainInfo = domainForm.querySelector('.form-text');
+                    if (domainInfo) {
+                        if (data.domain) {
+                            domainInfo.innerHTML = `
                                 현재 연결된 도메인: <strong>${data.domain}</strong> | 
                                 <a href="https://${data.domain}" target="_blank" class="text-decoration-none">
                                     <i class="bi bi-box-arrow-up-right me-1"></i>확인
                                 </a>
                             `;
-                    } else {
-                        const siteSlug = '{{ $site->slug }}';
-                        const masterDomain = '{{ config("app.master_domain", "seoomweb.com") }}';
-                        domainInfo.innerHTML = `
+                        } else {
+                            const siteSlug = '{{ $site->slug }}';
+                            const masterDomain = '{{ config("app.master_domain", "seoomweb.com") }}';
+                            domainInfo.innerHTML = `
                                 서브도메인: <strong>${siteSlug}.${masterDomain}</strong><br>
                                 <strong>도메인을 입력하고 저장하면 자동으로 Cloudflare에 추가되고 DNS 레코드가 생성됩니다.</strong>
                             `;
+                        }
                     }
-                }
-
-                // 네임서버 섹션 표시/숨김 처리
-                const nameserverSection = document.querySelector('[ref="e577"]');
-                if (nameserverSection) {
-                    if (data.domain && data.nameservers && data.nameservers.length > 0) {
-                        nameserverSection.style.display = 'block';
-                    } else if (!data.domain) {
-                        nameserverSection.style.display = 'none';
+                    
+                    // 네임서버 섹션 표시/숨김 처리
+                    const nameserverSection = document.querySelector('[ref="e577"]');
+                    if (nameserverSection) {
+                        if (data.domain && data.nameservers && data.nameservers.length > 0) {
+                            nameserverSection.style.display = 'block';
+                        } else if (!data.domain) {
+                            nameserverSection.style.display = 'none';
+                        }
                     }
-                }
-
-                // 페이지 새로고침 (최신 데이터 반영)
-                setTimeout(function() {
-                    window.location.reload();
-                }, 2000);
-            } catch (error) {
-                console.error('Domain update error:', error);
-                if (errorDiv) {
-                    errorDiv.textContent = error && error.message ? error.message : '저장에 실패했습니다.';
-                    errorDiv.style.display = 'block';
+                    
+                    // 페이지 새로고침 (최신 데이터 반영)
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 2000);
                 } else {
-                    alert(error && error.message ? error.message : '저장에 실패했습니다.');
+                    throw new Error(data.message || '저장에 실패했습니다.');
                 }
-            } finally {
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                }
-            }
+            })
+            .catch(function(error) {
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+                console.error('Error:', error);
+            })
+            .finally(function() {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            });
         });
     }
     
@@ -281,46 +276,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Upload params - type:', type, 'inputName:', inputName);
 
-        // FileReader로 즉시 미리보기 표시 (배너 이미지처럼)
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            // 즉시 미리보기 표시
-            $uploadArea.addClass('has-image');
-            var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block; width: auto; height: auto; margin: 0 auto;' : 'max-height: 120px; display: block; width: auto; height: auto; margin: 0 auto;';
-            
-            // 이미지 alt 텍스트 설정
-            var imageAlt = '로고';
-            if (type === 'logo_dark') {
-                imageAlt = '로고 (다크모드)';
-            } else if (type === 'favicon') {
-                imageAlt = '파비콘';
-            } else if (type === 'og_image') {
-                imageAlt = 'OG 이미지';
-            }
-            
-            var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
-            
-            // 기존 내용 제거하고 미리보기 이미지와 파일 input 추가
-            var $img = $('<img>', {
-                'class': 'image-preview',
-                'src': e.target.result,
-                'alt': imageAlt,
-                'style': previewStyle
-            });
-            
-            var $fileInput = $('<input>', {
-                'type': 'file',
-                'class': 'hidden-file-input',
-                'accept': acceptType,
-                'data-type': type
-            });
-            
-            // 업로드 영역 내부의 hidden input은 제거 (form 내부의 hidden input만 사용)
-            $uploadArea.empty().append($img).append($fileInput);
-            console.log('Local preview displayed');
-        };
-        reader.readAsDataURL(file);
-
         // FormData 생성
         var formData = new FormData();
         formData.append('image', file);
@@ -329,11 +284,15 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('_token', csrfToken);
         
         console.log('FormData created, CSRF token:', csrfToken ? 'exists' : 'missing');
-        console.log('Starting AJAX upload to:', uploadImageRoute);
+
+        // 업로드 중 표시
+        $uploadArea.html('<div class="image-upload-btn"><i class="bi bi-hourglass-split"></i><span>업로드 중...</span></div>');
+        
+        console.log('Starting AJAX upload to:', '{{ route("admin.settings.upload-image", ["site" => $site->slug]) }}');
 
         // AJAX 업로드
         $.ajax({
-            url: uploadImageRoute,
+            url: '{{ route("admin.settings.upload-image", ["site" => $site->slug]) }}',
             method: 'POST',
             data: formData,
             processData: false,
@@ -341,11 +300,14 @@ document.addEventListener('DOMContentLoaded', function() {
             timeout: 30000, // 30초 타임아웃
             success: function(response) {
                 console.log('Upload response received:', response);
+                console.log('Response type:', typeof response);
+                console.log('Response keys:', Object.keys(response || {}));
                 
                 // 응답 검증
                 if (!response) {
                     console.error('No response received');
                     alert('서버 응답을 받을 수 없습니다.');
+                    resetUploadArea($uploadArea);
                     return;
                 }
                 
@@ -364,19 +326,62 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // 서버 URL로 이미지 소스 업데이트
+                // 이미지 미리보기 표시
                 console.log('Upload success, URL:', response.url);
-                var $img = $uploadArea.find('.image-preview');
-                if ($img.length > 0) {
-                    $img.attr('src', response.url);
-                }
+                $uploadArea.addClass('has-image');
                 
-                // form 내부의 hidden input 값 업데이트
+                var previewStyle = type === 'favicon' ? 'max-height: 60px; display: block; width: auto; height: auto; margin: 0 auto;' : 'max-height: 120px; display: block; width: auto; height: auto; margin: 0 auto;';
+                
+                // 이미지 alt 텍스트
+                var imageAlt = type === 'logo' ? '로고' : (type === 'logo_dark' ? '로고 (다크모드)' : (type === 'favicon' ? '파비콘' : 'OG 이미지'));
+                
+                // accept 타입 설정
+                var acceptType = type === 'favicon' ? 'image/*,.ico' : 'image/*';
+                
+                // jQuery를 사용하여 안전하게 이미지 요소 생성
+                var $img = $('<img>', {
+                    'class': 'image-preview',
+                    'src': response.url,
+                    'alt': imageAlt,
+                    'style': previewStyle
+                });
+                
+                // 파일 input 생성
+                var $fileInput = $('<input>', {
+                    'type': 'file',
+                    'class': 'hidden-file-input',
+                    'accept': acceptType,
+                    'data-type': type
+                });
+                
+                // 이미지 로드 이벤트
+                $img.on('load', function() {
+                    console.log('Image loaded successfully');
+                }).on('error', function() {
+                    console.error('Image load failed, URL:', response.url);
+                    alert('이미지를 불러올 수 없습니다. URL: ' + response.url);
+                    resetUploadArea($uploadArea);
+                });
+                
+                // 업로드 영역에 이미지와 파일 input 추가
+                console.log('Setting HTML to upload area');
+                $uploadArea.empty().append($img).append($fileInput);
+                
+                // 이미지가 이미 캐시된 경우 (즉시 로드 완료)
+                setTimeout(function() {
+                    var imgElement = $img[0];
+                    if (imgElement && imgElement.complete && imgElement.naturalHeight > 0) {
+                        console.log('Image already loaded from cache');
+                    } else if (imgElement && imgElement.complete && imgElement.naturalHeight === 0) {
+                        console.error('Image failed to load (naturalHeight is 0)');
+                        alert('이미지를 불러올 수 없습니다. URL: ' + response.url);
+                        resetUploadArea($uploadArea);
+                    }
+                }, 100);
+                
+                // hidden input 값 업데이트
                 if ($input.length) {
                     $input.val(response.url);
-                    console.log('Hidden input updated:', inputName, response.url);
-                } else {
-                    console.warn('Hidden input not found:', inputName);
                 }
                 
                 console.log('Preview update completed');
@@ -420,15 +425,15 @@ document.addEventListener('DOMContentLoaded', function() {
         var uploadBtnStyle = type === 'favicon' ? 'style="padding: 0.5rem;"><i class="bi bi-cloud-upload"></i><span style="font-size: 0.75rem;">업로드</span>' : '><i class="bi bi-cloud-upload"></i><span>업로드</span>';
         
         $area.removeClass('has-image');
-        // 업로드 영역 내부의 hidden input은 제거 (form 내부의 hidden input만 사용)
         $area.html(
             '<div class="image-upload-btn" ' + uploadBtnStyle + '</div>' +
-            '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">'
+            '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">' +
+            '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="">'
         );
         
         // 이벤트 위임을 사용하므로 자동으로 처리됨
         
-        // form 내부의 hidden input 값 초기화
+        // hidden input 값 초기화
         var $input = $('#' + inputName);
         if ($input.length) {
             $input.val('');
@@ -451,13 +456,12 @@ document.addEventListener('DOMContentLoaded', function() {
             var uploadBtnStyle = type === 'favicon' ? 'style="padding: 0.5rem;"><i class="bi bi-cloud-upload"></i><span style="font-size: 0.75rem;">업로드</span>' : '><i class="bi bi-cloud-upload"></i><span>업로드</span>';
             
             $area.removeClass('has-image');
-            // 업로드 영역 내부의 hidden input은 제거 (form 내부의 hidden input만 사용)
             $area.html(
                 '<div class="image-upload-btn" ' + uploadBtnStyle + '</div>' +
-                '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">'
+                '<input type="file" class="hidden-file-input" accept="' + acceptType + '" data-type="' + type + '">' +
+                '<input type="hidden" name="' + inputName + '" id="' + inputName + '" value="">'
             );
             
-            // form 내부의 hidden input 값 초기화
             if ($input.length) {
                 $input.val('');
             }
@@ -495,18 +499,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return false;
     });
 
-    // 이미지 업로드 영역 클릭 시 파일 선택 창 열기
-    $(document).on('click', '.image-upload-area', function(e) {
-        // 이미지나 파일 input을 클릭한 경우는 제외
-        if ($(e.target).hasClass('image-preview') || $(e.target).hasClass('hidden-file-input')) {
-            return;
-        }
-        var $fileInput = $(this).find('.hidden-file-input');
-        if ($fileInput.length > 0) {
-            $fileInput[0].click();
-        }
-    });
-
     // 파일 input 클릭 시 이벤트 전파 중지 (이미지 업로드 영역 클릭 이벤트와 충돌 방지)
     $(document).on('click', '.hidden-file-input', function(e) {
         e.stopPropagation();
@@ -517,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $(document).on('change', '.hidden-file-input', function(e) {
         e.stopPropagation();
         console.log('File input changed');
-        var file = this.files[0];
+        var file = e.target.files[0];
         if (!file) {
             console.log('No file selected');
             return;
@@ -526,10 +518,6 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('File selected:', file.name, file.size, file.type);
         var $uploadArea = $(this).closest('.image-upload-area');
         console.log('Upload area found:', $uploadArea.length);
-        if ($uploadArea.length === 0) {
-            console.error('Upload area not found!');
-            return;
-        }
         uploadImage(file, $uploadArea);
     });
 
@@ -1108,3 +1096,5 @@ $(document).ready(function() {
     $('#logo_type').on('change', toggleLogoType);
     toggleLogoType(); // 초기 상태 확인
 });
+
+}
