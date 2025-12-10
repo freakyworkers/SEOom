@@ -3290,7 +3290,7 @@
                 @endphp
                 
                 @if(!$showOnlyWhenLoggedIn || auth()->check())
-                    <div class="shadow-sm" style="{{ $createSiteStyle }}">
+                    <div style="{{ $createSiteStyle }}">
                         <h3 class="mb-3" style="color: {{ $textColor }};">
                             <i class="bi {{ $icon }} me-2"></i>
                             {{ $title }}
