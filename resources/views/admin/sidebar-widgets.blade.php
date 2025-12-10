@@ -13,7 +13,7 @@
 
             <div class="card mb-4">
                 <div class="card-body">
-                    <div class="form-check form-switch">
+                    <div class="form-check form-switch mb-3">
                         <input class="form-check-input" 
                                type="checkbox" 
                                id="enable_sidebar_login_widget" 
@@ -23,9 +23,25 @@
                             사이드바 로그인 위젯 활성화
                         </label>
                     </div>
-                    <small class="text-muted d-block mt-2">
+                    <small class="text-muted d-block mt-2 mb-3">
                         체크 해제 시 사이드바의 로그인 위젯이 표시되지 않습니다.
                     </small>
+                    
+                    <div class="mb-0">
+                        <label class="form-label fw-bold" for="sidebar_mobile_display">
+                            사이드바 모바일 표시
+                        </label>
+                        <select class="form-select" 
+                                id="sidebar_mobile_display" 
+                                name="sidebar_mobile_display">
+                            <option value="top" {{ $site->getSetting('sidebar_mobile_display', 'top') === 'top' ? 'selected' : '' }}>본문 상단</option>
+                            <option value="bottom" {{ $site->getSetting('sidebar_mobile_display', 'top') === 'bottom' ? 'selected' : '' }}>본문 하단</option>
+                            <option value="none" {{ $site->getSetting('sidebar_mobile_display', 'top') === 'none' ? 'selected' : '' }}>표시안함</option>
+                        </select>
+                        <small class="text-muted d-block mt-2">
+                            모바일에서 사이드바를 표시할 위치를 선택하세요. 사이드바가 활성화된 경우에만 적용됩니다.
+                        </small>
+                    </div>
                 </div>
             </div>
 
@@ -1123,6 +1139,7 @@ let sortable = null;
 let currentEditWidgetId = null;
 
 function saveSidebarWidgetSettings() {
+    // 사이드바 로그인 위젯 활성화 저장
     const enabled = document.getElementById('enable_sidebar_login_widget').checked;
     const btn = event.target;
     const originalText = btn.innerHTML;
@@ -1206,6 +1223,47 @@ function handleEditGalleryDisplayTypeChange() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // 사이드바 모바일 표시 드롭다운 변경 시 저장
+    const sidebarMobileDisplay = document.getElementById('sidebar_mobile_display');
+    if (sidebarMobileDisplay) {
+        sidebarMobileDisplay.addEventListener('change', function() {
+            const displayValue = this.value;
+            
+            fetch('{{ route("admin.sidebar-widgets", ["site" => $site->slug]) }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'sidebar_mobile_display=' + encodeURIComponent(displayValue)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 성공 알림 표시
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                    alertDiv.innerHTML = `
+                        <i class="bi bi-check-circle me-2"></i>설정이 저장되었습니다.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    document.querySelector('.page-header').after(alertDiv);
+                    
+                    // 3초 후 알림 자동 제거
+                    setTimeout(() => {
+                        alertDiv.remove();
+                    }, 3000);
+                } else {
+                    console.error('설정 저장 실패:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    }
+    
     // 드래그 앤 드롭 초기화
     const widgetList = document.getElementById('widgetList');
     if (widgetList) {

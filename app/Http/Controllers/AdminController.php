@@ -2870,6 +2870,97 @@ class AdminController extends Controller
     }
 
     /**
+     * Display my page settings.
+     */
+    public function myPageSettings(Site $site)
+    {
+        // 기본값 설정
+        $defaultSettings = [
+            // 사이드바 로그인 위젯 표시 항목
+            'sidebar_widget_show_experience' => true,
+            'sidebar_widget_show_rank' => true,
+            'sidebar_widget_show_points' => true,
+            // 로그인 위젯 하단 메뉴
+            'sidebar_widget_show_notifications' => true,
+            'sidebar_widget_show_messages' => true,
+            'sidebar_widget_show_my_posts' => true,
+            'sidebar_widget_show_profile' => true,
+            'sidebar_widget_show_edit_profile' => true,
+            'sidebar_widget_show_saved_posts' => true,
+            'sidebar_widget_show_my_comments' => true,
+            // 마이페이지 표시 항목
+            'my_page_show_experience' => true,
+            'my_page_show_rank' => true,
+            'my_page_show_points' => true,
+            // 마이페이지 하단 메뉴
+            'my_page_show_notifications' => true,
+            'my_page_show_messages' => true,
+            'my_page_show_edit_profile' => true,
+            'my_page_show_my_posts' => true,
+            'my_page_show_saved_posts' => true,
+            'my_page_show_my_comments' => true,
+        ];
+
+        $settings = [];
+        foreach ($defaultSettings as $key => $defaultValue) {
+            $settings[$key] = $site->getSetting($key, $defaultValue);
+        }
+
+        return view('admin.my-page-settings', compact('site', 'settings'));
+    }
+
+    /**
+     * Update my page settings.
+     */
+    public function updateMyPageSettings(Site $site, Request $request)
+    {
+        $request->validate([
+            'sidebar_widget_show_experience' => 'boolean',
+            'sidebar_widget_show_rank' => 'boolean',
+            'sidebar_widget_show_points' => 'boolean',
+            'sidebar_widget_show_notifications' => 'boolean',
+            'sidebar_widget_show_messages' => 'boolean',
+            'sidebar_widget_show_my_posts' => 'boolean',
+            'sidebar_widget_show_profile' => 'boolean',
+            'sidebar_widget_show_edit_profile' => 'boolean',
+            'sidebar_widget_show_saved_posts' => 'boolean',
+            'sidebar_widget_show_my_comments' => 'boolean',
+            'my_page_show_experience' => 'boolean',
+            'my_page_show_rank' => 'boolean',
+            'my_page_show_points' => 'boolean',
+            'my_page_show_notifications' => 'boolean',
+            'my_page_show_messages' => 'boolean',
+            'my_page_show_edit_profile' => 'boolean',
+            'my_page_show_my_posts' => 'boolean',
+            'my_page_show_saved_posts' => 'boolean',
+            'my_page_show_my_comments' => 'boolean',
+        ]);
+
+        // 설정 저장
+        $site->setSetting('sidebar_widget_show_experience', $request->boolean('sidebar_widget_show_experience', true));
+        $site->setSetting('sidebar_widget_show_rank', $request->boolean('sidebar_widget_show_rank', true));
+        $site->setSetting('sidebar_widget_show_points', $request->boolean('sidebar_widget_show_points', true));
+        $site->setSetting('sidebar_widget_show_notifications', $request->boolean('sidebar_widget_show_notifications', true));
+        $site->setSetting('sidebar_widget_show_messages', $request->boolean('sidebar_widget_show_messages', true));
+        $site->setSetting('sidebar_widget_show_my_posts', $request->boolean('sidebar_widget_show_my_posts', true));
+        $site->setSetting('sidebar_widget_show_profile', $request->boolean('sidebar_widget_show_profile', true));
+        $site->setSetting('sidebar_widget_show_edit_profile', $request->boolean('sidebar_widget_show_edit_profile', true));
+        $site->setSetting('sidebar_widget_show_saved_posts', $request->boolean('sidebar_widget_show_saved_posts', true));
+        $site->setSetting('sidebar_widget_show_my_comments', $request->boolean('sidebar_widget_show_my_comments', true));
+        $site->setSetting('my_page_show_experience', $request->boolean('my_page_show_experience', true));
+        $site->setSetting('my_page_show_rank', $request->boolean('my_page_show_rank', true));
+        $site->setSetting('my_page_show_points', $request->boolean('my_page_show_points', true));
+        $site->setSetting('my_page_show_notifications', $request->boolean('my_page_show_notifications', true));
+        $site->setSetting('my_page_show_messages', $request->boolean('my_page_show_messages', true));
+        $site->setSetting('my_page_show_edit_profile', $request->boolean('my_page_show_edit_profile', true));
+        $site->setSetting('my_page_show_my_posts', $request->boolean('my_page_show_my_posts', true));
+        $site->setSetting('my_page_show_saved_posts', $request->boolean('my_page_show_saved_posts', true));
+        $site->setSetting('my_page_show_my_comments', $request->boolean('my_page_show_my_comments', true));
+
+        return back()->with('success', '마이페이지 설정이 저장되었습니다.');
+    }
+
+    /**
      * Send test mail.
      */
     public function testMail(Site $site, Request $request)
@@ -2951,6 +3042,21 @@ class AdminController extends Controller
             $site->setSetting('enable_sidebar_login_widget', $request->boolean('enable_sidebar_login_widget'));
             
             if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => '설정이 저장되었습니다.',
+                ]);
+            }
+        }
+        
+        // 사이드바 모바일 표시 설정 저장
+        if ($request->has('sidebar_mobile_display')) {
+            $displayValue = $request->input('sidebar_mobile_display');
+            if (in_array($displayValue, ['top', 'bottom', 'none'])) {
+                $site->setSetting('sidebar_mobile_display', $displayValue);
+            }
+            
+            if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => '설정이 저장되었습니다.',

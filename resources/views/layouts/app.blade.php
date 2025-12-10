@@ -882,8 +882,25 @@
                 <x-banner-display :site="$site" location="right_margin" />
             </div>
             
+            @php
+                // 사이드바 모바일 표시 설정
+                $sidebarMobileDisplay = $site->getSetting('sidebar_mobile_display', 'top');
+                // 사이드바가 활성화되어 있을 때만 모바일 표시 옵션 적용
+                $showMobileSidebar = ($themeSidebar !== 'none') && ($sidebarMobileDisplay !== 'none');
+                
+                // 사이드바 위젯 데이터 (모바일 사이드바에도 사용)
+                try {
+                    $sidebarWidgets = \App\Models\SidebarWidget::where('site_id', $site->id)
+                        ->where('is_active', true)
+                        ->orderBy('order', 'asc')
+                        ->get();
+                } catch (\Exception $e) {
+                    $sidebarWidgets = collect();
+                }
+            @endphp
+            
             @if($themeSidebar === 'left')
-                <aside class="col-md-3 mb-4">
+                <aside class="col-md-3 mb-4 {{ $showMobileSidebar ? 'd-md-block d-none' : '' }}">
                     {{-- 사용자 위젯 --}}
                     @if($site->getSetting('enable_sidebar_login_widget', true))
                         <x-sidebar-user-widget :site="$site" :themeDarkMode="$themeDarkMode" />
@@ -934,7 +951,43 @@
                     $isUserProfilePage = request()->routeIs('users.profile', 'users.point-history', 'users.saved-posts', 'users.my-posts', 'users.my-comments');
                     // 알림 및 쪽지함 페이지인지 확인
                     $isNotificationOrMessagePage = request()->routeIs('notifications.index', 'messages.index', 'messages.show');
+                    
                 @endphp
+                
+                {{-- 모바일 사이드바 (본문 상단) --}}
+                @if($showMobileSidebar && $sidebarMobileDisplay === 'top')
+                    <aside class="d-md-none mb-4">
+                        {{-- 사용자 위젯 --}}
+                        @if($site->getSetting('enable_sidebar_login_widget', true))
+                            <x-sidebar-user-widget :site="$site" :themeDarkMode="$themeDarkMode" />
+                        @endif
+                        
+                        {{-- 커스텀 코드: 사이드바 상단 --}}
+                        @php
+                            try {
+                                $customCodeSidebarTop = \Illuminate\Support\Facades\Schema::hasTable('custom_codes') ? \App\Models\CustomCode::getByLocation($site->id, 'sidebar_top') : null;
+                            } catch (\Exception $e) {
+                                $customCodeSidebarTop = null;
+                            }
+                        @endphp
+                        @if($customCodeSidebarTop && !empty(trim($customCodeSidebarTop->code)))
+                            <div class="custom-code-sidebar-top mb-3">
+                                {!! $customCodeSidebarTop->code !!}
+                            </div>
+                        @endif
+                        
+                        {{-- 사이드바 상단 배너 --}}
+                        <x-banner-display :site="$site" location="sidebar_top" />
+                        
+                        {{-- 사이드바 위젯 --}}
+                        @foreach($sidebarWidgets as $widget)
+                            <x-sidebar-widget :widget="$widget" :site="$site" />
+                        @endforeach
+                        
+                        {{-- 사이드바 하단 배너 --}}
+                        <x-banner-display :site="$site" location="sidebar_bottom" />
+                    </aside>
+                @endif
                 
                 @if($isHomePage)
                     {{-- 커스텀 코드: 첫 페이지 상단 (메인 상단 배너보다 위쪽) --}}
@@ -1012,10 +1065,45 @@
                         </div>
                     @endif
                 @endif
+                
+                {{-- 모바일 사이드바 (본문 하단) --}}
+                @if($showMobileSidebar && $sidebarMobileDisplay === 'bottom')
+                    <aside class="d-md-none mt-4">
+                        {{-- 사용자 위젯 --}}
+                        @if($site->getSetting('enable_sidebar_login_widget', true))
+                            <x-sidebar-user-widget :site="$site" :themeDarkMode="$themeDarkMode" />
+                        @endif
+                        
+                        {{-- 커스텀 코드: 사이드바 상단 --}}
+                        @php
+                            try {
+                                $customCodeSidebarTop = \Illuminate\Support\Facades\Schema::hasTable('custom_codes') ? \App\Models\CustomCode::getByLocation($site->id, 'sidebar_top') : null;
+                            } catch (\Exception $e) {
+                                $customCodeSidebarTop = null;
+                            }
+                        @endphp
+                        @if($customCodeSidebarTop && !empty(trim($customCodeSidebarTop->code)))
+                            <div class="custom-code-sidebar-top mb-3">
+                                {!! $customCodeSidebarTop->code !!}
+                            </div>
+                        @endif
+                        
+                        {{-- 사이드바 상단 배너 --}}
+                        <x-banner-display :site="$site" location="sidebar_top" />
+                        
+                        {{-- 사이드바 위젯 --}}
+                        @foreach($sidebarWidgets as $widget)
+                            <x-sidebar-widget :widget="$widget" :site="$site" />
+                        @endforeach
+                        
+                        {{-- 사이드바 하단 배너 --}}
+                        <x-banner-display :site="$site" location="sidebar_bottom" />
+                    </aside>
+                @endif
             </div>
 
             @if($themeSidebar === 'right')
-                <aside class="col-md-3 mb-4">
+                <aside class="col-md-3 mb-4 {{ $showMobileSidebar ? 'd-md-block d-none' : '' }}">
                     {{-- 사용자 위젯 --}}
                     @if($site->getSetting('enable_sidebar_login_widget', true))
                         <x-sidebar-user-widget :site="$site" :themeDarkMode="$themeDarkMode" />
