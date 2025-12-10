@@ -3285,7 +3285,8 @@
                     
                     // card-body 영역 안에서 전체 너비를 차지하도록 스타일 생성
                     // card-body의 기본 패딩(1rem = 16px)을 음수 마진으로 상쇄
-                    $createSiteStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: center; color: {$textColor}; background-color: {$backgroundColor}; margin-left: -1rem; margin-right: -1rem; margin-bottom: 0; width: calc(100% + 2rem);";
+                    // 하단 패딩도 상쇄하여 하단 여백 제거
+                    $createSiteStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: center; color: {$textColor}; background-color: {$backgroundColor}; margin-left: -1rem; margin-right: -1rem; margin-bottom: -1rem; width: calc(100% + 2rem);";
                 @endphp
                 
                 @if(!$showOnlyWhenLoggedIn || auth()->check())
