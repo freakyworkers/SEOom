@@ -3285,11 +3285,11 @@
                     
                     // card-body 영역 안에서 전체 너비를 차지하도록 스타일 생성
                     // card-body의 기본 패딩(1rem = 16px)을 음수 마진으로 상쇄
-                    $createSiteStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: center; color: {$textColor}; background-color: {$backgroundColor}; margin-left: -1rem; margin-right: -1rem; width: calc(100% + 2rem);";
+                    $createSiteStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: center; color: {$textColor}; background-color: {$backgroundColor}; margin-left: -1rem; margin-right: -1rem; margin-bottom: 0; width: calc(100% + 2rem);";
                 @endphp
                 
                 @if(!$showOnlyWhenLoggedIn || auth()->check())
-                    <div class="mb-3 shadow-sm" style="{{ $createSiteStyle }}">
+                    <div class="shadow-sm" style="{{ $createSiteStyle }}">
                         <h3 class="mb-3" style="color: {{ $textColor }};">
                             <i class="bi {{ $icon }} me-2"></i>
                             {{ $title }}
