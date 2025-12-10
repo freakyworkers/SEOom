@@ -791,8 +791,17 @@
             </div>
         @endif
         
-        @if($board->enable_likes || ($board->saved_posts_enabled && \Illuminate\Support\Facades\Schema::hasTable('saved_posts') && auth()->check()))
-            {{-- 추천/비추천 버튼 및 저장하기 버튼 --}}
+        @php
+            // enable_share 컬럼이 있는지 확인
+            $hasEnableShareColumn = \Illuminate\Support\Facades\Schema::hasColumn('boards', 'enable_share');
+            // 컬럼이 있으면 해당 값을 사용, 없으면 기본값 true (하위 호환성)
+            $showShare = $hasEnableShareColumn 
+                ? ($board->enable_share === true || $board->enable_share === 1) 
+                : true;
+        @endphp
+        
+        @if($board->enable_likes || ($board->saved_posts_enabled && \Illuminate\Support\Facades\Schema::hasTable('saved_posts') && auth()->check()) || $showShare)
+            {{-- 추천/비추천 버튼, 저장하기 버튼, 공유 버튼 --}}
             <div class="mt-4 pt-3 border-top">
                 <div class="d-flex align-items-center justify-content-between gap-3">
                     {{-- 왼쪽: 추천/비추천 버튼 --}}
@@ -834,20 +843,30 @@
                         @endif
                     </div>
                     
-                    {{-- 오른쪽: 저장하기 버튼 --}}
-                    @auth
-                        @if($board->saved_posts_enabled && \Illuminate\Support\Facades\Schema::hasTable('saved_posts'))
-                            @php
-                                $isSaved = $isSaved ?? $post->isSavedByUser(auth()->id());
-                            @endphp
+                    {{-- 오른쪽: 저장하기 버튼 및 공유 버튼 --}}
+                    <div class="d-flex align-items-center gap-2">
+                        @auth
+                            @if($board->saved_posts_enabled && \Illuminate\Support\Facades\Schema::hasTable('saved_posts'))
+                                @php
+                                    $isSaved = $isSaved ?? $post->isSavedByUser(auth()->id());
+                                @endphp
+                                <button type="button" 
+                                        class="btn btn-outline-secondary" 
+                                        onclick="toggleSave({{ $post->id }})"
+                                        id="save-btn-{{ $post->id }}">
+                                    <i class="bi {{ $isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' }}"></i>
+                                </button>
+                            @endif
+                        @endauth
+                        
+                        @if($showShare)
                             <button type="button" 
                                     class="btn btn-outline-secondary" 
-                                    onclick="toggleSave({{ $post->id }})"
-                                    id="save-btn-{{ $post->id }}">
-                                <i class="bi {{ $isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' }}"></i>
+                                    id="shareButton">
+                                <i class="bi bi-share"></i>
                             </button>
                         @endif
-                    @endauth
+                    </div>
                 </div>
             </div>
         @endif
@@ -878,13 +897,6 @@
 @endif
 
 @php
-    // enable_share 컬럼이 있는지 확인
-    $hasEnableShareColumn = \Illuminate\Support\Facades\Schema::hasColumn('boards', 'enable_share');
-    // 컬럼이 있으면 해당 값을 사용, 없으면 기본값 true (하위 호환성)
-    $showShare = $hasEnableShareColumn 
-        ? ($board->enable_share === true || $board->enable_share === 1) 
-        : true;
-    
     // enable_comments 컬럼이 있는지 확인
     $hasEnableCommentsColumn = \Illuminate\Support\Facades\Schema::hasColumn('boards', 'enable_comments');
     // 컬럼이 있으면 해당 값을 사용, 없으면 기본값 true (하위 호환성)
@@ -892,19 +904,6 @@
         ? ($board->enable_comments === true || $board->enable_comments === 1) 
         : true;
 @endphp
-
-@if($showShare)
-<!-- Share Section -->
-<div class="card shadow-sm mb-4">
-    <div class="card-body">
-        <div class="d-flex align-items-center justify-content-center gap-2">
-            <button type="button" class="btn btn-outline-primary btn-lg" id="shareButton" style="min-width: 200px;">
-                <i class="bi bi-share me-2"></i>공유하기
-            </button>
-        </div>
-    </div>
-</div>
-@endif
 
 @if($showComments)
 <!-- Comments Section -->
@@ -2570,17 +2569,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 클립보드에 복사
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(url).then(function() {
-                        // 성공 메시지 표시
-                        const originalText = shareButton.innerHTML;
-                        shareButton.innerHTML = '<i class="bi bi-check-circle me-2"></i>링크가 복사되었습니다!';
-                        shareButton.classList.remove('btn-outline-primary');
-                        shareButton.classList.add('btn-success');
-                        
-                        setTimeout(function() {
-                            shareButton.innerHTML = originalText;
-                            shareButton.classList.remove('btn-success');
-                            shareButton.classList.add('btn-outline-primary');
-                        }, 2000);
+                        // 성공 메시지 표시 (아이콘만 변경)
+                        const icon = shareButton.querySelector('i');
+                        if (icon) {
+                            const originalClass = icon.className;
+                            icon.className = 'bi bi-check-circle';
+                            shareButton.classList.remove('btn-outline-secondary');
+                            shareButton.classList.add('btn-success');
+                            
+                            setTimeout(function() {
+                                icon.className = originalClass;
+                                shareButton.classList.remove('btn-success');
+                                shareButton.classList.add('btn-outline-secondary');
+                            }, 2000);
+                        }
                     }).catch(function(err) {
                         console.error('클립보드 복사 실패:', err);
                         // 폴백: 수동 복사 안내
