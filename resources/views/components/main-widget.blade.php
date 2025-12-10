@@ -448,7 +448,7 @@
     @endif
 @else
 <div class="card shadow-sm mb-3 {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $widgetTopBorderStyle }}{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '' }}">
-    @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat' && $widget->type !== 'chat_widget')
+    @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat' && $widget->type !== 'chat_widget' && $widget->type !== 'create_site')
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
             <div class="card-header" style="background-color: white;{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '' }} border: none !important; border-bottom: 1px solid #dee2e6 !important;">
@@ -3258,50 +3258,47 @@
                 @endif
                 @break
 
-            @case('create_site')
-                @php
-                    // 마스터 사이트에서만 표시
-                    if (!$site->isMasterSite()) {
-                        break;
-                    }
-                    
-                    $createSiteSettings = $widgetSettings;
-                    $title = $createSiteSettings['title'] ?? '나만의 홈페이지를 만들어보세요!';
-                    $description = $createSiteSettings['description'] ?? '회원가입 후 간단한 정보만 입력하면 바로 홈페이지를 생성할 수 있습니다.';
-                    $buttonText = $createSiteSettings['button_text'] ?? '새 사이트 만들기';
-                    $buttonLink = $createSiteSettings['button_link'] ?? route('user-sites.select-plan', ['site' => $site->slug]);
-                    $showOnlyWhenLoggedIn = $createSiteSettings['show_only_when_logged_in'] ?? true;
-                    $backgroundColor = $createSiteSettings['background_color'] ?? '#007bff';
-                    $textColor = $createSiteSettings['text_color'] ?? '#ffffff';
-                    $buttonColor = $createSiteSettings['button_color'] ?? '#ffffff';
-                    $buttonBgColor = $createSiteSettings['button_bg_color'] ?? '#0056b3';
-                    $icon = $createSiteSettings['icon'] ?? 'bi-rocket-takeoff';
-                @endphp
-                
-                @if(!$showOnlyWhenLoggedIn || auth()->check())
-                    <div class="mb-3">
-                        <div class="card shadow-sm border-primary" style="background-color: {{ $backgroundColor }}; border-color: {{ $backgroundColor }} !important;">
-                            <div class="card-body text-center py-4" style="color: {{ $textColor }};">
-                                <h3 class="mb-3" style="color: {{ $textColor }};">
-                                    <i class="bi {{ $icon }} me-2"></i>
-                                    {{ $title }}
-                                </h3>
-                                <p class="mb-4" style="color: {{ $textColor }}; opacity: 0.9;">
-                                    {{ $description }}
-                                </p>
-                                <a href="{{ $buttonLink }}" class="btn btn-lg" style="background-color: {{ $buttonBgColor }}; color: {{ $buttonColor }}; border-color: {{ $buttonBgColor }};">
-                                    <i class="bi bi-plus-circle me-2"></i>{{ $buttonText }}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-                @break
-
             @default
                 <p class="text-muted mb-0">위젯 타입을 확인할 수 없습니다.</p>
         @endswitch
     </div>
 </div>
+@endif
+@if($widget->type === 'create_site')
+    @php
+        // 마스터 사이트에서만 표시
+        if ($site->isMasterSite()) {
+            $createSiteSettings = $widgetSettings;
+            $title = $createSiteSettings['title'] ?? '나만의 홈페이지를 만들어보세요!';
+            $description = $createSiteSettings['description'] ?? '회원가입 후 간단한 정보만 입력하면 바로 홈페이지를 생성할 수 있습니다.';
+            $buttonText = $createSiteSettings['button_text'] ?? '새 사이트 만들기';
+            $buttonLink = $createSiteSettings['button_link'] ?? route('user-sites.select-plan', ['site' => $site->slug]);
+            $showOnlyWhenLoggedIn = $createSiteSettings['show_only_when_logged_in'] ?? true;
+            $backgroundColor = $createSiteSettings['background_color'] ?? '#007bff';
+            $textColor = $createSiteSettings['text_color'] ?? '#ffffff';
+            $buttonColor = $createSiteSettings['button_color'] ?? '#ffffff';
+            $buttonBgColor = $createSiteSettings['button_bg_color'] ?? '#0056b3';
+            $icon = $createSiteSettings['icon'] ?? 'bi-rocket-takeoff';
+        }
+    @endphp
+    
+    @if($site->isMasterSite() && (!$showOnlyWhenLoggedIn || auth()->check()))
+        <div class="mb-3" style="margin-left: calc(-1 * var(--bs-gutter-x, 0.75rem)); margin-right: calc(-1 * var(--bs-gutter-x, 0.75rem)); width: calc(100% + var(--bs-gutter-x, 0.75rem) * 2);">
+            <div class="card shadow-sm border-primary" style="background-color: {{ $backgroundColor }}; border-color: {{ $backgroundColor }} !important; border-radius: 0;">
+                <div class="card-body text-center py-4" style="color: {{ $textColor }};">
+                    <h3 class="mb-3" style="color: {{ $textColor }};">
+                        <i class="bi {{ $icon }} me-2"></i>
+                        {{ $title }}
+                    </h3>
+                    <p class="mb-4" style="color: {{ $textColor }}; opacity: 0.9;">
+                        {{ $description }}
+                    </p>
+                    <a href="{{ $buttonLink }}" class="btn btn-lg" style="background-color: {{ $buttonBgColor }}; color: {{ $buttonColor }}; border-color: {{ $buttonBgColor }};">
+                        <i class="bi bi-plus-circle me-2"></i>{{ $buttonText }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    @endif
 @endif
 
