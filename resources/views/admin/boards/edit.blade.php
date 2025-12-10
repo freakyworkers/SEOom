@@ -807,6 +807,24 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="form-check">
+                                @php
+                                    $enableShareValue = null;
+                                    if (\Illuminate\Support\Facades\Schema::hasColumn('boards', 'enable_share')) {
+                                        $enableShareValue = $board->enable_share;
+                                    } else {
+                                        $enableShareValue = true; // 컬럼이 없으면 기본값 true
+                                    }
+                                    $enableShareChecked = old('enable_share', $enableShareValue) !== false && old('enable_share', $enableShareValue) !== 0 && old('enable_share', $enableShareValue) !== '0' && old('enable_share', $enableShareValue) !== null;
+                                @endphp
+                                <input type="checkbox" class="form-check-input" id="enable_share" name="enable_share" value="1" {{ $enableShareChecked ? 'checked' : '' }}>
+                                <label class="form-check-label" for="enable_share">
+                                    공유 기능
+                                </label>
+                                <small class="d-block text-muted">게시글 하단에 소셜 공유 버튼을 표시합니다.</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="enable_author_comment_adopt" name="enable_author_comment_adopt" value="1" {{ old('enable_author_comment_adopt', $board->enable_author_comment_adopt) ? 'checked' : '' }}>
                                 <label class="form-check-label" for="enable_author_comment_adopt">
                                     작성자 댓글 채택

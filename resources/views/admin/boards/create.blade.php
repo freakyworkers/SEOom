@@ -260,6 +260,7 @@
         formData.append('exclude_from_rss', '0');
         formData.append('prevent_drag', '0');
         formData.append('enable_attachments', '1'); // 첨부파일은 기본 활성화
+        formData.append('enable_share', '1'); // 공유 기능은 기본 활성화
         formData.append('enable_author_comment_adopt', '0');
         formData.append('enable_admin_comment_adopt', '0');
         

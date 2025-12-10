@@ -878,6 +878,13 @@
 @endif
 
 @php
+    // enable_share 컬럼이 있는지 확인
+    $hasEnableShareColumn = \Illuminate\Support\Facades\Schema::hasColumn('boards', 'enable_share');
+    // 컬럼이 있으면 해당 값을 사용, 없으면 기본값 true (하위 호환성)
+    $showShare = $hasEnableShareColumn 
+        ? ($board->enable_share === true || $board->enable_share === 1) 
+        : true;
+    
     // enable_comments 컬럼이 있는지 확인
     $hasEnableCommentsColumn = \Illuminate\Support\Facades\Schema::hasColumn('boards', 'enable_comments');
     // 컬럼이 있으면 해당 값을 사용, 없으면 기본값 true (하위 호환성)
@@ -885,6 +892,20 @@
         ? ($board->enable_comments === true || $board->enable_comments === 1) 
         : true;
 @endphp
+
+@if($showShare)
+<!-- Share Section -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-center gap-2">
+            <button type="button" class="btn btn-outline-primary btn-lg" id="shareButton" style="min-width: 200px;">
+                <i class="bi bi-share me-2"></i>공유하기
+            </button>
+        </div>
+    </div>
+</div>
+@endif
+
 @if($showComments)
 <!-- Comments Section -->
 <div class="card shadow-sm">
@@ -2511,6 +2532,67 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return false;
     }
+</script>
+@endif
+
+@if($showShare)
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const shareButton = document.getElementById('shareButton');
+        if (!shareButton) return;
+
+        // Web Share API 지원 여부 확인
+        const isWebShareSupported = navigator.share !== undefined;
+
+        if (isWebShareSupported) {
+            // Web Share API를 지원하는 경우
+            shareButton.addEventListener('click', async function() {
+                try {
+                    const shareData = {
+                        title: '{{ addslashes($post->title) }}',
+                        text: '{{ addslashes(mb_substr(strip_tags($post->content), 0, 200)) }}',
+                        url: window.location.href
+                    };
+
+                    await navigator.share(shareData);
+                } catch (error) {
+                    // 사용자가 공유를 취소한 경우는 에러로 처리하지 않음
+                    if (error.name !== 'AbortError') {
+                        console.error('공유 중 오류가 발생했습니다:', error);
+                    }
+                }
+            });
+        } else {
+            // Web Share API를 지원하지 않는 경우 - 클립보드에 URL 복사
+            shareButton.addEventListener('click', function() {
+                const url = window.location.href;
+                
+                // 클립보드에 복사
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(url).then(function() {
+                        // 성공 메시지 표시
+                        const originalText = shareButton.innerHTML;
+                        shareButton.innerHTML = '<i class="bi bi-check-circle me-2"></i>링크가 복사되었습니다!';
+                        shareButton.classList.remove('btn-outline-primary');
+                        shareButton.classList.add('btn-success');
+                        
+                        setTimeout(function() {
+                            shareButton.innerHTML = originalText;
+                            shareButton.classList.remove('btn-success');
+                            shareButton.classList.add('btn-outline-primary');
+                        }, 2000);
+                    }).catch(function(err) {
+                        console.error('클립보드 복사 실패:', err);
+                        // 폴백: 수동 복사 안내
+                        prompt('링크를 복사하세요:', url);
+                    });
+                } else {
+                    // 폴백: 수동 복사 안내
+                    prompt('링크를 복사하세요:', url);
+                }
+            });
+        }
+    });
 </script>
 @endif
 @endpush

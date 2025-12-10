@@ -681,6 +681,7 @@ class BoardController extends Controller
             'enable_attachments' => 'nullable',
             'enable_author_comment_adopt' => 'nullable',
             'enable_admin_comment_adopt' => 'nullable',
+            'enable_share' => 'nullable',
         ]);
 
         if ($validator->fails()) {
@@ -712,6 +713,11 @@ class BoardController extends Controller
         $updateData['enable_attachments'] = ($enableAttachmentsValue == '1' || $enableAttachmentsValue === true || $enableAttachmentsValue === 'true' || $enableAttachmentsValue === 1);
         $updateData['enable_author_comment_adopt'] = ($request->input('enable_author_comment_adopt', '0') == '1' || $request->input('enable_author_comment_adopt') === true || $request->input('enable_author_comment_adopt') === 'true' || $request->input('enable_author_comment_adopt') === 1);
         $updateData['enable_admin_comment_adopt'] = ($request->input('enable_admin_comment_adopt', '0') == '1' || $request->input('enable_admin_comment_adopt') === true || $request->input('enable_admin_comment_adopt') === 'true' || $request->input('enable_admin_comment_adopt') === 1);
+        // enable_share 처리 (컬럼이 존재하는 경우에만 업데이트)
+        if (Schema::hasColumn('boards', 'enable_share')) {
+            $enableShareValue = $request->input('enable_share', '0');
+            $updateData['enable_share'] = ($enableShareValue == '1' || $enableShareValue === true || $enableShareValue === 'true' || $enableShareValue === 1);
+        }
 
         $board->update($updateData);
         $board->refresh();
