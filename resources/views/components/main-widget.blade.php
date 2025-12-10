@@ -3283,8 +3283,9 @@
                     $paddingLeft = 20;
                     $paddingRight = 20;
                     
-                    // 전체 영역을 차지하도록 스타일 생성
-                    $createSiteStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: center; color: {$textColor}; background-color: {$backgroundColor}; margin-left: calc(-1 * var(--bs-gutter-x, 0.75rem)); margin-right: calc(-1 * var(--bs-gutter-x, 0.75rem)); width: calc(100% + var(--bs-gutter-x, 0.75rem) * 2);";
+                    // card-body 영역 안에서 전체 너비를 차지하도록 스타일 생성
+                    // card-body의 기본 패딩(1rem = 16px)을 음수 마진으로 상쇄
+                    $createSiteStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: center; color: {$textColor}; background-color: {$backgroundColor}; margin-left: -1rem; margin-right: -1rem; width: calc(100% + 2rem);";
                 @endphp
                 
                 @if(!$showOnlyWhenLoggedIn || auth()->check())
