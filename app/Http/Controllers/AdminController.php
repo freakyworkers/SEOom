@@ -2914,48 +2914,27 @@ class AdminController extends Controller
      */
     public function updateMyPageSettings(Site $site, Request $request)
     {
-        $request->validate([
-            'sidebar_widget_show_experience' => 'boolean',
-            'sidebar_widget_show_rank' => 'boolean',
-            'sidebar_widget_show_points' => 'boolean',
-            'sidebar_widget_show_notifications' => 'boolean',
-            'sidebar_widget_show_messages' => 'boolean',
-            'sidebar_widget_show_my_posts' => 'boolean',
-            'sidebar_widget_show_profile' => 'boolean',
-            'sidebar_widget_show_edit_profile' => 'boolean',
-            'sidebar_widget_show_saved_posts' => 'boolean',
-            'sidebar_widget_show_my_comments' => 'boolean',
-            'my_page_show_experience' => 'boolean',
-            'my_page_show_rank' => 'boolean',
-            'my_page_show_points' => 'boolean',
-            'my_page_show_notifications' => 'boolean',
-            'my_page_show_messages' => 'boolean',
-            'my_page_show_edit_profile' => 'boolean',
-            'my_page_show_my_posts' => 'boolean',
-            'my_page_show_saved_posts' => 'boolean',
-            'my_page_show_my_comments' => 'boolean',
-        ]);
-
-        // 설정 저장
-        $site->setSetting('sidebar_widget_show_experience', $request->boolean('sidebar_widget_show_experience', true));
-        $site->setSetting('sidebar_widget_show_rank', $request->boolean('sidebar_widget_show_rank', true));
-        $site->setSetting('sidebar_widget_show_points', $request->boolean('sidebar_widget_show_points', true));
-        $site->setSetting('sidebar_widget_show_notifications', $request->boolean('sidebar_widget_show_notifications', true));
-        $site->setSetting('sidebar_widget_show_messages', $request->boolean('sidebar_widget_show_messages', true));
-        $site->setSetting('sidebar_widget_show_my_posts', $request->boolean('sidebar_widget_show_my_posts', true));
-        $site->setSetting('sidebar_widget_show_profile', $request->boolean('sidebar_widget_show_profile', true));
-        $site->setSetting('sidebar_widget_show_edit_profile', $request->boolean('sidebar_widget_show_edit_profile', true));
-        $site->setSetting('sidebar_widget_show_saved_posts', $request->boolean('sidebar_widget_show_saved_posts', true));
-        $site->setSetting('sidebar_widget_show_my_comments', $request->boolean('sidebar_widget_show_my_comments', true));
-        $site->setSetting('my_page_show_experience', $request->boolean('my_page_show_experience', true));
-        $site->setSetting('my_page_show_rank', $request->boolean('my_page_show_rank', true));
-        $site->setSetting('my_page_show_points', $request->boolean('my_page_show_points', true));
-        $site->setSetting('my_page_show_notifications', $request->boolean('my_page_show_notifications', true));
-        $site->setSetting('my_page_show_messages', $request->boolean('my_page_show_messages', true));
-        $site->setSetting('my_page_show_edit_profile', $request->boolean('my_page_show_edit_profile', true));
-        $site->setSetting('my_page_show_my_posts', $request->boolean('my_page_show_my_posts', true));
-        $site->setSetting('my_page_show_saved_posts', $request->boolean('my_page_show_saved_posts', true));
-        $site->setSetting('my_page_show_my_comments', $request->boolean('my_page_show_my_comments', true));
+        // 체크박스는 체크되지 않으면 폼에서 전송되지 않으므로, has()로 확인하고 boolean()으로 변환
+        // 체크박스가 전송되지 않으면 false로 처리
+        $site->setSetting('sidebar_widget_show_experience', $request->has('sidebar_widget_show_experience') ? $request->boolean('sidebar_widget_show_experience') : false);
+        $site->setSetting('sidebar_widget_show_rank', $request->has('sidebar_widget_show_rank') ? $request->boolean('sidebar_widget_show_rank') : false);
+        $site->setSetting('sidebar_widget_show_points', $request->has('sidebar_widget_show_points') ? $request->boolean('sidebar_widget_show_points') : false);
+        $site->setSetting('sidebar_widget_show_notifications', $request->has('sidebar_widget_show_notifications') ? $request->boolean('sidebar_widget_show_notifications') : false);
+        $site->setSetting('sidebar_widget_show_messages', $request->has('sidebar_widget_show_messages') ? $request->boolean('sidebar_widget_show_messages') : false);
+        $site->setSetting('sidebar_widget_show_my_posts', $request->has('sidebar_widget_show_my_posts') ? $request->boolean('sidebar_widget_show_my_posts') : false);
+        $site->setSetting('sidebar_widget_show_profile', $request->has('sidebar_widget_show_profile') ? $request->boolean('sidebar_widget_show_profile') : false);
+        $site->setSetting('sidebar_widget_show_edit_profile', $request->has('sidebar_widget_show_edit_profile') ? $request->boolean('sidebar_widget_show_edit_profile') : false);
+        $site->setSetting('sidebar_widget_show_saved_posts', $request->has('sidebar_widget_show_saved_posts') ? $request->boolean('sidebar_widget_show_saved_posts') : false);
+        $site->setSetting('sidebar_widget_show_my_comments', $request->has('sidebar_widget_show_my_comments') ? $request->boolean('sidebar_widget_show_my_comments') : false);
+        $site->setSetting('my_page_show_experience', $request->has('my_page_show_experience') ? $request->boolean('my_page_show_experience') : false);
+        $site->setSetting('my_page_show_rank', $request->has('my_page_show_rank') ? $request->boolean('my_page_show_rank') : false);
+        $site->setSetting('my_page_show_points', $request->has('my_page_show_points') ? $request->boolean('my_page_show_points') : false);
+        $site->setSetting('my_page_show_notifications', $request->has('my_page_show_notifications') ? $request->boolean('my_page_show_notifications') : false);
+        $site->setSetting('my_page_show_messages', $request->has('my_page_show_messages') ? $request->boolean('my_page_show_messages') : false);
+        $site->setSetting('my_page_show_edit_profile', $request->has('my_page_show_edit_profile') ? $request->boolean('my_page_show_edit_profile') : false);
+        $site->setSetting('my_page_show_my_posts', $request->has('my_page_show_my_posts') ? $request->boolean('my_page_show_my_posts') : false);
+        $site->setSetting('my_page_show_saved_posts', $request->has('my_page_show_saved_posts') ? $request->boolean('my_page_show_saved_posts') : false);
+        $site->setSetting('my_page_show_my_comments', $request->has('my_page_show_my_comments') ? $request->boolean('my_page_show_my_comments') : false);
 
         return back()->with('success', '마이페이지 설정이 저장되었습니다.');
     }
