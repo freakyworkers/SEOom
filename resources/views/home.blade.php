@@ -24,23 +24,29 @@
             $containerClass = $isFullWidth ? 'container-fluid px-0' : '';
             $containerStyle = $isFullWidth ? 'width: 100vw; position: relative; left: 50%; transform: translateX(-50%); padding: 0;' : '';
             if ($isFullHeight) {
-                $containerStyle .= ($containerStyle ? ' ' : '') . 'min-height: 100vh;';
+                $containerStyle .= ($containerStyle ? ' ' : '') . 'height: 100vh; overflow: hidden;';
+                $containerClass .= ' full-height-container';
             }
             $rowStyle = $isFullWidth ? 'margin-left: 0; margin-right: 0; width: 100%;' : '';
             if ($isFullHeight) {
-                $rowStyle .= ($rowStyle ? ' ' : '') . 'min-height: 100vh;';
+                $rowStyle .= ($rowStyle ? ' ' : '') . 'height: 100%;';
             }
+            $containerMarginBottom = $isFullHeight ? 'mb-0' : 'mb-4';
         @endphp
-        <div class="{{ $containerClass }} mb-4" style="{{ $containerStyle }}">
+        <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
             <div class="row main-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
                 @for($i = 0; $i < $container->columns; $i++)
                     @php
                         $columnWidgets = $container->widgets->where('column_index', $i)->sortBy('order');
                         $colStyle = $isFullWidth ? 'padding-left: 0; padding-right: 0;' : '';
+                        if ($isFullHeight) {
+                            $colStyle .= ($colStyle ? ' ' : '') . 'height: 100%; display: flex; flex-direction: column;';
+                        }
+                        $colMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
                     @endphp
-                    <div class="col-md-{{ 12 / $container->columns }} mb-3" style="{{ $colStyle }}">
+                    <div class="col-md-{{ 12 / $container->columns }} {{ $colMarginBottom }}" style="{{ $colStyle }}">
                         @foreach($columnWidgets as $widget)
-                            <x-main-widget :widget="$widget" :site="$site" />
+                            <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" />
                         @endforeach
                     </div>
                 @endfor

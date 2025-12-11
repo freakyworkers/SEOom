@@ -16,6 +16,9 @@
     // 테마 설정 가져오기
     $themeMain = $site->getSetting('theme_main', 'round');
     $isRoundTheme = $themeMain === 'round';
+    
+    // 세로 100% 설정 확인
+    $isFullHeight = $isFullHeight ?? false;
 @endphp
 
     @if($widget->type === 'block')
@@ -44,8 +47,15 @@
         } else if ($backgroundType === 'image' && $backgroundImageUrl) {
             $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
         }
+        
+        // 세로 100%일 때 위젯이 전체 높이를 차지하도록
+        if ($isFullHeight) {
+            $blockStyle .= " height: 100%; display: flex; flex-direction: column; justify-content: center;";
+        }
+        
+        $blockMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
     @endphp
-    <div class="mb-3 shadow-sm" style="{{ $blockStyle }}">
+    <div class="{{ $blockMarginBottom }} shadow-sm" style="{{ $blockStyle }}">
         @if($link && !$showButton)
             <a href="{{ $link }}" 
                style="color: {{ $fontColor }}; text-decoration: none; display: block;"
@@ -2164,6 +2174,11 @@
                         $blockStyle .= " background-color: {$backgroundColor};";
                     } else if ($backgroundType === 'image' && $backgroundImageUrl) {
                         $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
+                    }
+                    
+                    // 세로 100%일 때 위젯이 전체 높이를 차지하도록
+                    if ($isFullHeight) {
+                        $blockStyle .= " height: 100%; display: flex; flex-direction: column; justify-content: center;";
                     }
                 @endphp
                 <div style="{{ $blockStyle }}">

@@ -635,6 +635,26 @@
     @endif
 </head>
 <body class="d-flex flex-column min-vh-100" style="overflow-x: hidden; max-width: 100vw;">
+@push('styles')
+<style>
+    .full-height-container {
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    .full-height-container .main-widget-container,
+    .full-height-container .custom-page-widget-container {
+        max-height: 100vh;
+    }
+    .full-height-container .col-md-1,
+    .full-height-container .col-md-2,
+    .full-height-container .col-md-3,
+    .full-height-container .col-md-4,
+    .full-height-container .col-md-6,
+    .full-height-container .col-md-12 {
+        max-height: 100%;
+    }
+</style>
+@endpush
     @php
         // 체크박스 값 비교 (문자열 '1' 또는 숫자 1 모두 처리)
         $showTopHeader = ($themeTopHeaderShow == '1' || $themeTopHeaderShow === '1' || $themeTopHeaderShow === 1);
