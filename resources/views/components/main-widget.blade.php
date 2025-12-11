@@ -3353,6 +3353,11 @@
                     // 하단 패딩도 상쇄하여 하단 여백 제거
                     $createSiteStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: center; color: {$textColor}; background-color: {$backgroundColor}; margin-left: -1rem; margin-right: -1rem; margin-bottom: -1rem; width: calc(100% + 2rem);";
                     
+                    // 라운드 테마일 때 하단 라운드 적용
+                    if ($isRoundTheme) {
+                        $createSiteStyle .= " border-bottom-left-radius: 0.375rem; border-bottom-right-radius: 0.375rem;";
+                    }
+                    
                     // 세로 100%일 때 위젯이 전체 높이를 차지하도록
                     if ($isFullHeight) {
                         $createSiteStyle .= " flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0;";
