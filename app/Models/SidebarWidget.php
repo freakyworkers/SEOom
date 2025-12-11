@@ -60,6 +60,7 @@ class SidebarWidget extends Model
             'plans' => '요금제',
             'chat' => '채팅',
             'create_site' => '사이트 생성 (마스터 전용)',
+            'countdown' => '카운트다운',
         ];
     }
 }

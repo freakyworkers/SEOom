@@ -1546,6 +1546,42 @@ function addMainWidget() {
         if (mapId) {
             settings.map_id = parseInt(mapId);
         }
+    } else if (widgetType === 'countdown') {
+        const countdownTitle = formData.get('countdown_title') || '';
+        const countdownContent = formData.get('countdown_content') || '';
+        const countdownType = formData.get('countdown_type') || 'dday';
+        
+        settings.countdown_title = countdownTitle;
+        settings.countdown_content = countdownContent;
+        settings.countdown_type = countdownType;
+        
+        if (countdownType === 'dday') {
+            const targetDate = formData.get('countdown_target_date');
+            if (targetDate) {
+                settings.countdown_target_date = targetDate;
+            }
+        } else if (countdownType === 'number') {
+            const animationEnabled = document.getElementById('widget_countdown_animation')?.checked || false;
+            settings.countdown_animation = animationEnabled;
+            
+            const numberItems = [];
+            const numberItemElements = document.querySelectorAll('.countdown-number-item');
+            numberItemElements.forEach((item) => {
+                const itemIndex = item.dataset.itemIndex;
+                const itemName = item.querySelector(`input[name="countdown_number[${itemIndex}][name]"]`)?.value || '';
+                const itemNumber = item.querySelector(`input[name="countdown_number[${itemIndex}][number]"]`)?.value || '';
+                const itemUnit = item.querySelector(`input[name="countdown_number[${itemIndex}][unit]"]`)?.value || '';
+                
+                if (itemName && itemNumber) {
+                    numberItems.push({
+                        name: itemName,
+                        number: parseInt(itemNumber) || 0,
+                        unit: itemUnit
+                    });
+                }
+            });
+            settings.countdown_number_items = numberItems;
+        }
     } else if (widgetType === 'block') {
         const blockTitle = formData.get('block_title');
         const blockContent = formData.get('block_content');
@@ -2374,6 +2410,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (mapContainer) mapContainer.style.display = 'none';
             const toggleMenuContainer = document.getElementById('widget_toggle_menu_container');
             if (toggleMenuContainer) toggleMenuContainer.style.display = 'none';
+            const countdownContainer = document.getElementById('widget_countdown_container');
+            if (countdownContainer) countdownContainer.style.display = 'none';
             if (titleHelp) titleHelp.style.display = 'none';
             
             if (widgetType === 'popular_posts' || widgetType === 'recent_posts' || widgetType === 'weekly_popular_posts' || widgetType === 'monthly_popular_posts') {
@@ -2488,6 +2526,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (mapContainer) mapContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'block';
                 if (titleInput) titleInput.required = true;
+            } else if (widgetType === 'countdown') {
+                if (countdownContainer) countdownContainer.style.display = 'block';
+                if (titleContainer) titleContainer.style.display = 'block';
+                if (titleInput) titleInput.required = false;
+                // 초기화: D-day 카운트 표시
+                const countdownType = document.getElementById('widget_countdown_type');
+                if (countdownType) {
+                    countdownType.value = 'dday';
+                    handleCountdownTypeChange();
+                }
             } else {
                 if (titleContainer) titleContainer.style.display = 'block';
                 if (titleInput) titleInput.required = true;
@@ -3978,6 +4026,78 @@ function handleEditMainGalleryDisplayTypeChange() {
     } else {
         if (gridContainer) gridContainer.style.display = 'none';
         if (slideContainer) slideContainer.style.display = 'block';
+    }
+}
+
+// 카운트다운 타입 변경 핸들러
+function handleCountdownTypeChange() {
+    const countdownType = document.getElementById('widget_countdown_type')?.value;
+    const ddayContainer = document.getElementById('widget_countdown_dday_container');
+    const numberContainer = document.getElementById('widget_countdown_number_container');
+    
+    if (countdownType === 'dday') {
+        if (ddayContainer) ddayContainer.style.display = 'block';
+        if (numberContainer) numberContainer.style.display = 'none';
+    } else if (countdownType === 'number') {
+        if (ddayContainer) ddayContainer.style.display = 'none';
+        if (numberContainer) numberContainer.style.display = 'block';
+        // 숫자 카운트 항목이 없으면 하나 추가
+        const itemsContainer = document.getElementById('widget_countdown_number_items');
+        if (itemsContainer && itemsContainer.children.length === 0) {
+            addCountdownNumberItem();
+        }
+    }
+}
+
+// 카운트다운 숫자 카운트 항목 추가
+let countdownNumberItemIndex = 0;
+function addCountdownNumberItem() {
+    const container = document.getElementById('widget_countdown_number_items');
+    if (!container) return;
+    
+    const itemIndex = countdownNumberItemIndex++;
+    const item = document.createElement('div');
+    item.className = 'card mb-3 countdown-number-item';
+    item.dataset.itemIndex = itemIndex;
+    item.innerHTML = `
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">항목명</label>
+                    <input type="text" 
+                           class="form-control" 
+                           name="countdown_number[${itemIndex}][name]" 
+                           placeholder="예: 프로젝트수">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">숫자</label>
+                    <input type="number" 
+                           class="form-control" 
+                           name="countdown_number[${itemIndex}][number]" 
+                           placeholder="예: 48"
+                           min="0">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">단위</label>
+                    <input type="text" 
+                           class="form-control" 
+                           name="countdown_number[${itemIndex}][unit]" 
+                           placeholder="예: 개">
+                </div>
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeCountdownNumberItem(${itemIndex})">
+                <i class="bi bi-trash me-1"></i>삭제
+            </button>
+        </div>
+    `;
+    container.appendChild(item);
+}
+
+// 카운트다운 숫자 카운트 항목 삭제
+function removeCountdownNumberItem(itemIndex) {
+    const item = document.querySelector(`.countdown-number-item[data-item-index="${itemIndex}"]`);
+    if (item) {
+        item.remove();
     }
 }
 

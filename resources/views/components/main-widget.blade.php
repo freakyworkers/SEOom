@@ -3380,10 +3380,181 @@
                 @endif
                 @break
 
+            @case('countdown')
+                @php
+                    $countdownSettings = $widgetSettings;
+                    $countdownTitle = $countdownSettings['countdown_title'] ?? '';
+                    $countdownContent = $countdownSettings['countdown_content'] ?? '';
+                    $countdownType = $countdownSettings['countdown_type'] ?? 'dday';
+                @endphp
+                <div class="countdown-widget text-center" style="{{ $isFullHeight ? 'flex: 1; display: flex; flex-direction: column; justify-content: center;' : '' }}">
+                    @if($countdownTitle)
+                        <h4 class="mb-3">{{ $countdownTitle }}</h4>
+                    @endif
+                    @if($countdownContent)
+                        <p class="mb-3">{{ $countdownContent }}</p>
+                    @endif
+                    
+                    @if($countdownType === 'dday')
+                        @php
+                            $targetDate = $countdownSettings['countdown_target_date'] ?? '';
+                        @endphp
+                        @if($targetDate)
+                            <div class="countdown-dday" data-target-date="{{ $targetDate }}">
+                                <div class="countdown-display">
+                                    <span class="countdown-text">계산 중...</span>
+                                </div>
+                            </div>
+                        @else
+                            <p class="text-muted">목표 날짜가 설정되지 않았습니다.</p>
+                        @endif
+                    @elseif($countdownType === 'number')
+                        @php
+                            $numberItems = $countdownSettings['countdown_number_items'] ?? [];
+                            $animationEnabled = $countdownSettings['countdown_animation'] ?? false;
+                        @endphp
+                        @if(count($numberItems) > 0)
+                            <div class="countdown-number-items row g-3">
+                                @foreach($numberItems as $index => $item)
+                                    <div class="col-md-{{ 12 / min(count($numberItems), 3) }} countdown-number-item" 
+                                         data-item-name="{{ $item['name'] ?? '' }}"
+                                         data-item-number="{{ $item['number'] ?? 0 }}"
+                                         data-item-unit="{{ $item['unit'] ?? '' }}"
+                                         data-animation="{{ $animationEnabled ? 'true' : 'false' }}">
+                                        <div class="countdown-number-name mb-2">{{ $item['name'] ?? '' }}</div>
+                                        <div class="countdown-number-value">
+                                            <span class="countdown-number-display" style="font-size: 2.5rem; font-weight: bold;">{{ $animationEnabled ? '0' : ($item['number'] ?? 0) }}</span>
+                                            <span class="countdown-number-unit" style="font-size: 1.2rem; margin-left: 0.5rem;">{{ $item['unit'] ?? '' }}</span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-muted">숫자 카운트 항목이 없습니다.</p>
+                        @endif
+                    @endif
+                </div>
+                @break
+
             @default
                 {{-- 알 수 없는 위젯 타입 --}}
         @endswitch
     </div>
 </div>
 @endif
+
+@push('scripts')
+@if($widget->type === 'countdown')
+@php
+    $countdownSettings = $widgetSettings;
+    $countdownType = $countdownSettings['countdown_type'] ?? 'dday';
+@endphp
+@if($countdownType === 'dday')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const countdownElement = document.querySelector('.countdown-dday[data-target-date="{{ $countdownSettings['countdown_target_date'] ?? '' }}"]');
+    if (!countdownElement) return;
+    
+    const targetDate = new Date(countdownElement.dataset.targetDate).getTime();
+    const displayElement = countdownElement.querySelector('.countdown-display .countdown-text');
+    
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+        
+        if (distance < 0) {
+            displayElement.textContent = '이미 지났습니다.';
+            return;
+        }
+        
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        const targetDateObj = new Date(targetDate);
+        const nowDateObj = new Date(now);
+        
+        // 같은 월인지 확인
+        const isSameMonth = targetDateObj.getFullYear() === nowDateObj.getFullYear() && 
+                           targetDateObj.getMonth() === nowDateObj.getMonth();
+        
+        let countdownText = '';
+        if (isSameMonth) {
+            countdownText = `${days}일 ${String(hours).padStart(2, '0')}시간 ${String(minutes).padStart(2, '0')}분 ${String(seconds).padStart(2, '0')}초`;
+        } else {
+            const month = targetDateObj.getMonth() + 1;
+            countdownText = `${month}월 ${days}일 ${String(hours).padStart(2, '0')}시간 ${String(minutes).padStart(2, '0')}분 ${String(seconds).padStart(2, '0')}초`;
+        }
+        
+        displayElement.textContent = countdownText;
+    }
+    
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+});
+</script>
+@elseif($countdownType === 'number')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const numberItems = document.querySelectorAll('.countdown-number-item');
+    
+    numberItems.forEach(function(item) {
+        const targetNumber = parseInt(item.dataset.itemNumber) || 0;
+        const animationEnabled = item.dataset.animation === 'true';
+        const displayElement = item.querySelector('.countdown-number-display');
+        
+        if (!displayElement) return;
+        
+        if (animationEnabled) {
+            // 슬롯 애니메이션: 0부터 목표 숫자까지 증가하면서 각 자릿수가 0~9를 돌아가는 효과
+            const targetString = targetNumber.toString();
+            const digits = targetString.length;
+            let currentNumber = 0;
+            const duration = 2000; // 2초 동안 애니메이션
+            const steps = Math.min(targetNumber, 100); // 최대 100단계
+            const stepDuration = duration / steps;
+            let step = 0;
+            
+            function animateNumber() {
+                if (step < steps) {
+                    step++;
+                    currentNumber = Math.floor((targetNumber * step) / steps);
+                    
+                    // 각 자릿수를 0~9 사이에서 순환시키면서 표시
+                    const currentString = currentNumber.toString().padStart(digits, '0');
+                    let displayString = '';
+                    
+                    for (let i = 0; i < digits; i++) {
+                        const targetDigit = parseInt(targetString[i]);
+                        const currentDigit = parseInt(currentString[i]);
+                        
+                        if (currentNumber >= targetNumber) {
+                            // 목표 숫자에 도달했으면 목표 자릿수 표시
+                            displayString += targetDigit;
+                        } else {
+                            // 아직 도달하지 않았으면 현재 자릿수 표시 (0~9 순환)
+                            displayString += currentDigit;
+                        }
+                    }
+                    
+                    displayElement.textContent = parseInt(displayString);
+                    setTimeout(animateNumber, stepDuration);
+                } else {
+                    // 최종적으로 목표 숫자 표시
+                    displayElement.textContent = targetNumber;
+                }
+            }
+            
+            animateNumber();
+        } else {
+            // 애니메이션 없이 바로 표시
+            displayElement.textContent = targetNumber;
+        }
+    });
+});
+</script>
+@endif
+@endif
+@endpush
 

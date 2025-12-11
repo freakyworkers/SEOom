@@ -546,4 +546,61 @@
     </select>
     <small class="text-muted">표시할 토글 메뉴를 선택하세요.</small>
 </div>
+<div class="mb-3" id="widget_countdown_container" style="display: none;">
+    <div class="mb-3">
+        <label for="widget_countdown_title" class="form-label">카운트 제목</label>
+        <input type="text" 
+               class="form-control" 
+               id="widget_countdown_title" 
+               name="countdown_title" 
+               placeholder="카운트 제목을 입력하세요 (선택사항)">
+    </div>
+    <div class="mb-3">
+        <label for="widget_countdown_content" class="form-label">내용</label>
+        <textarea class="form-control" 
+                  id="widget_countdown_content" 
+                  name="countdown_content" 
+                  rows="3"
+                  placeholder="내용을 입력하세요 (선택사항)"></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="widget_countdown_type" class="form-label">카운트 타입</label>
+        <select class="form-select" id="widget_countdown_type" name="countdown_type" onchange="handleCountdownTypeChange()">
+            <option value="dday">D-day 카운트</option>
+            <option value="number">숫자카운트</option>
+        </select>
+    </div>
+    <!-- D-day 카운트 설정 -->
+    <div id="widget_countdown_dday_container">
+        <div class="mb-3">
+            <label for="widget_countdown_target_date" class="form-label">목표 날짜 및 시간</label>
+            <input type="datetime-local" 
+                   class="form-control" 
+                   id="widget_countdown_target_date" 
+                   name="countdown_target_date">
+        </div>
+    </div>
+    <!-- 숫자 카운트 설정 -->
+    <div id="widget_countdown_number_container" style="display: none;">
+        <div class="mb-3">
+            <div class="form-check">
+                <input class="form-check-input" 
+                       type="checkbox" 
+                       id="widget_countdown_animation" 
+                       name="countdown_animation" 
+                       checked>
+                <label class="form-check-label" for="widget_countdown_animation">
+                    숫자 애니메이션 활성화
+                </label>
+            </div>
+            <small class="text-muted">슬롯처럼 0~9까지 돌아가다가 목표 숫자로 멈추는 애니메이션을 표시합니다.</small>
+        </div>
+        <div id="widget_countdown_number_items">
+            <!-- 숫자 카운트 항목들이 여기에 동적으로 추가됨 -->
+        </div>
+        <button type="button" class="btn btn-primary w-100" onclick="addCountdownNumberItem()">
+            <i class="bi bi-plus-circle me-2"></i>항목 추가
+        </button>
+    </div>
+</div>
 
