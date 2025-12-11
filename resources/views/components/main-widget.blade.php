@@ -3458,6 +3458,11 @@
 /* 모바일에서 월/일 다음 줄바꿈 (≤576px) */
 @media (max-width: 576px) {
     .countdown-mobile-break { display: block; height: 0.25rem; }
+    /* 모바일에서 시간/분/초 사이 간격 줄이기 */
+    .countdown-display .countdown-text .countdown-gap {
+        margin: 0 0.3rem !important;
+        width: 0.3rem !important;
+    }
 }
 </style>
 <script>
@@ -3498,7 +3503,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 숫자와 단위를 분리하여 HTML로 생성 (단위 사이 여백 추가)
             // 모바일(≤576px)에서는 날짜 줄과 시간 줄을 구분하여 표시
-            const gap = `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>`;
+            const gap = `<span class="countdown-gap" style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>`;
             const mobileLineBreak = '<span class="d-sm-none d-block" style="height: 0.35rem;"></span>';
             
             const timePart =
