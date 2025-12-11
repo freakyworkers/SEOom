@@ -31,7 +31,10 @@
             if ($isFullHeight) {
                 $rowStyle .= ($rowStyle ? ' ' : '') . 'height: 100%;';
             }
-            $containerMarginBottom = 'mb-4';
+            
+            // 컨테이너 간격도 widget_spacing으로 통일
+            $containerSpacing = $container->widget_spacing ?? 3;
+            $containerMarginBottom = $isFullHeight ? 'mb-0' : 'mb-' . min(max($containerSpacing, 0), 5);
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
             <div class="row main-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">

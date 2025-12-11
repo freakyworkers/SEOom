@@ -2398,9 +2398,10 @@ function editMainWidget(widgetId) {
                     }
                     
                     // 컨텍트폼 목록 가져오기
-                    fetch(`{{ route("admin.contact-forms", ["site" => $site->slug]) }}`, {
+                    fetch(`{{ route("admin.contact-forms.index", ["site" => $site->slug]) }}`, {
                         headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
                         }
                     })
                     .then(response => response.json())
