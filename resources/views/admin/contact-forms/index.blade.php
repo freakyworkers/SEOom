@@ -53,6 +53,9 @@
                                             <a href="{{ route('admin.contact-forms.show', ['site' => $site->slug, 'contactForm' => $form->id]) }}" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-eye me-1"></i>보기
                                             </a>
+                                            <button type="button" class="btn btn-sm btn-outline-warning" onclick="editContactForm({{ $form->id }})">
+                                                <i class="bi bi-pencil me-1"></i>수정
+                                            </button>
                                             <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteContactForm({{ $form->id }})">
                                                 <i class="bi bi-trash me-1"></i>삭제
                                             </button>
@@ -151,6 +154,20 @@
 let fieldIndex = 0;
 let checkboxIndex = 0;
 
+// 컨텍트폼 데이터를 JavaScript 변수에 저장
+const contactFormsData = {
+    @foreach($contactForms as $form)
+    {{ $form->id }}: {
+        id: {{ $form->id }},
+        title: @json($form->title),
+        fields: @json($form->fields),
+        has_inquiry_content: {{ $form->has_inquiry_content ? 'true' : 'false' }},
+        button_text: @json($form->button_text),
+        checkboxes: @json($form->checkboxes)
+    },
+    @endforeach
+};
+
 function showCreateForm() {
     document.getElementById('modalTitle').textContent = '컨텍트폼 생성';
     document.getElementById('contactFormForm').reset();
@@ -158,9 +175,101 @@ function showCreateForm() {
     document.getElementById('fieldsContainer').innerHTML = '';
     document.getElementById('checkboxesContainer').innerHTML = '';
     document.getElementById('checkboxesSection').style.display = 'none';
+    document.getElementById('checkboxes_enabled').checked = false;
+    document.getElementById('checkboxes_allow_multiple').checked = false;
     fieldIndex = 0;
     checkboxIndex = 0;
     addField(); // 기본 항목 하나 추가
+    new bootstrap.Modal(document.getElementById('contactFormModal')).show();
+}
+
+function editContactForm(id) {
+    const formData = contactFormsData[id];
+    if (!formData) {
+        alert('컨텍트폼 데이터를 찾을 수 없습니다.');
+        return;
+    }
+
+    document.getElementById('modalTitle').textContent = '컨텍트폼 수정';
+    document.getElementById('contact_form_id').value = formData.id;
+    document.getElementById('form_title').value = formData.title;
+    document.getElementById('button_text').value = formData.button_text;
+    document.getElementById('has_inquiry_content').checked = formData.has_inquiry_content;
+
+    // 필드 데이터 로드
+    document.getElementById('fieldsContainer').innerHTML = '';
+    fieldIndex = 0;
+    if (formData.fields && formData.fields.length > 0) {
+        formData.fields.forEach(field => {
+            const container = document.getElementById('fieldsContainer');
+            const fieldDiv = document.createElement('div');
+            fieldDiv.className = 'card mb-2';
+            fieldDiv.id = 'field_' + fieldIndex;
+            fieldDiv.innerHTML = `
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label class="form-label">항목이름</label>
+                            <input type="text" class="form-control field-name" placeholder="예: 신청자 성함" value="${(field.name || '').replace(/"/g, '&quot;')}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">항목 내용</label>
+                            <input type="text" class="form-control field-placeholder" placeholder="예: 성함을 작성해주세요." value="${(field.placeholder || '').replace(/"/g, '&quot;')}">
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeField(${fieldIndex})">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(fieldDiv);
+            fieldIndex++;
+        });
+    } else {
+        addField(); // 필드가 없으면 기본 항목 추가
+    }
+
+    // 체크박스 데이터 로드
+    document.getElementById('checkboxesContainer').innerHTML = '';
+    checkboxIndex = 0;
+    if (formData.checkboxes && formData.checkboxes.enabled) {
+        document.getElementById('checkboxes_enabled').checked = true;
+        document.getElementById('checkboxes_allow_multiple').checked = formData.checkboxes.allow_multiple || false;
+        document.getElementById('checkboxesSection').style.display = 'block';
+        
+        if (formData.checkboxes.items && formData.checkboxes.items.length > 0) {
+            formData.checkboxes.items.forEach(item => {
+                const container = document.getElementById('checkboxesContainer');
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'card mb-2';
+                itemDiv.id = 'checkbox_item_' + checkboxIndex;
+                itemDiv.innerHTML = `
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-11">
+                                <label class="form-label">체크 항목 라벨</label>
+                                <input type="text" class="form-control checkbox-label" placeholder="예: 이용약관 동의" value="${(item.label || '').replace(/"/g, '&quot;')}" required>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCheckboxItem(${checkboxIndex})">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+                checkboxIndex++;
+            });
+        }
+    } else {
+        document.getElementById('checkboxes_enabled').checked = false;
+        document.getElementById('checkboxes_allow_multiple').checked = false;
+        document.getElementById('checkboxesSection').style.display = 'none';
+    }
+
     new bootstrap.Modal(document.getElementById('contactFormModal')).show();
 }
 
