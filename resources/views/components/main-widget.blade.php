@@ -3403,7 +3403,7 @@
                         @if($targetDate)
                             <div class="countdown-dday" data-target-date="{{ $targetDate }}" data-animation-enabled="{{ $ddayAnimationEnabled ? 'true' : 'false' }}">
                                 <div class="countdown-display">
-                                    <span class="countdown-text" style="font-size: 2.5rem; font-weight: bold;">계산 중...</span>
+                                    <span class="countdown-text">계산 중...</span>
                                 </div>
                             </div>
                         @else
@@ -3487,15 +3487,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const isSameMonth = targetDateObj.getFullYear() === nowDateObj.getFullYear() && 
                            targetDateObj.getMonth() === nowDateObj.getMonth();
         
-        let countdownText = '';
+        // 숫자와 단위를 분리하여 HTML로 생성
+        let countdownHTML = '';
         if (isSameMonth) {
-            countdownText = `${days}일 ${String(hours).padStart(2, '0')}시간 ${String(minutes).padStart(2, '0')}분 ${String(seconds).padStart(2, '0')}초`;
+            countdownHTML = `<span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
         } else {
             const month = targetDateObj.getMonth() + 1;
-            countdownText = `${month}월 ${days}일 ${String(hours).padStart(2, '0')}시간 ${String(minutes).padStart(2, '0')}분 ${String(seconds).padStart(2, '0')}초`;
+            countdownHTML = `<span style="font-size: 2.5rem; font-weight: bold;">${month}</span><span style="font-size: 1.2rem;">월</span> <span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
         }
         
-        currentDisplay = countdownText;
+        currentDisplay = countdownHTML;
         
         if (animationEnabled) {
             // 애니메이션 효과: 숫자가 빠르게 변경되다가 최종 값으로 멈춤
@@ -3503,25 +3504,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearInterval(animationInterval);
             }
             
-            // 초기에는 랜덤 숫자로 표시
-            const parts = countdownText.split(/(일|시간|분|초|월)/);
-            let animatedText = '';
-            for (let i = 0; i < parts.length; i++) {
-                if (/\d/.test(parts[i])) {
-                    // 숫자 부분을 랜덤으로 변경
-                    animatedText += parts[i].replace(/\d/g, () => Math.floor(Math.random() * 10));
-                } else {
-                    animatedText += parts[i];
-                }
-            }
-            displayElement.textContent = animatedText;
+            // 초기에는 랜덤 숫자로 표시 (HTML 구조 유지)
+            let animatedHTML = countdownHTML;
+            animatedHTML = animatedHTML.replace(/(\d+)/g, (match) => {
+                return match.replace(/\d/g, () => Math.floor(Math.random() * 10));
+            });
+            displayElement.innerHTML = animatedHTML;
             
             // 짧은 딜레이 후 실제 값 표시
             setTimeout(() => {
-                displayElement.textContent = countdownText;
+                displayElement.innerHTML = countdownHTML;
             }, 100);
         } else {
-            displayElement.textContent = countdownText;
+            displayElement.innerHTML = countdownHTML;
         }
     }
     

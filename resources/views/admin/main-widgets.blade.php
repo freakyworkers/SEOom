@@ -1925,6 +1925,8 @@ function editMainWidget(widgetId) {
     .then(response => response.json())
     .then(data => {
         if (data.success && data.widget) {
+            // 위젯 데이터를 sessionStorage에 저장 (나중에 저장 시 기존 설정 유지용)
+            sessionStorage.setItem(`widget_${widgetId}_data`, JSON.stringify(data.widget));
             const settings = data.widget.settings || {};
             
             const boardContainer = document.getElementById('edit_main_widget_board_container');
@@ -3147,8 +3149,22 @@ function saveMainWidgetSettings() {
         formData.set('title', '');
     }
     
-    // settings 객체 생성
-    const settings = {};
+    // settings 객체 생성 - 기존 설정 유지
+    const widgetItem = document.querySelector(`[data-widget-id="${widgetId}"]`);
+    let existingSettings = {};
+    if (widgetItem) {
+        // 위젯 정보를 AJAX로 가져온 데이터에서 settings 가져오기
+        try {
+            const widgetData = JSON.parse(sessionStorage.getItem(`widget_${widgetId}_data`) || '{}');
+            if (widgetData.settings) {
+                existingSettings = widgetData.settings;
+            }
+        } catch (e) {
+            console.error('Error parsing existing settings:', e);
+        }
+    }
+    const settings = { ...existingSettings };
+    
     if (widgetType === 'popular_posts' || widgetType === 'recent_posts' || widgetType === 'weekly_popular_posts' || widgetType === 'monthly_popular_posts') {
         const limit = document.getElementById('edit_main_widget_limit')?.value;
         if (limit) {
@@ -3472,12 +3488,15 @@ function saveMainWidgetSettings() {
                 // datetime-local 형식을 ISO 형식으로 변환
                 const date = new Date(targetDate);
                 settings.countdown_target_date = date.toISOString();
+            } else if (existingSettings.countdown_target_date) {
+                // 기존 값 유지
+                settings.countdown_target_date = existingSettings.countdown_target_date;
             }
-            const ddayAnimationEnabled = document.getElementById('edit_main_widget_countdown_dday_animation')?.checked || false;
-            settings.countdown_dday_animation_enabled = ddayAnimationEnabled;
+            const ddayAnimationCheckbox = document.getElementById('edit_main_widget_countdown_dday_animation');
+            settings.countdown_dday_animation_enabled = ddayAnimationCheckbox ? ddayAnimationCheckbox.checked : false;
         } else if (countdownType === 'number') {
-            const animationEnabled = document.getElementById('edit_main_widget_countdown_animation')?.checked || false;
-            settings.countdown_animation_enabled = animationEnabled;
+            const animationCheckbox = document.getElementById('edit_main_widget_countdown_animation');
+            settings.countdown_animation_enabled = animationCheckbox ? animationCheckbox.checked : false;
             
             // 숫자 카운트 항목 수집
             const numberItems = [];
