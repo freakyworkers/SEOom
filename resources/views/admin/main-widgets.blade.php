@@ -2513,7 +2513,11 @@ function editMainWidget(widgetId) {
                     }
                 } else if (countdownType === 'number') {
                     if (document.getElementById('edit_main_widget_countdown_animation')) {
-                        document.getElementById('edit_main_widget_countdown_animation').checked = settings.countdown_animation_enabled !== false;
+                        // 구키(countdown_animation)와 신키(countdown_animation_enabled) 모두 대응
+                        const anim = settings.countdown_animation_enabled;
+                        const animLegacy = settings.countdown_animation;
+                        document.getElementById('edit_main_widget_countdown_animation').checked =
+                            (anim !== undefined ? anim : animLegacy) !== false;
                     }
                     
                     // 숫자 카운트 항목 로드
