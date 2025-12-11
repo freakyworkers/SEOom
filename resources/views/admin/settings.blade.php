@@ -583,13 +583,6 @@
                             </label>
                         </div>
                         <div class="form-check mt-2">
-                            <input class="form-check-input" type="checkbox" name="header_transparent" id="header_transparent" value="1" {{ (isset($settings['header_transparent']) && $settings['header_transparent'] == '1') ? 'checked' : '' }}>
-                            <label class="form-check-label" for="header_transparent">
-                                투명헤더
-                            </label>
-                            <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="활성화 시 헤더 배경색이 투명하게 표시됩니다. 헤더 고정이 활성화된 경우 스크롤 시에는 배경색이 표시됩니다."></i>
-                        </div>
-                        <div class="form-check mt-2">
                             <input class="form-check-input" type="checkbox" name="theme_full_width" id="theme_full_width" value="1" {{ (isset($settings['theme_full_width']) && $settings['theme_full_width'] == '1') ? 'checked' : '' }}>
                             <label class="form-check-label" for="theme_full_width">
                                 가로100%
@@ -759,15 +752,6 @@
                             <label class="form-check-label" for="mobile_menu_icon_border">
                                 메뉴 아이콘 테두리
                             </label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="mobile_header_transparent" id="mobile_header_transparent" value="1" {{ (isset($settings['mobile_header_transparent']) && $settings['mobile_header_transparent'] == '1') ? 'checked' : '' }}>
-                            <label class="form-check-label" for="mobile_header_transparent">
-                                투명헤더
-                            </label>
-                            <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="활성화 시 모바일 헤더 배경색이 투명하게 표시됩니다."></i>
                         </div>
                     </div>
                     <div class="mb-3">
