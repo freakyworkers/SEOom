@@ -31,7 +31,7 @@
             if ($isFullHeight) {
                 $rowStyle .= ($rowStyle ? ' ' : '') . 'height: 100%;';
             }
-            $containerMarginBottom = $isFullHeight ? 'mb-0' : 'mb-4';
+            $containerMarginBottom = 'mb-4';
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
             <div class="row custom-page-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
