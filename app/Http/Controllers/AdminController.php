@@ -3391,6 +3391,7 @@ class AdminController extends Controller
             'columns' => 'required|integer|in:1,2,3,4',
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
+            'full_height' => 'nullable|boolean',
         ]);
 
         $maxOrder = MainWidgetContainer::where('site_id', $site->id)->max('order') ?? 0;
@@ -3402,12 +3403,20 @@ class AdminController extends Controller
             $fullWidthValue = $request->input('full_width');
             $fullWidth = ($fullWidthValue == '1' || $fullWidthValue === '1' || $fullWidthValue === true || $fullWidthValue === 1);
         }
+        
+        // full_height 처리
+        $fullHeight = false;
+        if ($request->has('full_height')) {
+            $fullHeightValue = $request->input('full_height');
+            $fullHeight = ($fullHeightValue == '1' || $fullHeightValue === '1' || $fullHeightValue === true || $fullHeightValue === 1);
+        }
 
         $container = MainWidgetContainer::create([
             'site_id' => $site->id,
             'columns' => $request->columns,
             'vertical_align' => $request->vertical_align ?? 'top',
             'full_width' => $fullWidth,
+            'full_height' => $fullHeight,
             'order' => $maxOrder + 1,
         ]);
 
@@ -3432,6 +3441,7 @@ class AdminController extends Controller
             'columns' => 'required|integer|in:1,2,3,4',
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
+            'full_height' => 'nullable|boolean',
         ]);
 
         $oldColumns = $container->columns;
@@ -3464,6 +3474,15 @@ class AdminController extends Controller
         } else {
             // 사이드바가 있으면 항상 false
             $container->full_width = false;
+        }
+        
+        // full_height 처리
+        if ($request->has('full_height')) {
+            $fullHeightValue = $request->input('full_height');
+            $container->full_height = ($fullHeightValue == '1' || $fullHeightValue === '1' || $fullHeightValue === true || $fullHeightValue === 1);
+        } else {
+            // full_height 값이 전송되지 않았으면 false로 설정
+            $container->full_height = false;
         }
         
         $container->save();
@@ -3951,6 +3970,7 @@ class AdminController extends Controller
             'columns' => 'required|integer|in:1,2,3,4',
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
+            'full_height' => 'nullable|boolean',
         ]);
 
         $maxOrder = CustomPageWidgetContainer::where('custom_page_id', $customPage->id)->max('order') ?? 0;
@@ -3962,12 +3982,20 @@ class AdminController extends Controller
             $fullWidthValue = $request->input('full_width');
             $fullWidth = ($fullWidthValue == '1' || $fullWidthValue === '1' || $fullWidthValue === true || $fullWidthValue === 1);
         }
+        
+        // full_height 처리
+        $fullHeight = false;
+        if ($request->has('full_height')) {
+            $fullHeightValue = $request->input('full_height');
+            $fullHeight = ($fullHeightValue == '1' || $fullHeightValue === '1' || $fullHeightValue === true || $fullHeightValue === 1);
+        }
 
         $container = CustomPageWidgetContainer::create([
             'custom_page_id' => $customPage->id,
             'columns' => $request->columns,
             'vertical_align' => $request->vertical_align ?? 'top',
             'full_width' => $fullWidth,
+            'full_height' => $fullHeight,
             'order' => $maxOrder + 1,
         ]);
 
@@ -3992,6 +4020,7 @@ class AdminController extends Controller
             'columns' => 'required|integer|in:1,2,3,4',
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
+            'full_height' => 'nullable|boolean',
         ]);
 
         $oldColumns = $container->columns;
@@ -4016,6 +4045,15 @@ class AdminController extends Controller
             $container->full_width = ($fullWidthValue == '1' || $fullWidthValue === '1' || $fullWidthValue === true || $fullWidthValue === 1);
         } else {
             $container->full_width = false;
+        }
+        
+        // full_height 처리
+        if ($request->has('full_height')) {
+            $fullHeightValue = $request->input('full_height');
+            $container->full_height = ($fullHeightValue == '1' || $fullHeightValue === '1' || $fullHeightValue === true || $fullHeightValue === 1);
+        } else {
+            // full_height 값이 전송되지 않았으면 false로 설정
+            $container->full_height = false;
         }
         
         $container->save();

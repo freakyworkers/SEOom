@@ -20,9 +20,16 @@
             // 가로 100% 설정 확인 (사이드바가 없을 때만 적용)
             $themeSidebar = $site->getSetting('theme_sidebar', 'left');
             $isFullWidth = ($container->full_width ?? false) && ($themeSidebar === 'none');
+            $isFullHeight = ($container->full_height ?? false);
             $containerClass = $isFullWidth ? 'container-fluid px-0' : '';
             $containerStyle = $isFullWidth ? 'width: 100vw; position: relative; left: 50%; transform: translateX(-50%); padding: 0;' : '';
+            if ($isFullHeight) {
+                $containerStyle .= ($containerStyle ? ' ' : '') . 'min-height: 100vh;';
+            }
             $rowStyle = $isFullWidth ? 'margin-left: 0; margin-right: 0; width: 100%;' : '';
+            if ($isFullHeight) {
+                $rowStyle .= ($rowStyle ? ' ' : '') . 'min-height: 100vh;';
+            }
         @endphp
         <div class="{{ $containerClass }} mb-4" style="{{ $containerStyle }}">
             <div class="row custom-page-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">

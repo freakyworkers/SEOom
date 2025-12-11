@@ -62,6 +62,19 @@
                                         </small>
                                     @endif
                                 </div>
+                                <div class="mb-3">
+                                    <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input" type="checkbox" id="container_full_height" name="full_height" value="1">
+                                        <label class="form-check-label" for="container_full_height">
+                                            세로 100%
+                                        </label>
+                                        <i class="bi bi-question-circle text-muted ms-2" 
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="top" 
+                                           title="활성화 시 해당 컨테이너가 브라우저 세로 100% 영역을 사용합니다. 컨테이너 안의 요소들이 전체 높이를 활용할 수 있습니다." 
+                                           style="cursor: help; font-size: 0.9rem;"></i>
+                                    </div>
+                                </div>
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="bi bi-plus-circle me-2"></i>컨테이너 추가
                                 </button>
@@ -151,6 +164,20 @@
                                                            data-bs-toggle="tooltip" 
                                                            data-bs-placement="top" 
                                                            title="활성화 시 해당 컨테이너가 브라우저 전체 너비를 사용합니다. 사이드바가 없음으로 설정된 경우에만 사용할 수 있습니다." 
+                                                           style="cursor: help; font-size: 0.85rem;"></i>
+                                                    </div>
+                                                    <div class="form-check ms-3 d-flex align-items-center">
+                                                        <input class="form-check-input container-full-height-checkbox" type="checkbox" 
+                                                               id="container_full_height_{{ $container->id }}" 
+                                                               @if($container->full_height) checked @endif
+                                                               data-container-id="{{ $container->id }}">
+                                                        <label class="form-check-label small mb-0" for="container_full_height_{{ $container->id }}">
+                                                            세로 100%
+                                                        </label>
+                                                        <i class="bi bi-question-circle text-muted ms-1" 
+                                                           data-bs-toggle="tooltip" 
+                                                           data-bs-placement="top" 
+                                                           title="활성화 시 해당 컨테이너가 브라우저 세로 100% 영역을 사용합니다." 
                                                            style="cursor: help; font-size: 0.85rem;"></i>
                                                     </div>
                                                 </div>
@@ -828,6 +855,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // 세로 100% 체크박스 이벤트 리스너 추가
+    document.querySelectorAll('.container-full-height-checkbox').forEach(function(checkbox) {
+        if (checkbox.dataset.containerId) {
+            checkbox.addEventListener('change', function() {
+                const containerId = parseInt(this.dataset.containerId);
+                const fullHeight = this.checked;
+                updateContainerFullHeight(containerId, fullHeight);
+            });
+        }
+    });
+    
     // 컨테이너 추가
     const addContainerForm = document.getElementById('addContainerForm');
     if (addContainerForm) {
@@ -839,6 +877,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const fullWidthCheckbox = document.getElementById('container_full_width');
             if (fullWidthCheckbox) {
                 formData.set('full_width', fullWidthCheckbox.checked ? '1' : '0');
+            }
+            const fullHeightCheckbox = document.getElementById('container_full_height');
+            if (fullHeightCheckbox) {
+                formData.set('full_height', fullHeightCheckbox.checked ? '1' : '0');
             }
             
             const submitBtn = this.querySelector('button[type="submit"]');
@@ -898,6 +940,11 @@ function updateContainerColumns(containerId, columns) {
     if (fullWidthCheckbox) {
         formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
     }
+    // 현재 full_height 상태 유지
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
     formData.append('_method', 'PUT');
     
     fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
@@ -934,6 +981,11 @@ function updateContainerVerticalAlign(containerId, verticalAlign) {
     if (fullWidthCheckbox) {
         formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
     }
+    // 현재 full_height 상태 유지
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
     formData.append('_method', 'PUT');
     
     fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
@@ -965,6 +1017,11 @@ function updateContainerFullWidth(containerId, fullWidth) {
     formData.append('columns', document.querySelector(`select[data-container-id="${containerId}"][onchange*="updateContainerColumns"]`).value);
     formData.append('vertical_align', document.querySelector(`select[data-container-id="${containerId}"][onchange*="updateContainerVerticalAlign"]`).value);
     formData.append('full_width', fullWidth ? '1' : '0');
+    // 현재 full_height 상태 유지
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
     formData.append('_method', 'PUT');
     
     fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
@@ -987,6 +1044,42 @@ function updateContainerFullWidth(containerId, fullWidth) {
     .catch(error => {
         console.error('Error:', error);
         alert('가로 100% 설정 업데이트 중 오류가 발생했습니다.');
+    });
+}
+
+// 컨테이너 세로 100% 업데이트
+function updateContainerFullHeight(containerId, fullHeight) {
+    const formData = new FormData();
+    formData.append('columns', document.querySelector(`select[data-container-id="${containerId}"][onchange*="updateContainerColumns"]`).value);
+    formData.append('vertical_align', document.querySelector(`select[data-container-id="${containerId}"][onchange*="updateContainerVerticalAlign"]`).value);
+    formData.append('full_height', fullHeight ? '1' : '0');
+    // 현재 full_width 상태 유지
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    if (fullWidthCheckbox) {
+        formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+    }
+    formData.append('_method', 'PUT');
+    
+    fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 성공 시 페이지 새로고침
+            location.reload();
+        } else {
+            alert('세로 100% 설정 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('세로 100% 설정 업데이트 중 오류가 발생했습니다.');
     });
 }
 

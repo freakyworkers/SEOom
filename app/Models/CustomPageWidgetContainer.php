@@ -14,6 +14,7 @@ class CustomPageWidgetContainer extends Model
         'columns',
         'vertical_align',
         'full_width',
+        'full_height',
         'order',
     ];
 
@@ -21,6 +22,7 @@ class CustomPageWidgetContainer extends Model
         'columns' => 'integer',
         'order' => 'integer',
         'full_width' => 'boolean',
+        'full_height' => 'boolean',
     ];
 
     /**

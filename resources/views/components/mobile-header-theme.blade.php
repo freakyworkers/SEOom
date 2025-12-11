@@ -23,8 +23,17 @@
     $mobileMenuIconBorder = $site->getSetting('mobile_menu_icon_border', '0') == '1';
     $mobileMenuLoginWidget = $site->getSetting('mobile_menu_login_widget', '0') == '1';
     
+    // 투명헤더 설정
+    $mobileHeaderTransparent = $site->getSetting('mobile_header_transparent', '0') == '1';
+    
     // 헤더 스타일 생성
-    $headerStyle = "background-color: {$headerBgColor}; color: {$headerTextColor};";
+    $headerStyle = "color: {$headerTextColor};";
+    if ($mobileHeaderTransparent) {
+        // 투명헤더가 활성화된 경우 배경색 제거
+        $headerStyle .= " background-color: transparent;";
+    } else {
+        $headerStyle .= " background-color: {$headerBgColor};";
+    }
     // 하단 메뉴가 있는 테마(5,6,7,8)는 헤더 하단에 회색 구분선만 적용하고 그림자 제거
     if (in_array($theme, ['theme5', 'theme6', 'theme7', 'theme8'])) {
         $headerStyle .= " border-bottom: 1px solid #dee2e6;";
@@ -37,6 +46,9 @@
             $headerStyle .= " border-bottom: {$headerBorderWidth}px solid {$headerBorderColor};";
         }
     }
+    
+    // 헤더 클래스 추가
+    $headerClass = $mobileHeaderTransparent ? 'mobile-header-transparent' : '';
     
     // 로고 설정
     $siteName = $site->getSetting('site_name', $site->name ?? 'SEOom Builder');
@@ -662,7 +674,7 @@
 
 @if($theme === 'theme1')
     {{-- 테마 1: 로고 좌측 메뉴 아이콘 우측 --}}
-    <nav class="navbar navbar-expand-lg d-xl-none" style="{{ $headerStyle }}">
+    <nav class="navbar navbar-expand-lg d-xl-none {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="container-fluid" style="padding-left: 0.9375rem; padding-right: 0.9375rem;">
             <a class="navbar-brand" href="{{ route('home', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
                 @if($logoType === 'text' || empty($siteLogo))
@@ -767,7 +779,7 @@
 
 @elseif($theme === 'theme2')
     {{-- 테마 2: 메뉴 아이콘 좌측 로고 우측 --}}
-    <nav class="navbar navbar-expand-lg d-xl-none" style="{{ $headerStyle }}">
+    <nav class="navbar navbar-expand-lg d-xl-none {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="container-fluid" style="padding-left: 0.9375rem; padding-right: 0.9375rem;">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavbar2" aria-controls="mobileNavbar2" aria-expanded="false" aria-label="Toggle navigation" style="@if($mobileMenuIconBorder)border: 1px solid {{ $headerTextColor }};@else border: none;@endif">
                 <i class="bi {{ $mobileMenuIcon }}" style="color: {{ $headerTextColor }}; font-size: 1.5rem;"></i>
@@ -1300,7 +1312,7 @@
     </div>
 @elseif($theme === 'theme7')
     {{-- 테마 7: 로고 좌측 메뉴 아이콘 우측 + 하단 메뉴 --}}
-    <nav class="navbar navbar-expand-lg d-xl-none" style="{{ $headerStyle }}">
+    <nav class="navbar navbar-expand-lg d-xl-none {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="container-fluid" style="padding-left: 0.9375rem; padding-right: 0.9375rem;">
             <a class="navbar-brand" href="{{ route('home', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
                 @if($logoType === 'text' || empty($siteLogo))
@@ -1409,7 +1421,7 @@
     </div>
 @elseif($theme === 'theme8')
     {{-- 테마 8: 로고 우측 메뉴 아이콘 좌측 + 하단 메뉴 --}}
-    <nav class="navbar navbar-expand-lg d-xl-none" style="{{ $headerStyle }}">
+    <nav class="navbar navbar-expand-lg d-xl-none {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="container-fluid" style="padding-left: 0.9375rem; padding-right: 0.9375rem;">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavbar8" aria-controls="mobileNavbar8" aria-expanded="false" aria-label="Toggle navigation" style="@if($mobileMenuIconBorder)border: 1px solid {{ $headerTextColor }};@else border: none;@endif">
                 <i class="bi {{ $mobileMenuIcon }}" style="color: {{ $headerTextColor }}; font-size: 1.5rem;"></i>

@@ -33,13 +33,31 @@
     $containerClass = $themeFullWidth ? 'container-fluid' : 'container';
     $containerStyle = $themeFullWidth ? 'max-width: 100%; padding-left: 15px; padding-right: 15px;' : '';
     
+    // 투명헤더 설정
+    $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
+    $headerSticky = $site->getSetting('header_sticky', '0') == '1';
+    
     // 헤더 스타일 생성
-    $headerStyle = "background-color: {$headerBgColor}; color: {$headerTextColor};";
+    $headerStyle = "color: {$headerTextColor};";
+    if ($headerTransparent && !$headerSticky) {
+        // 투명헤더가 활성화되고 헤더 고정이 아닌 경우 배경색 제거
+        $headerStyle .= " background-color: transparent;";
+    } else {
+        $headerStyle .= " background-color: {$headerBgColor};";
+    }
     if ($headerShadow) {
         $headerStyle .= " box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
     }
     if ($headerBorder) {
         $headerStyle .= " border-bottom: {$headerBorderWidth}px solid {$headerBorderColor};";
+    }
+    
+    // 헤더 고정이 활성화된 경우 스크롤 시 배경색 표시를 위한 클래스 추가
+    $headerClass = '';
+    if ($headerSticky && $headerTransparent) {
+        $headerClass = 'header-transparent-sticky';
+    } elseif ($headerTransparent) {
+        $headerClass = 'header-transparent';
     }
     
     // 메뉴 로드 (테이블이 존재하는 경우에만)
@@ -86,7 +104,7 @@
 
 @if($designType === 'design1')
     {{-- 테마1: 로고 좌측 메뉴 우측 --}}
-    <nav class="navbar navbar-expand-lg navbar-dark pc-header" style="{{ $headerStyle }}">
+    <nav class="navbar navbar-expand-lg navbar-dark pc-header {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="{{ $containerClass }}" style="{{ $containerStyle }}">
             <a class="navbar-brand" href="{{ route('home', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
                 @if($logoType === 'text' || empty($siteLogo))
@@ -170,7 +188,7 @@
 
 @elseif($designType === 'design2')
         {{-- 테마2: 로고 좌측 메뉴 중앙 검색창 우측 --}}
-        <nav class="navbar navbar-expand-lg navbar-dark pc-header" style="{{ $headerStyle }}">
+        <nav class="navbar navbar-expand-lg navbar-dark pc-header {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="{{ $containerClass }}" style="{{ $containerStyle }}">
             <a class="navbar-brand" href="{{ route('home', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
                 @if($logoType === 'text' || empty($siteLogo))
@@ -263,7 +281,7 @@
 
 @elseif($designType === 'design3')
         {{-- 테마3: 메뉴 좌측 로고 중앙 검색창 우측 --}}
-        <nav class="navbar navbar-expand-lg navbar-dark pc-header" style="{{ $headerStyle }}">
+        <nav class="navbar navbar-expand-lg navbar-dark pc-header {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="{{ $containerClass }}" style="{{ $containerStyle }}">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav3">
                 <span class="navbar-toggler-icon"></span>
@@ -359,7 +377,7 @@
 
 @elseif($designType === 'design4')
         {{-- 테마4: 로고 좌측 검색창 우측, 하단 중앙 메뉴 --}}
-        <nav class="navbar navbar-expand-lg navbar-dark pc-header" style="{{ $headerStyle }}">
+        <nav class="navbar navbar-expand-lg navbar-dark pc-header {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="{{ $containerClass }}" style="{{ $containerStyle }}">
             <div class="w-100">
                 <div class="d-flex align-items-center justify-content-between mb-2">
@@ -448,7 +466,7 @@
 
 @elseif($designType === 'design5')
         {{-- 테마5: 로고 중앙, 하단 메뉴 중앙 정렬 --}}
-        <nav class="navbar navbar-expand-lg navbar-dark pc-header" style="{{ $headerStyle }}">
+        <nav class="navbar navbar-expand-lg navbar-dark pc-header {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="{{ $containerClass }}" style="{{ $containerStyle }}">
             <div class="w-100">
                 <div class="d-flex justify-content-center mb-3">
@@ -543,7 +561,7 @@
 
 @elseif($designType === 'design6')
         {{-- 테마6: 메뉴 좌측 로고 우측 --}}
-        <nav class="navbar navbar-expand-lg navbar-dark pc-header" style="{{ $headerStyle }}">
+        <nav class="navbar navbar-expand-lg navbar-dark pc-header {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="{{ $containerClass }}" style="{{ $containerStyle }}">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav6">
                 <span class="navbar-toggler-icon"></span>
@@ -625,5 +643,32 @@
             </a>
         </div>
     </nav>
+@endif
+
+@if($headerSticky && $headerTransparent)
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const header = document.querySelector('.header-transparent-sticky');
+    if (header) {
+        const bgColor = header.getAttribute('data-bg-color');
+        
+        function handleScroll() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > 10) {
+                // 스크롤 시 배경색 표시
+                header.style.backgroundColor = bgColor;
+                header.style.transition = 'background-color 0.3s ease';
+            } else {
+                // 상단에 있을 때 투명
+                header.style.backgroundColor = 'transparent';
+            }
+        }
+        
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // 초기 상태 확인
+    }
+});
+</script>
 @endif
 

@@ -189,6 +189,8 @@ class SiteSettingController extends Controller
             'mobile_menu_direction' => 'nullable|in:top-to-bottom,left-to-right,right-to-left,bottom-to-top',
             'mobile_menu_icon_border' => 'nullable|in:0,1',
             'mobile_menu_login_widget' => 'nullable|in:0,1',
+            'header_transparent' => 'nullable|in:0,1',
+            'mobile_header_transparent' => 'nullable|in:0,1',
             // 게시판 설정
             'best_post_criteria' => 'nullable|in:views,likes,comments',
             'write_interval' => 'nullable|integer|min:0',
@@ -273,6 +275,7 @@ class SiteSettingController extends Controller
                 'theme_top_header_show',
                 'top_header_login_show',
                 'header_sticky',
+                'header_transparent',
                 'menu_login_show',
                 'header_shadow',
                 'header_border',
@@ -283,6 +286,7 @@ class SiteSettingController extends Controller
                 'general_login',
                 'mobile_menu_icon_border',
                 'mobile_menu_login_widget',
+                'mobile_header_transparent',
                 'enable_point_message',
                 'theme_full_width'
             ])) {
@@ -572,6 +576,7 @@ class SiteSettingController extends Controller
             $topHeaderLoginShow = $request->get('top_header_login_show', $settings['top_header_login_show'] ?? '0');
             $menuLoginShow = $request->get('menu_login_show', $settings['menu_login_show'] ?? '0');
             $headerSticky = $request->get('header_sticky', $settings['header_sticky'] ?? '0');
+            $headerTransparent = $request->get('header_transparent', $settings['header_transparent'] ?? '0');
             $headerShadow = $request->get('header_shadow', $settings['header_shadow'] ?? '0');
             $headerBorder = $request->get('header_border', $settings['header_border'] ?? '0');
             $headerBorderWidth = $request->get('header_border_width', $settings['header_border_width'] ?? '1');
