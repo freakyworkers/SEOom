@@ -457,7 +457,17 @@
         </script>
     @endif
 @else
-<div class="card shadow-sm mb-3 {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $widgetTopBorderStyle }}{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '' }}">
+@php
+    $cardStyle = $widgetTopBorderStyle;
+    if (!$isRoundTheme) {
+        $cardStyle .= ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;';
+    }
+    if ($isFullHeight) {
+        $cardStyle .= ($cardStyle ? ' ' : '') . 'flex: 1; display: flex; flex-direction: column; min-height: 0;';
+    }
+    $cardMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
+@endphp
+<div class="card shadow-sm {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }}">
     @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat' && $widget->type !== 'chat_widget' && $widget->type !== 'create_site')
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
@@ -471,7 +481,13 @@
         </div>
         @endif
     @endif
-    <div class="card-body" style="{{ ($widget->type === 'tab_menu' || $widget->type === 'user_ranking' || $widget->type === 'toggle_menu') ? 'padding-top: 0 !important;' : '' }}">
+    @php
+        $cardBodyStyle = ($widget->type === 'tab_menu' || $widget->type === 'user_ranking' || $widget->type === 'toggle_menu') ? 'padding-top: 0 !important;' : '';
+        if ($isFullHeight) {
+            $cardBodyStyle .= ($cardBodyStyle ? ' ' : '') . 'flex: 1; display: flex; flex-direction: column; min-height: 0;';
+        }
+    @endphp
+    <div class="card-body" style="{{ $cardBodyStyle }}">
         @switch($widget->type)
             @case('popular_posts')
                 {{-- 인기 게시글 위젯 --}}
@@ -3336,6 +3352,11 @@
                     // card-body의 기본 패딩(1rem = 16px)을 음수 마진으로 상쇄
                     // 하단 패딩도 상쇄하여 하단 여백 제거
                     $createSiteStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: center; color: {$textColor}; background-color: {$backgroundColor}; margin-left: -1rem; margin-right: -1rem; margin-bottom: -1rem; width: calc(100% + 2rem);";
+                    
+                    // 세로 100%일 때 위젯이 전체 높이를 차지하도록
+                    if ($isFullHeight) {
+                        $createSiteStyle .= " flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0;";
+                    }
                 @endphp
                 
                 @if(!$showOnlyWhenLoggedIn || auth()->check())
