@@ -3451,77 +3451,99 @@
     $countdownType = $countdownSettings['countdown_type'] ?? 'dday';
 @endphp
 @if($countdownType === 'dday')
+<style>
+/* 모바일에서 월/일 다음 줄바꿈 (≤576px) */
+@media (max-width: 576px) {
+    .countdown-mobile-break { display: block; height: 0.25rem; }
+}
+</style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const countdownElement = document.querySelector('.countdown-dday[data-target-date="{{ $countdownSettings['countdown_target_date'] ?? '' }}"]');
-    if (!countdownElement) return;
-    
-    const targetDate = new Date(countdownElement.dataset.targetDate).getTime();
-    const displayElement = countdownElement.querySelector('.countdown-display .countdown-text');
-    const animationEnabled = countdownElement.dataset.animationEnabled === 'true';
-    
-    let currentDisplay = '';
-    let animationInterval = null;
-    
-    function updateCountdown() {
-        const now = new Date().getTime();
-        const distance = targetDate - now;
-        
-        if (distance < 0) {
-            if (animationInterval) {
-                clearInterval(animationInterval);
+    const countdownElements = document.querySelectorAll('.countdown-dday');
+    if (!countdownElements.length) return;
+
+    countdownElements.forEach((countdownElement) => {
+        const targetDate = new Date(countdownElement.dataset.targetDate).getTime();
+        const displayElement = countdownElement.querySelector('.countdown-display .countdown-text');
+        const animationEnabled = countdownElement.dataset.animationEnabled === 'true';
+
+        let animationInterval = null;
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                if (animationInterval) {
+                    clearInterval(animationInterval);
+                }
+                displayElement.textContent = '이미 지났습니다.';
+                return;
             }
-            displayElement.textContent = '이미 지났습니다.';
-            return;
-        }
-        
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        
-        const targetDateObj = new Date(targetDate);
-        const nowDateObj = new Date(now);
-        
-        // 같은 월인지 확인
-        const isSameMonth = targetDateObj.getFullYear() === nowDateObj.getFullYear() && 
-                           targetDateObj.getMonth() === nowDateObj.getMonth();
-        
-        // 숫자와 단위를 분리하여 HTML로 생성 (단위 사이 여백 추가)
-        let countdownHTML = '';
-        if (isSameMonth) {
-            countdownHTML = `<span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span><span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span><span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span><span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
-        } else {
-            const month = targetDateObj.getMonth() + 1;
-            countdownHTML = `<span style="font-size: 2.5rem; font-weight: bold;">${month}</span><span style="font-size: 1.2rem;">월</span><span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span><span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span><span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span><span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span><span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
-        }
-        
-        currentDisplay = countdownHTML;
-        
-        if (animationEnabled) {
-            // 애니메이션 효과: 숫자가 빠르게 변경되다가 최종 값으로 멈춤
-            if (animationInterval) {
-                clearInterval(animationInterval);
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const targetDateObj = new Date(targetDate);
+            const nowDateObj = new Date(now);
+
+            // 같은 월인지 확인
+            const isSameMonth = targetDateObj.getFullYear() === nowDateObj.getFullYear() &&
+                               targetDateObj.getMonth() === nowDateObj.getMonth();
+
+            // 숫자와 단위를 분리하여 HTML로 생성 (단위 사이 여백 추가)
+            let countdownHTML = '';
+            if (isSameMonth) {
+                countdownHTML =
+                    `<span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span>` +
+                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
+                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span>` +
+                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
+                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span>` +
+                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
+                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
+            } else {
+                const month = targetDateObj.getMonth() + 1;
+                const mobileBreak = '<span class="countdown-mobile-break d-sm-none"></span>';
+                countdownHTML =
+                    `<span style="font-size: 2.5rem; font-weight: bold;">${month}</span><span style="font-size: 1.2rem;">월</span>` +
+                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
+                    `<span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span>` +
+                    `${mobileBreak}` +
+                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
+                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span>` +
+                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
+                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span>` +
+                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
+                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
             }
-            
-            // 초기에는 랜덤 숫자로 표시 (HTML 구조 유지)
-            let animatedHTML = countdownHTML;
-            animatedHTML = animatedHTML.replace(/(\d+)/g, (match) => {
-                return match.replace(/\d/g, () => Math.floor(Math.random() * 10));
-            });
-            displayElement.innerHTML = animatedHTML;
-            
-            // 짧은 딜레이 후 실제 값 표시
-            setTimeout(() => {
+
+            if (animationEnabled) {
+                // 애니메이션 효과: 숫자가 빠르게 변경되다가 최종 값으로 멈춤
+                if (animationInterval) {
+                    clearInterval(animationInterval);
+                }
+
+                // 초기에는 랜덤 숫자로 표시 (HTML 구조 유지)
+                let animatedHTML = countdownHTML.replace(/(\d+)/g, (match) => {
+                    return match.replace(/\d/g, () => Math.floor(Math.random() * 10));
+                });
+                displayElement.innerHTML = animatedHTML;
+
+                // 짧은 딜레이 후 실제 값 표시
+                setTimeout(() => {
+                    displayElement.innerHTML = countdownHTML;
+                }, 100);
+            } else {
                 displayElement.innerHTML = countdownHTML;
-            }, 100);
-        } else {
-            displayElement.innerHTML = countdownHTML;
+            }
         }
-    }
-    
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    });
 });
 </script>
 @elseif($countdownType === 'number')
