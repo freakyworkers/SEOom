@@ -3150,21 +3150,17 @@ function saveMainWidgetSettings() {
     }
     
     // settings 객체 생성 - 기존 설정 유지
-    const widgetItem = document.querySelector(`[data-widget-id="${widgetId}"]`);
     let existingSettings = {};
-    if (widgetItem) {
-        // 위젯 정보를 AJAX로 가져온 데이터에서 settings 가져오기
-        try {
-            const widgetDataStr = sessionStorage.getItem(`widget_${widgetId}_data`);
-            if (widgetDataStr) {
-                const widgetData = JSON.parse(widgetDataStr);
-                if (widgetData && widgetData.settings) {
-                    existingSettings = widgetData.settings;
-                }
+    try {
+        const widgetDataStr = sessionStorage.getItem(`widget_${widgetId}_data`);
+        if (widgetDataStr) {
+            const widgetData = JSON.parse(widgetDataStr);
+            if (widgetData && widgetData.settings) {
+                existingSettings = widgetData.settings;
             }
-        } catch (e) {
-            console.error('Error parsing existing settings:', e);
         }
+    } catch (e) {
+        console.error('Error parsing existing settings:', e);
     }
     const settings = Object.assign({}, existingSettings);
     
