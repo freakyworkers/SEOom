@@ -4419,26 +4419,6 @@ function handleEditMainGalleryDisplayTypeChange() {
     }
 }
 
-// 카운트다운 타입 변경 핸들러
-function handleCountdownTypeChange() {
-    const countdownType = document.getElementById('widget_countdown_type')?.value;
-    const ddayContainer = document.getElementById('widget_countdown_dday_container');
-    const numberContainer = document.getElementById('widget_countdown_number_container');
-    
-    if (countdownType === 'dday') {
-        if (ddayContainer) ddayContainer.style.display = 'block';
-        if (numberContainer) numberContainer.style.display = 'none';
-    } else if (countdownType === 'number') {
-        if (ddayContainer) ddayContainer.style.display = 'none';
-        if (numberContainer) numberContainer.style.display = 'block';
-        // 숫자 카운트 항목이 없으면 하나 추가
-        const itemsContainer = document.getElementById('widget_countdown_number_items');
-        if (itemsContainer && itemsContainer.children.length === 0) {
-            addCountdownNumberItem();
-        }
-    }
-}
-
 // 카운트다운 숫자 카운트 항목 추가
 let countdownNumberItemIndex = 0;
 function addCountdownNumberItem() {

@@ -3412,7 +3412,10 @@
                     @elseif($countdownType === 'number')
                         @php
                             $numberItems = $countdownSettings['countdown_number_items'] ?? [];
-                            $animationEnabled = $countdownSettings['countdown_animation'] ?? false;
+                            // 기존 키(countdown_animation)와 신규 키(countdown_animation_enabled) 모두 대응
+                            $animationEnabled = $countdownSettings['countdown_animation_enabled'] 
+                                ?? $countdownSettings['countdown_animation'] 
+                                ?? false;
                         @endphp
                         @if(count($numberItems) > 0)
                             <div class="countdown-number-items row g-3">
