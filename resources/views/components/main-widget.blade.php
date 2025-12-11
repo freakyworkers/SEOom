@@ -468,7 +468,7 @@
     $cardMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
 @endphp
 <div class="card shadow-sm {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }}">
-    @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat' && $widget->type !== 'chat_widget' && $widget->type !== 'create_site')
+    @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat' && $widget->type !== 'chat_widget' && $widget->type !== 'create_site' && $widget->type !== 'countdown')
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
             <div class="card-header" style="background-color: white;{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '' }} border: none !important; border-bottom: 1px solid #dee2e6 !important;">
@@ -3398,11 +3398,12 @@
                     @if($countdownType === 'dday')
                         @php
                             $targetDate = $countdownSettings['countdown_target_date'] ?? '';
+                            $ddayAnimationEnabled = $countdownSettings['countdown_dday_animation_enabled'] ?? false;
                         @endphp
                         @if($targetDate)
-                            <div class="countdown-dday" data-target-date="{{ $targetDate }}">
+                            <div class="countdown-dday" data-target-date="{{ $targetDate }}" data-animation-enabled="{{ $ddayAnimationEnabled ? 'true' : 'false' }}">
                                 <div class="countdown-display">
-                                    <span class="countdown-text">계산 중...</span>
+                                    <span class="countdown-text" style="font-size: 2.5rem; font-weight: bold;">계산 중...</span>
                                 </div>
                             </div>
                         @else
@@ -3457,12 +3458,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const targetDate = new Date(countdownElement.dataset.targetDate).getTime();
     const displayElement = countdownElement.querySelector('.countdown-display .countdown-text');
+    const animationEnabled = countdownElement.dataset.animationEnabled === 'true';
+    
+    let currentDisplay = '';
+    let animationInterval = null;
     
     function updateCountdown() {
         const now = new Date().getTime();
         const distance = targetDate - now;
         
         if (distance < 0) {
+            if (animationInterval) {
+                clearInterval(animationInterval);
+            }
             displayElement.textContent = '이미 지났습니다.';
             return;
         }
@@ -3487,7 +3495,34 @@ document.addEventListener('DOMContentLoaded', function() {
             countdownText = `${month}월 ${days}일 ${String(hours).padStart(2, '0')}시간 ${String(minutes).padStart(2, '0')}분 ${String(seconds).padStart(2, '0')}초`;
         }
         
-        displayElement.textContent = countdownText;
+        currentDisplay = countdownText;
+        
+        if (animationEnabled) {
+            // 애니메이션 효과: 숫자가 빠르게 변경되다가 최종 값으로 멈춤
+            if (animationInterval) {
+                clearInterval(animationInterval);
+            }
+            
+            // 초기에는 랜덤 숫자로 표시
+            const parts = countdownText.split(/(일|시간|분|초|월)/);
+            let animatedText = '';
+            for (let i = 0; i < parts.length; i++) {
+                if (/\d/.test(parts[i])) {
+                    // 숫자 부분을 랜덤으로 변경
+                    animatedText += parts[i].replace(/\d/g, () => Math.floor(Math.random() * 10));
+                } else {
+                    animatedText += parts[i];
+                }
+            }
+            displayElement.textContent = animatedText;
+            
+            // 짧은 딜레이 후 실제 값 표시
+            setTimeout(() => {
+                displayElement.textContent = countdownText;
+            }, 100);
+        } else {
+            displayElement.textContent = countdownText;
+        }
     }
     
     updateCountdown();

@@ -579,6 +579,24 @@
                    id="widget_countdown_target_date" 
                    name="countdown_target_date">
         </div>
+        <div class="mb-3">
+            <div class="form-check">
+                <input class="form-check-input" 
+                       type="checkbox" 
+                       id="widget_countdown_dday_animation" 
+                       name="countdown_dday_animation_enabled" 
+                       value="1">
+                <label class="form-check-label" for="widget_countdown_dday_animation">
+                    D-day 애니메이션 활성화
+                </label>
+                <i class="bi bi-question-circle text-muted ms-2" 
+                   data-bs-toggle="tooltip" 
+                   data-bs-placement="top" 
+                   title="활성화 시 카운트다운 숫자가 빠르게 변경되다가 멈춥니다." 
+                   style="cursor: help; font-size: 0.9rem;"></i>
+            </div>
+            <small class="text-muted">활성화 시 카운트다운 숫자가 빠르게 변경되다가 멈추는 애니메이션을 표시합니다.</small>
+        </div>
     </div>
     <!-- 숫자 카운트 설정 -->
     <div id="widget_countdown_number_container" style="display: none;">

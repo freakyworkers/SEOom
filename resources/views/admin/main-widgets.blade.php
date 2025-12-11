@@ -924,6 +924,84 @@
                             <small class="text-muted">체크 해제 시 로그인하지 않은 사용자에게도 표시됩니다.</small>
                         </div>
                     </div>
+                    <div class="mb-3" id="edit_main_widget_countdown_container" style="display: none;">
+                        <div class="mb-3">
+                            <label for="edit_main_widget_countdown_title" class="form-label">카운트 제목</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="edit_main_widget_countdown_title" 
+                                   name="countdown_title" 
+                                   placeholder="카운트 제목을 입력하세요 (선택사항)">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_countdown_content" class="form-label">내용</label>
+                            <textarea class="form-control" 
+                                      id="edit_main_widget_countdown_content" 
+                                      name="countdown_content" 
+                                      rows="3"
+                                      placeholder="내용을 입력하세요 (선택사항)"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_countdown_type" class="form-label">카운트 타입</label>
+                            <select class="form-select" id="edit_main_widget_countdown_type" name="countdown_type" onchange="handleEditCountdownTypeChange()">
+                                <option value="dday">D-day 카운트</option>
+                                <option value="number">숫자카운트</option>
+                            </select>
+                        </div>
+                        <div id="edit_main_widget_countdown_dday_container" class="mb-3">
+                            <div class="mb-3">
+                                <label for="edit_main_widget_countdown_target_date" class="form-label">목표 날짜 및 시간</label>
+                                <input type="datetime-local" 
+                                       class="form-control" 
+                                       id="edit_main_widget_countdown_target_date" 
+                                       name="countdown_target_date">
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="edit_main_widget_countdown_dday_animation" 
+                                           name="countdown_dday_animation_enabled" 
+                                           value="1">
+                                    <label class="form-check-label" for="edit_main_widget_countdown_dday_animation">
+                                        D-day 애니메이션 활성화
+                                    </label>
+                                    <i class="bi bi-question-circle text-muted ms-2" 
+                                       data-bs-toggle="tooltip" 
+                                       data-bs-placement="top" 
+                                       title="활성화 시 카운트다운 숫자가 빠르게 변경되다가 멈춥니다." 
+                                       style="cursor: help; font-size: 0.9rem;"></i>
+                                </div>
+                                <small class="text-muted">활성화 시 카운트다운 숫자가 빠르게 변경되다가 멈추는 애니메이션을 표시합니다.</small>
+                            </div>
+                        </div>
+                        <div id="edit_main_widget_countdown_number_container" style="display: none;">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="edit_main_widget_countdown_animation" 
+                                           name="countdown_animation_enabled" 
+                                           value="1" 
+                                           checked>
+                                    <label class="form-check-label" for="edit_main_widget_countdown_animation">
+                                        숫자 애니메이션 활성화
+                                    </label>
+                                    <i class="bi bi-question-circle text-muted ms-2" 
+                                       data-bs-toggle="tooltip" 
+                                       data-bs-placement="top" 
+                                       title="활성화 시 숫자가 슬롯처럼 돌아가다가 멈춥니다." 
+                                       style="cursor: help; font-size: 0.9rem;"></i>
+                                </div>
+                                <small class="text-muted">슬롯처럼 0~9까지 돌아가다가 목표 숫자로 멈추는 애니메이션을 표시합니다.</small>
+                            </div>
+                            <label class="form-label">숫자 카운트 항목</label>
+                            <div id="edit_main_widget_countdown_number_items">
+                                <!-- Number items will be added here dynamically -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addEditCountdownNumberItem()">+ 항목 추가</button>
+                        </div>
+                    </div>
                     <div class="mb-3" id="edit_main_widget_title_container_main">
                         <label for="edit_main_widget_title" class="form-label">
                             위젯 제목
@@ -1847,6 +1925,8 @@ function editMainWidget(widgetId) {
             if (createSiteContainer) createSiteContainer.style.display = 'none';
             const toggleMenuContainer = document.getElementById('edit_main_widget_toggle_menu_container');
             if (toggleMenuContainer) toggleMenuContainer.style.display = 'none';
+            const countdownContainer = document.getElementById('edit_main_widget_countdown_container');
+            if (countdownContainer) countdownContainer.style.display = 'none';
             const titleInput = document.getElementById('edit_main_widget_title');
             
             if (widgetType === 'popular_posts' || widgetType === 'recent_posts' || widgetType === 'weekly_popular_posts' || widgetType === 'monthly_popular_posts') {
@@ -2192,6 +2272,56 @@ function editMainWidget(widgetId) {
                 }
                 if (document.getElementById('edit_main_widget_title')) {
                     document.getElementById('edit_main_widget_title').value = title || '';
+                }
+            } else if (widgetType === 'countdown') {
+                if (countdownContainer) countdownContainer.style.display = 'block';
+                if (titleContainer) titleContainer.style.display = 'none';
+                
+                // 카운트다운 설정 로드
+                if (document.getElementById('edit_main_widget_countdown_title')) {
+                    document.getElementById('edit_main_widget_countdown_title').value = settings.countdown_title || '';
+                }
+                if (document.getElementById('edit_main_widget_countdown_content')) {
+                    document.getElementById('edit_main_widget_countdown_content').value = settings.countdown_content || '';
+                }
+                const countdownType = settings.countdown_type || 'dday';
+                if (document.getElementById('edit_main_widget_countdown_type')) {
+                    document.getElementById('edit_main_widget_countdown_type').value = countdownType;
+                    handleEditCountdownTypeChange();
+                }
+                
+                if (countdownType === 'dday') {
+                    if (document.getElementById('edit_main_widget_countdown_target_date')) {
+                        // datetime-local 형식으로 변환 (YYYY-MM-DDTHH:mm)
+                        const targetDate = settings.countdown_target_date || '';
+                        if (targetDate) {
+                            const date = new Date(targetDate);
+                            const year = date.getFullYear();
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const hours = String(date.getHours()).padStart(2, '0');
+                            const minutes = String(date.getMinutes()).padStart(2, '0');
+                            document.getElementById('edit_main_widget_countdown_target_date').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+                        }
+                    }
+                    if (document.getElementById('edit_main_widget_countdown_dday_animation')) {
+                        document.getElementById('edit_main_widget_countdown_dday_animation').checked = settings.countdown_dday_animation_enabled || false;
+                    }
+                } else if (countdownType === 'number') {
+                    if (document.getElementById('edit_main_widget_countdown_animation')) {
+                        document.getElementById('edit_main_widget_countdown_animation').checked = settings.countdown_animation_enabled !== false;
+                    }
+                    
+                    // 숫자 카운트 항목 로드
+                    const numberItems = settings.countdown_number_items || [];
+                    const itemsContainer = document.getElementById('edit_main_widget_countdown_number_items');
+                    if (itemsContainer) {
+                        itemsContainer.innerHTML = '';
+                        editCountdownNumberItemIndex = 0;
+                        numberItems.forEach((item) => {
+                            addEditCountdownNumberItem(item);
+                        });
+                    }
                 }
             } else {
                 if (titleContainer) titleContainer.style.display = 'block';
@@ -3286,6 +3416,46 @@ function saveMainWidgetSettings() {
         settings.button_bg_color = buttonBgColor;
         settings.button_color = buttonColor;
         settings.show_only_when_logged_in = showOnlyWhenLoggedIn;
+    } else if (widgetType === 'countdown') {
+        const countdownTitle = document.getElementById('edit_main_widget_countdown_title')?.value || '';
+        const countdownContent = document.getElementById('edit_main_widget_countdown_content')?.value || '';
+        const countdownType = document.getElementById('edit_main_widget_countdown_type')?.value || 'dday';
+        
+        settings.countdown_title = countdownTitle;
+        settings.countdown_content = countdownContent;
+        settings.countdown_type = countdownType;
+        
+        if (countdownType === 'dday') {
+            const targetDate = document.getElementById('edit_main_widget_countdown_target_date')?.value;
+            if (targetDate) {
+                // datetime-local 형식을 ISO 형식으로 변환
+                const date = new Date(targetDate);
+                settings.countdown_target_date = date.toISOString();
+            }
+            const ddayAnimationEnabled = document.getElementById('edit_main_widget_countdown_dday_animation')?.checked || false;
+            settings.countdown_dday_animation_enabled = ddayAnimationEnabled;
+        } else if (countdownType === 'number') {
+            const animationEnabled = document.getElementById('edit_main_widget_countdown_animation')?.checked || false;
+            settings.countdown_animation_enabled = animationEnabled;
+            
+            // 숫자 카운트 항목 수집
+            const numberItems = [];
+            const numberItemElements = document.querySelectorAll('#edit_main_widget_countdown_number_items .countdown-number-item');
+            numberItemElements.forEach((item) => {
+                const nameInput = item.querySelector('.edit-countdown-number-name');
+                const numberInput = item.querySelector('.edit-countdown-number-number');
+                const unitInput = item.querySelector('.edit-countdown-number-unit');
+                
+                if (nameInput && numberInput && unitInput) {
+                    numberItems.push({
+                        name: nameInput.value || '',
+                        number: parseInt(numberInput.value) || 0,
+                        unit: unitInput.value || ''
+                    });
+                }
+            });
+            settings.countdown_number_items = numberItems;
+        }
     }
     
     // settings를 JSON으로 추가 (빈 객체가 아닌 경우에만)
@@ -4096,6 +4266,91 @@ function addCountdownNumberItem() {
 // 카운트다운 숫자 카운트 항목 삭제
 function removeCountdownNumberItem(itemIndex) {
     const item = document.querySelector(`.countdown-number-item[data-item-index="${itemIndex}"]`);
+    if (item) {
+        item.remove();
+    }
+}
+
+// 카운트다운 타입 변경 처리 (위젯 추가용)
+function handleCountdownTypeChange() {
+    const type = document.getElementById('widget_countdown_type').value;
+    const ddayContainer = document.getElementById('widget_countdown_dday_container');
+    const numberContainer = document.getElementById('widget_countdown_number_container');
+    
+    if (type === 'dday') {
+        if (ddayContainer) ddayContainer.style.display = 'block';
+        if (numberContainer) numberContainer.style.display = 'none';
+    } else if (type === 'number') {
+        if (ddayContainer) ddayContainer.style.display = 'none';
+        if (numberContainer) numberContainer.style.display = 'block';
+    }
+}
+
+// 카운트다운 타입 변경 처리 (위젯 수정용)
+function handleEditCountdownTypeChange() {
+    const type = document.getElementById('edit_main_widget_countdown_type').value;
+    const ddayContainer = document.getElementById('edit_main_widget_countdown_dday_container');
+    const numberContainer = document.getElementById('edit_main_widget_countdown_number_container');
+    
+    if (type === 'dday') {
+        if (ddayContainer) ddayContainer.style.display = 'block';
+        if (numberContainer) numberContainer.style.display = 'none';
+    } else if (type === 'number') {
+        if (ddayContainer) ddayContainer.style.display = 'none';
+        if (numberContainer) numberContainer.style.display = 'block';
+    }
+}
+
+// 카운트다운 숫자 카운트 항목 추가 (위젯 수정용)
+let editCountdownNumberItemIndex = 0;
+function addEditCountdownNumberItem(itemData = null) {
+    const container = document.getElementById('edit_main_widget_countdown_number_items');
+    if (!container) return;
+    
+    const itemIndex = editCountdownNumberItemIndex++;
+    const item = document.createElement('div');
+    item.className = 'card mb-3 countdown-number-item';
+    item.dataset.itemIndex = itemIndex;
+    item.innerHTML = `
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">항목명</label>
+                    <input type="text" 
+                           class="form-control edit-countdown-number-name" 
+                           name="edit_countdown_number[${itemIndex}][name]" 
+                           placeholder="예: 프로젝트수"
+                           value="${itemData ? (itemData.name || '') : ''}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">숫자</label>
+                    <input type="number" 
+                           class="form-control edit-countdown-number-number" 
+                           name="edit_countdown_number[${itemIndex}][number]" 
+                           placeholder="예: 48"
+                           min="0"
+                           value="${itemData ? (itemData.number || '') : ''}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">단위</label>
+                    <input type="text" 
+                           class="form-control edit-countdown-number-unit" 
+                           name="edit_countdown_number[${itemIndex}][unit]" 
+                           placeholder="예: 개"
+                           value="${itemData ? (itemData.unit || '') : ''}">
+                </div>
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeEditCountdownNumberItem(${itemIndex})">
+                <i class="bi bi-trash me-1"></i>삭제
+            </button>
+        </div>
+    `;
+    container.appendChild(item);
+}
+
+// 카운트다운 숫자 카운트 항목 삭제 (위젯 수정용)
+function removeEditCountdownNumberItem(itemIndex) {
+    const item = document.querySelector(`#edit_main_widget_countdown_number_items .countdown-number-item[data-item-index="${itemIndex}"]`);
     if (item) {
         item.remove();
     }
