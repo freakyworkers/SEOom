@@ -3487,13 +3487,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const isSameMonth = targetDateObj.getFullYear() === nowDateObj.getFullYear() && 
                            targetDateObj.getMonth() === nowDateObj.getMonth();
         
-        // 숫자와 단위를 분리하여 HTML로 생성
+        // 숫자와 단위를 분리하여 HTML로 생성 (단위 사이 여백 추가)
         let countdownHTML = '';
         if (isSameMonth) {
-            countdownHTML = `<span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
+            countdownHTML = `<span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span><span style="margin: 0 0.8rem; display: inline-block;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span><span style="margin: 0 0.8rem; display: inline-block;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span><span style="margin: 0 0.8rem; display: inline-block;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
         } else {
             const month = targetDateObj.getMonth() + 1;
-            countdownHTML = `<span style="font-size: 2.5rem; font-weight: bold;">${month}</span><span style="font-size: 1.2rem;">월</span> <span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span> <span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
+            countdownHTML = `<span style="font-size: 2.5rem; font-weight: bold;">${month}</span><span style="font-size: 1.2rem;">월</span><span style="margin: 0 0.8rem; display: inline-block;"></span><span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span><span style="margin: 0 0.8rem; display: inline-block;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span><span style="margin: 0 0.8rem; display: inline-block;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span><span style="margin: 0 0.8rem; display: inline-block;"></span><span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
         }
         
         currentDisplay = countdownHTML;

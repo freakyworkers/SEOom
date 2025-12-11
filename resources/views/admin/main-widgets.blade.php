@@ -3155,15 +3155,18 @@ function saveMainWidgetSettings() {
     if (widgetItem) {
         // 위젯 정보를 AJAX로 가져온 데이터에서 settings 가져오기
         try {
-            const widgetData = JSON.parse(sessionStorage.getItem(`widget_${widgetId}_data`) || '{}');
-            if (widgetData.settings) {
-                existingSettings = widgetData.settings;
+            const widgetDataStr = sessionStorage.getItem(`widget_${widgetId}_data`);
+            if (widgetDataStr) {
+                const widgetData = JSON.parse(widgetDataStr);
+                if (widgetData && widgetData.settings) {
+                    existingSettings = widgetData.settings;
+                }
             }
         } catch (e) {
             console.error('Error parsing existing settings:', e);
         }
     }
-    const settings = { ...existingSettings };
+    const settings = Object.assign({}, existingSettings);
     
     if (widgetType === 'popular_posts' || widgetType === 'recent_posts' || widgetType === 'weekly_popular_posts' || widgetType === 'monthly_popular_posts') {
         const limit = document.getElementById('edit_main_widget_limit')?.value;
