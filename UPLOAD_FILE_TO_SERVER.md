@@ -10,7 +10,7 @@
 
 1. WinSCP 실행
 2. 서버 연결:
-   - **호스트 이름**: `54.180.2.108`
+   - **호스트 이름**: `52.79.104.130`
    - **사용자 이름**: `ubuntu`
    - **고급** → **인증** → **개인 키 파일**: `.ppk` 파일 선택
    - **로그인** 클릭
@@ -46,7 +46,7 @@ Enter 키 누르기
 ### PowerShell에서 실행:
 
 ```powershell
-scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" "C:\Users\kangd\Desktop\01.seoom\SEOom\app\Models\Site.php" ubuntu@54.180.2.108:/var/www/seoom/app/Models/Site.php
+scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" "C:\Users\kangd\Desktop\01.seoom\SEOom\app\Models\Site.php" ubuntu@52.79.104.130:/var/www/seoom/app/Models/Site.php
 ```
 
 Enter 키 누르기

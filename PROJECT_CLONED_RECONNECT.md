@@ -23,7 +23,7 @@
 PowerShell에서 다음 명령어로 다시 접속하세요:
 
 ```powershell
-ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@54.180.2.108
+ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.104.130
 ```
 
 Enter 키 누르면 서버에 접속돼요.

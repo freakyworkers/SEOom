@@ -95,6 +95,34 @@
                         </button>
                     </div>
 
+                    <div class="mb-3 border-top pt-3">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="checkboxes_enabled" name="checkboxes_enabled" onchange="toggleCheckboxesSection()">
+                            <label class="form-check-label" for="checkboxes_enabled">
+                                체크박스 추가
+                            </label>
+                        </div>
+                        <div id="checkboxesSection" style="display: none;">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="checkboxes_allow_multiple" name="checkboxes_allow_multiple">
+                                    <label class="form-check-label" for="checkboxes_allow_multiple">
+                                        복수 선택 허용
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">체크 항목</label>
+                                <div id="checkboxesContainer">
+                                    <!-- 동적으로 추가됨 -->
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addCheckboxItem()">
+                                    <i class="bi bi-plus-circle me-1"></i>체크 항목 추가
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="has_inquiry_content" name="has_inquiry_content">
@@ -121,15 +149,59 @@
 @push('scripts')
 <script>
 let fieldIndex = 0;
+let checkboxIndex = 0;
 
 function showCreateForm() {
     document.getElementById('modalTitle').textContent = '컨텍트폼 생성';
     document.getElementById('contactFormForm').reset();
     document.getElementById('contact_form_id').value = '';
     document.getElementById('fieldsContainer').innerHTML = '';
+    document.getElementById('checkboxesContainer').innerHTML = '';
+    document.getElementById('checkboxesSection').style.display = 'none';
     fieldIndex = 0;
+    checkboxIndex = 0;
     addField(); // 기본 항목 하나 추가
     new bootstrap.Modal(document.getElementById('contactFormModal')).show();
+}
+
+function toggleCheckboxesSection() {
+    const enabled = document.getElementById('checkboxes_enabled').checked;
+    document.getElementById('checkboxesSection').style.display = enabled ? 'block' : 'none';
+    if (!enabled) {
+        document.getElementById('checkboxesContainer').innerHTML = '';
+        checkboxIndex = 0;
+    }
+}
+
+function addCheckboxItem() {
+    const container = document.getElementById('checkboxesContainer');
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'card mb-2';
+    itemDiv.id = 'checkbox_item_' + checkboxIndex;
+    itemDiv.innerHTML = `
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-11">
+                    <label class="form-label">체크 항목 라벨</label>
+                    <input type="text" class="form-control checkbox-label" placeholder="예: 이용약관 동의" required>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCheckboxItem(${checkboxIndex})">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    container.appendChild(itemDiv);
+    checkboxIndex++;
+}
+
+function removeCheckboxItem(index) {
+    const itemDiv = document.getElementById('checkbox_item_' + index);
+    if (itemDiv) {
+        itemDiv.remove();
+    }
 }
 
 function addField() {
@@ -190,11 +262,36 @@ function saveContactForm() {
         return;
     }
 
+    // 체크박스 데이터 수집
+    const checkboxesEnabled = document.getElementById('checkboxes_enabled').checked;
+    let checkboxesData = null;
+    if (checkboxesEnabled) {
+        const checkboxItems = [];
+        const checkboxDivs = document.querySelectorAll('[id^="checkbox_item_"]');
+        checkboxDivs.forEach(div => {
+            const labelInput = div.querySelector('.checkbox-label');
+            if (labelInput && labelInput.value.trim()) {
+                checkboxItems.push({
+                    label: labelInput.value.trim()
+                });
+            }
+        });
+
+        if (checkboxItems.length > 0) {
+            checkboxesData = {
+                enabled: true,
+                allow_multiple: document.getElementById('checkboxes_allow_multiple').checked,
+                items: checkboxItems
+            };
+        }
+    }
+
     const data = {
         title: formData.get('title'),
         fields: fields,
         has_inquiry_content: document.getElementById('has_inquiry_content').checked,
         button_text: formData.get('button_text'),
+        checkboxes: checkboxesData,
         _token: '{{ csrf_token() }}'
     };
 

@@ -52,12 +52,22 @@ class ContactFormController extends Controller
             ], 422);
         }
 
+        // 체크박스 데이터 처리
+        $checkboxData = null;
+        if ($contactForm->checkboxes && isset($contactForm->checkboxes['enabled']) && $contactForm->checkboxes['enabled']) {
+            $checkboxValues = $request->input('checkboxes', []);
+            if (!empty($checkboxValues)) {
+                $checkboxData = is_array($checkboxValues) ? $checkboxValues : [$checkboxValues];
+            }
+        }
+
         // 제출 데이터 저장
         $submission = ContactFormSubmission::create([
             'contact_form_id' => $contactForm->id,
             'site_id' => $site->id,
             'data' => $formData,
             'inquiry_content' => $inquiryContent,
+            'checkbox_data' => $checkboxData,
         ]);
 
         // 운영자에게 메일 발송
@@ -102,6 +112,18 @@ class ContactFormController extends Controller
                 $mailContent = "컨텍트폼 작성 인원이 추가 되었습니다.\n\n";
                 foreach ($formData as $fieldName => $fieldValue) {
                     $mailContent .= $fieldName . " : " . $fieldValue . "\n";
+                }
+                
+                // 체크박스 데이터 추가
+                if ($checkboxData && !empty($checkboxData)) {
+                    $mailContent .= "\n체크 항목\n";
+                    if (is_array($checkboxData)) {
+                        foreach ($checkboxData as $checkedItem) {
+                            $mailContent .= "✓ " . $checkedItem . "\n";
+                        }
+                    } else {
+                        $mailContent .= "✓ " . $checkboxData . "\n";
+                    }
                 }
                 
                 if ($contactForm->has_inquiry_content && $inquiryContent) {

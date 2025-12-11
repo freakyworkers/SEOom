@@ -42,7 +42,7 @@ Enter 키 누르면 편집기가 열려요.
 APP_NAME="SEOom Builder"
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=http://54.180.2.108
+APP_URL=http://52.79.104.130
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -51,7 +51,7 @@ DB_DATABASE=seoom
 DB_USERNAME=seoom_user
 DB_PASSWORD=Tpdk1021!
 
-MASTER_DOMAIN=54.180.2.108
+MASTER_DOMAIN=52.79.104.130
 ```
 
 **⚠️ 중요:**

@@ -31,7 +31,7 @@ APP_URL=http://localhost
 
 **변경:**
 ```
-APP_URL=http://54.180.2.108
+APP_URL=http://52.79.104.130
 ```
 
 **이유:** 서버의 IP 주소로 변경해야 해요 (나중에 도메인으로 변경 가능)
@@ -74,7 +74,7 @@ DB_PASSWORD=Tpdk1021!
 
 **파일 맨 아래에 추가:**
 ```
-MASTER_DOMAIN=54.180.2.108
+MASTER_DOMAIN=52.79.104.130
 ```
 
 **이유:** 마스터 도메인 설정이 필요해요 (나중에 도메인으로 변경 가능)
@@ -89,7 +89,7 @@ APP_ENV=production
 APP_KEY=
 APP_DEBUG=false
 APP_TIMEZONE=Asia/Seoul
-APP_URL=http://54.180.2.108
+APP_URL=http://52.79.104.130
 APP_LOCALE=ko
 APP_FALLBACK_LOCALE=en
 APP_FAKER_LOCALE=ko_KR
@@ -109,7 +109,7 @@ QUEUE_CONNECTION=database
 MAIL_MAILER=log
 MAIL_FROM_ADDRESS="hello@example.com"
 
-MASTER_DOMAIN=54.180.2.108
+MASTER_DOMAIN=52.79.104.130
 ```
 
 ---
@@ -131,10 +131,10 @@ MASTER_DOMAIN=54.180.2.108
 ## ✅ 수정 체크리스트
 
 - [ ] `APP_DEBUG=true` → `APP_DEBUG=false`
-- [ ] `APP_URL=http://localhost` → `APP_URL=http://54.180.2.108`
+- [ ] `APP_URL=http://localhost` → `APP_URL=http://52.79.104.130`
 - [ ] `DB_USERNAME=root` → `DB_USERNAME=seoom_user`
 - [ ] `DB_PASSWORD=` → `DB_PASSWORD=Tpdk1021!`
-- [ ] 파일 맨 아래에 `MASTER_DOMAIN=54.180.2.108` 추가
+- [ ] 파일 맨 아래에 `MASTER_DOMAIN=52.79.104.130` 추가
 
 ---
 
@@ -143,13 +143,13 @@ MASTER_DOMAIN=54.180.2.108
 1. 화살표 키로 `APP_DEBUG=true`로 이동
 2. `true`를 `false`로 변경
 3. `APP_URL=http://localhost`로 이동
-4. `localhost`를 `54.180.2.108`로 변경
+4. `localhost`를 `52.79.104.130`로 변경
 5. `DB_USERNAME=root`로 이동
 6. `root`를 `seoom_user`로 변경
 7. `DB_PASSWORD=`로 이동
 8. `=` 뒤에 `Tpdk1021!` 입력
 9. 파일 맨 아래로 이동 (화살표 키 아래로)
-10. `MASTER_DOMAIN=54.180.2.108` 입력
+10. `MASTER_DOMAIN=52.79.104.130` 입력
 11. `Ctrl + O` → Enter → `Ctrl + X`
 
 ---

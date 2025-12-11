@@ -4314,7 +4314,21 @@ class AdminController extends Controller
             'fields.*.placeholder' => 'nullable|string|max:255',
             'has_inquiry_content' => 'boolean',
             'button_text' => 'required|string|max:255',
+            'checkboxes' => 'nullable|array',
+            'checkboxes.enabled' => 'nullable|boolean',
+            'checkboxes.allow_multiple' => 'nullable|boolean',
+            'checkboxes.items' => 'nullable|array',
+            'checkboxes.items.*.label' => 'nullable|string|max:255',
         ]);
+
+        $checkboxesData = null;
+        if ($request->has('checkboxes') && $request->input('checkboxes.enabled')) {
+            $checkboxesData = [
+                'enabled' => true,
+                'allow_multiple' => $request->boolean('checkboxes.allow_multiple', false),
+                'items' => $request->input('checkboxes.items', []),
+            ];
+        }
 
         $contactForm = ContactForm::create([
             'site_id' => $site->id,
@@ -4322,6 +4336,7 @@ class AdminController extends Controller
             'fields' => $request->input('fields'),
             'has_inquiry_content' => $request->boolean('has_inquiry_content'),
             'button_text' => $request->input('button_text', '신청하기'),
+            'checkboxes' => $checkboxesData,
         ]);
 
         return response()->json([
@@ -4363,13 +4378,28 @@ class AdminController extends Controller
             'fields.*.placeholder' => 'nullable|string|max:255',
             'has_inquiry_content' => 'boolean',
             'button_text' => 'required|string|max:255',
+            'checkboxes' => 'nullable|array',
+            'checkboxes.enabled' => 'nullable|boolean',
+            'checkboxes.allow_multiple' => 'nullable|boolean',
+            'checkboxes.items' => 'nullable|array',
+            'checkboxes.items.*.label' => 'nullable|string|max:255',
         ]);
+
+        $checkboxesData = null;
+        if ($request->has('checkboxes') && $request->input('checkboxes.enabled')) {
+            $checkboxesData = [
+                'enabled' => true,
+                'allow_multiple' => $request->boolean('checkboxes.allow_multiple', false),
+                'items' => $request->input('checkboxes.items', []),
+            ];
+        }
 
         $contactForm->update([
             'title' => $request->input('title'),
             'fields' => $request->input('fields'),
             'has_inquiry_content' => $request->boolean('has_inquiry_content'),
             'button_text' => $request->input('button_text', '신청하기'),
+            'checkboxes' => $checkboxesData,
         ]);
 
         return response()->json([

@@ -14,10 +14,12 @@ class ContactFormSubmission extends Model
         'site_id',
         'data',
         'inquiry_content',
+        'checkbox_data',
     ];
 
     protected $casts = [
         'data' => 'array',
+        'checkbox_data' => 'array',
     ];
 
     /**

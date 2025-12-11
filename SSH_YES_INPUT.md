@@ -35,7 +35,7 @@ Are you sure you want to continue connecting (yes/no/[fingerprint])?
 1. **`Ctrl + C`** 눌러서 취소
 2. **다시 SSH 접속 명령어 실행:**
    ```powershell
-   ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@54.180.2.108
+   ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.104.130
    ```
 3. **`yes`** 입력 (정확히!)
 4. **Enter 키** 누르기
@@ -47,7 +47,7 @@ Are you sure you want to continue connecting (yes/no/[fingerprint])?
 올바르게 입력하면:
 
 ```
-Warning: Permanently added '54.180.2.108' (ED25519) to the list of known hosts.
+Warning: Permanently added '52.79.104.130' (ED25519) to the list of known hosts.
 Welcome to Ubuntu 22.04.3 LTS (GNU/Linux ...)
 
 ...

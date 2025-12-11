@@ -106,7 +106,7 @@ mysqldump -u root seoom \
 WinSCP 또는 scp 사용:
 
 ```bash
-scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" sites_export.sql ubuntu@54.180.2.108:~/
+scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" sites_export.sql ubuntu@52.79.104.130:~/
 ```
 
 ## 5단계: 서버에서 Import

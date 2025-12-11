@@ -22,7 +22,7 @@ php sync_plans_to_server.php export
 
 **방법 1: SCP 사용 (Windows PowerShell)**
 ```powershell
-scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" plans_export.sql ubuntu@54.180.2.108:/var/www/seoom/
+scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" plans_export.sql ubuntu@52.79.104.130:/var/www/seoom/
 ```
 
 **방법 2: WinSCP 사용**
@@ -74,7 +74,7 @@ EXIT;
 
 2. 로컬로 파일 복사 (SCP):
    ```powershell
-   scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@54.180.2.108:/var/www/seoom/plans_export.sql .
+   scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.104.130:/var/www/seoom/plans_export.sql .
    ```
 
 3. 로컬에서 import:
@@ -93,7 +93,7 @@ EXIT;
 php sync_plans_to_server.php export
 
 # 파일 복사 (PowerShell)
-scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" plans_export.sql ubuntu@54.180.2.108:/var/www/seoom/
+scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" plans_export.sql ubuntu@52.79.104.130:/var/www/seoom/
 
 # 서버
 cd /var/www/seoom

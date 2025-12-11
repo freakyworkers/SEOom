@@ -103,7 +103,7 @@ mysqldump -u root -p seoom plans > plans_export.sql
 ### 서버로 복사:
 
 ```powershell
-scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" plans_export.sql ubuntu@54.180.2.108:/var/www/seoom/
+scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" plans_export.sql ubuntu@52.79.104.130:/var/www/seoom/
 ```
 
 ### 서버에서:

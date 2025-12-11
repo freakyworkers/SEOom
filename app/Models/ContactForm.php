@@ -15,11 +15,13 @@ class ContactForm extends Model
         'fields',
         'has_inquiry_content',
         'button_text',
+        'checkboxes',
     ];
 
     protected $casts = [
         'fields' => 'array',
         'has_inquiry_content' => 'boolean',
+        'checkboxes' => 'array',
     ];
 
     /**

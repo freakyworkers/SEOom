@@ -65,7 +65,7 @@ REM export_sites_simple.bat 파일을 열어서 SITE_IDS를 수정한 후 실행
 **WinSCP** 또는 **scp** 사용:
 
 ```bash
-scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" sites_export.sql ubuntu@54.180.2.108:~/
+scp -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" sites_export.sql ubuntu@52.79.104.130:~/
 ```
 
 ### 4단계: 서버에서 Import

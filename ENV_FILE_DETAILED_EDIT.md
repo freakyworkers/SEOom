@@ -24,7 +24,7 @@ DB_USERNAME=seoom_user
 
 **파일 맨 아래에 추가:**
 ```
-MASTER_DOMAIN=54.180.2.108
+MASTER_DOMAIN=52.79.104.130
 ```
 
 ---
@@ -56,7 +56,7 @@ Enter 키 누르기
 1. **화살표 키 (↓)**로 파일 맨 아래로 이동
 2. `MAIL_FROM_ADDRESS="hello@example.com"` 다음 줄로 이동
 3. **Enter 키** 누르기 (새 줄 만들기)
-4. **타이핑**: `MASTER_DOMAIN=54.180.2.108`
+4. **타이핑**: `MASTER_DOMAIN=52.79.104.130`
 5. **Enter 키** 누르기 (줄바꿈 확인)
 
 ---
@@ -77,7 +77,7 @@ APP_ENV=production
 APP_KEY=base64:QScgT6S3hwC56UyhUs1BTTCM8v0nfXRcJ8cZYJVhSLM=
 APP_DEBUG=false
 APP_TIMEZONE=Asia/Seoul
-APP_URL=http://54.180.2.108
+APP_URL=http://52.79.104.130
 APP_LOCALE=ko
 APP_FALLBACK_LOCALE=en
 APP_FAKER_LOCALE=ko_KR
@@ -97,7 +97,7 @@ QUEUE_CONNECTION=database
 MAIL_MAILER=log
 MAIL_FROM_ADDRESS="hello@example.com"
 
-MASTER_DOMAIN=54.180.2.108
+MASTER_DOMAIN=52.79.104.130
 ```
 
 ---
@@ -115,7 +115,7 @@ MASTER_DOMAIN=54.180.2.108
 ## ✅ 수정 체크리스트
 
 - [ ] `DB_USERNAME=seoom_userroot` → `DB_USERNAME=seoom_user`로 수정
-- [ ] 파일 맨 아래에 `MASTER_DOMAIN=54.180.2.108` 추가
+- [ ] 파일 맨 아래에 `MASTER_DOMAIN=52.79.104.130` 추가
 - [ ] 저장 (`Ctrl + O` → Enter)
 - [ ] 나가기 (`Ctrl + X`)
 

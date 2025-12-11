@@ -2231,6 +2231,28 @@
                                        required>
                             </div>
                         @endforeach
+                        @if($contactForm->checkboxes && isset($contactForm->checkboxes['enabled']) && $contactForm->checkboxes['enabled'])
+                            <div class="mb-3">
+                                <label class="form-label">체크 항목</label>
+                                @if(isset($contactForm->checkboxes['items']) && is_array($contactForm->checkboxes['items']))
+                                    @foreach($contactForm->checkboxes['items'] as $index => $item)
+                                        <div class="form-check">
+                                            <input class="form-check-input" 
+                                                   type="{{ isset($contactForm->checkboxes['allow_multiple']) && $contactForm->checkboxes['allow_multiple'] ? 'checkbox' : 'radio' }}" 
+                                                   name="checkboxes[]" 
+                                                   id="checkbox_{{ $contactForm->id }}_{{ $index }}" 
+                                                   value="{{ $item['label'] ?? '' }}"
+                                                   @if(!isset($contactForm->checkboxes['allow_multiple']) || !$contactForm->checkboxes['allow_multiple'])
+                                                       required
+                                                   @endif>
+                                            <label class="form-check-label" for="checkbox_{{ $contactForm->id }}_{{ $index }}">
+                                                {{ $item['label'] ?? '' }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        @endif
                         @if($contactForm->has_inquiry_content)
                             <div class="mb-3">
                                 <label class="form-label">문의 내용</label>
@@ -2253,6 +2275,18 @@
                             form.addEventListener('submit', function(e) {
                                 e.preventDefault();
                                 const formData = new FormData(form);
+                                
+                                // 체크박스 데이터 수집
+                                @if($contactForm->checkboxes && isset($contactForm->checkboxes['enabled']) && $contactForm->checkboxes['enabled'])
+                                    const checkboxes = form.querySelectorAll('input[name="checkboxes[]"]:checked');
+                                    const checkboxValues = Array.from(checkboxes).map(cb => cb.value);
+                                    // 기존 checkboxes[] 항목 제거 후 새로 추가
+                                    formData.delete('checkboxes[]');
+                                    checkboxValues.forEach(value => {
+                                        formData.append('checkboxes[]', value);
+                                    });
+                                @endif
+                                
                                 const submitBtn = form.querySelector('button[type="submit"]');
                                 const originalBtnText = submitBtn.textContent;
                                 

@@ -1,6 +1,6 @@
 # 서버 접속 명령어 (완성)
 
-**퍼블릭 IP 주소:** `54.180.2.108`  
+**퍼블릭 IP 주소:** `52.79.104.130`  
 **키 파일 경로:** `C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem`
 
 ---
@@ -10,7 +10,7 @@
 PowerShell에 다음 명령어를 **복사해서 붙여넣기**하세요:
 
 ```powershell
-ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@54.180.2.108
+ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.104.130
 ```
 
 ---
@@ -29,7 +29,7 @@ ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@54.180.2
 ### 첫 접속 시:
 
 ```
-The authenticity of host '54.180.2.108 (54.180.2.108)' can't be established.
+The authenticity of host '52.79.104.130 (52.79.104.130)' can't be established.
 ED25519 key fingerprint is SHA256:...
 Are you sure you want to continue connecting (yes/no/[fingerprint])?
 ```
@@ -71,7 +71,7 @@ ubuntu@ip-xxx-xxx-xxx-xxx:~$
 - `yes`를 입력했는지 확인
 - 또는 다음 명령어로 호스트 키 제거 후 재시도:
   ```powershell
-  ssh-keygen -R 54.180.2.108
+  ssh-keygen -R 52.79.104.130
   ```
 
 ---
