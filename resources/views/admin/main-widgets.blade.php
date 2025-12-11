@@ -1811,6 +1811,47 @@ function addMainWidget() {
         });
         
         settings.images = imageItems;
+    } else if (widgetType === 'countdown') {
+        const countdownTitle = document.getElementById('widget_countdown_title')?.value || '';
+        const countdownContent = document.getElementById('widget_countdown_content')?.value || '';
+        const countdownType = document.getElementById('widget_countdown_type')?.value || 'dday';
+        
+        settings.countdown_title = countdownTitle;
+        settings.countdown_content = countdownContent;
+        settings.countdown_type = countdownType;
+        
+        if (countdownType === 'dday') {
+            const targetDate = document.getElementById('widget_countdown_target_date')?.value;
+            if (targetDate) {
+                // datetime-local 형식을 ISO 형식으로 변환
+                const date = new Date(targetDate);
+                settings.countdown_target_date = date.toISOString();
+            }
+            const ddayAnimationEnabled = document.getElementById('widget_countdown_dday_animation')?.checked || false;
+            settings.countdown_dday_animation_enabled = ddayAnimationEnabled;
+        } else if (countdownType === 'number') {
+            const animationEnabled = document.getElementById('widget_countdown_animation')?.checked || false;
+            settings.countdown_animation_enabled = animationEnabled;
+            
+            // 숫자 카운트 항목 수집
+            const numberItems = [];
+            const numberItemElements = document.querySelectorAll('.countdown-number-item');
+            numberItemElements.forEach((item) => {
+                const itemIndex = item.dataset.itemIndex;
+                const nameInput = item.querySelector(`input[name="countdown_number[${itemIndex}][name]"]`);
+                const numberInput = item.querySelector(`input[name="countdown_number[${itemIndex}][number]"]`);
+                const unitInput = item.querySelector(`input[name="countdown_number[${itemIndex}][unit]"]`);
+                
+                if (nameInput && numberInput && unitInput) {
+                    numberItems.push({
+                        name: nameInput.value || '',
+                        number: parseInt(numberInput.value) || 0,
+                        unit: unitInput.value || ''
+                    });
+                }
+            });
+            settings.countdown_number_items = numberItems;
+        }
     }
     
     // 제목 처리: 갤러리 위젯의 경우 제목이 없으면 빈 문자열로 설정
@@ -2658,7 +2699,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (titleInput) titleInput.required = true;
             } else if (widgetType === 'countdown') {
                 if (countdownContainer) countdownContainer.style.display = 'block';
-                if (titleContainer) titleContainer.style.display = 'block';
+                if (titleContainer) titleContainer.style.display = 'none';
                 if (titleInput) titleInput.required = false;
                 // 초기화: D-day 카운트 표시
                 const countdownType = document.getElementById('widget_countdown_type');
