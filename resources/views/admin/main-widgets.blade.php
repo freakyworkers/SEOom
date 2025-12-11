@@ -74,6 +74,18 @@
                                            style="cursor: help; font-size: 0.9rem;"></i>
                                     </div>
                                 </div>
+                                <div class="mb-3">
+                                    <label for="container_widget_spacing" class="form-label">위젯 간격</label>
+                                    <select class="form-select" id="container_widget_spacing" name="widget_spacing">
+                                        <option value="0">없음</option>
+                                        <option value="1">매우 좁음</option>
+                                        <option value="2">좁음</option>
+                                        <option value="3" selected>보통</option>
+                                        <option value="4">넓음</option>
+                                        <option value="5">매우 넓음</option>
+                                    </select>
+                                    <small class="text-muted">같은 컨테이너 내 위젯들 사이의 간격을 설정합니다.</small>
+                                </div>
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="bi bi-plus-circle me-2"></i>컨테이너 추가
                                 </button>
@@ -179,6 +191,18 @@
                                                            title="활성화 시 해당 컨테이너가 브라우저 세로 100% 영역을 사용합니다." 
                                                            style="cursor: help; font-size: 0.85rem;"></i>
                                                     </div>
+                                                    <label class="mb-0 small ms-3">위젯 간격:</label>
+                                                    <select class="form-select form-select-sm" 
+                                                            style="width: auto; min-width: 100px;" 
+                                                            onchange="updateContainerWidgetSpacing({{ $container->id }}, this.value)"
+                                                            data-container-id="{{ $container->id }}">
+                                                        <option value="0" {{ ($container->widget_spacing ?? 3) == 0 ? 'selected' : '' }}>없음</option>
+                                                        <option value="1" {{ ($container->widget_spacing ?? 3) == 1 ? 'selected' : '' }}>매우 좁음</option>
+                                                        <option value="2" {{ ($container->widget_spacing ?? 3) == 2 ? 'selected' : '' }}>좁음</option>
+                                                        <option value="3" {{ ($container->widget_spacing ?? 3) == 3 ? 'selected' : '' }}>보통</option>
+                                                        <option value="4" {{ ($container->widget_spacing ?? 3) == 4 ? 'selected' : '' }}>넓음</option>
+                                                        <option value="5" {{ ($container->widget_spacing ?? 3) == 5 ? 'selected' : '' }}>매우 넓음</option>
+                                                    </select>
                                                 </div>
                                                 <div class="d-flex align-items-center gap-2">
                                                     <button type="button" 
@@ -793,7 +817,7 @@
                         <select class="form-select" id="edit_main_widget_contact_form_id" name="contact_form_id" required>
                             <option value="">선택하세요</option>
                             @foreach(\App\Models\ContactForm::where('site_id', $site->id)->orderBy('created_at', 'desc')->get() as $contactForm)
-                                <option value="{{ $contactForm->id }}">{{ $contactForm->name }}</option>
+                                <option value="{{ $contactForm->id }}">{{ $contactForm->title ?? '제목 없음' }}</option>
                             @endforeach
                         </select>
                         <small class="text-muted">사용할 컨텍트폼을 선택하세요.</small>
@@ -1102,6 +1126,14 @@ function updateContainerColumns(containerId, columns) {
     if (fullHeightCheckbox) {
         formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
     }
+    // 현재 widget_spacing 상태 유지
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (containerItem) {
+        const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
+        if (widgetSpacingSelect) {
+            formData.append('widget_spacing', widgetSpacingSelect.value);
+        }
+    }
     formData.append('_method', 'PUT');
     
     fetch('{{ route("admin.main-widgets.containers.update", ["site" => $site->slug, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
@@ -1126,6 +1158,89 @@ function updateContainerColumns(containerId, columns) {
         alert('컨테이너 업데이트 중 오류가 발생했습니다.');
         location.reload();
     });
+}
+
+// 컨테이너 위젯 간격 업데이트
+function updateContainerWidgetSpacing(containerId, widgetSpacing) {
+    try {
+        const formData = new FormData();
+        
+        // 컨테이너 아이템 찾기
+        const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+        if (!containerItem) {
+            console.error('Container item not found for ID:', containerId);
+            alert('컨테이너를 찾을 수 없습니다.');
+            return;
+        }
+        
+        // 컬럼 값 찾기
+        const columnsSelect = containerItem.querySelector('select[data-container-id="' + containerId + '"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        } else {
+            formData.append('columns', '1');
+        }
+        
+        // 정렬 값 찾기
+        const allSelects = containerItem.querySelectorAll('select[data-container-id="' + containerId + '"]');
+        if (allSelects.length >= 2) {
+            formData.append('vertical_align', allSelects[1].value);
+        } else {
+            formData.append('vertical_align', 'top');
+        }
+        
+        // full_width 값 찾기
+        const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+        if (fullWidthCheckbox) {
+            formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+        }
+        
+        // full_height 값 찾기
+        const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+        if (fullHeightCheckbox) {
+            formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+        }
+        
+        formData.append('widget_spacing', widgetSpacing);
+        formData.append('_method', 'PUT');
+        
+        fetch('{{ route("admin.main-widgets.containers.update", ["site" => $site->slug, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 성공 메시지 표시
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                alertDiv.style.zIndex = '9999';
+                alertDiv.innerHTML = `
+                    <i class="bi bi-check-circle me-2"></i>위젯 간격이 저장되었습니다.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(alertDiv);
+                
+                // 3초 후 자동으로 알림 제거
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 3000);
+            } else {
+                alert('위젯 간격 설정 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('위젯 간격 설정 업데이트 중 오류가 발생했습니다: ' + error.message);
+        });
+    } catch (error) {
+        console.error('Error in updateContainerWidgetSpacing:', error);
+        alert('위젯 간격 설정 업데이트 중 오류가 발생했습니다: ' + error.message);
+    }
 }
 
 // 컨테이너 정렬 업데이트
@@ -1307,6 +1422,14 @@ function updateContainerFullHeight(containerId, fullHeight) {
         const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
         if (fullWidthCheckbox) {
             formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+        }
+        
+        // widget_spacing 값 찾기
+        const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
+        if (widgetSpacingSelect) {
+            formData.append('widget_spacing', widgetSpacingSelect.value);
+        } else {
+            formData.append('widget_spacing', '3'); // 기본값
         }
         
         formData.append('full_height', fullHeight ? '1' : '0');
@@ -2265,9 +2388,46 @@ function editMainWidget(widgetId) {
             } else if (widgetType === 'contact_form') {
                 if (contactFormContainer) contactFormContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'block';
-                if (document.getElementById('edit_main_widget_contact_form_id')) {
-                    document.getElementById('edit_main_widget_contact_form_id').value = settings.contact_form_id || '';
+                
+                // 컨텍트폼 목록을 동적으로 업데이트
+                const contactFormSelect = document.getElementById('edit_main_widget_contact_form_id');
+                if (contactFormSelect) {
+                    // 기존 옵션 제거 (첫 번째 "선택하세요" 옵션 제외)
+                    while (contactFormSelect.options.length > 1) {
+                        contactFormSelect.remove(1);
+                    }
+                    
+                    // 컨텍트폼 목록 가져오기
+                    fetch(`{{ route("admin.contact-forms", ["site" => $site->slug]) }}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.contactForms) {
+                            data.contactForms.forEach(contactForm => {
+                                const option = document.createElement('option');
+                                option.value = contactForm.id;
+                                option.textContent = contactForm.title || '제목 없음';
+                                contactFormSelect.appendChild(option);
+                            });
+                            
+                            // 저장된 contact_form_id 설정
+                            if (settings.contact_form_id) {
+                                contactFormSelect.value = settings.contact_form_id;
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('컨텍트폼 목록을 가져오는 중 오류:', error);
+                        // 오류 발생 시 기존 서버 사이드 옵션 사용
+                        if (settings.contact_form_id) {
+                            contactFormSelect.value = settings.contact_form_id;
+                        }
+                    });
                 }
+                
                 if (document.getElementById('edit_main_widget_title')) {
                     document.getElementById('edit_main_widget_title').value = title;
                 }

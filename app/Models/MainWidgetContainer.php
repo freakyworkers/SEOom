@@ -15,6 +15,7 @@ class MainWidgetContainer extends Model
         'vertical_align',
         'full_width',
         'full_height',
+        'widget_spacing',
         'order',
     ];
 
@@ -23,6 +24,7 @@ class MainWidgetContainer extends Model
         'order' => 'integer',
         'full_width' => 'boolean',
         'full_height' => 'boolean',
+        'widget_spacing' => 'integer',
     ];
 
     /**

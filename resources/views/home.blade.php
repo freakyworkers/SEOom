@@ -43,13 +43,19 @@
                             $colStyle .= ($colStyle ? ' ' : '') . 'height: 100%; display: flex; flex-direction: column;';
                         }
                         $colMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
+                        
+                        // 위젯 간격 설정 (컨테이너별)
+                        $widgetSpacing = $container->widget_spacing ?? 3;
+                        $widgetSpacingClass = $isFullHeight ? 'mb-0' : 'mb-' . min(max($widgetSpacing, 0), 5);
                     @endphp
                     <div class="col-md-{{ 12 / $container->columns }} {{ $colMarginBottom }}" style="{{ $colStyle }}">
-                        @foreach($columnWidgets as $widget)
+                        @foreach($columnWidgets as $index => $widget)
                             @php
                                 $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
+                                // 마지막 위젯이 아니면 간격 적용
+                                $isLastWidget = $index === $columnWidgets->count() - 1;
                             @endphp
-                            <div style="{{ $widgetWrapperStyle }}">
+                            <div class="{{ !$isLastWidget && !$isFullHeight ? $widgetSpacingClass : '' }}" style="{{ $widgetWrapperStyle }}">
                                 <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" />
                             </div>
                         @endforeach

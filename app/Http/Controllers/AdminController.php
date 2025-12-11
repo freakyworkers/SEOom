@@ -3392,6 +3392,7 @@ class AdminController extends Controller
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
+            'widget_spacing' => 'nullable|integer|min:0|max:5',
         ]);
 
         $maxOrder = MainWidgetContainer::where('site_id', $site->id)->max('order') ?? 0;
@@ -3417,6 +3418,7 @@ class AdminController extends Controller
             'vertical_align' => $request->vertical_align ?? 'top',
             'full_width' => $fullWidth,
             'full_height' => $fullHeight,
+            'widget_spacing' => $request->widget_spacing ?? 3,
             'order' => $maxOrder + 1,
         ]);
 
@@ -3442,6 +3444,7 @@ class AdminController extends Controller
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
+            'widget_spacing' => 'nullable|integer|min:0|max:5',
         ]);
 
         $oldColumns = $container->columns;
@@ -3483,6 +3486,11 @@ class AdminController extends Controller
         } else {
             // full_height 값이 전송되지 않았으면 false로 설정
             $container->full_height = false;
+        }
+        
+        // widget_spacing 처리
+        if ($request->has('widget_spacing')) {
+            $container->widget_spacing = $request->widget_spacing;
         }
         
         $container->save();
@@ -4336,6 +4344,19 @@ class AdminController extends Controller
         $contactForms = ContactForm::where('site_id', $site->id)
             ->orderBy('created_at', 'desc')
             ->get();
+
+        // AJAX 요청인 경우 JSON 반환
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'contactForms' => $contactForms->map(function ($form) {
+                    return [
+                        'id' => $form->id,
+                        'title' => $form->title ?? '제목 없음',
+                    ];
+                }),
+            ]);
+        }
 
         return view('admin.contact-forms.index', compact('site', 'contactForms'));
     }
