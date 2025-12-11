@@ -3497,29 +3497,30 @@ document.addEventListener('DOMContentLoaded', function() {
                                targetDateObj.getMonth() === nowDateObj.getMonth();
 
             // 숫자와 단위를 분리하여 HTML로 생성 (단위 사이 여백 추가)
-            let countdownHTML = '';
+            // 모바일(≤576px)에서는 날짜 줄과 시간 줄을 구분하여 표시
+            const gap = `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>`;
+            const mobileLineBreak = '<span class="d-sm-none d-block" style="height: 0.35rem;"></span>';
+            
+            const timePart =
+                `<span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span>` +
+                `${gap}` +
+                `<span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span>` +
+                `${gap}` +
+                `<span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
+            
+            let datePart = '';
             if (isSameMonth) {
-                countdownHTML =
-                    `<span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span>` +
-                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
-                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span>` +
-                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
-                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span>` +
-                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
-                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
+                datePart =
+                    `<span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span>`;
             } else {
                 const month = targetDateObj.getMonth() + 1;
-                countdownHTML =
+                datePart =
                     `<span style="font-size: 2.5rem; font-weight: bold;">${month}</span><span style="font-size: 1.2rem;">월</span>` +
-                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
-                    `<span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span>` +
-                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
-                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(hours).padStart(2, '0')}</span><span style="font-size: 1.2rem;">시간</span>` +
-                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
-                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(minutes).padStart(2, '0')}</span><span style="font-size: 1.2rem;">분</span>` +
-                    `<span style="margin: 0 1.2rem; display: inline-block; width: 1.2rem;"></span>` +
-                    `<span style="font-size: 2.5rem; font-weight: bold;">${String(seconds).padStart(2, '0')}</span><span style="font-size: 1.2rem;">초</span>`;
+                    `${gap}` +
+                    `<span style="font-size: 2.5rem; font-weight: bold;">${days}</span><span style="font-size: 1.2rem;">일</span>`;
             }
+            
+            countdownHTML = `${datePart}${mobileLineBreak}${gap}${timePart}`;
 
             if (animationEnabled) {
                 // 애니메이션 효과: 숫자가 빠르게 변경되다가 최종 값으로 멈춤
