@@ -4483,6 +4483,14 @@ function handleCountdownTypeChange() {
     } else if (type === 'number') {
         if (ddayContainer) ddayContainer.style.display = 'none';
         if (numberContainer) numberContainer.style.display = 'block';
+        // 숫자 항목이 없으면 기본 1개 추가
+        const itemsContainer = document.getElementById('widget_countdown_number_items');
+        if (itemsContainer) {
+            const items = itemsContainer.querySelectorAll('.countdown-number-item');
+            if (items.length === 0) {
+                addCountdownNumberItem();
+            }
+        }
     }
 }
 
@@ -4498,6 +4506,14 @@ function handleEditCountdownTypeChange() {
     } else if (type === 'number') {
         if (ddayContainer) ddayContainer.style.display = 'none';
         if (numberContainer) numberContainer.style.display = 'block';
+        // 숫자 항목이 없으면 기본 1개 추가
+        const itemsContainer = document.getElementById('edit_main_widget_countdown_number_items');
+        if (itemsContainer) {
+            const items = itemsContainer.querySelectorAll('.countdown-number-item');
+            if (items.length === 0) {
+                addEditCountdownNumberItem();
+            }
+        }
     }
 }
 
