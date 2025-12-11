@@ -46,7 +46,12 @@
                     @endphp
                     <div class="col-md-{{ 12 / $container->columns }} {{ $colMarginBottom }}" style="{{ $colStyle }}">
                         @foreach($columnWidgets as $widget)
-                            <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" />
+                            @php
+                                $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
+                            @endphp
+                            <div style="{{ $widgetWrapperStyle }}">
+                                <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" />
+                            </div>
                         @endforeach
                     </div>
                 @endfor

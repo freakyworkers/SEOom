@@ -56,8 +56,11 @@
                                     'is_active' => $widget->is_active,
                                     'order' => $widget->order,
                                 ];
+                                $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
                             @endphp
-                            <x-main-widget :widget="$widgetData" :site="$site" :isFullHeight="$isFullHeight" />
+                            <div style="{{ $widgetWrapperStyle }}">
+                                <x-main-widget :widget="$widgetData" :site="$site" :isFullHeight="$isFullHeight" />
+                            </div>
                         @endforeach
                     </div>
                 @endfor

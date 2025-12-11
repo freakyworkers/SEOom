@@ -50,7 +50,7 @@
         
         // 세로 100%일 때 위젯이 전체 높이를 차지하도록
         if ($isFullHeight) {
-            $blockStyle .= " height: 100%; display: flex; flex-direction: column; justify-content: center;";
+            $blockStyle .= " height: 100%; min-height: 100%; display: flex; flex-direction: column; justify-content: center;";
         }
         
         $blockMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
@@ -2178,7 +2178,7 @@
                     
                     // 세로 100%일 때 위젯이 전체 높이를 차지하도록
                     if ($isFullHeight) {
-                        $blockStyle .= " height: 100%; display: flex; flex-direction: column; justify-content: center;";
+                        $blockStyle .= " height: 100%; min-height: 100%; display: flex; flex-direction: column; justify-content: center;";
                     }
                 @endphp
                 <div style="{{ $blockStyle }}">
