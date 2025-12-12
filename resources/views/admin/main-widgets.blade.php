@@ -393,26 +393,30 @@
                                                                                         <button type="button" 
                                                                                                 class="btn btn-sm btn-outline-secondary" 
                                                                                                 onclick="moveMainWidgetUp({{ $widget->id }}, {{ $container->id }}, {{ $i }})"
-                                                                                                title="위로 이동">
-                                                                                            <i class="bi bi-arrow-up me-1"></i>위로
+                                                                                                title="위로 이동"
+                                                                                                style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                                                            <i class="bi bi-arrow-up"></i>
                                                                                         </button>
                                                                                         <button type="button" 
                                                                                                 class="btn btn-sm btn-outline-secondary" 
                                                                                                 onclick="moveMainWidgetDown({{ $widget->id }}, {{ $container->id }}, {{ $i }})"
-                                                                                                title="아래로 이동">
-                                                                                            <i class="bi bi-arrow-down me-1"></i>아래로
+                                                                                                title="아래로 이동"
+                                                                                                style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                                                            <i class="bi bi-arrow-down"></i>
                                                                                         </button>
                                                                                         <button type="button" 
                                                                                                 class="btn btn-sm btn-outline-primary" 
                                                                                                 onclick="editMainWidget({{ $widget->id }})"
-                                                                                                title="설정">
-                                                                                            <i class="bi bi-gear me-1"></i>설정
+                                                                                                title="설정"
+                                                                                                style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                                                            <i class="bi bi-gear"></i>
                                                                                         </button>
                                                                                         <button type="button" 
                                                                                                 class="btn btn-sm btn-outline-danger" 
                                                                                                 onclick="deleteMainWidget({{ $widget->id }})"
-                                                                                                title="삭제">
-                                                                                            <i class="bi bi-trash me-1"></i>삭제
+                                                                                                title="삭제"
+                                                                                                style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                                                            <i class="bi bi-trash"></i>
                                                                                         </button>
                                                                                     </div>
                                                                                 </div>
