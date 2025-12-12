@@ -49,7 +49,8 @@
         </button>
     </div>
     <div class="card-body">
-        <div class="table-responsive">
+        {{-- 데스크탑 버전 (테이블) --}}
+        <div class="table-responsive d-none d-md-block">
             <table class="table table-bordered table-hover align-middle">
                 <thead class="table-light">
                     <tr>
@@ -173,6 +174,142 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        {{-- 모바일 버전 (카드 레이아웃) --}}
+        <div class="d-md-none">
+            <div class="d-grid gap-3" id="popupsCardBody">
+                @forelse($popups as $popup)
+                    <div class="card" data-popup-id="{{ $popup->id }}">
+                        <div class="card-body">
+                            {{-- 이미지/HTML 섹션 --}}
+                            <div class="mb-3 text-center">
+                                @if($popup->type === 'html')
+                                    <div class="popup-html-wrapper" style="position: relative; display: inline-block; max-width: 100%; max-height: 150px; overflow: auto; border: 1px solid #dee2e6; border-radius: 4px; padding: 5px;">
+                                        <div class="popup-html-preview" data-popup-id="{{ $popup->id }}">
+                                            {!! $popup->html_code !!}
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="popup-image-wrapper" style="position: relative; display: inline-block;" data-popup-id="{{ $popup->id }}">
+                                        @if($popup->image_path)
+                                            <img src="{{ asset('storage/' . $popup->image_path) }}" 
+                                                 alt="팝업 이미지" 
+                                                 class="popup-preview-image" 
+                                                 style="max-width: 100%; max-height: 150px; width: auto; height: auto; cursor: pointer; border: 1px solid #dee2e6; border-radius: 4px;"
+                                                 data-popup-id="{{ $popup->id }}"
+                                                 onerror="this.style.display='none'; $(this).siblings('.popup-image-placeholder').show();">
+                                        @endif
+                                        <label class="popup-image-placeholder" 
+                                               style="display: {{ $popup->image_path ? 'none' : 'block' }}; width: 100%; max-width: 200px; height: 120px; border: 2px dashed #dee2e6; border-radius: 4px; cursor: pointer; text-align: center; line-height: 120px; color: #6c757d; background-color: #f8f9fa; margin: 0 auto;"
+                                               data-popup-id="{{ $popup->id }}">
+                                            <i class="bi bi-image" style="font-size: 2rem;"></i><br>
+                                            <small>이미지 클릭</small>
+                                        </label>
+                                        <input type="file" 
+                                               class="popup-image-input d-none" 
+                                               accept="image/*"
+                                               data-popup-id="{{ $popup->id }}">
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- 링크/HTML 코드 섹션 --}}
+                            <div class="mb-3">
+                                <label class="form-label small mb-1">링크/HTML 코드</label>
+                                @if($popup->type === 'html')
+                                    <textarea class="form-control form-control-sm popup-html-input" 
+                                              name="html_codes[{{ $popup->id }}]"
+                                              rows="5"
+                                              placeholder="HTML 코드를 입력하세요.">{{ $popup->html_code ?? '' }}</textarea>
+                                @else
+                                    <input type="text" 
+                                           class="form-control form-control-sm popup-link-input" 
+                                           name="links[{{ $popup->id }}]"
+                                           value="{{ $popup->link ?? '' }}" 
+                                           placeholder="https://example.com">
+                                @endif
+                            </div>
+
+                            {{-- 새 창으로 띄우기 --}}
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input popup-open-new-window-checkbox" 
+                                           type="checkbox" 
+                                           name="open_new_windows[{{ $popup->id }}]"
+                                           value="1"
+                                           id="open_new_window_mobile_{{ $popup->id }}"
+                                           data-popup-id="{{ $popup->id }}"
+                                           {{ $popup->open_new_window ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="open_new_window_mobile_{{ $popup->id }}">
+                                        새 창으로 띄우기
+                                    </label>
+                                </div>
+                            </div>
+
+                            {{-- 등록시각 --}}
+                            <div class="mb-3">
+                                <label class="form-label small mb-1">등록시각</label>
+                                <div class="text-muted small">{{ $popup->created_at->format('Y.m.d H:i:s') }}</div>
+                            </div>
+
+                            {{-- 순서 버튼 --}}
+                            <div class="mb-3">
+                                <label class="form-label small mb-1">순서</label>
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-secondary popup-order-up-btn" 
+                                            data-popup-id="{{ $popup->id }}"
+                                            {{ $loop->first ? 'disabled' : '' }}>
+                                        <i class="bi bi-arrow-up"></i> 위로
+                                    </button>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-secondary popup-order-down-btn" 
+                                            data-popup-id="{{ $popup->id }}"
+                                            {{ $loop->last ? 'disabled' : '' }}>
+                                        <i class="bi bi-arrow-down"></i> 아래로
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- 위치 선택 --}}
+                            <div class="mb-3">
+                                <label class="form-label small mb-1">위치</label>
+                                <select class="form-select form-select-sm popup-target-type-select" 
+                                        name="target_types[{{ $popup->id }}]"
+                                        data-popup-id="{{ $popup->id }}">
+                                    <option value="all" {{ $popup->target_type == 'all' ? 'selected' : '' }}>전체</option>
+                                    <option value="main" {{ $popup->target_type == 'main' ? 'selected' : '' }}>메인</option>
+                                    <option value="attendance" {{ $popup->target_type == 'attendance' ? 'selected' : '' }}>출첵</option>
+                                    <option value="point-exchange" {{ $popup->target_type == 'point-exchange' ? 'selected' : '' }}>{{ $pointExchangeTitle }}</option>
+                                    <option value="event-application" {{ $popup->target_type == 'event-application' ? 'selected' : '' }}>{{ $eventApplicationTitle }}</option>
+                                    @foreach($boards as $board)
+                                        <option value="board_{{ $board->id }}" {{ ($popup->target_type == 'board' && $popup->target_board_id == $board->id) ? 'selected' : '' }}>
+                                            {{ $board->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- 삭제 버튼 --}}
+                            <div class="d-grid">
+                                <button type="button" 
+                                        class="btn btn-sm btn-danger delete-popup-btn" 
+                                        data-popup-id="{{ $popup->id }}">
+                                    <i class="bi bi-trash"></i> 삭제
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="card">
+                        <div class="card-body text-center py-5">
+                            <i class="bi bi-inbox" style="font-size: 3rem; color: #dee2e6;"></i>
+                            <p class="mt-3 text-muted">등록된 팝업이 없습니다.</p>
+                        </div>
+                    </div>
+                @endforelse
+            </div>
         </div>
         @if($popups->hasPages())
             <div class="card-footer bg-white">
@@ -368,16 +505,17 @@ $(document).ready(function() {
     function saveAllPopupItems(btn, originalText) {
         var popupData = [];
         
-        $('#popupsTableBody tr').each(function() {
+        // 데스크탑 테이블과 모바일 카드 모두에서 데이터 수집
+        $('[data-popup-id]').each(function() {
             var popupId = $(this).data('popup-id');
             if (!popupId) return;
             
-            var row = $(this);
-            var link = row.find('.popup-link-input').val() || '';
-            var htmlCodeInput = row.find('.popup-html-input');
+            var container = $(this);
+            var link = container.find('.popup-link-input').val() || '';
+            var htmlCodeInput = container.find('.popup-html-input');
             var htmlCode = htmlCodeInput.length > 0 ? htmlCodeInput.val() : null;
-            var openNewWindow = row.find('.popup-open-new-window-checkbox').is(':checked') ? '1' : '0';
-            var targetType = row.find('.popup-target-type-select').val();
+            var openNewWindow = container.find('.popup-open-new-window-checkbox').is(':checked') ? '1' : '0';
+            var targetType = container.find('.popup-target-type-select').val();
             
             // 이미지 타입 팝업의 경우 html_code를 전송하지 않음
             var data = {
@@ -435,32 +573,33 @@ $(document).ready(function() {
         });
     }
     
-    // 순서 변경 버튼
-    $('.popup-order-up-btn').on('click', function() {
+    // 순서 변경 버튼 (데스크탑 + 모바일)
+    $(document).on('click', '.popup-order-up-btn', function() {
         var popupId = $(this).data('popup-id');
-        var row = $(this).closest('tr');
-        var prevRow = row.prev();
+        var container = $(this).closest('[data-popup-id]');
+        var prevContainer = container.prev('[data-popup-id]');
         
-        if (prevRow.length) {
-            var prevPopupId = prevRow.data('popup-id');
+        if (prevContainer.length) {
+            var prevPopupId = prevContainer.data('popup-id');
             swapPopupOrder(popupId, prevPopupId);
         }
     });
     
-    $('.popup-order-down-btn').on('click', function() {
+    $(document).on('click', '.popup-order-down-btn', function() {
         var popupId = $(this).data('popup-id');
-        var row = $(this).closest('tr');
-        var nextRow = row.next();
+        var container = $(this).closest('[data-popup-id]');
+        var nextContainer = container.next('[data-popup-id]');
         
-        if (nextRow.length) {
-            var nextPopupId = nextRow.data('popup-id');
+        if (nextContainer.length) {
+            var nextPopupId = nextContainer.data('popup-id');
             swapPopupOrder(popupId, nextPopupId);
         }
     });
     
     function swapPopupOrder(popupId1, popupId2) {
         var popupIds = [];
-        $('#popupsTableBody tr').each(function() {
+        // 데스크탑 테이블과 모바일 카드 모두에서 순서 수집
+        $('#popupsTableBody tr[data-popup-id], #popupsCardBody .card[data-popup-id]').each(function() {
             var id = $(this).data('popup-id');
             if (id) {
                 if (id == popupId1) {
@@ -512,8 +651,11 @@ $(document).ready(function() {
     });
     
     // 새 창으로 띄우기 체크박스 변경 (자동 저장 제거)
-    $('.popup-open-new-window-checkbox').on('change', function() {
-        // 자동 저장 제거
+    $(document).on('change', '.popup-open-new-window-checkbox', function() {
+        // 데스크탑과 모바일 체크박스 동기화
+        var popupId = $(this).data('popup-id');
+        var isChecked = $(this).is(':checked');
+        $('.popup-open-new-window-checkbox[data-popup-id="' + popupId + '"]').not(this).prop('checked', isChecked);
     });
     
     // 링크 입력 변경 (자동 저장 제거)
@@ -568,13 +710,13 @@ $(document).ready(function() {
         }
     });
     
-    // 팝업 항목 업데이트
+    // 팝업 항목 업데이트 (데스크탑 + 모바일)
     function updatePopupItem(popupId) {
-        var row = $('tr[data-popup-id="' + popupId + '"]');
-        var link = row.find('.popup-link-input').val();
-        var htmlCode = row.find('.popup-html-input').val();
-        var openNewWindow = row.find('.popup-open-new-window-checkbox').is(':checked') ? '1' : '0';
-        var targetType = row.find('.popup-target-type-select').val();
+        var container = $('[data-popup-id="' + popupId + '"]');
+        var link = container.find('.popup-link-input').val();
+        var htmlCode = container.find('.popup-html-input').val();
+        var openNewWindow = container.find('.popup-open-new-window-checkbox').is(':checked') ? '1' : '0';
+        var targetType = container.find('.popup-target-type-select').val();
         
         $.ajax({
             url: '{{ route("admin.popups.update-item", ["site" => $site->slug, "popup" => ":popupId"]) }}'.replace(':popupId', popupId),
@@ -599,8 +741,8 @@ $(document).ready(function() {
         });
     }
     
-    // 팝업 삭제
-    $('.delete-popup-btn').on('click', function() {
+    // 팝업 삭제 (데스크탑 + 모바일)
+    $(document).on('click', '.delete-popup-btn', function() {
         if (!confirm('정말 삭제하시겠습니까?')) {
             return;
         }
