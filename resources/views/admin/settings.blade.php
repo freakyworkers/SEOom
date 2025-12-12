@@ -213,17 +213,21 @@
     }
     @media (max-width: 768px) {
         .theme-preview-wrapper {
-            margin: 0 -1rem;
-            padding: 0 1rem;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
         }
         .theme-preview {
-            min-width: 1200px;
             width: 1200px;
+            transform: scale(0.3);
             transform-origin: left top;
+            margin-bottom: -840px; /* (1200px * 0.7) = 840px negative margin to compensate for scale */
+            height: 200px;
         }
         .theme-preview-container {
-            min-width: 1200px;
             width: 1200px;
+            transform: scale(1);
         }
     }
     .header-preview-wrapper {
