@@ -323,7 +323,7 @@
                                     </div>
                                     @if(!in_array($key, ['mobile_menu_top', 'mobile_menu_bottom']))
                                         <div class="col-6">
-                                            <label class="form-label small mb-1">한줄당 개수 (데스크탑)</label>
+                                            <label class="form-label small mb-1">한줄당 개수 (PC)</label>
                                             <input type="number" 
                                                    class="form-control form-control-sm text-center banner-per-line-input" 
                                                    name="banner_{{ $key }}_desktop_per_line" 
