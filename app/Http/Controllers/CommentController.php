@@ -194,11 +194,27 @@ class CommentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'success' => false,
+                'error' => $validator->errors()->first('reason') ?: '신고 사유를 입력해주세요.',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
+        // Comment가 해당 site와 post에 속하는지 확인
         if ($comment->site_id !== $site->id || $comment->post_id !== $post->id) {
-            return response()->json(['error' => '댓글을 찾을 수 없습니다.'], 404);
+            return response()->json([
+                'success' => false,
+                'error' => '댓글을 찾을 수 없습니다.'
+            ], 404);
+        }
+        
+        // Post가 해당 site에 속하는지 확인
+        if ($post->site_id !== $site->id) {
+            return response()->json([
+                'success' => false,
+                'error' => '게시글을 찾을 수 없습니다.'
+            ], 404);
         }
 
         // Get reporter info

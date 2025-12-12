@@ -501,19 +501,26 @@ function openReportModal(type, id, siteSlug, boardSlug, postId) {
                 reason: reason
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            return response.json().then(data => {
+                if (!response.ok) {
+                    throw new Error(data.error || data.message || '신고 접수에 실패했습니다.');
+                }
+                return data;
+            });
+        })
         .then(data => {
             modal.remove();
             if (data.success) {
                 alert('신고가 접수되었습니다.');
             } else {
-                alert(data.error || '신고 접수에 실패했습니다.');
+                alert(data.error || data.message || '신고 접수에 실패했습니다.');
             }
         })
         .catch(error => {
             console.error('Error:', error);
             modal.remove();
-            alert('신고 접수에 실패했습니다.');
+            alert(error.message || '신고 접수에 실패했습니다.');
         });
     });
     

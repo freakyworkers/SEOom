@@ -87,7 +87,7 @@
             <div class="col-md-6">
                 <strong>검토일:</strong> {{ $report->reviewed_at->format('Y-m-d H:i:s') }}
                 @if($report->reviewer)
-                    ({{ $report->reviewer->name }})
+                    ({{ $report->reviewer->nickname ?? $report->reviewer->name }})
                 @endif
             </div>
             @endif
