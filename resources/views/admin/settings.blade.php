@@ -231,6 +231,22 @@
             width: 1200px;
             transform: scale(1);
         }
+        /* 미리보기 내부 요소들이 항상 데스크탑 레이아웃으로 표시되도록 */
+        .theme-preview .navbar {
+            flex-wrap: nowrap !important;
+        }
+        .theme-preview .container-fluid {
+            min-width: 1200px !important;
+            display: flex !important;
+            flex-wrap: nowrap !important;
+        }
+        .theme-preview .navbar-nav {
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+        }
+        .theme-preview .navbar-brand {
+            white-space: nowrap !important;
+        }
     }
     .header-preview-wrapper {
         transform: scale(0.75);
