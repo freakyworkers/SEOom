@@ -133,12 +133,13 @@
             margin: 0;
             padding: 0;
             width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         #mobile_header_preview {
-            width: 100% !important;
-            max-width: 100% !important;
-            transform: scale(0.98);
-            transform-origin: center;
+            width: 375px !important;
+            max-width: 375px !important;
+            margin: 0 auto;
         }
         .col-md-8 {
             padding-left: 0.5rem;
