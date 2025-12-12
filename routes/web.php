@@ -549,8 +549,8 @@ Route::middleware('web')->group(function () {
             })->name('master.admin.chat.ban-user');
             
             // Reports Management
-            Route::get('/reports', function () use ($masterSite) {
-                return app(\App\Http\Controllers\AdminReportController::class)->index($masterSite);
+            Route::get('/reports', function (Request $request) use ($masterSite) {
+                return app(\App\Http\Controllers\AdminReportController::class)->index($masterSite, $request);
             })->name('master.admin.reports.index');
             Route::get('/reports/{report}', function (\App\Models\Report $report) use ($masterSite) {
                 return app(\App\Http\Controllers\AdminReportController::class)->show($masterSite, $report);
