@@ -50,7 +50,7 @@
         ->exists();
 
     // Get API routes
-    $apiBaseUrl = $site->isMasterSite() ? '' : "/site/{$site->slug}";
+    $apiBaseUrl = "/site/{$site->slug}";
     $getMessagesUrl = $apiBaseUrl . '/api/chat/messages';
     $sendMessageUrl = $apiBaseUrl . '/api/chat/messages';
     $reportUrl = $apiBaseUrl . '/api/chat/report';
