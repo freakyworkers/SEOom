@@ -119,28 +119,43 @@
     </div>
     <div class="card-body">
         <form id="menuOrderForm">
-            <table class="table menu-table">
-                <thead>
-                    <tr>
-                        <th style="width: 20%;">이름</th>
-                        <th style="width: 15%;">연결 타입</th>
-                        <th style="width: 25%;">연결 대상</th>
-                        <th style="width: 10%;">표시 순서</th>
-                        <th style="width: 30%;">작업</th>
-                    </tr>
-                </thead>
-                <tbody id="menuListBody">
-                    @if($menus->count() > 0)
-                        @foreach($menus as $menu)
-                            @include('admin.partials.menu-row', ['menu' => $menu, 'level' => 0])
-                        @endforeach
-                    @else
+            {{-- 데스크탑 버전 (기존 테이블) --}}
+            <div class="d-none d-md-block">
+                <table class="table menu-table">
+                    <thead>
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">등록된 메뉴가 없습니다.</td>
+                            <th style="width: 20%;">이름</th>
+                            <th style="width: 15%;">연결 타입</th>
+                            <th style="width: 25%;">연결 대상</th>
+                            <th style="width: 10%;">표시 순서</th>
+                            <th style="width: 30%;">작업</th>
                         </tr>
-                    @endif
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="menuListBody">
+                        @if($menus->count() > 0)
+                            @foreach($menus as $menu)
+                                @include('admin.partials.menu-row', ['menu' => $menu, 'level' => 0])
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">등록된 메뉴가 없습니다.</td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- 모바일 버전 (카드 레이아웃) --}}
+            <div class="d-md-none" id="mobileMenuListBody">
+                @if($menus->count() > 0)
+                    @foreach($menus as $menu)
+                        @include('admin.partials.menu-card', ['menu' => $menu, 'level' => 0])
+                    @endforeach
+                @else
+                    <div class="text-center text-muted py-4">등록된 메뉴가 없습니다.</div>
+                @endif
+            </div>
+            
             <div class="mt-3 text-end">
                 <button type="submit" class="btn btn-primary">저장</button>
             </div>
@@ -456,14 +471,18 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const menus = [];
-        document.querySelectorAll('.menu-row').forEach((row, index) => {
-            const menuId = row.dataset.menuId;
-            const parentId = row.dataset.parentId || null;
-            menus.push({
-                id: menuId,
-                order: index + 1,
-                parent_id: parentId
-            });
+        // 데스크탑 테이블 또는 모바일 카드에서 메뉴 정보 수집
+        const menuElements = document.querySelectorAll('.menu-row, .menu-card');
+        menuElements.forEach((element, index) => {
+            const menuId = element.dataset.menuId;
+            const parentId = element.dataset.parentId || null;
+            if (menuId) {
+                menus.push({
+                    id: menuId,
+                    order: index + 1,
+                    parent_id: parentId
+                });
+            }
         });
 
         fetch('{{ route("admin.menus.update-order", ["site" => $site->slug]) }}', {
@@ -492,19 +511,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 표시 순서 상하 조정
+    // 표시 순서 상하 조정 (데스크탑 테이블 및 모바일 카드 모두 지원)
     document.addEventListener('click', function(e) {
         if (e.target.closest('.order-up-btn')) {
-            const row = e.target.closest('.menu-row');
+            const btn = e.target.closest('.order-up-btn');
+            const row = btn.closest('.menu-row, .menu-card');
+            if (!row) return;
+            
+            const container = row.parentNode;
             const prevRow = row.previousElementSibling;
-            if (prevRow && prevRow.classList.contains('menu-row')) {
-                row.parentNode.insertBefore(row, prevRow);
+            if (prevRow && (prevRow.classList.contains('menu-row') || prevRow.classList.contains('menu-card'))) {
+                container.insertBefore(row, prevRow);
             }
         } else if (e.target.closest('.order-down-btn')) {
-            const row = e.target.closest('.menu-row');
+            const btn = e.target.closest('.order-down-btn');
+            const row = btn.closest('.menu-row, .menu-card');
+            if (!row) return;
+            
+            const container = row.parentNode;
             const nextRow = row.nextElementSibling;
-            if (nextRow && nextRow.classList.contains('menu-row')) {
-                row.parentNode.insertBefore(nextRow, row);
+            if (nextRow && (nextRow.classList.contains('menu-row') || nextRow.classList.contains('menu-card'))) {
+                container.insertBefore(nextRow, row);
             }
         }
     });
@@ -541,22 +568,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 하위 메뉴 추가
+    // 하위 메뉴 추가 (데스크탑 테이블 및 모바일 카드 모두 지원)
     document.addEventListener('click', function(e) {
         if (e.target.closest('.add-submenu-btn')) {
             const menuId = e.target.closest('.add-submenu-btn').dataset.menuId;
-            const row = e.target.closest('.menu-row');
-            const submenuForm = document.createElement('tr');
-            submenuForm.className = 'submenu-form-row';
-            submenuForm.innerHTML = `
-                <td colspan="5" class="bg-light p-3">
-                    <form class="submenu-form">
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <input type="text" class="form-control" name="name" placeholder="이름" required>
+            const row = e.target.closest('.menu-row, .menu-card');
+            if (!row) return;
+            
+            // 기존 하위 메뉴 폼이 있으면 제거
+            const existingForm = row.parentNode.querySelector('.submenu-form-row, .submenu-form-card');
+            if (existingForm) {
+                existingForm.remove();
+            }
+            
+            const isMobile = row.classList.contains('menu-card');
+            let submenuForm;
+            
+            if (isMobile) {
+                // 모바일 카드 형태
+                submenuForm = document.createElement('div');
+                submenuForm.className = 'submenu-form-card card mb-3 bg-light';
+                submenuForm.innerHTML = `
+                    <div class="card-body">
+                        <form class="submenu-form">
+                            <div class="mb-3">
+                                <input type="text" class="form-control form-control-sm" name="name" placeholder="이름" required>
                             </div>
-                            <div class="col-md-3">
-                                <select class="form-select" name="link_type" required>
+                            <div class="mb-3">
+                                <select class="form-select form-select-sm" name="link_type" required>
                                     <option value="">선택하세요</option>
                                     <option value="board">게시판</option>
                                     <option value="custom_page">커스텀 페이지</option>
@@ -566,29 +605,74 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <option value="event_application">신청형 이벤트 페이지</option>
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <select class="form-select submenu-link-target-board" name="link_target_board" style="display: none;">
+                            <div class="mb-3">
+                                <select class="form-select form-select-sm submenu-link-target-board" name="link_target_board" style="display: none;">
                                     <option value="">게시판 선택</option>
                                     @foreach($boards as $board)
                                         <option value="{{ $board->id }}">{{ $board->name }}</option>
                                     @endforeach
                                 </select>
-                                <select class="form-select submenu-link-target-custom-page" name="link_target_custom_page" style="display: none;">
+                                <select class="form-select form-select-sm submenu-link-target-custom-page" name="link_target_custom_page" style="display: none;">
                                     <option value="">페이지 선택</option>
                                     @foreach($customPages as $customPage)
                                         <option value="{{ $customPage->id }}">{{ $customPage->name }}</option>
                                     @endforeach
                                 </select>
-                                <input type="text" class="form-control submenu-link-target-external" name="link_target_external" placeholder="https://example.com" style="display: none;">
+                                <input type="text" class="form-control form-control-sm submenu-link-target-external" name="link_target_external" placeholder="https://example.com" style="display: none;">
                             </div>
-                            <div class="col-md-2">
+                            <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-sm btn-primary">추가</button>
                                 <button type="button" class="btn btn-sm btn-secondary cancel-submenu-btn">취소</button>
                             </div>
-                        </div>
-                    </form>
-                </td>
-            `;
+                        </form>
+                    </div>
+                `;
+            } else {
+                // 데스크탑 테이블 형태
+                submenuForm = document.createElement('tr');
+                submenuForm.className = 'submenu-form-row';
+                submenuForm.innerHTML = `
+                    <td colspan="5" class="bg-light p-3">
+                        <form class="submenu-form">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" name="name" placeholder="이름" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" name="link_type" required>
+                                        <option value="">선택하세요</option>
+                                        <option value="board">게시판</option>
+                                        <option value="custom_page">커스텀 페이지</option>
+                                        <option value="external_link">외부링크</option>
+                                        <option value="attendance">출첵페이지</option>
+                                        <option value="point_exchange">포인트교환페이지</option>
+                                        <option value="event_application">신청형 이벤트 페이지</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select submenu-link-target-board" name="link_target_board" style="display: none;">
+                                        <option value="">게시판 선택</option>
+                                        @foreach($boards as $board)
+                                            <option value="{{ $board->id }}">{{ $board->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <select class="form-select submenu-link-target-custom-page" name="link_target_custom_page" style="display: none;">
+                                        <option value="">페이지 선택</option>
+                                        @foreach($customPages as $customPage)
+                                            <option value="{{ $customPage->id }}">{{ $customPage->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <input type="text" class="form-control submenu-link-target-external" name="link_target_external" placeholder="https://example.com" style="display: none;">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-sm btn-primary">추가</button>
+                                    <button type="button" class="btn btn-sm btn-secondary cancel-submenu-btn">취소</button>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
+                `;
+            }
             
             row.parentNode.insertBefore(submenuForm, row.nextSibling);
 
