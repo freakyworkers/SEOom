@@ -192,6 +192,40 @@
         width: 100%;
         position: relative;
     }
+    .theme-preview-wrapper {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+    .theme-preview-wrapper::-webkit-scrollbar {
+        height: 8px;
+    }
+    .theme-preview-wrapper::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    .theme-preview-wrapper::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+    .theme-preview-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    @media (max-width: 768px) {
+        .theme-preview-wrapper {
+            margin: 0 -1rem;
+            padding: 0 1rem;
+        }
+        .theme-preview {
+            min-width: 1200px;
+            width: 1200px;
+            transform-origin: left top;
+        }
+        .theme-preview-container {
+            min-width: 1200px;
+            width: 1200px;
+        }
+    }
     .header-preview-wrapper {
         transform: scale(0.75);
         transform-origin: top left;
@@ -832,18 +866,20 @@
                         <div class="d-flex align-items-center mb-2" style="height: 24px;">
                             <label class="form-label mb-0">미리보기</label>
                         </div>
-                        <div id="theme_top_preview" class="theme-preview" style="height: 200px; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; background-color: #f8f9fa; overflow: hidden; position: relative;">
-                            <div class="theme-preview-container" style="position: relative; width: 100%; height: 100%;">
-                                @if(isset($headerPreviewHtml) && !empty($headerPreviewHtml))
-                                    {!! $headerPreviewHtml !!}
-                                @else
-                                    <div class="text-muted p-3">
-                                        미리보기를 불러올 수 없습니다.
-                                        @if(config('app.debug'))
-                                            <br><small>Debug: headerPreviewHtml is not set</small>
-                                        @endif
-                                    </div>
-                                @endif
+                        <div class="theme-preview-wrapper">
+                            <div id="theme_top_preview" class="theme-preview" style="height: 200px; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; background-color: #f8f9fa; overflow: hidden; position: relative;">
+                                <div class="theme-preview-container" style="position: relative; width: 100%; height: 100%;">
+                                    @if(isset($headerPreviewHtml) && !empty($headerPreviewHtml))
+                                        {!! $headerPreviewHtml !!}
+                                    @else
+                                        <div class="text-muted p-3">
+                                            미리보기를 불러올 수 없습니다.
+                                            @if(config('app.debug'))
+                                                <br><small>Debug: headerPreviewHtml is not set</small>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -870,13 +906,14 @@
                         <div class="d-flex align-items-center mb-2" style="height: 24px;">
                             <label class="form-label mb-0">미리보기</label>
                         </div>
-                        <div id="theme_bottom_preview" class="theme-preview" style="height: 200px; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; background-color: #f8f9fa; overflow: hidden; position: relative;">
-                            <div class="theme-preview-container" style="position: relative; width: 100%; height: 100%;">
-                                @if(isset($footerPreviewHtml) && !empty(trim($footerPreviewHtml)))
-                                    {!! $footerPreviewHtml !!}
-                                @else
-                                    <div class="text-muted p-3" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                                        미리보기를 불러올 수 없습니다.
+                        <div class="theme-preview-wrapper">
+                            <div id="theme_bottom_preview" class="theme-preview" style="height: 200px; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; background-color: #f8f9fa; overflow: hidden; position: relative;">
+                                <div class="theme-preview-container" style="position: relative; width: 100%; height: 100%;">
+                                    @if(isset($footerPreviewHtml) && !empty(trim($footerPreviewHtml)))
+                                        {!! $footerPreviewHtml !!}
+                                    @else
+                                        <div class="text-muted p-3" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                            미리보기를 불러올 수 없습니다.
                                         @if(config('app.debug'))
                                             <br><small>Debug: footerPreviewHtml is {{ isset($footerPreviewHtml) ? 'set but empty' : 'not set' }}</small>
                                         @endif
