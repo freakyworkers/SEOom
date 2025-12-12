@@ -138,7 +138,8 @@
         @endif
 
         @if($posts->count() > 0)
-            <div class="table-responsive">
+            <!-- PC 버전 테이블 -->
+            <div class="table-responsive d-none d-md-block">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
@@ -276,6 +277,120 @@
                 </table>
             </div>
 
+            <!-- 모바일 버전 카드 레이아웃 -->
+            <div class="d-md-none">
+                <div class="d-grid gap-3">
+                    @foreach($posts as $post)
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-secondary">ID: {{ $post->id }}</span>
+                                    @if($post->is_pinned)
+                                        <span class="badge bg-warning text-dark">고정</span>
+                                    @endif
+                                    @if($post->is_notice)
+                                        <span class="badge bg-info">공지</span>
+                                    @endif
+                                    @if(!$post->board)
+                                        <span class="badge bg-danger">삭제된 게시판</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- 제목 -->
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted mb-1">제목</label>
+                                    @if($post->board)
+                                        <div>
+                                            <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
+                                               class="text-decoration-none text-dark fw-bold">
+                                                {{ Str::limit($post->title, 50) }}
+                                            </a>
+                                        </div>
+                                    @else
+                                        <div class="text-muted">
+                                            {{ Str::limit($post->title, 50) }}
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <!-- 게시판 -->
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted mb-1">게시판</label>
+                                    <select class="form-select form-select-sm board-select-mobile" 
+                                            data-post-id="{{ $post->id }}" 
+                                            data-current-board="{{ $post->board_id }}">
+                                        @foreach($boards as $board)
+                                            <option value="{{ $board->id }}" {{ $post->board_id == $board->id ? 'selected' : '' }}>
+                                                {{ $board->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- 작성자 -->
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted mb-1">작성자</label>
+                                    <div class="small">{{ $post->user->name ?? '알 수 없음' }}</div>
+                                </div>
+
+                                <!-- 조회수 -->
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted mb-1">조회수</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" 
+                                               class="form-control views-input-mobile" 
+                                               value="{{ $post->views }}" 
+                                               min="0"
+                                               data-post-id="{{ $post->id }}"
+                                               style="text-align: right;">
+                                        <span class="input-group-text">
+                                            <i class="bi bi-eye"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- 작성일 -->
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted mb-1">작성일</label>
+                                    <div class="small text-muted">{{ $post->created_at->format('Y-m-d H:i') }}</div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-grid gap-2">
+                                    @if($post->board)
+                                        <a href="{{ route('posts.edit', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-pencil me-1"></i>수정
+                                        </a>
+                                        <form action="{{ route('posts.destroy', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
+                                              method="POST" 
+                                              onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                                <i class="bi bi-trash me-1"></i>삭제
+                                            </button>
+                                        </form>
+                                    @else
+                                        <button type="button" 
+                                                class="btn btn-outline-secondary btn-sm" 
+                                                disabled>
+                                            <i class="bi bi-pencil me-1"></i>수정 불가 (게시판 삭제됨)
+                                        </button>
+                                        <button type="button" 
+                                                class="btn btn-outline-secondary btn-sm" 
+                                                onclick="alert('게시판이 삭제되어 삭제할 수 없습니다.');">
+                                            <i class="bi bi-trash me-1"></i>삭제 불가
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
             <!-- Pagination -->
             <div class="d-flex justify-content-center mt-4">
                 @php
@@ -296,6 +411,24 @@
 </div>
 @endsection
 
+@push('styles')
+<style>
+    /* 모바일 드롭다운 텍스트 잘림 방지 */
+    @media (max-width: 767.98px) {
+        .board-select-mobile {
+            font-size: 14px;
+            padding: 0.5rem;
+        }
+        .board-select-mobile option {
+            font-size: 14px;
+            padding: 0.5rem;
+            white-space: normal;
+            overflow: visible;
+        }
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -307,8 +440,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 게시판 변경 처리
-    document.querySelectorAll('.board-select').forEach(function(select) {
+    // 게시판 변경 처리 (PC + 모바일)
+    function handleBoardChange(select) {
         select.addEventListener('change', function() {
             const postId = this.dataset.postId;
             const boardId = this.value;
@@ -341,7 +474,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     // 성공 메시지 표시 (선택사항)
                     this.dataset.currentBoard = boardId;
-                    // 페이지 새로고침 없이 현재 상태 유지
+                    // PC와 모바일 동기화
+                    const allSelects = document.querySelectorAll(`.board-select[data-post-id="${postId}"], .board-select-mobile[data-post-id="${postId}"]`);
+                    allSelects.forEach(s => {
+                        s.value = boardId;
+                        s.dataset.currentBoard = boardId;
+                    });
                 } else {
                     alert(data.message || '게시판 변경에 실패했습니다.');
                     this.value = currentBoardId;
@@ -353,10 +491,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.value = currentBoardId;
             });
         });
-    });
+    }
 
-    // 조회수 변경 처리
-    document.querySelectorAll('.views-input').forEach(function(input) {
+    document.querySelectorAll('.board-select').forEach(handleBoardChange);
+    document.querySelectorAll('.board-select-mobile').forEach(handleBoardChange);
+
+    // 조회수 변경 처리 (PC + 모바일)
+    function handleViewsChange(input) {
         let originalValue = input.value;
         
         input.addEventListener('blur', function() {
@@ -389,7 +530,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     originalValue = views;
-                    // 성공적으로 업데이트됨
+                    // PC와 모바일 동기화
+                    const allInputs = document.querySelectorAll(`.views-input[data-post-id="${postId}"], .views-input-mobile[data-post-id="${postId}"]`);
+                    allInputs.forEach(inp => {
+                        inp.value = views;
+                    });
                 } else {
                     alert(data.message || '조회수 변경에 실패했습니다.');
                     this.value = originalValue;
@@ -408,7 +553,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.blur();
             }
         });
-    });
+    }
+
+    document.querySelectorAll('.views-input').forEach(handleViewsChange);
+    document.querySelectorAll('.views-input-mobile').forEach(handleViewsChange);
 });
 </script>
 @endpush
