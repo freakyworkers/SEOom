@@ -57,7 +57,22 @@
         </div>
 
         @if($users->count() > 0)
-            <div class="table-responsive">
+            @php
+                // 가입 순서대로 No 계산 (오래된 사용자가 1번)
+                // 전체 사용자 중에서 이 사용자의 가입 순서를 찾기 (마스터 사용자 제외)
+                $masterUserEmails = \App\Models\MasterUser::pluck('email')->toArray();
+                $allUsersQuery = \App\Models\User::where('site_id', $site->id);
+                if (!empty($masterUserEmails)) {
+                    $allUsersQuery->whereNotIn('email', $masterUserEmails);
+                }
+                $allUserIds = $allUsersQuery->orderBy('created_at', 'asc')
+                    ->pluck('id')
+                    ->toArray();
+                $userOrderMap = array_flip($allUserIds); // id => 순서 (0부터 시작)
+            @endphp
+            
+            {{-- 데스크탑 버전 (테이블) --}}
+            <div class="table-responsive d-none d-md-block">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
@@ -115,19 +130,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            // 가입 순서대로 No 계산 (오래된 사용자가 1번)
-                            // 전체 사용자 중에서 이 사용자의 가입 순서를 찾기 (마스터 사용자 제외)
-                            $masterUserEmails = \App\Models\MasterUser::pluck('email')->toArray();
-                            $allUsersQuery = \App\Models\User::where('site_id', $site->id);
-                            if (!empty($masterUserEmails)) {
-                                $allUsersQuery->whereNotIn('email', $masterUserEmails);
-                            }
-                            $allUserIds = $allUsersQuery->orderBy('created_at', 'asc')
-                                ->pluck('id')
-                                ->toArray();
-                            $userOrderMap = array_flip($allUserIds); // id => 순서 (0부터 시작)
-                        @endphp
                         @foreach($users as $user)
                             <tr>
                                 <td>{{ ($userOrderMap[$user->id] ?? 0) + 1 }}</td>
@@ -197,6 +199,100 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+
+            {{-- 모바일 버전 (카드 레이아웃) --}}
+            <div class="d-md-none">
+                <div class="d-grid gap-3">
+                    @foreach($users as $user)
+                        @php
+                            $adminIcon = $site->getSetting('admin_icon_path', '');
+                            $managerIcon = $site->getSetting('manager_icon_path', '');
+                            $displayType = $site->getSetting('rank_display_type', 'icon');
+                            $userRank = null;
+                            if (!$user->isAdmin() && !$user->isManager()) {
+                                $userRank = $user->getUserRank($site->id);
+                            }
+                        @endphp
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-secondary">#{{ ($userOrderMap[$user->id] ?? 0) + 1 }}</span>
+                                    <strong>{{ $user->name }}</strong>
+                                </div>
+                                <a href="{{ route('admin.users.detail', ['site' => $site->slug, 'user' => $user->id]) }}" 
+                                   class="btn btn-sm btn-outline-primary" 
+                                   title="상세보기">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">아이디</small>
+                                        <div>{{ $user->username ?? $user->id }}</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">닉네임</small>
+                                        <div>{{ $user->nickname ?? '-' }}</div>
+                                    </div>
+                                </div>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">등급</small>
+                                        <div>
+                                            @if($user->isAdmin() && $adminIcon)
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ asset('storage/' . $adminIcon) }}" alt="Admin" style="width: 18px; height: 18px; object-fit: contain; margin-right: 4px;">
+                                                    <span class="small">관리자</span>
+                                                </div>
+                                            @elseif($user->isManager() && $managerIcon)
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ asset('storage/' . $managerIcon) }}" alt="Manager" style="width: 18px; height: 18px; object-fit: contain; margin-right: 4px;">
+                                                    <span class="small">매니저</span>
+                                                </div>
+                                            @elseif($userRank)
+                                                <div class="d-flex align-items-center">
+                                                    @if($displayType === 'icon' && $userRank->icon_path)
+                                                        <img src="{{ asset('storage/' . $userRank->icon_path) }}" alt="{{ $userRank->name }}" style="width: 18px; height: 18px; object-fit: contain; margin-right: 4px;">
+                                                    @elseif($displayType === 'color' && $userRank->color)
+                                                        <span style="color: {{ $userRank->color }}; font-weight: bold; margin-right: 4px;" class="small">{{ $userRank->name }}</span>
+                                                    @else
+                                                        <span class="small">{{ $userRank->name }}</span>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <span class="text-muted small">-</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">포인트</small>
+                                        <div class="fw-bold">{{ number_format($user->points ?? 0) }}P</div>
+                                    </div>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">역할</small>
+                                        <div>
+                                            @if($user->role === 'admin')
+                                                <span class="badge bg-danger">관리자</span>
+                                            @elseif($user->role === 'manager')
+                                                <span class="badge bg-warning text-dark">매니저</span>
+                                            @else
+                                                <span class="badge bg-secondary">사용자</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">가입일</small>
+                                        <div class="small">{{ $user->created_at->format('Y-m-d') }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
 
             @if($users->hasPages())

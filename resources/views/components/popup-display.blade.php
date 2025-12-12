@@ -574,7 +574,9 @@
     @media (max-width: 768px) {
         .popup-overlay .popup-content,
         .popup-item .popup-content {
-            max-width: 95%;
+            max-width: calc(100% - 20px) !important;
+            margin-left: 10px !important;
+            margin-right: 10px !important;
             padding: 15px;
         }
         
@@ -586,6 +588,7 @@
             right: 10px;
             bottom: 10px;
             left: 10px;
+            max-width: calc(100% - 20px) !important;
         }
         
         .popup-list-container.popup-top-left,
@@ -597,6 +600,13 @@
             bottom: 10px;
             left: 10px;
             max-width: calc(100% - 20px);
+        }
+        
+        /* 중앙 정렬 팝업도 좌우 여백 적용 */
+        .popup-overlay.popup-center .popup-content {
+            max-width: calc(100% - 20px) !important;
+            margin-left: 10px !important;
+            margin-right: 10px !important;
         }
     }
 </style>

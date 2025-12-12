@@ -199,7 +199,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <span class="badge bg-secondary ms-2">{{ $popup->created_at->format('m.d') }}</span>
+                                <span class="badge bg-secondary ms-2 d-none d-md-inline">{{ $popup->created_at->format('m.d') }}</span>
                             </div>
                             <div class="d-flex gap-1">
                                 <button type="button" 
