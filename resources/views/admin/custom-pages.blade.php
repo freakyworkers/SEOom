@@ -76,19 +76,27 @@
                         @foreach($customPages as $index => $page)
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex align-items-center gap-2 mb-1">
-                                                <span class="badge bg-secondary">#{{ $index + 1 }}</span>
-                                                <h6 class="mb-0">{{ $page->name }}</h6>
-                                            </div>
-                                            <div class="mb-2">
-                                                <code class="small text-muted">{{ $page->slug }}</code>
-                                            </div>
-                                            @if($page->description)
-                                                <p class="text-muted small mb-0">{{ Str::limit($page->description, 100) }}</p>
-                                            @endif
+                                    <div class="mb-2">
+                                        <div class="mb-2">
+                                            <span class="badge bg-secondary me-2">#{{ $index + 1 }}</span>
+                                            <span class="small text-muted">이름 :</span>
+                                            <strong class="ms-1">{{ $page->name }}</strong>
                                         </div>
+                                        <div class="mb-2">
+                                            <span class="small text-muted">슬러그 :</span>
+                                            <code class="small ms-1">{{ $page->slug }}</code>
+                                        </div>
+                                        @if($page->description)
+                                            <div class="mb-2">
+                                                <span class="small text-muted">설명 :</span>
+                                                <span class="small text-muted ms-1">{{ Str::limit($page->description, 100) }}</span>
+                                            </div>
+                                        @else
+                                            <div class="mb-2">
+                                                <span class="small text-muted">설명 :</span>
+                                                <span class="small text-muted ms-1">-</span>
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="d-flex gap-2 justify-content-end pt-2 border-top">
                                         <a href="{{ route('custom-pages.show', ['site' => $site->slug, 'slug' => $page->slug]) }}" 
