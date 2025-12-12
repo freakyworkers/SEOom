@@ -13,24 +13,120 @@ class AdminReportController extends Controller
     /**
      * Display reports page.
      */
-    public function index(Site $site)
+    public function index(Site $site, Request $request)
     {
         if (!Auth::check() || !Auth::user()->canManage()) {
             abort(403);
         }
 
-        // Get reports with pagination
-        $reports = Report::where('site_id', $site->id)
-            ->with(['reporter', 'reportedUser', 'post', 'comment', 'chatMessage', 'reviewer'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Get search parameters
+        $searchType = $request->get('search_type', 'all');
+        $searchKeyword = $request->get('search', '');
+        $reportStatus = $request->get('status', '');
+        $reportType = $request->get('report_type', '');
+        $perPage = $request->get('per_page', 5);
 
-        // Get penalties
-        $penalties = Penalty::where('site_id', $site->id)
+        // Build reports query
+        $reportsQuery = Report::where('site_id', $site->id)
+            ->with(['reporter', 'reportedUser', 'post', 'comment', 'chatMessage', 'reviewer']);
+
+        // Apply search filters
+        if ($searchKeyword) {
+            if ($searchType === 'reporter') {
+                $reportsQuery->where(function($q) use ($searchKeyword) {
+                    $q->where('reporter_nickname', 'like', '%' . $searchKeyword . '%')
+                      ->orWhereHas('reporter', function($q) use ($searchKeyword) {
+                          $q->where('name', 'like', '%' . $searchKeyword . '%')
+                            ->orWhere('nickname', 'like', '%' . $searchKeyword . '%');
+                      });
+                });
+            } elseif ($searchType === 'reported') {
+                $reportsQuery->where(function($q) use ($searchKeyword) {
+                    $q->where('reported_nickname', 'like', '%' . $searchKeyword . '%')
+                      ->orWhereHas('reportedUser', function($q) use ($searchKeyword) {
+                          $q->where('name', 'like', '%' . $searchKeyword . '%')
+                            ->orWhere('nickname', 'like', '%' . $searchKeyword . '%');
+                      });
+                });
+            } elseif ($searchType === 'reason') {
+                $reportsQuery->where('reason', 'like', '%' . $searchKeyword . '%');
+            } else {
+                // Search all fields
+                $reportsQuery->where(function($q) use ($searchKeyword) {
+                    $q->where('reporter_nickname', 'like', '%' . $searchKeyword . '%')
+                      ->orWhere('reported_nickname', 'like', '%' . $searchKeyword . '%')
+                      ->orWhere('reason', 'like', '%' . $searchKeyword . '%')
+                      ->orWhereHas('reporter', function($q) use ($searchKeyword) {
+                          $q->where('name', 'like', '%' . $searchKeyword . '%')
+                            ->orWhere('nickname', 'like', '%' . $searchKeyword . '%');
+                      })
+                      ->orWhereHas('reportedUser', function($q) use ($searchKeyword) {
+                          $q->where('name', 'like', '%' . $searchKeyword . '%')
+                            ->orWhere('nickname', 'like', '%' . $searchKeyword . '%');
+                      });
+                });
+            }
+        }
+
+        // Apply status filter
+        if ($reportStatus) {
+            $reportsQuery->where('status', $reportStatus);
+        }
+
+        // Apply report type filter
+        if ($reportType) {
+            $reportsQuery->where('report_type', $reportType);
+        }
+
+        // Get reports with pagination
+        $reports = $reportsQuery->orderBy('created_at', 'desc')
+            ->paginate($perPage, ['*'], 'reports_page')
+            ->appends($request->except('reports_page'));
+
+        // Get penalty search parameters
+        $penaltySearchType = $request->get('penalty_search_type', 'all');
+        $penaltySearchKeyword = $request->get('penalty_search', '');
+        $penaltyType = $request->get('penalty_type', '');
+        $penaltyPerPage = $request->get('penalty_per_page', 5);
+
+        // Build penalties query
+        $penaltiesQuery = Penalty::where('site_id', $site->id)
             ->with(['user', 'issuer', 'report'])
-            ->where('is_active', true)
-            ->orderBy('created_at', 'desc')
-            ->paginate(20, ['*'], 'penalties_page');
+            ->where('is_active', true);
+
+        // Apply penalty search filters
+        if ($penaltySearchKeyword) {
+            if ($penaltySearchType === 'nickname') {
+                $penaltiesQuery->where(function($q) use ($penaltySearchKeyword) {
+                    $q->where('nickname', 'like', '%' . $penaltySearchKeyword . '%')
+                      ->orWhereHas('user', function($q) use ($penaltySearchKeyword) {
+                          $q->where('name', 'like', '%' . $penaltySearchKeyword . '%')
+                            ->orWhere('nickname', 'like', '%' . $penaltySearchKeyword . '%');
+                      });
+                });
+            } elseif ($penaltySearchType === 'reason') {
+                $penaltiesQuery->where('reason', 'like', '%' . $penaltySearchKeyword . '%');
+            } else {
+                $penaltiesQuery->where(function($q) use ($penaltySearchKeyword) {
+                    $q->where('nickname', 'like', '%' . $penaltySearchKeyword . '%')
+                      ->orWhere('reason', 'like', '%' . $penaltySearchKeyword . '%')
+                      ->orWhereHas('user', function($q) use ($penaltySearchKeyword) {
+                          $q->where('name', 'like', '%' . $penaltySearchKeyword . '%')
+                            ->orWhere('nickname', 'like', '%' . $penaltySearchKeyword . '%');
+                      });
+                });
+            }
+        }
+
+        // Apply penalty type filter
+        if ($penaltyType) {
+            $penaltiesQuery->where('type', $penaltyType);
+        }
+
+        // Get penalties with pagination
+        $penalties = $penaltiesQuery->orderBy('created_at', 'desc')
+            ->paginate($penaltyPerPage, ['*'], 'penalties_page')
+            ->appends($request->except('penalties_page'));
 
         return view('admin.reports.index', compact('site', 'reports', 'penalties'));
     }
@@ -93,7 +189,7 @@ class AdminReportController extends Controller
             'user_id' => 'nullable|exists:users,id',
             'guest_session_id' => 'nullable|string',
             'nickname' => 'required|string',
-            'type' => 'required|in:chat_ban,post_ban',
+            'type' => 'required|in:chat_ban,post_ban,comment_ban',
             'reason' => 'nullable|string|max:500',
             'expires_at' => 'nullable|date',
         ]);
