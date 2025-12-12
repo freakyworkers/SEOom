@@ -500,7 +500,8 @@
                                 <h6 class="mb-0"><i class="bi bi-gear me-2"></i>Cool SMS 설정</h6>
                             </div>
                             <div class="card-body">
-                                <div class="table-responsive">
+                                {{-- 데스크탑 버전 (테이블) --}}
+                                <div class="table-responsive d-none d-md-block">
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
@@ -563,7 +564,64 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <small class="text-muted">
+
+                                {{-- 모바일 버전 (카드 레이아웃) --}}
+                                <div class="d-md-none">
+                                    <div class="d-grid gap-3">
+                                        <div>
+                                            <label class="form-label small fw-bold mb-1">API Key</label>
+                                            <input type="text" 
+                                                   class="form-control form-control-sm" 
+                                                   id="sms_cool_api_key_mobile" 
+                                                   name="sms_cool_api_key" 
+                                                   value="{{ $settings['sms_cool_api_key'] ?? '' }}" 
+                                                   placeholder="API Key">
+                                        </div>
+                                        <div>
+                                            <label class="form-label small fw-bold mb-1">API Secret</label>
+                                            <input type="text" 
+                                                   class="form-control form-control-sm" 
+                                                   id="sms_cool_api_secret_mobile" 
+                                                   name="sms_cool_api_secret" 
+                                                   value="{{ $settings['sms_cool_api_secret'] ?? '' }}" 
+                                                   placeholder="API Secret">
+                                        </div>
+                                        <div>
+                                            <label class="form-label small fw-bold mb-1">발신번호</label>
+                                            <input type="text" 
+                                                   class="form-control form-control-sm phone-format" 
+                                                   id="sms_cool_from_mobile" 
+                                                   name="sms_cool_from" 
+                                                   value="{{ $settings['sms_cool_from'] ?? '' }}" 
+                                                   placeholder="010-1234-5678"
+                                                   maxlength="13">
+                                        </div>
+                                        <div>
+                                            <label class="form-label small fw-bold mb-1">테스트</label>
+                                            <div class="input-group">
+                                                <input type="text" 
+                                                       class="form-control form-control-sm phone-format" 
+                                                       id="cool_test_phone_mobile" 
+                                                       placeholder="010-1234-5678"
+                                                       maxlength="13">
+                                                <button type="button" 
+                                                        class="btn btn-outline-primary btn-sm" 
+                                                        onclick="testSms('cool_sms')">
+                                                    테스트
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="d-grid">
+                                            <button type="button" 
+                                                    class="btn btn-primary btn-sm" 
+                                                    onclick="saveSmsSettings('cool_sms')">
+                                                설정
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <small class="text-muted d-block mt-3">
                                     <i class="bi bi-info-circle me-1"></i>
                                     <a href="https://www.coolsms.co.kr" target="_blank">Cool SMS 홈페이지</a>에서 API 키를 발급받으세요.
                                 </small>
@@ -576,7 +634,8 @@
                                 <h6 class="mb-0"><i class="bi bi-gear me-2"></i>네이버 클라우드 플랫폼 설정</h6>
                             </div>
                             <div class="card-body">
-                                <div class="table-responsive">
+                                {{-- 데스크탑 버전 (테이블) --}}
+                                <div class="table-responsive d-none d-md-block">
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
@@ -647,7 +706,72 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <small class="text-muted">
+
+                                {{-- 모바일 버전 (카드 레이아웃) --}}
+                                <div class="d-md-none">
+                                    <div class="d-grid gap-3">
+                                        <div>
+                                            <label class="form-label small fw-bold mb-1">API Key</label>
+                                            <input type="text" 
+                                                   class="form-control form-control-sm" 
+                                                   id="sms_naver_api_key_mobile" 
+                                                   name="sms_naver_api_key" 
+                                                   value="{{ $settings['sms_naver_api_key'] ?? '' }}" 
+                                                   placeholder="API Key">
+                                        </div>
+                                        <div>
+                                            <label class="form-label small fw-bold mb-1">API Secret Key</label>
+                                            <input type="text" 
+                                                   class="form-control form-control-sm" 
+                                                   id="sms_naver_api_secret_mobile" 
+                                                   name="sms_naver_api_secret" 
+                                                   value="{{ $settings['sms_naver_api_secret'] ?? '' }}" 
+                                                   placeholder="API Secret">
+                                        </div>
+                                        <div>
+                                            <label class="form-label small fw-bold mb-1">SMS Service Id</label>
+                                            <input type="text" 
+                                                   class="form-control form-control-sm" 
+                                                   id="sms_naver_service_id_mobile" 
+                                                   name="sms_naver_service_id" 
+                                                   value="{{ $settings['sms_naver_service_id'] ?? '' }}" 
+                                                   placeholder="Service ID">
+                                        </div>
+                                        <div>
+                                            <label class="form-label small fw-bold mb-1">SMS Caller Id</label>
+                                            <input type="text" 
+                                                   class="form-control form-control-sm" 
+                                                   id="sms_naver_caller_id_mobile" 
+                                                   name="sms_naver_caller_id" 
+                                                   value="{{ $settings['sms_naver_caller_id'] ?? '' }}" 
+                                                   placeholder="Caller ID">
+                                        </div>
+                                        <div>
+                                            <label class="form-label small fw-bold mb-1">테스트</label>
+                                            <div class="input-group">
+                                                <input type="text" 
+                                                       class="form-control form-control-sm phone-format" 
+                                                       id="naver_test_phone_mobile" 
+                                                       placeholder="010-1234-5678"
+                                                       maxlength="13">
+                                                <button type="button" 
+                                                        class="btn btn-outline-primary btn-sm" 
+                                                        onclick="testSms('naver_cloud')">
+                                                    테스트
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="d-grid">
+                                            <button type="button" 
+                                                    class="btn btn-primary btn-sm" 
+                                                    onclick="saveSmsSettings('naver_cloud')">
+                                                설정
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <small class="text-muted d-block mt-3">
                                     <i class="bi bi-info-circle me-1"></i>
                                     <a href="https://www.ncloud.com" target="_blank">네이버 클라우드 플랫폼</a>에서 SMS 서비스를 신청하세요.
                                 </small>
@@ -728,6 +852,34 @@ document.addEventListener('DOMContentLoaded', function() {
             e.target.value = formatted;
         });
     });
+
+    // 모바일과 데스크탑 입력 필드 동기화
+    function syncInputFields(desktopId, mobileId) {
+        const desktopInput = document.getElementById(desktopId);
+        const mobileInput = document.getElementById(mobileId);
+        
+        if (desktopInput && mobileInput) {
+            desktopInput.addEventListener('input', function() {
+                mobileInput.value = this.value;
+            });
+            mobileInput.addEventListener('input', function() {
+                desktopInput.value = this.value;
+            });
+        }
+    }
+
+    // Cool SMS 필드 동기화
+    syncInputFields('sms_cool_api_key', 'sms_cool_api_key_mobile');
+    syncInputFields('sms_cool_api_secret', 'sms_cool_api_secret_mobile');
+    syncInputFields('sms_cool_from', 'sms_cool_from_mobile');
+    syncInputFields('cool_test_phone', 'cool_test_phone_mobile');
+
+    // 네이버 클라우드 필드 동기화
+    syncInputFields('sms_naver_api_key', 'sms_naver_api_key_mobile');
+    syncInputFields('sms_naver_api_secret', 'sms_naver_api_secret_mobile');
+    syncInputFields('sms_naver_service_id', 'sms_naver_service_id_mobile');
+    syncInputFields('sms_naver_caller_id', 'sms_naver_caller_id_mobile');
+    syncInputFields('naver_test_phone', 'naver_test_phone_mobile');
     
     // 추천인 기능 활성화/비활성화에 따라 설정 영역 표시/숨김
     enableReferrer.addEventListener('change', function() {
@@ -822,16 +974,18 @@ function testSms(provider) {
     let phoneInput, apiKeyInput, apiSecretInput, fromInput, serviceIdInput;
     
     if (provider === 'cool_sms') {
-        phoneInput = document.getElementById('cool_test_phone');
-        apiKeyInput = document.getElementById('sms_cool_api_key');
-        apiSecretInput = document.getElementById('sms_cool_api_secret');
-        fromInput = document.getElementById('sms_cool_from');
+        // 모바일과 데스크탑 모두 지원
+        phoneInput = document.getElementById('cool_test_phone') || document.getElementById('cool_test_phone_mobile');
+        apiKeyInput = document.getElementById('sms_cool_api_key') || document.getElementById('sms_cool_api_key_mobile');
+        apiSecretInput = document.getElementById('sms_cool_api_secret') || document.getElementById('sms_cool_api_secret_mobile');
+        fromInput = document.getElementById('sms_cool_from') || document.getElementById('sms_cool_from_mobile');
     } else if (provider === 'naver_cloud') {
-        phoneInput = document.getElementById('naver_test_phone');
-        apiKeyInput = document.getElementById('sms_naver_api_key');
-        apiSecretInput = document.getElementById('sms_naver_api_secret');
-        fromInput = document.getElementById('sms_naver_caller_id');
-        serviceIdInput = document.getElementById('sms_naver_service_id');
+        // 모바일과 데스크탑 모두 지원
+        phoneInput = document.getElementById('naver_test_phone') || document.getElementById('naver_test_phone_mobile');
+        apiKeyInput = document.getElementById('sms_naver_api_key') || document.getElementById('sms_naver_api_key_mobile');
+        apiSecretInput = document.getElementById('sms_naver_api_secret') || document.getElementById('sms_naver_api_secret_mobile');
+        fromInput = document.getElementById('sms_naver_caller_id') || document.getElementById('sms_naver_caller_id_mobile');
+        serviceIdInput = document.getElementById('sms_naver_service_id') || document.getElementById('sms_naver_service_id_mobile');
     }
     
     const phone = phoneInput.value.trim();
