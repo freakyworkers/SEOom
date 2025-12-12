@@ -71,7 +71,7 @@
         <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>등급 목록</h5>
     </div>
     <div class="card-body">
-        <form id="ranksForm">
+        <form id="ranksForm" novalidate>
             {{-- 데스크탑 버전 (테이블) --}}
             <div class="table-responsive d-none d-md-block">
                 <table class="table table-hover">
@@ -390,6 +390,10 @@ $(document).ready(function() {
     // 전체 저장
     $('#ranksForm').on('submit', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+        
+        // 모든 required 속성 제거 (validation 오류 방지)
+        $('#ranksForm input[required]').removeAttr('required');
         
         const formData = new FormData();
         
@@ -399,26 +403,35 @@ $(document).ready(function() {
         formData.append('_token', '{{ csrf_token() }}');
         
         // 관리자/매니저 아이콘
-        if ($('#admin_icon')[0].files.length > 0) {
+        if ($('#admin_icon')[0] && $('#admin_icon')[0].files.length > 0) {
             formData.append('admin_icon', $('#admin_icon')[0].files[0]);
         }
-        if ($('#manager_icon')[0].files.length > 0) {
+        if ($('#manager_icon')[0] && $('#manager_icon')[0].files.length > 0) {
             formData.append('manager_icon', $('#manager_icon')[0].files[0]);
         }
         
         // 등급 데이터 수집 (표시된 것만 수집)
         const isMobile = window.innerWidth < 768;
-        const ranks = [];
+        let hasError = false;
         
         if (isMobile) {
             // 모바일 카드에서 데이터 수집
             $('#ranksCardBody .card[data-rank-id]').each(function() {
+                if (hasError) return false;
+                
                 const rankId = $(this).data('rank-id');
                 const card = $(this);
                 
+                const name = card.find('input[name*="[name]"]').val();
+                if (!name || name.trim() === '') {
+                    alert('등급 이름을 입력해주세요.');
+                    hasError = true;
+                    return false;
+                }
+                
                 formData.append('ranks[' + rankId + '][id]', rankId);
                 formData.append('ranks[' + rankId + '][rank]', card.find('input[name*="[rank]"]').val());
-                formData.append('ranks[' + rankId + '][name]', card.find('input[name*="[name]"]').val());
+                formData.append('ranks[' + rankId + '][name]', name);
                 formData.append('ranks[' + rankId + '][criteria_value]', card.find('input[name*="[criteria_value]"]').val());
                 formData.append('ranks[' + rankId + '][display_type]', card.find('input[name*="[display_type]"]').val());
                 
@@ -437,14 +450,30 @@ $(document).ready(function() {
         } else {
             // 데스크탑 테이블에서 데이터 수집
             $('#ranksTableBody tr[data-rank-id]').each(function() {
+                if (hasError) return false;
+                
                 const rankId = $(this).data('rank-id');
                 const row = $(this);
                 
+                const name = row.find('input[name*="[name]"]').val();
+                if (!name || name.trim() === '') {
+                    alert('등급 이름을 입력해주세요.');
+                    hasError = true;
+                    return false;
+                }
+                
                 formData.append('ranks[' + rankId + '][id]', rankId);
                 formData.append('ranks[' + rankId + '][rank]', row.find('input[name*="[rank]"]').val());
-                formData.append('ranks[' + rankId + '][name]', row.find('input[name*="[name]"]').val());
+                formData.append('ranks[' + rankId + '][name]', name);
                 formData.append('ranks[' + rankId + '][criteria_value]', row.find('input[name*="[criteria_value]"]').val());
-                formData.append('ranks[' + rankId + '][display_type]', row.next('input[name*="[display_type]"]').val());
+                
+                // display_type 찾기
+                const displayTypeInput = row.next('input[name*="[display_type]"]');
+                if (displayTypeInput.length) {
+                    formData.append('ranks[' + rankId + '][display_type]', displayTypeInput.val());
+                } else {
+                    formData.append('ranks[' + rankId + '][display_type]', $('#rank_display_type').val());
+                }
                 
                 // 색상 추가
                 const colorInput = row.find('input[name*="[color]"]');
@@ -458,6 +487,10 @@ $(document).ready(function() {
                     formData.append('ranks[' + rankId + '][icon]', iconInput[0].files[0]);
                 }
             });
+        }
+        
+        if (hasError) {
+            return false;
         }
 
         $.ajax({
