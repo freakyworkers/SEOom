@@ -138,7 +138,8 @@
                                 @else
                                     @foreach($containers as $container)
                                         <div class="card mb-3 container-item" data-container-id="{{ $container->id }}">
-                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                            {{-- 데스크탑 버전 (기존 가로 배치) --}}
+                                            <div class="card-header bg-light d-none d-md-flex justify-content-between align-items-center">
                                                 <div class="d-flex align-items-center gap-2">
                                                     <label class="mb-0 small">컨테이너 가로:</label>
                                                     <select class="form-select form-select-sm" 
@@ -222,6 +223,88 @@
                                                     </button>
                                                 </div>
                                             </div>
+
+                                            {{-- 모바일 버전 (세로 배치) --}}
+                                            <div class="card-header bg-light d-md-none">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <h6 class="mb-0 small">컨테이너 설정</h6>
+                                                    <div class="d-flex gap-1">
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-outline-secondary" 
+                                                                onclick="moveContainerUp({{ $container->id }})"
+                                                                title="위로 이동">
+                                                            <i class="bi bi-arrow-up"></i>
+                                                        </button>
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-outline-secondary" 
+                                                                onclick="moveContainerDown({{ $container->id }})"
+                                                                title="아래로 이동">
+                                                            <i class="bi bi-arrow-down"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteContainer({{ $container->id }})">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-2">
+                                                    <div class="col-6">
+                                                        <label class="form-label small mb-1">컨테이너 가로</label>
+                                                        <select class="form-select form-select-sm" 
+                                                                onchange="updateContainerColumns({{ $container->id }}, this.value)"
+                                                                data-container-id="{{ $container->id }}">
+                                                            <option value="1" {{ $container->columns == 1 ? 'selected' : '' }}>1</option>
+                                                            <option value="2" {{ $container->columns == 2 ? 'selected' : '' }}>2</option>
+                                                            <option value="3" {{ $container->columns == 3 ? 'selected' : '' }}>3</option>
+                                                            <option value="4" {{ $container->columns == 4 ? 'selected' : '' }}>4</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <label class="form-label small mb-1">정렬</label>
+                                                        <select class="form-select form-select-sm" 
+                                                                onchange="updateContainerVerticalAlign({{ $container->id }}, this.value)"
+                                                                data-container-id="{{ $container->id }}">
+                                                            <option value="top" {{ ($container->vertical_align ?? 'top') == 'top' ? 'selected' : '' }}>상단</option>
+                                                            <option value="center" {{ ($container->vertical_align ?? 'top') == 'center' ? 'selected' : '' }}>중앙</option>
+                                                            <option value="bottom" {{ ($container->vertical_align ?? 'top') == 'bottom' ? 'selected' : '' }}>하단</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-check d-flex align-items-center pt-3">
+                                                            <input class="form-check-input container-full-width-checkbox" type="checkbox" 
+                                                                   id="container_full_width_mobile_{{ $container->id }}" 
+                                                                   @if($container->full_width) checked @endif
+                                                                   @if(!$hasSidebar) data-container-id="{{ $container->id }}" @else disabled @endif>
+                                                            <label class="form-check-label small mb-0 ms-2" for="container_full_width_mobile_{{ $container->id }}">
+                                                                가로 100%
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-check d-flex align-items-center pt-3">
+                                                            <input class="form-check-input container-full-height-checkbox" type="checkbox" 
+                                                                   id="container_full_height_mobile_{{ $container->id }}" 
+                                                                   @if($container->full_height) checked @endif
+                                                                   data-container-id="{{ $container->id }}">
+                                                            <label class="form-check-label small mb-0 ms-2" for="container_full_height_mobile_{{ $container->id }}">
+                                                                세로 100%
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label class="form-label small mb-1">위젯 간격</label>
+                                                        <select class="form-select form-select-sm" 
+                                                                onchange="updateContainerWidgetSpacing({{ $container->id }}, this.value)"
+                                                                data-container-id="{{ $container->id }}">
+                                                            <option value="0" {{ ($container->widget_spacing ?? 3) == 0 ? 'selected' : '' }}>없음</option>
+                                                            <option value="1" {{ ($container->widget_spacing ?? 3) == 1 ? 'selected' : '' }}>매우 좁음</option>
+                                                            <option value="2" {{ ($container->widget_spacing ?? 3) == 2 ? 'selected' : '' }}>좁음</option>
+                                                            <option value="3" {{ ($container->widget_spacing ?? 3) == 3 ? 'selected' : '' }}>보통</option>
+                                                            <option value="4" {{ ($container->widget_spacing ?? 3) == 4 ? 'selected' : '' }}>넓음</option>
+                                                            <option value="5" {{ ($container->widget_spacing ?? 3) == 5 ? 'selected' : '' }}>매우 넓음</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="card-body">
                                                 <div class="row g-3">
                                                     @for($i = 0; $i < $container->columns; $i++)
@@ -250,7 +333,8 @@
                                                                                  data-widget-title="{{ $widget->title }}"
                                                                                  data-widget-type="{{ $widget->type }}"
                                                                                  data-widget-active="{{ $widget->is_active ? '1' : '0' }}">
-                                                                                <div class="card-body p-2">
+                                                                                {{-- 데스크탑 버전 (기존 가로 배치) --}}
+                                                                                <div class="card-body p-2 d-none d-md-block">
                                                                                     <div class="d-flex justify-content-between align-items-center">
                                                                                         <div>
                                                                                             <h6 class="mb-0 small">
@@ -291,6 +375,45 @@
                                                                                                 <i class="bi bi-trash" style="font-size: 12px;"></i>
                                                                                             </button>
                                                                                         </div>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                {{-- 모바일 버전 (세로 배치) --}}
+                                                                                <div class="card-body p-3 d-md-none">
+                                                                                    <div class="mb-2">
+                                                                                        <h6 class="mb-1">
+                                                                                            {{ $widget->title }}
+                                                                                            @if(!$widget->is_active)
+                                                                                                <span class="badge bg-secondary ms-1">비활성</span>
+                                                                                            @endif
+                                                                                        </h6>
+                                                                                        <small class="text-muted d-block">{{ $availableTypes[$widget->type] ?? $widget->type }}</small>
+                                                                                    </div>
+                                                                                    <div class="d-flex gap-2 justify-content-end pt-2 border-top">
+                                                                                        <button type="button" 
+                                                                                                class="btn btn-sm btn-outline-secondary" 
+                                                                                                onclick="moveMainWidgetUp({{ $widget->id }}, {{ $container->id }}, {{ $i }})"
+                                                                                                title="위로 이동">
+                                                                                            <i class="bi bi-arrow-up me-1"></i>위로
+                                                                                        </button>
+                                                                                        <button type="button" 
+                                                                                                class="btn btn-sm btn-outline-secondary" 
+                                                                                                onclick="moveMainWidgetDown({{ $widget->id }}, {{ $container->id }}, {{ $i }})"
+                                                                                                title="아래로 이동">
+                                                                                            <i class="bi bi-arrow-down me-1"></i>아래로
+                                                                                        </button>
+                                                                                        <button type="button" 
+                                                                                                class="btn btn-sm btn-outline-primary" 
+                                                                                                onclick="editMainWidget({{ $widget->id }})"
+                                                                                                title="설정">
+                                                                                            <i class="bi bi-gear me-1"></i>설정
+                                                                                        </button>
+                                                                                        <button type="button" 
+                                                                                                class="btn btn-sm btn-outline-danger" 
+                                                                                                onclick="deleteMainWidget({{ $widget->id }})"
+                                                                                                title="삭제">
+                                                                                            <i class="bi bi-trash me-1"></i>삭제
+                                                                                        </button>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -2669,22 +2792,45 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // 가로 100% 체크박스 이벤트 리스너 추가
+    // 가로 100% 체크박스 이벤트 리스너 추가 및 동기화
     document.querySelectorAll('.container-full-width-checkbox').forEach(function(checkbox) {
         if (!checkbox.disabled && checkbox.dataset.containerId) {
             checkbox.addEventListener('change', function() {
                 const containerId = parseInt(this.dataset.containerId);
                 const fullWidth = this.checked;
+                
+                // 데스크탑과 모바일 체크박스 동기화
+                const desktopCheckbox = document.getElementById(`container_full_width_${containerId}`);
+                const mobileCheckbox = document.getElementById(`container_full_width_mobile_${containerId}`);
+                if (desktopCheckbox && desktopCheckbox !== this) {
+                    desktopCheckbox.checked = fullWidth;
+                }
+                if (mobileCheckbox && mobileCheckbox !== this) {
+                    mobileCheckbox.checked = fullWidth;
+                }
+                
                 updateContainerFullWidth(containerId, fullWidth);
             });
         }
     });
     
-    // 세로 100% 체크박스 이벤트 리스너 추가
+    // 세로 100% 체크박스 이벤트 리스너 추가 및 동기화
     document.querySelectorAll('.container-full-height-checkbox').forEach(function(checkbox) {
         if (checkbox.dataset.containerId) {
             checkbox.addEventListener('change', function() {
                 const containerId = parseInt(this.dataset.containerId);
                 const fullHeight = this.checked;
+                
+                // 데스크탑과 모바일 체크박스 동기화
+                const desktopCheckbox = document.getElementById(`container_full_height_${containerId}`);
+                const mobileCheckbox = document.getElementById(`container_full_height_mobile_${containerId}`);
+                if (desktopCheckbox && desktopCheckbox !== this) {
+                    desktopCheckbox.checked = fullHeight;
+                }
+                if (mobileCheckbox && mobileCheckbox !== this) {
+                    mobileCheckbox.checked = fullHeight;
+                }
+                
                 updateContainerFullHeight(containerId, fullHeight);
             });
         }
