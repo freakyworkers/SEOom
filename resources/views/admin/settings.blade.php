@@ -130,13 +130,15 @@
     }
     @media (max-width: 768px) {
         .mobile-preview-wrapper {
-            margin: 0 -1rem;
-            padding: 0 1rem;
-            width: calc(100% + 2rem);
+            margin: 0;
+            padding: 0;
+            width: 100%;
         }
         #mobile_header_preview {
-            width: 375px !important;
-            max-width: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            transform: scale(0.98);
+            transform-origin: center;
         }
         .col-md-8 {
             padding-left: 0.5rem;
@@ -149,6 +151,10 @@
         .row > * {
             padding-left: 0.5rem;
             padding-right: 0.5rem;
+        }
+        .card-body {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
         }
     }
     .size-input {
