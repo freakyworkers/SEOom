@@ -21,7 +21,19 @@
         body {
             background-color: #f8f9fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            overflow-x: hidden;
+        }
+        
+        /* 모바일에서만 가로 스크롤 방지 (테이블 스크롤은 허용) */
+        @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+            
+            /* table-responsive는 스크롤 허용 */
+            .table-responsive {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
         }
         
         * {

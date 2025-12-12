@@ -110,6 +110,34 @@
     .table-responsive::-webkit-scrollbar-thumb:hover {
         background: #555;
     }
+    .mobile-preview-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .mobile-preview-wrapper::-webkit-scrollbar {
+        height: 8px;
+    }
+    .mobile-preview-wrapper::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    .mobile-preview-wrapper::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+    .mobile-preview-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    @media (max-width: 768px) {
+        .mobile-preview-wrapper {
+            margin: 0 -1rem;
+            padding: 0 1rem;
+        }
+        #mobile_header_preview {
+            width: 375px !important;
+            max-width: 375px !important;
+        }
+    }
     .size-input {
         width: 100px;
     }
@@ -787,9 +815,11 @@
                 <div class="col-md-8">
                     <div class="mb-3">
                         <label class="form-label">미리보기</label>
-                        <div id="mobile_header_preview" style="border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; min-height: 667px; width: 375px; max-width: 375px; background-color: #f8f9fa; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                            <div class="text-center text-muted">
-                                <i class="bi bi-phone"></i> 모바일 헤더 미리보기
+                        <div class="mobile-preview-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                            <div id="mobile_header_preview" style="border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; min-height: 667px; width: 375px; max-width: 100%; background-color: #f8f9fa; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                <div class="text-center text-muted">
+                                    <i class="bi bi-phone"></i> 모바일 헤더 미리보기
+                                </div>
                             </div>
                         </div>
                     </div>
