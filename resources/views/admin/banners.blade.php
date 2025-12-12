@@ -17,7 +17,8 @@
             <div class="card mb-4" style="background-color: #f8f9fa;">
                 <div class="card-body">
                     <h6 class="mb-3"><i class="bi bi-layout-text-window me-2"></i>배너 여백 설정</h6>
-                    <div class="row align-items-center">
+                    {{-- 데스크탑 버전 --}}
+                    <div class="row align-items-center d-none d-md-flex">
                         <div class="col-md-2">
                             <label class="form-label mb-0"><strong>여백</strong></label>
                         </div>
@@ -38,12 +39,34 @@
                             </select>
                         </div>
                     </div>
+                    {{-- 모바일 버전 --}}
+                    <div class="d-md-none">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label small mb-1">데스크탑 (px)</label>
+                                <select class="form-select form-select-sm" name="banner_desktop_gap" id="banner_desktop_gap_mobile">
+                                    @for($i = 0; $i <= 50; $i += 2)
+                                        <option value="{{ $i }}" {{ ($site->getSetting('banner_desktop_gap', 16) == $i) ? 'selected' : '' }}>{{ $i }}px</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small mb-1">모바일 (px)</label>
+                                <select class="form-select form-select-sm" name="banner_mobile_gap" id="banner_mobile_gap_mobile">
+                                    @for($i = 0; $i <= 30; $i += 2)
+                                        <option value="{{ $i }}" {{ ($site->getSetting('banner_mobile_gap', 8) == $i) ? 'selected' : '' }}>{{ $i }}px</option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <small class="text-muted d-block mt-2">
                         <i class="bi bi-info-circle me-1"></i>슬라이드 타입 배너에는 여백이 적용되지 않습니다.
                     </small>
                 </div>
             </div>
-            <div class="table-responsive">
+            {{-- 데스크탑 버전 (기존 테이블) --}}
+            <div class="table-responsive d-none d-md-block">
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
@@ -254,6 +277,196 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- 모바일 버전 (카드 레이아웃) --}}
+            <div class="d-md-none">
+                <div class="d-grid gap-3">
+                    @foreach($bannerLocations as $key => $location)
+                        @php
+                            $settings = $bannerSettings[$key];
+                        @endphp
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">
+                                        {{ $location['name'] }}
+                                        @if(in_array($key, ['mobile_menu_top', 'mobile_menu_bottom']))
+                                            <i class="bi bi-question-circle ms-1" 
+                                               data-bs-toggle="tooltip" 
+                                               data-bs-placement="top" 
+                                               title="{{ $location['description'] ?? '' }}"
+                                               style="cursor: help; color: #6c757d;"></i>
+                                        @endif
+                                    </h6>
+                                    <span class="badge bg-secondary">{{ $settings['count'] }}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <label class="form-label small mb-1">노출 타입</label>
+                                        <select class="form-select form-select-sm" 
+                                                name="banner_{{ $key }}_exposure_type" 
+                                                id="banner_{{ $key }}_exposure_type_mobile">
+                                            <option value="basic" {{ $settings['exposure_type'] == 'basic' ? 'selected' : '' }}>기본타입</option>
+                                            <option value="slide" {{ $settings['exposure_type'] == 'slide' ? 'selected' : '' }}>슬라이드타입</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small mb-1">정렬</label>
+                                        <select class="form-select form-select-sm" 
+                                                name="banner_{{ $key }}_sort" 
+                                                id="banner_{{ $key }}_sort_mobile">
+                                            <option value="created" {{ $settings['sort'] == 'created' ? 'selected' : '' }}>생성순</option>
+                                            <option value="random" {{ $settings['sort'] == 'random' ? 'selected' : '' }}>랜덤</option>
+                                        </select>
+                                    </div>
+                                    @if(!in_array($key, ['mobile_menu_top', 'mobile_menu_bottom']))
+                                        <div class="col-6">
+                                            <label class="form-label small mb-1">한줄당 개수 (데스크탑)</label>
+                                            <input type="number" 
+                                                   class="form-control form-control-sm text-center banner-per-line-input" 
+                                                   name="banner_{{ $key }}_desktop_per_line" 
+                                                   id="banner_{{ $key }}_desktop_per_line_mobile"
+                                                   data-location="{{ $key }}"
+                                                   value="{{ $settings['desktop_per_line'] }}" 
+                                                   min="1"
+                                                   {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                        </div>
+                                    @else
+                                        <input type="hidden" 
+                                               name="banner_{{ $key }}_desktop_per_line" 
+                                               value="{{ $settings['desktop_per_line'] }}">
+                                    @endif
+                                    <div class="col-6">
+                                        <label class="form-label small mb-1">한줄당 개수 (모바일)</label>
+                                        <input type="number" 
+                                               class="form-control form-control-sm text-center banner-per-line-input" 
+                                               name="banner_{{ $key }}_mobile_per_line" 
+                                               id="banner_{{ $key }}_mobile_per_line_mobile"
+                                               data-location="{{ $key }}"
+                                               value="{{ $settings['mobile_per_line'] }}" 
+                                               min="1"
+                                               {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                    </div>
+                                    @if(!in_array($key, ['mobile_menu_top', 'mobile_menu_bottom']))
+                                        <div class="col-6">
+                                            <label class="form-label small mb-1">세로줄 수 (데스크탑)</label>
+                                            <input type="number" 
+                                                   class="form-control form-control-sm text-center banner-rows-input" 
+                                                   name="banner_{{ $key }}_desktop_rows" 
+                                                   id="banner_{{ $key }}_desktop_rows_mobile"
+                                                   data-location="{{ $key }}"
+                                                   value="{{ $settings['desktop_rows'] }}" 
+                                                   min="0"
+                                                   {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                        </div>
+                                    @else
+                                        <input type="hidden" 
+                                               name="banner_{{ $key }}_desktop_rows" 
+                                               value="{{ $settings['desktop_rows'] }}">
+                                    @endif
+                                    <div class="col-6">
+                                        <label class="form-label small mb-1">세로줄 수 (모바일)</label>
+                                        <input type="number" 
+                                               class="form-control form-control-sm text-center banner-rows-input" 
+                                               name="banner_{{ $key }}_mobile_rows" 
+                                               id="banner_{{ $key }}_mobile_rows_mobile"
+                                               data-location="{{ $key }}"
+                                               value="{{ $settings['mobile_rows'] }}" 
+                                               min="0"
+                                               {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                    </div>
+                                    {{-- 슬라이드 설정 (슬라이드 타입일 때만 표시) --}}
+                                    <div class="col-12 banner-slide-settings-mobile" data-location="{{ $key }}" style="display: {{ $settings['exposure_type'] == 'slide' ? 'block' : 'none' }};">
+                                        <div class="border-top pt-3 mt-2">
+                                            <label class="form-label small mb-2">슬라이드 설정</label>
+                                            <div class="row g-2">
+                                                <div class="col-12">
+                                                    <label class="form-label small mb-1">간격(초)</label>
+                                                    <input type="number" 
+                                                           class="form-control form-control-sm text-center banner-slide-interval" 
+                                                           name="banner_{{ $key }}_slide_interval" 
+                                                           id="banner_{{ $key }}_slide_interval_mobile"
+                                                           data-location="{{ $key }}"
+                                                           value="{{ $settings['slide_interval'] ?? 3 }}" 
+                                                           min="1"
+                                                           {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                                </div>
+                                                <div class="col-12">
+                                                    <label class="form-label small mb-1">방향</label>
+                                                    <div class="btn-group w-100 banner-slide-direction" role="group" data-location="{{ $key }}">
+                                                        <input type="radio" 
+                                                               class="btn-check" 
+                                                               name="banner_{{ $key }}_slide_direction" 
+                                                               id="banner_{{ $key }}_slide_direction_left_mobile" 
+                                                               value="left"
+                                                               {{ ($settings['slide_direction'] ?? '') == 'left' ? 'checked' : '' }}
+                                                               {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                                        <label class="btn btn-sm btn-outline-secondary" for="banner_{{ $key }}_slide_direction_left_mobile" title="좌측">
+                                                            <i class="bi bi-arrow-left"></i>
+                                                        </label>
+                                                        
+                                                        <input type="radio" 
+                                                               class="btn-check" 
+                                                               name="banner_{{ $key }}_slide_direction" 
+                                                               id="banner_{{ $key }}_slide_direction_right_mobile" 
+                                                               value="right"
+                                                               {{ ($settings['slide_direction'] ?? '') == 'right' ? 'checked' : '' }}
+                                                               {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                                        <label class="btn btn-sm btn-outline-secondary" for="banner_{{ $key }}_slide_direction_right_mobile" title="우측">
+                                                            <i class="bi bi-arrow-right"></i>
+                                                        </label>
+                                                        
+                                                        <input type="radio" 
+                                                               class="btn-check" 
+                                                               name="banner_{{ $key }}_slide_direction" 
+                                                               id="banner_{{ $key }}_slide_direction_up_mobile" 
+                                                               value="up"
+                                                               {{ ($settings['slide_direction'] ?? '') == 'up' ? 'checked' : '' }}
+                                                               {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                                        <label class="btn btn-sm btn-outline-secondary" for="banner_{{ $key }}_slide_direction_up_mobile" title="위">
+                                                            <i class="bi bi-arrow-up"></i>
+                                                        </label>
+                                                        
+                                                        <input type="radio" 
+                                                               class="btn-check" 
+                                                               name="banner_{{ $key }}_slide_direction" 
+                                                               id="banner_{{ $key }}_slide_direction_down_mobile" 
+                                                               value="down"
+                                                               {{ ($settings['slide_direction'] ?? '') == 'down' ? 'checked' : '' }}
+                                                               {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                                        <label class="btn btn-sm btn-outline-secondary" for="banner_{{ $key }}_slide_direction_down_mobile" title="아래">
+                                                            <i class="bi bi-arrow-down"></i>
+                                                        </label>
+                                                        
+                                                        <input type="radio" 
+                                                               class="btn-check" 
+                                                               name="banner_{{ $key }}_slide_direction" 
+                                                               id="banner_{{ $key }}_slide_direction_none_mobile" 
+                                                               value=""
+                                                               {{ ($settings['slide_direction'] ?? '') == '' ? 'checked' : '' }}
+                                                               {{ $settings['exposure_type'] == 'slide' ? '' : 'disabled' }}>
+                                                        <label class="btn btn-sm btn-outline-secondary" for="banner_{{ $key }}_slide_direction_none_mobile" title="없음 (페이드)">
+                                                            <i class="bi bi-x"></i>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <a href="{{ route('admin.banners.detail', ['site' => $site->slug, 'location' => $key]) }}" 
+                                           class="btn btn-sm btn-info w-100">
+                                            <i class="bi bi-list-ul"></i> 상세
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
             
             <div class="mt-4 text-end">
                 <button type="submit" class="btn btn-primary">
@@ -269,17 +482,78 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('bannerSettingsForm');
     
+    // 데스크탑과 모바일 입력 필드 동기화
+    function syncBannerFields() {
+        // 노출 타입 동기화
+        document.querySelectorAll('[id^="banner_"][id$="_exposure_type"]').forEach(function(select) {
+            const location = select.id.replace('banner_', '').replace('_exposure_type', '').replace('_mobile', '');
+            const desktopSelect = document.getElementById(`banner_${location}_exposure_type`);
+            const mobileSelect = document.getElementById(`banner_${location}_exposure_type_mobile`);
+            
+            if (desktopSelect && mobileSelect) {
+                desktopSelect.addEventListener('change', function() {
+                    mobileSelect.value = this.value;
+                });
+                mobileSelect.addEventListener('change', function() {
+                    desktopSelect.value = this.value;
+                });
+            }
+        });
+        
+        // 정렬 동기화
+        document.querySelectorAll('[id^="banner_"][id$="_sort"]').forEach(function(select) {
+            const location = select.id.replace('banner_', '').replace('_sort', '').replace('_mobile', '');
+            const desktopSelect = document.getElementById(`banner_${location}_sort`);
+            const mobileSelect = document.getElementById(`banner_${location}_sort_mobile`);
+            
+            if (desktopSelect && mobileSelect) {
+                desktopSelect.addEventListener('change', function() {
+                    mobileSelect.value = this.value;
+                });
+                mobileSelect.addEventListener('change', function() {
+                    desktopSelect.value = this.value;
+                });
+            }
+        });
+        
+        // 여백 설정 동기화
+        const desktopGapDesktop = document.getElementById('banner_desktop_gap');
+        const desktopGapMobile = document.getElementById('banner_desktop_gap_mobile');
+        if (desktopGapDesktop && desktopGapMobile) {
+            desktopGapDesktop.addEventListener('change', function() {
+                desktopGapMobile.value = this.value;
+            });
+            desktopGapMobile.addEventListener('change', function() {
+                desktopGapDesktop.value = this.value;
+            });
+        }
+        
+        const mobileGapDesktop = document.getElementById('banner_mobile_gap');
+        const mobileGapMobile = document.getElementById('banner_mobile_gap_mobile');
+        if (mobileGapDesktop && mobileGapMobile) {
+            mobileGapDesktop.addEventListener('change', function() {
+                mobileGapMobile.value = this.value;
+            });
+            mobileGapMobile.addEventListener('change', function() {
+                mobileGapDesktop.value = this.value;
+            });
+        }
+    }
+    
+    syncBannerFields();
+    
     // 노출 타입 변경 시 입력 필드 활성화/비활성화 및 슬라이드 설정 행 표시/숨김
     document.querySelectorAll('[id^="banner_"][id$="_exposure_type"]').forEach(function(select) {
-        const location = select.id.replace('banner_', '').replace('_exposure_type', '');
+        const location = select.id.replace('banner_', '').replace('_exposure_type', '').replace('_mobile', '');
         
         function toggleSlideFields() {
             const isSlide = select.value === 'slide';
             const perLineInputs = document.querySelectorAll(`.banner-per-line-input[data-location="${location}"]`);
             const rowsInputs = document.querySelectorAll(`.banner-rows-input[data-location="${location}"]`);
-            const intervalInput = document.querySelector(`.banner-slide-interval[data-location="${location}"]`);
-            const directionGroup = document.querySelector(`.banner-slide-direction[data-location="${location}"]`);
+            const intervalInputs = document.querySelectorAll(`.banner-slide-interval[data-location="${location}"]`);
+            const directionGroups = document.querySelectorAll(`.banner-slide-direction[data-location="${location}"]`);
             const slideSettingsRow = document.querySelector(`.banner-slide-settings-row[data-location="${location}"]`);
+            const slideSettingsMobile = document.querySelector(`.banner-slide-settings-mobile[data-location="${location}"]`);
             
             // 한줄당 개수, 세로줄 수 입력 필드
             perLineInputs.forEach(input => {
@@ -305,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // 슬라이드 설정 필드
-            if (intervalInput) {
+            intervalInputs.forEach(intervalInput => {
                 intervalInput.disabled = !isSlide;
                 if (!isSlide) {
                     intervalInput.style.opacity = '0.5';
@@ -314,9 +588,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     intervalInput.style.opacity = '1';
                     intervalInput.style.cursor = 'default';
                 }
-            }
+            });
             
-            if (directionGroup) {
+            directionGroups.forEach(directionGroup => {
                 const radios = directionGroup.querySelectorAll('input[type="radio"]');
                 radios.forEach(radio => {
                     radio.disabled = !isSlide;
@@ -331,11 +605,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         label.style.cursor = 'pointer';
                     }
                 });
-            }
+            });
             
-            // 슬라이드 설정 행 표시/숨김
+            // 슬라이드 설정 행 표시/숨김 (데스크탑)
             if (slideSettingsRow) {
                 slideSettingsRow.style.display = isSlide ? 'table-row' : 'none';
+            }
+            
+            // 슬라이드 설정 표시/숨김 (모바일)
+            if (slideSettingsMobile) {
+                slideSettingsMobile.style.display = isSlide ? 'block' : 'none';
             }
         }
         
@@ -343,7 +622,45 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleSlideFields();
         
         // 변경 이벤트 리스너
-        select.addEventListener('change', toggleSlideFields);
+        select.addEventListener('change', function() {
+            toggleSlideFields();
+            // 다른 쪽도 동기화
+            const otherSelect = select.id.includes('_mobile') 
+                ? document.getElementById(select.id.replace('_mobile', ''))
+                : document.getElementById(select.id + '_mobile');
+            if (otherSelect) {
+                otherSelect.value = select.value;
+                // 다른 쪽의 toggleSlideFields도 호출
+                const otherLocation = otherSelect.id.replace('banner_', '').replace('_exposure_type', '').replace('_mobile', '');
+                const otherPerLineInputs = document.querySelectorAll(`.banner-per-line-input[data-location="${otherLocation}"]`);
+                const otherRowsInputs = document.querySelectorAll(`.banner-rows-input[data-location="${otherLocation}"]`);
+                const otherIntervalInputs = document.querySelectorAll(`.banner-slide-interval[data-location="${otherLocation}"]`);
+                const otherDirectionGroups = document.querySelectorAll(`.banner-slide-direction[data-location="${otherLocation}"]`);
+                const otherSlideSettingsRow = document.querySelector(`.banner-slide-settings-row[data-location="${otherLocation}"]`);
+                const otherSlideSettingsMobile = document.querySelector(`.banner-slide-settings-mobile[data-location="${otherLocation}"]`);
+                
+                const isSlide = otherSelect.value === 'slide';
+                [...otherPerLineInputs, ...otherRowsInputs].forEach(input => {
+                    input.disabled = isSlide;
+                    input.style.opacity = isSlide ? '0.5' : '1';
+                    input.style.cursor = isSlide ? 'not-allowed' : 'default';
+                });
+                otherIntervalInputs.forEach(input => {
+                    input.disabled = !isSlide;
+                    input.style.opacity = !isSlide ? '0.5' : '1';
+                    input.style.cursor = !isSlide ? 'not-allowed' : 'default';
+                });
+                otherDirectionGroups.forEach(group => {
+                    group.querySelectorAll('input[type="radio"]').forEach(radio => radio.disabled = !isSlide);
+                    group.querySelectorAll('label').forEach(label => {
+                        label.style.opacity = !isSlide ? '0.5' : '1';
+                        label.style.cursor = !isSlide ? 'not-allowed' : 'pointer';
+                    });
+                });
+                if (otherSlideSettingsRow) otherSlideSettingsRow.style.display = isSlide ? 'table-row' : 'none';
+                if (otherSlideSettingsMobile) otherSlideSettingsMobile.style.display = isSlide ? 'block' : 'none';
+            }
+        });
     });
     
     // Tooltip 초기화
