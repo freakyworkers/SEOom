@@ -16,8 +16,10 @@
                 <form method="POST" action="{{ route('boards.update-general', ['site' => $site->slug, 'board' => $board->id]) }}" id="generalForm" enctype="multipart/form-data">
                     @csrf
                     @method('POST')
-                    <table class="table table-bordered">
-                        <tbody>
+                    {{-- 데스크탑 버전 (테이블) --}}
+                    <div class="d-none d-md-block">
+                        <table class="table table-bordered">
+                            <tbody>
                             <tr>
                                 <td style="width: 150px;">
                                     <label for="type" class="form-label mb-0">
@@ -466,6 +468,63 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
+                    
+                    {{-- 모바일 버전 (카드 레이아웃) - 주요 필드만 --}}
+                    <div class="d-md-none">
+                        <div class="d-grid gap-3">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <label for="type_mobile" class="form-label fw-bold mb-2">게시판 타입</label>
+                                    <select class="form-select form-select-sm" id="type_mobile" name="type">
+                                        @foreach(\App\Models\Board::getTypes() as $value => $label)
+                                            @if($site->hasBoardType($value))
+                                                <option value="{{ $value }}" {{ old('type', $board->type) === $value ? 'selected' : '' }}>
+                                                    {{ $label }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <label for="name_mobile" class="form-label fw-bold mb-2">이름</label>
+                                    <input type="text" class="form-control form-control-sm" id="name_mobile" name="name" value="{{ old('name', $board->name) }}" required>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <label for="slug_mobile" class="form-label fw-bold mb-2">연결 주소</label>
+                                    <input type="text" class="form-control form-control-sm" id="slug_mobile" name="slug" value="{{ old('slug', $board->slug) }}">
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <label for="description_mobile" class="form-label fw-bold mb-2">설명</label>
+                                    <textarea class="form-control form-control-sm" id="description_mobile" name="description" rows="2">{{ old('description', $board->description) }}</textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <label for="max_posts_per_day_mobile" class="form-label fw-bold mb-2">유저당 하루 최대 글</label>
+                                    <input type="number" class="form-control form-control-sm" id="max_posts_per_day_mobile" name="max_posts_per_day" value="{{ old('max_posts_per_day', $board->max_posts_per_day ?? 0) }}" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <label for="posts_per_page_mobile" class="form-label fw-bold mb-2">페이지당 표시 게시글</label>
+                                    <input type="number" class="form-control form-control-sm" id="posts_per_page_mobile" name="posts_per_page" value="{{ old('posts_per_page', $board->posts_per_page ?? 20) }}" min="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="d-flex justify-content-end mt-3">
                         <button type="submit" class="btn btn-primary">저장</button>
                     </div>
@@ -510,6 +569,8 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
+                    
                     <div class="d-flex justify-content-end mt-3">
                         <button type="submit" class="btn btn-primary">저장</button>
                     </div>
@@ -527,80 +588,176 @@
                 <form method="POST" action="{{ route('boards.update-grade-points', ['site' => $site->slug, 'board' => $board->id]) }}" id="gradePointsForm">
                     @csrf
                     @method('POST')
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th style="width: 150px;"></th>
-                                <th>등급</th>
-                                <th>포인트</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>게시글 읽기</strong></td>
-                                <td>
-                                    <select class="form-select" name="read_permission" id="read_permission">
-                                        <option value="guest" {{ old('read_permission', $board->read_permission ?? 'guest') === 'guest' ? 'selected' : '' }}>비회원</option>
-                                        <option value="user" {{ old('read_permission', $board->read_permission ?? 'guest') === 'user' ? 'selected' : '' }}>회원</option>
-                                        <option value="admin" {{ old('read_permission', $board->read_permission ?? 'guest') === 'admin' ? 'selected' : '' }}>관리자</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control" name="read_points" id="read_points" value="{{ old('read_points', $board->read_points ?? 0) }}">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>게시글 쓰기</strong></td>
-                                <td>
-                                    <select class="form-select" name="write_permission" id="write_permission">
-                                        <option value="guest" {{ old('write_permission', $board->write_permission ?? 'user') === 'guest' ? 'selected' : '' }}>비회원</option>
-                                        <option value="user" {{ old('write_permission', $board->write_permission ?? 'user') === 'user' ? 'selected' : '' }}>회원</option>
-                                        <option value="admin" {{ old('write_permission', $board->write_permission ?? 'user') === 'admin' ? 'selected' : '' }}>관리자</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control" name="write_points" id="write_points" value="{{ old('write_points', $board->write_points ?? 0) }}">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>게시글 삭제</strong></td>
-                                <td>
-                                    <select class="form-select" name="delete_permission" id="delete_permission">
-                                        <option value="author" {{ old('delete_permission', $board->delete_permission ?? 'author') === 'author' ? 'selected' : '' }}>작성자 본인</option>
-                                        <option value="admin" {{ old('delete_permission', $board->delete_permission ?? 'author') === 'admin' ? 'selected' : '' }}>관리자</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control" name="delete_points" id="delete_points" value="{{ old('delete_points', $board->delete_points ?? 0) }}">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>댓글 쓰기</strong></td>
-                                <td>
-                                    <select class="form-select" name="comment_permission" id="comment_permission">
-                                        <option value="guest" {{ old('comment_permission', $board->comment_permission ?? 'user') === 'guest' ? 'selected' : '' }}>비회원</option>
-                                        <option value="user" {{ old('comment_permission', $board->comment_permission ?? 'user') === 'user' ? 'selected' : '' }}>회원</option>
-                                        <option value="admin" {{ old('comment_permission', $board->comment_permission ?? 'user') === 'admin' ? 'selected' : '' }}>관리자</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control" name="comment_points" id="comment_points" value="{{ old('comment_points', $board->comment_points ?? 0) }}">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>댓글 삭제</strong></td>
-                                <td>
-                                    <select class="form-select" name="comment_delete_permission" id="comment_delete_permission">
-                                        <option value="author" {{ old('comment_delete_permission', $board->comment_delete_permission ?? 'author') === 'author' ? 'selected' : '' }}>작성자 본인</option>
-                                        <option value="admin" {{ old('comment_delete_permission', $board->comment_delete_permission ?? 'author') === 'admin' ? 'selected' : '' }}>관리자</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control" name="comment_delete_points" id="comment_delete_points" value="{{ old('comment_delete_points', $board->comment_delete_points ?? 0) }}">
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    {{-- 데스크탑 버전 (테이블) --}}
+                    <div class="d-none d-md-block">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width: 150px;"></th>
+                                    <th>등급</th>
+                                    <th>포인트</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>게시글 읽기</strong></td>
+                                    <td>
+                                        <select class="form-select" name="read_permission" id="read_permission">
+                                            <option value="guest" {{ old('read_permission', $board->read_permission ?? 'guest') === 'guest' ? 'selected' : '' }}>비회원</option>
+                                            <option value="user" {{ old('read_permission', $board->read_permission ?? 'guest') === 'user' ? 'selected' : '' }}>회원</option>
+                                            <option value="admin" {{ old('read_permission', $board->read_permission ?? 'guest') === 'admin' ? 'selected' : '' }}>관리자</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control" name="read_points" id="read_points" value="{{ old('read_points', $board->read_points ?? 0) }}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>게시글 쓰기</strong></td>
+                                    <td>
+                                        <select class="form-select" name="write_permission" id="write_permission">
+                                            <option value="guest" {{ old('write_permission', $board->write_permission ?? 'user') === 'guest' ? 'selected' : '' }}>비회원</option>
+                                            <option value="user" {{ old('write_permission', $board->write_permission ?? 'user') === 'user' ? 'selected' : '' }}>회원</option>
+                                            <option value="admin" {{ old('write_permission', $board->write_permission ?? 'user') === 'admin' ? 'selected' : '' }}>관리자</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control" name="write_points" id="write_points" value="{{ old('write_points', $board->write_points ?? 0) }}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>게시글 삭제</strong></td>
+                                    <td>
+                                        <select class="form-select" name="delete_permission" id="delete_permission">
+                                            <option value="author" {{ old('delete_permission', $board->delete_permission ?? 'author') === 'author' ? 'selected' : '' }}>작성자 본인</option>
+                                            <option value="admin" {{ old('delete_permission', $board->delete_permission ?? 'author') === 'admin' ? 'selected' : '' }}>관리자</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control" name="delete_points" id="delete_points" value="{{ old('delete_points', $board->delete_points ?? 0) }}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>댓글 쓰기</strong></td>
+                                    <td>
+                                        <select class="form-select" name="comment_permission" id="comment_permission">
+                                            <option value="guest" {{ old('comment_permission', $board->comment_permission ?? 'user') === 'guest' ? 'selected' : '' }}>비회원</option>
+                                            <option value="user" {{ old('comment_permission', $board->comment_permission ?? 'user') === 'user' ? 'selected' : '' }}>회원</option>
+                                            <option value="admin" {{ old('comment_permission', $board->comment_permission ?? 'user') === 'admin' ? 'selected' : '' }}>관리자</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control" name="comment_points" id="comment_points" value="{{ old('comment_points', $board->comment_points ?? 0) }}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>댓글 삭제</strong></td>
+                                    <td>
+                                        <select class="form-select" name="comment_delete_permission" id="comment_delete_permission">
+                                            <option value="author" {{ old('comment_delete_permission', $board->comment_delete_permission ?? 'author') === 'author' ? 'selected' : '' }}>작성자 본인</option>
+                                            <option value="admin" {{ old('comment_delete_permission', $board->comment_delete_permission ?? 'author') === 'admin' ? 'selected' : '' }}>관리자</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control" name="comment_delete_points" id="comment_delete_points" value="{{ old('comment_delete_points', $board->comment_delete_points ?? 0) }}">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {{-- 모바일 버전 (카드 레이아웃) --}}
+                    <div class="d-md-none">
+                        <div class="d-grid gap-3">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">게시글 읽기</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold mb-1">등급</label>
+                                        <select class="form-select form-select-sm grade-select-mobile" name="read_permission" id="read_permission_mobile">
+                                            <option value="guest" {{ old('read_permission', $board->read_permission ?? 'guest') === 'guest' ? 'selected' : '' }}>비회원</option>
+                                            <option value="user" {{ old('read_permission', $board->read_permission ?? 'guest') === 'user' ? 'selected' : '' }}>회원</option>
+                                            <option value="admin" {{ old('read_permission', $board->read_permission ?? 'guest') === 'admin' ? 'selected' : '' }}>관리자</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-0">
+                                        <label class="form-label small fw-bold mb-1">포인트</label>
+                                        <input type="number" class="form-control form-control-sm" name="read_points" id="read_points_mobile" value="{{ old('read_points', $board->read_points ?? 0) }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">게시글 쓰기</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold mb-1">등급</label>
+                                        <select class="form-select form-select-sm grade-select-mobile" name="write_permission" id="write_permission_mobile">
+                                            <option value="guest" {{ old('write_permission', $board->write_permission ?? 'user') === 'guest' ? 'selected' : '' }}>비회원</option>
+                                            <option value="user" {{ old('write_permission', $board->write_permission ?? 'user') === 'user' ? 'selected' : '' }}>회원</option>
+                                            <option value="admin" {{ old('write_permission', $board->write_permission ?? 'user') === 'admin' ? 'selected' : '' }}>관리자</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-0">
+                                        <label class="form-label small fw-bold mb-1">포인트</label>
+                                        <input type="number" class="form-control form-control-sm" name="write_points" id="write_points_mobile" value="{{ old('write_points', $board->write_points ?? 0) }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">게시글 삭제</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold mb-1">등급</label>
+                                        <select class="form-select form-select-sm grade-select-mobile" name="delete_permission" id="delete_permission_mobile">
+                                            <option value="author" {{ old('delete_permission', $board->delete_permission ?? 'author') === 'author' ? 'selected' : '' }}>작성자 본인</option>
+                                            <option value="admin" {{ old('delete_permission', $board->delete_permission ?? 'author') === 'admin' ? 'selected' : '' }}>관리자</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-0">
+                                        <label class="form-label small fw-bold mb-1">포인트</label>
+                                        <input type="number" class="form-control form-control-sm" name="delete_points" id="delete_points_mobile" value="{{ old('delete_points', $board->delete_points ?? 0) }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">댓글 쓰기</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold mb-1">등급</label>
+                                        <select class="form-select form-select-sm grade-select-mobile" name="comment_permission" id="comment_permission_mobile">
+                                            <option value="guest" {{ old('comment_permission', $board->comment_permission ?? 'user') === 'guest' ? 'selected' : '' }}>비회원</option>
+                                            <option value="user" {{ old('comment_permission', $board->comment_permission ?? 'user') === 'user' ? 'selected' : '' }}>회원</option>
+                                            <option value="admin" {{ old('comment_permission', $board->comment_permission ?? 'user') === 'admin' ? 'selected' : '' }}>관리자</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-0">
+                                        <label class="form-label small fw-bold mb-1">포인트</label>
+                                        <input type="number" class="form-control form-control-sm" name="comment_points" id="comment_points_mobile" value="{{ old('comment_points', $board->comment_points ?? 0) }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">댓글 삭제</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold mb-1">등급</label>
+                                        <select class="form-select form-select-sm grade-select-mobile" name="comment_delete_permission" id="comment_delete_permission_mobile">
+                                            <option value="author" {{ old('comment_delete_permission', $board->comment_delete_permission ?? 'author') === 'author' ? 'selected' : '' }}>작성자 본인</option>
+                                            <option value="admin" {{ old('comment_delete_permission', $board->comment_delete_permission ?? 'author') === 'admin' ? 'selected' : '' }}>관리자</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-0">
+                                        <label class="form-label small fw-bold mb-1">포인트</label>
+                                        <input type="number" class="form-control form-control-sm" name="comment_delete_points" id="comment_delete_points_mobile" value="{{ old('comment_delete_points', $board->comment_delete_points ?? 0) }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="d-flex justify-content-end mt-3">
                         <button type="submit" class="btn btn-primary">저장</button>
                     </div>
@@ -1934,7 +2091,109 @@
             alert('저장 중 오류가 발생했습니다.');
         });
     }
+    // 일반 설정 모바일/데스크탑 입력 필드 동기화
+    document.addEventListener('DOMContentLoaded', function() {
+        // 게시판 타입
+        syncGeneralFields('type', 'type_mobile');
+        syncGeneralFields('name', 'name_mobile');
+        syncGeneralFields('slug', 'slug_mobile');
+        syncGeneralFields('description', 'description_mobile');
+        syncGeneralFields('max_posts_per_day', 'max_posts_per_day_mobile');
+        syncGeneralFields('posts_per_page', 'posts_per_page_mobile');
+        
+        function syncGeneralFields(desktopId, mobileId) {
+            const desktopField = document.getElementById(desktopId);
+            const mobileField = document.getElementById(mobileId);
+            
+            if (desktopField && mobileField) {
+                // 데스크탑 -> 모바일
+                desktopField.addEventListener('change', function() {
+                    mobileField.value = this.value;
+                });
+                desktopField.addEventListener('input', function() {
+                    mobileField.value = this.value;
+                });
+                
+                // 모바일 -> 데스크탑
+                mobileField.addEventListener('change', function() {
+                    desktopField.value = this.value;
+                });
+                mobileField.addEventListener('input', function() {
+                    desktopField.value = this.value;
+                });
+            }
+        }
+    });
+    
+    // 등급 & 포인트 모바일/데스크탑 입력 필드 동기화
+    document.addEventListener('DOMContentLoaded', function() {
+        // 게시글 읽기
+        syncFields('read_permission', 'read_permission_mobile');
+        syncFields('read_points', 'read_points_mobile');
+        
+        // 게시글 쓰기
+        syncFields('write_permission', 'write_permission_mobile');
+        syncFields('write_points', 'write_points_mobile');
+        
+        // 게시글 삭제
+        syncFields('delete_permission', 'delete_permission_mobile');
+        syncFields('delete_points', 'delete_points_mobile');
+        
+        // 댓글 쓰기
+        syncFields('comment_permission', 'comment_permission_mobile');
+        syncFields('comment_points', 'comment_points_mobile');
+        
+        // 댓글 삭제
+        syncFields('comment_delete_permission', 'comment_delete_permission_mobile');
+        syncFields('comment_delete_points', 'comment_delete_points_mobile');
+        
+        function syncFields(desktopId, mobileId) {
+            const desktopField = document.getElementById(desktopId);
+            const mobileField = document.getElementById(mobileId);
+            
+            if (desktopField && mobileField) {
+                // 데스크탑 -> 모바일
+                desktopField.addEventListener('change', function() {
+                    mobileField.value = this.value;
+                });
+                
+                // 모바일 -> 데스크탑
+                mobileField.addEventListener('change', function() {
+                    desktopField.value = this.value;
+                });
+            }
+        }
+    });
 </script>
+@push('styles')
+<style>
+    /* 등급 드롭다운 글씨 잘림 방지 */
+    .grade-select-mobile {
+        font-size: 0.875rem !important;
+        padding: 0.5rem 2rem 0.5rem 0.75rem !important;
+        white-space: nowrap;
+        overflow: visible;
+        text-overflow: clip;
+    }
+    
+    .grade-select-mobile option {
+        padding: 0.5rem;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+    
+    /* 데스크탑 등급 드롭다운도 개선 */
+    #gradePointsForm .form-select {
+        font-size: 0.875rem;
+        padding: 0.5rem 2rem 0.5rem 0.75rem;
+    }
+    
+    #gradePointsForm .form-select option {
+        padding: 0.5rem;
+        white-space: normal;
+    }
+</style>
+@endpush
 @endpush
 @endsection
 
