@@ -288,34 +288,112 @@
     </div>
     <div class="card-body">
         <form id="mobileMenuOrderForm">
-            <table class="table menu-table">
-                <thead>
-                    <tr>
-                        <th style="width: 10%; text-align: center;">아이콘</th>
-                        <th style="width: 15%; text-align: center;">이름</th>
-                        <th style="width: 15%; text-align: center;">연결 타입</th>
-                        <th style="width: 20%; text-align: center;">연결 대상</th>
-                        <th style="width: 10%; text-align: center;">표시 순서</th>
-                        <th style="width: 30%; text-align: center;">작업</th>
-                    </tr>
-                </thead>
-                <tbody id="mobileMenuListBody">
-                    @if($mobileMenus->count() > 0)
-                        @foreach($mobileMenus as $mobileMenu)
-                            <tr data-mobile-menu-id="{{ $mobileMenu->id }}">
-                                <td style="text-align: center;">
-                                    @if($mobileMenu->icon_type === 'image' && $mobileMenu->icon_path)
-                                        <img src="{{ asset('storage/' . $mobileMenu->icon_path) }}" alt="{{ $mobileMenu->name }}" style="max-width: 40px; max-height: 40px;">
-                                    @elseif($mobileMenu->icon_type === 'emoji' && $mobileMenu->icon_path)
-                                        <span style="font-size: 24px;">{{ $mobileMenu->icon_path }}</span>
-                                    @else
-                                        <i class="{{ $mobileMenu->icon_path ?? 'bi bi-circle' }}" style="font-size: 24px;"></i>
-                                    @endif
-                                </td>
-                                <td style="text-align: center;">
-                                    <input type="text" class="form-control form-control-sm mobile-menu-name-input" value="{{ $mobileMenu->name }}" data-menu-id="{{ $mobileMenu->id }}">
-                                </td>
-                                <td style="text-align: center;">
+            {{-- 데스크탑 버전 (기존 테이블) --}}
+            <div class="d-none d-md-block">
+                <table class="table menu-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%; text-align: center;">아이콘</th>
+                            <th style="width: 15%; text-align: center;">이름</th>
+                            <th style="width: 15%; text-align: center;">연결 타입</th>
+                            <th style="width: 20%; text-align: center;">연결 대상</th>
+                            <th style="width: 10%; text-align: center;">표시 순서</th>
+                            <th style="width: 30%; text-align: center;">작업</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mobileMenuListBody">
+                        @if($mobileMenus->count() > 0)
+                            @foreach($mobileMenus as $mobileMenu)
+                                <tr data-mobile-menu-id="{{ $mobileMenu->id }}">
+                                    <td style="text-align: center;">
+                                        @if($mobileMenu->icon_type === 'image' && $mobileMenu->icon_path)
+                                            <img src="{{ asset('storage/' . $mobileMenu->icon_path) }}" alt="{{ $mobileMenu->name }}" style="max-width: 40px; max-height: 40px;">
+                                        @elseif($mobileMenu->icon_type === 'emoji' && $mobileMenu->icon_path)
+                                            <span style="font-size: 24px;">{{ $mobileMenu->icon_path }}</span>
+                                        @else
+                                            <i class="{{ $mobileMenu->icon_path ?? 'bi bi-circle' }}" style="font-size: 24px;"></i>
+                                        @endif
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <input type="text" class="form-control form-control-sm mobile-menu-name-input" value="{{ $mobileMenu->name }}" data-menu-id="{{ $mobileMenu->id }}">
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <select class="form-select form-select-sm mobile-menu-link-type-select" data-menu-id="{{ $mobileMenu->id }}">
+                                            <option value="board" {{ $mobileMenu->link_type === 'board' ? 'selected' : '' }}>게시판</option>
+                                            <option value="custom_page" {{ $mobileMenu->link_type === 'custom_page' ? 'selected' : '' }}>커스텀 페이지</option>
+                                            <option value="external_link" {{ $mobileMenu->link_type === 'external_link' ? 'selected' : '' }}>외부링크</option>
+                                            <option value="attendance" {{ $mobileMenu->link_type === 'attendance' ? 'selected' : '' }}>출첵페이지</option>
+                                            <option value="point_exchange" {{ $mobileMenu->link_type === 'point_exchange' ? 'selected' : '' }}>포인트교환페이지</option>
+                                            <option value="event_application" {{ $mobileMenu->link_type === 'event_application' ? 'selected' : '' }}>신청형 이벤트 페이지</option>
+                                        </select>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <select class="form-select form-select-sm mobile-menu-link-target-board" data-menu-id="{{ $mobileMenu->id }}" style="{{ $mobileMenu->link_type === 'board' ? 'display: block;' : 'display: none;' }}">
+                                            <option value="">게시판 선택</option>
+                                            @foreach($boards as $board)
+                                                <option value="{{ $board->id }}" {{ (string)$mobileMenu->link_target === (string)$board->id ? 'selected' : '' }}>{{ $board->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <select class="form-select form-select-sm mobile-menu-link-target-custom-page" data-menu-id="{{ $mobileMenu->id }}" style="{{ $mobileMenu->link_type === 'custom_page' ? 'display: block;' : 'display: none;' }}">
+                                            <option value="">페이지 선택</option>
+                                            @foreach($customPages as $customPage)
+                                                <option value="{{ $customPage->id }}" {{ (string)$mobileMenu->link_target === (string)$customPage->id ? 'selected' : '' }}>{{ $customPage->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <input type="text" class="form-control form-control-sm mobile-menu-link-target-external" value="{{ $mobileMenu->link_type === 'external_link' ? $mobileMenu->link_target : '' }}" data-menu-id="{{ $mobileMenu->id }}" placeholder="외부 링크 URL" style="{{ $mobileMenu->link_type === 'external_link' ? 'display: block;' : 'display: none;' }}">
+                                        <span class="form-text text-muted mobile-menu-link-target-placeholder" style="{{ !in_array($mobileMenu->link_type, ['board', 'custom_page', 'external_link']) ? 'display: block;' : 'display: none;' }}">연결 타입에 따라 입력 필드가 나타납니다.</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary mb-1 mobile-menu-move-up-btn" data-menu-id="{{ $mobileMenu->id }}">
+                                                <i class="bi bi-arrow-up"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary mobile-menu-move-down-btn" data-menu-id="{{ $mobileMenu->id }}">
+                                                <i class="bi bi-arrow-down"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <button type="button" class="btn btn-sm btn-danger rounded-3 delete-mobile-menu-btn" data-menu-id="{{ $mobileMenu->id }}">
+                                                <i class="bi bi-trash"></i> 삭제
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">등록된 모바일 하단 메뉴가 없습니다.</td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- 모바일 버전 (카드 레이아웃) --}}
+            <div class="d-md-none" id="mobileMenuListBodyCards">
+                @if($mobileMenus->count() > 0)
+                    @foreach($mobileMenus as $mobileMenu)
+                        <div class="card mb-3 mobile-menu-card" data-mobile-menu-id="{{ $mobileMenu->id }}">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="flex-shrink-0" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                        @if($mobileMenu->icon_type === 'image' && $mobileMenu->icon_path)
+                                            <img src="{{ asset('storage/' . $mobileMenu->icon_path) }}" alt="{{ $mobileMenu->name }}" style="max-width: 50px; max-height: 50px; border-radius: 0.375rem;">
+                                        @elseif($mobileMenu->icon_type === 'emoji' && $mobileMenu->icon_path)
+                                            <span style="font-size: 32px;">{{ $mobileMenu->icon_path }}</span>
+                                        @else
+                                            <i class="{{ $mobileMenu->icon_path ?? 'bi bi-circle' }}" style="font-size: 32px;"></i>
+                                        @endif
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <label class="form-label small text-muted mb-1">이름</label>
+                                        <input type="text" class="form-control form-control-sm mobile-menu-name-input" value="{{ $mobileMenu->name }}" data-menu-id="{{ $mobileMenu->id }}" placeholder="메뉴 이름">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted mb-1">연결 타입</label>
                                     <select class="form-select form-select-sm mobile-menu-link-type-select" data-menu-id="{{ $mobileMenu->id }}">
                                         <option value="board" {{ $mobileMenu->link_type === 'board' ? 'selected' : '' }}>게시판</option>
                                         <option value="custom_page" {{ $mobileMenu->link_type === 'custom_page' ? 'selected' : '' }}>커스텀 페이지</option>
@@ -324,8 +402,9 @@
                                         <option value="point_exchange" {{ $mobileMenu->link_type === 'point_exchange' ? 'selected' : '' }}>포인트교환페이지</option>
                                         <option value="event_application" {{ $mobileMenu->link_type === 'event_application' ? 'selected' : '' }}>신청형 이벤트 페이지</option>
                                     </select>
-                                </td>
-                                <td style="text-align: center;">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted mb-1">연결 대상</label>
                                     <select class="form-select form-select-sm mobile-menu-link-target-board" data-menu-id="{{ $mobileMenu->id }}" style="{{ $mobileMenu->link_type === 'board' ? 'display: block;' : 'display: none;' }}">
                                         <option value="">게시판 선택</option>
                                         @foreach($boards as $board)
@@ -339,34 +418,29 @@
                                         @endforeach
                                     </select>
                                     <input type="text" class="form-control form-control-sm mobile-menu-link-target-external" value="{{ $mobileMenu->link_type === 'external_link' ? $mobileMenu->link_target : '' }}" data-menu-id="{{ $mobileMenu->id }}" placeholder="외부 링크 URL" style="{{ $mobileMenu->link_type === 'external_link' ? 'display: block;' : 'display: none;' }}">
-                                    <span class="form-text text-muted mobile-menu-link-target-placeholder" style="{{ !in_array($mobileMenu->link_type, ['board', 'custom_page', 'external_link']) ? 'display: block;' : 'display: none;' }}">연결 타입에 따라 입력 필드가 나타납니다.</span>
-                                </td>
-                                <td style="text-align: center;">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary mb-1 mobile-menu-move-up-btn" data-menu-id="{{ $mobileMenu->id }}">
+                                    <span class="form-text text-muted small mobile-menu-link-target-placeholder" style="{{ !in_array($mobileMenu->link_type, ['board', 'custom_page', 'external_link']) ? 'display: block;' : 'display: none;' }}">연결 타입에 따라 입력 필드가 나타납니다.</span>
+                                </div>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <div class="order-buttons d-flex gap-1">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary mobile-menu-move-up-btn" data-menu-id="{{ $mobileMenu->id }}" title="위로">
                                             <i class="bi bi-arrow-up"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary mobile-menu-move-down-btn" data-menu-id="{{ $mobileMenu->id }}">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary mobile-menu-move-down-btn" data-menu-id="{{ $mobileMenu->id }}" title="아래로">
                                             <i class="bi bi-arrow-down"></i>
                                         </button>
                                     </div>
-                                </td>
-                                <td style="text-align: center;">
-                                    <div class="d-flex gap-2 justify-content-center">
-                                        <button type="button" class="btn btn-sm btn-danger rounded-3 delete-mobile-menu-btn" data-menu-id="{{ $mobileMenu->id }}">
-                                            <i class="bi bi-trash"></i> 삭제
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @else
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-4">등록된 모바일 하단 메뉴가 없습니다.</td>
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
+                                    <button type="button" class="btn btn-sm btn-danger delete-mobile-menu-btn" data-menu-id="{{ $mobileMenu->id }}">
+                                        <i class="bi bi-trash me-1"></i>삭제
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="text-center text-muted py-4">등록된 모바일 하단 메뉴가 없습니다.</div>
+                @endif
+            </div>
+            
             <div class="mt-3 text-end">
                 <button type="submit" class="btn btn-primary">저장</button>
             </div>
@@ -1255,23 +1329,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const menus = [];
         const mobileMenusData = @json($mobileMenus->keyBy('id')->toArray());
         
-        document.querySelectorAll('#mobileMenuListBody > tr[data-mobile-menu-id]').forEach((row, index) => {
-            const menuId = row.dataset.mobileMenuId;
+        // 데스크탑 테이블과 모바일 카드 모두 처리
+        const menuElements = document.querySelectorAll('#mobileMenuListBody > tr[data-mobile-menu-id], #mobileMenuListBodyCards > .mobile-menu-card[data-mobile-menu-id]');
+        menuElements.forEach((element, index) => {
+            const menuId = element.dataset.mobileMenuId;
             if (!menuId) return; // menuId가 없으면 스킵
             
-            const nameInput = row.querySelector('.mobile-menu-name-input');
-            const linkTypeSelect = row.querySelector('.mobile-menu-link-type-select');
+            const nameInput = element.querySelector('.mobile-menu-name-input');
+            const linkTypeSelect = element.querySelector('.mobile-menu-link-type-select');
             const linkType = linkTypeSelect ? linkTypeSelect.value : null;
             let linkTarget = null;
 
             if (linkType === 'board') {
-                const boardSelect = row.querySelector('.mobile-menu-link-target-board');
+                const boardSelect = element.querySelector('.mobile-menu-link-target-board');
                 linkTarget = boardSelect ? boardSelect.value : null;
             } else if (linkType === 'custom_page') {
-                const customPageSelect = row.querySelector('.mobile-menu-link-target-custom-page');
+                const customPageSelect = element.querySelector('.mobile-menu-link-target-custom-page');
                 linkTarget = customPageSelect ? customPageSelect.value : null;
             } else if (linkType === 'external_link') {
-                const externalInput = row.querySelector('.mobile-menu-link-target-external');
+                const externalInput = element.querySelector('.mobile-menu-link-target-external');
                 linkTarget = externalInput ? externalInput.value : null;
             }
 
@@ -1365,19 +1441,27 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    // 모바일 메뉴 순서 상하 조정
+    // 모바일 메뉴 순서 상하 조정 (데스크탑 테이블 및 모바일 카드 모두 지원)
     document.addEventListener('click', function(e) {
         if (e.target.closest('.mobile-menu-move-up-btn')) {
-            const row = e.target.closest('tr[data-mobile-menu-id]');
+            const btn = e.target.closest('.mobile-menu-move-up-btn');
+            const row = btn.closest('tr[data-mobile-menu-id], .mobile-menu-card[data-mobile-menu-id]');
+            if (!row) return;
+            
+            const container = row.parentNode;
             const prevRow = row.previousElementSibling;
-            if (prevRow && prevRow.hasAttribute('data-mobile-menu-id')) {
-                row.parentNode.insertBefore(row, prevRow);
+            if (prevRow && (prevRow.hasAttribute('data-mobile-menu-id') || prevRow.classList.contains('mobile-menu-card'))) {
+                container.insertBefore(row, prevRow);
             }
         } else if (e.target.closest('.mobile-menu-move-down-btn')) {
-            const row = e.target.closest('tr[data-mobile-menu-id]');
+            const btn = e.target.closest('.mobile-menu-move-down-btn');
+            const row = btn.closest('tr[data-mobile-menu-id], .mobile-menu-card[data-mobile-menu-id]');
+            if (!row) return;
+            
+            const container = row.parentNode;
             const nextRow = row.nextElementSibling;
-            if (nextRow && nextRow.hasAttribute('data-mobile-menu-id')) {
-                row.parentNode.insertBefore(nextRow, row);
+            if (nextRow && (nextRow.hasAttribute('data-mobile-menu-id') || nextRow.classList.contains('mobile-menu-card'))) {
+                container.insertBefore(nextRow, row);
             }
         }
     });
@@ -1415,28 +1499,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 모바일 메뉴 목록에서 연결 타입 변경 시 연결 대상 필드 표시/숨김
+    // 모바일 메뉴 목록에서 연결 타입 변경 시 연결 대상 필드 표시/숨김 (데스크탑 테이블 및 모바일 카드 모두 지원)
     document.addEventListener('change', function(e) {
         if (e.target.classList.contains('mobile-menu-link-type-select')) {
             const menuId = e.target.dataset.menuId;
-            const row = document.querySelector(`tr[data-mobile-menu-id="${menuId}"]`);
+            const row = document.querySelector(`tr[data-mobile-menu-id="${menuId}"], .mobile-menu-card[data-mobile-menu-id="${menuId}"]`);
+            if (!row) return;
+            
             const linkType = e.target.value;
             const boardSelect = row.querySelector('.mobile-menu-link-target-board');
             const customPageSelect = row.querySelector('.mobile-menu-link-target-custom-page');
             const externalInput = row.querySelector('.mobile-menu-link-target-external');
             const placeholder = row.querySelector('.mobile-menu-link-target-placeholder');
 
-            boardSelect.style.display = 'none';
-            customPageSelect.style.display = 'none';
-            externalInput.style.display = 'none';
+            if (boardSelect) boardSelect.style.display = 'none';
+            if (customPageSelect) customPageSelect.style.display = 'none';
+            if (externalInput) externalInput.style.display = 'none';
             if (placeholder) placeholder.style.display = 'none';
 
             if (linkType === 'board') {
-                boardSelect.style.display = 'block';
+                if (boardSelect) boardSelect.style.display = 'block';
             } else if (linkType === 'custom_page') {
-                customPageSelect.style.display = 'block';
+                if (customPageSelect) customPageSelect.style.display = 'block';
             } else if (linkType === 'external_link') {
-                externalInput.style.display = 'block';
+                if (externalInput) externalInput.style.display = 'block';
             } else if (['attendance', 'point_exchange', 'event_application'].includes(linkType)) {
                 if (placeholder) placeholder.style.display = 'block';
             }
