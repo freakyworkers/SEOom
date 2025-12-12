@@ -19,7 +19,8 @@
             </div>
 
             @if($customPages->count() > 0)
-                <div class="card">
+                {{-- 데스크탑 버전 (기존 테이블) --}}
+                <div class="card d-none d-md-block">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
                             <thead>
@@ -66,6 +67,51 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                {{-- 모바일 버전 (카드 레이아웃) --}}
+                <div class="d-md-none">
+                    <div class="d-grid gap-3">
+                        @foreach($customPages as $index => $page)
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-secondary">#{{ $index + 1 }}</span>
+                                                <h6 class="mb-0">{{ $page->name }}</h6>
+                                            </div>
+                                            <div class="mb-2">
+                                                <code class="small text-muted">{{ $page->slug }}</code>
+                                            </div>
+                                            @if($page->description)
+                                                <p class="text-muted small mb-0">{{ Str::limit($page->description, 100) }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2 justify-content-end pt-2 border-top">
+                                        <a href="{{ route('custom-pages.show', ['site' => $site->slug, 'slug' => $page->slug]) }}" 
+                                           class="btn btn-sm btn-outline-info" 
+                                           title="보기" 
+                                           target="_blank">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ route('admin.custom-pages.edit', ['site' => $site->slug, 'customPage' => $page->id]) }}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           title="편집">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-danger" 
+                                                title="삭제"
+                                                onclick="deleteCustomPage({{ $page->id }})">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             @else
