@@ -1024,15 +1024,12 @@
                         <div class="col-md-6 mb-3">
                             <div class="form-check">
                                 @php
-                                    $enableShareValue = null;
+                                    $enableShareValue = false;
                                     if (\Illuminate\Support\Facades\Schema::hasColumn('boards', 'enable_share')) {
                                         $enableShareValue = $board->enable_share;
-                                    } else {
-                                        $enableShareValue = true; // 컬럼이 없으면 기본값 true
                                     }
-                                    $enableShareChecked = old('enable_share', $enableShareValue) !== false && old('enable_share', $enableShareValue) !== 0 && old('enable_share', $enableShareValue) !== '0' && old('enable_share', $enableShareValue) !== null;
                                 @endphp
-                                <input type="checkbox" class="form-check-input" id="enable_share" name="enable_share" value="1" {{ $enableShareChecked ? 'checked' : '' }}>
+                                <input type="checkbox" class="form-check-input" id="enable_share" name="enable_share" value="1" {{ old('enable_share', $enableShareValue) ? 'checked' : '' }}>
                                 <label class="form-check-label" for="enable_share">
                                     공유 기능
                                 </label>
