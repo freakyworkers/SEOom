@@ -21,6 +21,11 @@
         body {
             background-color: #f8f9fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        * {
+            box-sizing: border-box;
         }
         
         .sidebar {
@@ -92,6 +97,9 @@
         .main-content {
             margin-left: var(--sidebar-width);
             padding: 2rem;
+            width: calc(100% - var(--sidebar-width));
+            max-width: 100%;
+            overflow-x: hidden;
         }
         
         .page-header {
@@ -179,7 +187,7 @@
         
         @media (max-width: 768px) {
             .mobile-header {
-                display: flex;
+                display: flex !important;
             }
             
             .sidebar {
@@ -198,8 +206,20 @@
             }
             
             .main-content {
-                margin-left: 0;
-                padding-top: calc(2rem + 56px);
+                margin-left: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 1rem;
+                padding-top: calc(1rem + 56px);
+            }
+            
+            .page-header {
+                margin-bottom: 1rem;
+            }
+            
+            .container-fluid {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
             }
         }
     </style>

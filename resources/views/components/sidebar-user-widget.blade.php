@@ -249,6 +249,7 @@
         <div class="card-body p-3">
             <form action="{{ route('login', ['site' => $site->slug ?? 'default']) }}" method="POST">
                 @csrf
+                <input type="hidden" name="intended_url" value="{{ url()->current() }}">
                 <div class="mb-2">
                     <div class="input-group" style="border: 1px solid #dee2e6; border-radius: 0.375rem; overflow: hidden;">
                         <span class="input-group-text bg-white border-0" style="padding: 0.5rem;">

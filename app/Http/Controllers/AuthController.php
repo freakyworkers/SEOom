@@ -91,6 +91,13 @@ class AuthController extends Controller
                 
                 $request->session()->regenerate();
                 
+                // intended URL이 있으면 그곳으로, 없으면 현재 페이지 또는 기본 경로로
+                $intendedUrl = $request->input('intended_url') ?: session()->pull('url.intended');
+                
+                if ($intendedUrl) {
+                    return redirect($intendedUrl);
+                }
+                
                 // 마스터 사이트인 경우 관리자 대시보드로 리다이렉트, 일반 사이트는 /site/{slug}로
                 if ($site->isMasterSite()) {
                     return redirect()->route('master.admin.dashboard');
@@ -109,6 +116,13 @@ class AuthController extends Controller
 
         if ($this->authService->login($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+            
+            // intended URL이 있으면 그곳으로, 없으면 현재 페이지 또는 기본 경로로
+            $intendedUrl = $request->input('intended_url') ?: session()->pull('url.intended');
+            
+            if ($intendedUrl) {
+                return redirect($intendedUrl);
+            }
             
             // 마스터 사이트인 경우 관리자 대시보드로 리다이렉트, 일반 사이트는 /site/{slug}로
             if ($site->isMasterSite()) {
