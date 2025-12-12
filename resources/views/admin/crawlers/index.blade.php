@@ -28,8 +28,9 @@
                         <p class="text-muted mt-3">등록된 크롤러가 없습니다.</p>
                     </div>
                 @else
-                    <div class="table-responsive">
-                        <table class="table table-hover">
+                    <!-- PC 버전 테이블 -->
+                    <div class="table-responsive d-none d-md-block">
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th>주소</th>
@@ -85,6 +86,88 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- 모바일 버전 카드 레이아웃 -->
+                    <div class="d-md-none">
+                        @foreach($crawlers as $crawler)
+                            <div class="card border mb-2">
+                                <div class="card-body p-3">
+                                    <!-- 주소 -->
+                                    <div class="mb-3">
+                                        <div class="small text-muted mb-1" style="font-size: 0.75rem;">주소</div>
+                                        <a href="{{ $crawler->url }}" target="_blank" class="text-decoration-none">
+                                            <div class="fw-medium text-primary" style="font-size: 0.9rem; word-break: break-all;">{{ Str::limit($crawler->url, 60) }}</div>
+                                        </a>
+                                    </div>
+
+                                    <!-- 정보 그리드 -->
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <div class="small text-muted mb-1" style="font-size: 0.75rem;">게시판</div>
+                                            <div class="fw-medium" style="font-size: 0.9rem;">{{ $crawler->board->name ?? '-' }}</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="small text-muted mb-1" style="font-size: 0.75rem;">작성자</div>
+                                            <div>
+                                                @if($crawler->use_random_user)
+                                                    <span class="badge bg-info" style="font-size: 0.7rem;">랜덤 유저</span>
+                                                @else
+                                                    <span class="fw-medium" style="font-size: 0.9rem;">{{ $crawler->author_nickname ?? '-' }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 총 수량과 최근 크롤링 -->
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <div class="small text-muted mb-1" style="font-size: 0.75rem;">총 수량</div>
+                                            <div class="fw-bold" style="font-size: 0.9rem;">{{ number_format($crawler->total_count) }}</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="small text-muted mb-1" style="font-size: 0.75rem;">최근 크롤링</div>
+                                            <div class="small text-muted" style="font-size: 0.85rem;">
+                                                @if($crawler->last_crawled_at)
+                                                    {{ $crawler->last_crawled_at->format('Y-m-d H:i') }}
+                                                @else
+                                                    -
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 활성화 스위치 -->
+                                    <div class="mb-3 pb-3 border-bottom">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="small text-muted" style="font-size: 0.75rem;">활성화</div>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       id="active_mobile_{{ $crawler->id }}" 
+                                                       {{ $crawler->is_active ? 'checked' : '' }}
+                                                       onchange="toggleActive({{ $crawler->id }})">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 작업 버튼 -->
+                                    <div class="d-grid gap-2">
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-primary" 
+                                                onclick="editCrawler({{ $crawler->id }})"
+                                                style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                            <i class="bi bi-pencil"></i> 수정
+                                        </button>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-danger" 
+                                                onclick="deleteCrawler({{ $crawler->id }})"
+                                                style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                            <i class="bi bi-trash"></i> 삭제
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 @endif
             </div>
@@ -197,6 +280,30 @@
     </div>
 </div>
 
+@push('styles')
+<style>
+    /* 모바일 최적화 스타일 */
+    @media (max-width: 767.98px) {
+        /* 카드 스타일 최적화 */
+        .d-md-none .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* 버튼 최적화 */
+        .d-md-none .btn-sm {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.5rem;
+        }
+        
+        /* 배지 최적화 */
+        .d-md-none .badge {
+            font-size: 0.7rem;
+        }
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
 function runAllCrawlers() {
@@ -236,7 +343,13 @@ function runAllCrawlers() {
 
 function toggleActive(crawlerId) {
     const checkbox = document.getElementById('active_' + crawlerId);
-    const isActive = checkbox.checked;
+    const checkboxMobile = document.getElementById('active_mobile_' + crawlerId);
+    const activeCheckbox = checkbox || checkboxMobile;
+    const isActive = activeCheckbox.checked;
+
+    // PC와 모바일 체크박스 동기화
+    if (checkbox) checkbox.checked = isActive;
+    if (checkboxMobile) checkboxMobile.checked = isActive;
 
     fetch('{{ route("admin.crawlers.toggle-active", ["site" => $site->slug, "crawler" => ":id"]) }}'.replace(':id', crawlerId), {
         method: 'POST',
@@ -248,13 +361,17 @@ function toggleActive(crawlerId) {
     .then(response => response.json())
     .then(data => {
         if (!data.success) {
-            checkbox.checked = !isActive;
+            const newState = !isActive;
+            if (checkbox) checkbox.checked = newState;
+            if (checkboxMobile) checkboxMobile.checked = newState;
             alert('오류: ' + (data.message || '알 수 없는 오류'));
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        checkbox.checked = !isActive;
+        const newState = !isActive;
+        if (checkbox) checkbox.checked = newState;
+        if (checkboxMobile) checkboxMobile.checked = newState;
         alert('활성화 상태 변경 중 오류가 발생했습니다.');
     });
 }
