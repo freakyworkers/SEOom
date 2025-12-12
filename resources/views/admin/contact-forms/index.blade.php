@@ -21,8 +21,9 @@
                         <p class="text-muted mt-3">생성된 컨텍트폼이 없습니다.</p>
                     </div>
                 @else
-                    <div class="table-responsive">
-                        <table class="table table-hover">
+                    <!-- PC 버전 테이블 -->
+                    <div class="table-responsive d-none d-md-block">
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th>제목</th>
@@ -64,6 +65,68 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- 모바일 버전 카드 레이아웃 -->
+                    <div class="d-md-none">
+                        @foreach($contactForms as $form)
+                            <div class="card border mb-2">
+                                <div class="card-body p-3">
+                                    <!-- 제목 -->
+                                    <div class="mb-3">
+                                        <a href="{{ route('admin.contact-forms.show', ['site' => $site->slug, 'contactForm' => $form->id]) }}" 
+                                           class="text-decoration-none">
+                                            <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">{{ $form->title }}</h6>
+                                        </a>
+                                    </div>
+
+                                    <!-- 정보 그리드 -->
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <div class="small text-muted mb-1" style="font-size: 0.75rem;">항목 수</div>
+                                            <div class="fw-medium" style="font-size: 0.9rem;">{{ count($form->fields) }}개</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="small text-muted mb-1" style="font-size: 0.75rem;">문의내용</div>
+                                            <div>
+                                                @if($form->has_inquiry_content)
+                                                    <span class="badge bg-success" style="font-size: 0.7rem;">사용</span>
+                                                @else
+                                                    <span class="badge bg-secondary" style="font-size: 0.7rem;">미사용</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 생성일 -->
+                                    <div class="mb-3">
+                                        <div class="small text-muted mb-1" style="font-size: 0.75rem;">생성일</div>
+                                        <div class="small text-muted" style="font-size: 0.85rem;">{{ $form->created_at->format('Y-m-d H:i') }}</div>
+                                    </div>
+
+                                    <!-- 작업 버튼 -->
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ route('admin.contact-forms.show', ['site' => $site->slug, 'contactForm' => $form->id]) }}" 
+                                           class="btn btn-sm btn-outline-primary"
+                                           style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                            <i class="bi bi-eye"></i> 보기
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-warning" 
+                                                onclick="editContactForm({{ $form->id }})"
+                                                style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                            <i class="bi bi-pencil"></i> 수정
+                                        </button>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-danger" 
+                                                onclick="deleteContactForm({{ $form->id }})"
+                                                style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                            <i class="bi bi-trash"></i> 삭제
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 @endif
             </div>
@@ -148,6 +211,30 @@
         </div>
     </div>
 </div>
+
+@push('styles')
+<style>
+    /* 모바일 최적화 스타일 */
+    @media (max-width: 767.98px) {
+        /* 카드 스타일 최적화 */
+        .d-md-none .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* 버튼 최적화 */
+        .d-md-none .btn-sm {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.5rem;
+        }
+        
+        /* 배지 최적화 */
+        .d-md-none .badge {
+            font-size: 0.7rem;
+        }
+    }
+</style>
+@endpush
 
 @push('scripts')
 <script>
