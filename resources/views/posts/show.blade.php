@@ -80,19 +80,19 @@
                                 <div class="dropdown d-inline">
                                     <a class="text-decoration-none text-muted dropdown-toggle" href="#" role="button" id="postUserDropdown{{ $post->id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                         <x-user-rank :user="$post->user" :site="$site" />
-                                        {{ $post->user->name }}
+                                        {{ $post->user->nickname ?? $post->user->name }}
                                     </a>
                                     <ul class="dropdown-menu" aria-labelledby="postUserDropdown{{ $post->id }}">
-                                        <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $post->user_id }}, '{{ $post->user->name }}'); return false;">쪽지보내기</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $post->user_id }}, '{{ $post->user->nickname ?? $post->user->name }}'); return false;">쪽지보내기</a></li>
                                     </ul>
                                 </div>
                             @else
                                 <x-user-rank :user="$post->user" :site="$site" />
-                                {{ $post->user->name }}
+                                {{ $post->user->nickname ?? $post->user->name }}
                             @endif
                         @else
                             <x-user-rank :user="$post->user" :site="$site" />
-                            {{ $post->user->name }}
+                            {{ $post->user->nickname ?? $post->user->name }}
                         @endauth
                     @endif
                     <span class="mx-2">|</span>
@@ -1245,7 +1245,7 @@
                                                     <i class="bi bi-person"></i> 익명
                                                 @else
                                                     <x-user-rank :user="$post->user" :site="$site" />
-                                                    {{ $post->user->name }}
+                                                    {{ $post->user->nickname ?? $post->user->name }}
                                                 @endif
                                             </small>
                                             <small class="text-muted">
@@ -1522,7 +1522,7 @@
                                             익명
                                         @else
                                             <x-user-rank :user="$post->user" :site="$site" />
-                                            {{ $post->user->name }}
+                                            {{ $post->user->nickname ?? $post->user->name }}
                                         @endif
                                     </td>
                                     @if($showViews)
@@ -1656,7 +1656,7 @@
                                         익명
                                     @else
                                         <x-user-rank :user="$post->user" :site="$site" />
-                                        {{ $post->user->name }}
+                                        {{ $post->user->nickname ?? $post->user->name }}
                                     @endif
                                 </span>
                                 <span>·</span>
@@ -1795,7 +1795,7 @@
                                     익명
                                 @else
                                     <x-user-rank :user="$post->user" :site="$site" />
-                                    {{ $post->user->name }}
+                                    {{ $post->user->nickname ?? $post->user->name }}
                                 @endif
                             </span>
                             <span>·</span>

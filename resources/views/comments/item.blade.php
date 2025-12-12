@@ -50,17 +50,17 @@
                             <div class="dropdown d-inline">
                                 <a class="text-decoration-none dropdown-toggle fw-bold" href="#" role="button" id="commentUserDropdownMobile{{ $comment->id }}" data-bs-toggle="dropdown" aria-expanded="false" style="color: inherit;">
                                     <x-user-rank :user="$comment->user" :site="$site" />
-                                    {{ $comment->user->name }}
+                                    {{ $comment->user->nickname ?? $comment->user->name }}
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="commentUserDropdownMobile{{ $comment->id }}">
-                                    <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $comment->user_id }}, '{{ $comment->user->name }}'); return false;">쪽지보내기</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $comment->user_id }}, '{{ $comment->user->nickname ?? $comment->user->name }}'); return false;">쪽지보내기</a></li>
                                 </ul>
                             </div>
                         @else
-                            <strong><x-user-rank :user="$comment->user" :site="$site" />{{ $comment->user->name }}</strong>
+                            <strong><x-user-rank :user="$comment->user" :site="$site" />{{ $comment->user->nickname ?? $comment->user->name }}</strong>
                         @endif
                     @else
-                        <strong><x-user-rank :user="$comment->user" :site="$site" />{{ $comment->user->name }}</strong>
+                        <strong><x-user-rank :user="$comment->user" :site="$site" />{{ $comment->user->nickname ?? $comment->user->name }}</strong>
                     @endauth
                 </div>
                 <div class="comment-content mb-1" id="comment-content-mobile-{{ $comment->id }}" style="word-break: break-word; overflow-wrap: break-word;">
@@ -135,17 +135,17 @@
                             <div class="dropdown d-inline me-2">
                                 <a class="text-decoration-none dropdown-toggle fw-bold" href="#" role="button" id="commentUserDropdown{{ $comment->id }}" data-bs-toggle="dropdown" aria-expanded="false" style="color: inherit;">
                                     <x-user-rank :user="$comment->user" :site="$site" />
-                                    {{ $comment->user->name }}
+                                    {{ $comment->user->nickname ?? $comment->user->name }}
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="commentUserDropdown{{ $comment->id }}">
-                                    <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $comment->user_id }}, '{{ $comment->user->name }}'); return false;">쪽지보내기</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $comment->user_id }}, '{{ $comment->user->nickname ?? $comment->user->name }}'); return false;">쪽지보내기</a></li>
                                 </ul>
                             </div>
                         @else
-                            <strong class="me-2"><x-user-rank :user="$comment->user" :site="$site" />{{ $comment->user->name }}</strong>
+                            <strong class="me-2"><x-user-rank :user="$comment->user" :site="$site" />{{ $comment->user->nickname ?? $comment->user->name }}</strong>
                         @endif
                     @else
-                        <strong class="me-2"><x-user-rank :user="$comment->user" :site="$site" />{{ $comment->user->name }}</strong>
+                        <strong class="me-2"><x-user-rank :user="$comment->user" :site="$site" />{{ $comment->user->nickname ?? $comment->user->name }}</strong>
                     @endauth
                     @if($comment->is_adopted)
                         <span class="badge bg-success me-2">채택됨</span>

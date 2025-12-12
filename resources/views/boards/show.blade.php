@@ -527,7 +527,7 @@
                                                 <i class="bi bi-person"></i> 익명
                                             @else
                                                 <x-user-rank :user="$post->user" :site="$site" />
-                                                {{ $post->user->name }}
+                                                {{ $post->user->nickname ?? $post->user->name }}
                                             @endif
                                         </small>
                                         <div class="d-flex align-items-center gap-2">
@@ -585,7 +585,7 @@
                                                 <i class="bi bi-person"></i> 익명
                                             @else
                                                 <x-user-rank :user="$post->user" :site="$site" />
-                                                {{ $post->user->name }}
+                                                {{ $post->user->nickname ?? $post->user->name }}
                                             @endif
                                         </small>
                                         @if($showDatetime)
@@ -864,19 +864,19 @@
                                                     <div class="dropdown d-inline">
                                                         <a class="text-decoration-none text-muted dropdown-toggle" href="#" role="button" id="boardPostUserDropdown{{ $post->id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                                             <x-user-rank :user="$post->user" :site="$site" />
-                                                            {{ $post->user->name }}
+                                                            {{ $post->user->nickname ?? $post->user->name }}
                                                         </a>
                                                         <ul class="dropdown-menu" aria-labelledby="boardPostUserDropdown{{ $post->id }}">
-                                                            <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $post->user_id }}, '{{ $post->user->name }}'); return false;">쪽지보내기</a></li>
+                                                            <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $post->user_id }}, '{{ $post->user->nickname ?? $post->user->name }}'); return false;">쪽지보내기</a></li>
                                                         </ul>
                                                     </div>
                                                 @else
                                                     <x-user-rank :user="$post->user" :site="$site" />
-                                                    {{ $post->user->name }}
+                                                    {{ $post->user->nickname ?? $post->user->name }}
                                                 @endif
                                             @else
                                                 <x-user-rank :user="$post->user" :site="$site" />
-                                                {{ $post->user->name }}
+                                                {{ $post->user->nickname ?? $post->user->name }}
                                             @endauth
                                         @endif
                                     </small>
@@ -977,19 +977,19 @@
                                             <div class="dropdown d-inline">
                                                 <a class="text-decoration-none text-muted dropdown-toggle" href="#" role="button" id="boardPostUserDropdownMobile{{ $post->id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <x-user-rank :user="$post->user" :site="$site" />
-                                                    {{ $post->user->name }}
+                                                    {{ $post->user->nickname ?? $post->user->name }}
                                                 </a>
                                                 <ul class="dropdown-menu" aria-labelledby="boardPostUserDropdownMobile{{ $post->id }}">
-                                                    <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $post->user_id }}, '{{ $post->user->name }}'); return false;">쪽지보내기</a></li>
+                                                    <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $post->user_id }}, '{{ $post->user->nickname ?? $post->user->name }}'); return false;">쪽지보내기</a></li>
                                                 </ul>
                                             </div>
                                         @else
                                             <x-user-rank :user="$post->user" :site="$site" />
-                                            {{ $post->user->name }}
+                                            {{ $post->user->nickname ?? $post->user->name }}
                                         @endif
                                     @else
                                         <x-user-rank :user="$post->user" :site="$site" />
-                                        {{ $post->user->name }}
+                                        {{ $post->user->nickname ?? $post->user->name }}
                                     @endauth
                                 @endif
                             </span>
@@ -1165,7 +1165,7 @@
                                 익명
                             @else
                                 <x-user-rank :user="$post->user" :site="$site" />
-                                {{ $post->user->name }}
+                                {{ $post->user->nickname ?? $post->user->name }}
                             @endif
                         </span>
                         @if($showViews)
@@ -1300,7 +1300,7 @@
                                 익명
                             @else
                                 <x-user-rank :user="$post->user" :site="$site" />
-                                {{ $post->user->name }}
+                                {{ $post->user->nickname ?? $post->user->name }}
                             @endif
                         </span>
                         @if($showViews)

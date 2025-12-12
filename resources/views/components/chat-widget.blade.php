@@ -24,7 +24,7 @@
     $nickname = null;
     
     if ($userId) {
-        $nickname = auth()->user()->name;
+        $nickname = auth()->user()->nickname ?? auth()->user()->name;
     } else {
         $sessionId = session()->getId();
         $guestSession = \App\Models\ChatGuestSession::getOrCreate($sessionId, $site->id, request()->ip(), request()->userAgent());
