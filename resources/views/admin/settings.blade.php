@@ -79,15 +79,36 @@
     }
     .logo-settings-table {
         background-color: white;
+        min-width: 800px;
     }
     .logo-settings-table th {
         background-color: #f8f9fa;
         font-weight: 600;
         text-align: center;
         vertical-align: middle;
+        white-space: nowrap;
     }
     .logo-settings-table td {
         vertical-align: middle;
+        white-space: nowrap;
+    }
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #555;
     }
     .size-input {
         width: 100px;
