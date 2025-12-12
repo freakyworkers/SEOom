@@ -405,124 +405,259 @@
         <h5 class="mb-0"><i class="bi bi-image me-2"></i>로고</h5>
     </div>
     <div class="card-body">
-            
-            <div class="table-responsive">
-                <table class="table table-bordered logo-settings-table">
-                    <thead>
-                        <tr>
-                            <th rowspan="2" style="width: 100px;">로고</th>
-                            <th>타입</th>
-                            <th>이미지</th>
-                            <th>이미지 (다크모드)</th>
-                            <th>데스크탑 사이즈</th>
-                            <th>모바일 사이즈</th>
-                            <th>파비콘 <i class="bi bi-question-circle help-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="파비콘은 브라우저 탭에 표시되는 작은 아이콘입니다. 권장 사이즈: 32x32px 또는 16x16px (ICO, PNG 형식)"></i></th>
-                            <th>OG 이미지 <i class="bi bi-question-circle help-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="OG(Open Graph) 이미지는 소셜 미디어 공유 시 표시되는 이미지입니다. 권장 사이즈: 1200x630px (PNG, JPG 형식)"></i></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td rowspan="2" class="text-center align-middle">
-                                <strong>로고</strong>
-                            </td>
-                            <td>
-                                <select class="form-select form-select-sm" name="logo_type" id="logo_type">
-                                    <option value="image" {{ ($settings['logo_type'] ?? 'image') === 'image' ? 'selected' : '' }}>이미지</option>
-                                    <option value="text" {{ ($settings['logo_type'] ?? '') === 'text' ? 'selected' : '' }}>텍스트</option>
-                                </select>
-                                <div id="logo-text-notice" class="alert alert-info mt-2 mb-0" style="display: none;">
-                                    <i class="bi bi-info-circle me-1"></i>사이트 이름이 로고로 표시됩니다.
+        <!-- 데스크탑 테이블 뷰 -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-bordered logo-settings-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width: 100px;">로고</th>
+                        <th>타입</th>
+                        <th>이미지</th>
+                        <th>이미지 (다크모드)</th>
+                        <th>데스크탑 사이즈</th>
+                        <th>모바일 사이즈</th>
+                        <th>파비콘 <i class="bi bi-question-circle help-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="파비콘은 브라우저 탭에 표시되는 작은 아이콘입니다. 권장 사이즈: 32x32px 또는 16x16px (ICO, PNG 형식)"></i></th>
+                        <th>OG 이미지 <i class="bi bi-question-circle help-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="OG(Open Graph) 이미지는 소셜 미디어 공유 시 표시되는 이미지입니다. 권장 사이즈: 1200x630px (PNG, JPG 형식)"></i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2" class="text-center align-middle">
+                            <strong>로고</strong>
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm" name="logo_type" id="logo_type">
+                                <option value="image" {{ ($settings['logo_type'] ?? 'image') === 'image' ? 'selected' : '' }}>이미지</option>
+                                <option value="text" {{ ($settings['logo_type'] ?? '') === 'text' ? 'selected' : '' }}>텍스트</option>
+                            </select>
+                            <div id="logo-text-notice" class="alert alert-info mt-2 mb-0" style="display: none;">
+                                <i class="bi bi-info-circle me-1"></i>사이트 이름이 로고로 표시됩니다.
+                            </div>
+                        </td>
+                        <td>
+                            <div class="image-upload-area {{ !empty($settings['site_logo'] ?? '') ? 'has-image' : '' }}" 
+                                 data-type="logo" 
+                                 data-input="site_logo">
+                                @if(!empty($settings['site_logo'] ?? ''))
+                                    <img src="{{ $settings['site_logo'] }}" alt="로고" class="image-preview">
+                                @else
+                                    <div class="image-upload-btn">
+                                        <i class="bi bi-cloud-upload"></i>
+                                        <span>업로드</span>
+                                    </div>
+                                @endif
+                                <input type="file" class="hidden-file-input" accept="image/*" data-type="logo">
+                                <input type="hidden" name="site_logo" id="site_logo" value="{{ $settings['site_logo'] ?? '' }}">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="image-upload-area {{ !empty($settings['site_logo_dark'] ?? '') ? 'has-image' : '' }}" 
+                                 data-type="logo_dark" 
+                                 data-input="site_logo_dark">
+                                @if(!empty($settings['site_logo_dark'] ?? ''))
+                                    <img src="{{ $settings['site_logo_dark'] }}" alt="로고 (다크모드)" class="image-preview">
+                                @else
+                                    <div class="image-upload-btn">
+                                        <i class="bi bi-cloud-upload"></i>
+                                        <span>업로드</span>
+                                    </div>
+                                @endif
+                                <input type="file" class="hidden-file-input" accept="image/*" data-type="logo_dark">
+                                <input type="hidden" name="site_logo_dark" id="site_logo_dark" value="{{ $settings['site_logo_dark'] ?? '' }}">
+                            </div>
+                        </td>
+                        <td>
+                            <input type="number" 
+                                   class="form-control form-control-sm size-input" 
+                                   name="logo_desktop_size" 
+                                   id="logo_desktop_size" 
+                                   value="{{ old('logo_desktop_size', $settings['logo_desktop_size'] ?? '300') }}"
+                                   min="50" 
+                                   max="1000">
+                            <small class="text-muted">px</small>
+                        </td>
+                        <td>
+                            <input type="number" 
+                                   class="form-control form-control-sm size-input" 
+                                   name="logo_mobile_size" 
+                                   id="logo_mobile_size" 
+                                   value="{{ old('logo_mobile_size', $settings['logo_mobile_size'] ?? '200') }}"
+                                   min="50" 
+                                   max="1000">
+                            <small class="text-muted">px</small>
+                        </td>
+                        <td>
+                            <div class="image-upload-area {{ !empty($settings['site_favicon'] ?? '') ? 'has-image' : '' }}" 
+                                 data-type="favicon" 
+                                 data-input="site_favicon"
+                                 style="min-height: 60px;">
+                                @if(!empty($settings['site_favicon'] ?? ''))
+                                    <img src="{{ $settings['site_favicon'] }}" alt="파비콘" class="image-preview" style="max-height: 60px;">
+                                @else
+                                    <div class="image-upload-btn" style="padding: 0.5rem;">
+                                        <i class="bi bi-cloud-upload"></i>
+                                        <span style="font-size: 0.75rem;">업로드</span>
+                                    </div>
+                                @endif
+                                <input type="file" class="hidden-file-input" accept="image/*,.ico" data-type="favicon">
+                                <input type="hidden" name="site_favicon" id="site_favicon" value="{{ $settings['site_favicon'] ?? '' }}">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="image-upload-area {{ !empty($settings['og_image'] ?? '') ? 'has-image' : '' }}" 
+                                 data-type="og_image" 
+                                 data-input="og_image">
+                                @if(!empty($settings['og_image'] ?? ''))
+                                    <img src="{{ $settings['og_image'] }}" alt="OG 이미지" class="image-preview">
+                                @else
+                                    <div class="image-upload-btn">
+                                        <i class="bi bi-cloud-upload"></i>
+                                        <span>업로드</span>
+                                    </div>
+                                @endif
+                                <input type="file" class="hidden-file-input" accept="image/*" data-type="og_image">
+                                <input type="hidden" name="og_image" id="og_image" value="{{ $settings['og_image'] ?? '' }}">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 모바일 카드 뷰 -->
+        <div class="d-md-none">
+            <!-- 로고 카드 -->
+            <div class="card mb-3 border">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="bi bi-image me-2"></i>로고</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">타입</label>
+                        <select class="form-select" id="logo_type_mobile">
+                            <option value="image" {{ ($settings['logo_type'] ?? 'image') === 'image' ? 'selected' : '' }}>이미지</option>
+                            <option value="text" {{ ($settings['logo_type'] ?? '') === 'text' ? 'selected' : '' }}>텍스트</option>
+                        </select>
+                        <div id="logo-text-notice-mobile" class="alert alert-info mt-2 mb-0" style="display: none;">
+                            <i class="bi bi-info-circle me-1"></i>사이트 이름이 로고로 표시됩니다.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">이미지</label>
+                        <div class="image-upload-area {{ !empty($settings['site_logo'] ?? '') ? 'has-image' : '' }}" 
+                             data-type="logo" 
+                             data-input="site_logo">
+                            @if(!empty($settings['site_logo'] ?? ''))
+                                <img src="{{ $settings['site_logo'] }}" alt="로고" class="image-preview">
+                            @else
+                                <div class="image-upload-btn">
+                                    <i class="bi bi-cloud-upload"></i>
+                                    <span>업로드</span>
                                 </div>
-                            </td>
-                            <td>
-                                <div class="image-upload-area {{ !empty($settings['site_logo'] ?? '') ? 'has-image' : '' }}" 
-                                     data-type="logo" 
-                                     data-input="site_logo">
-                                    @if(!empty($settings['site_logo'] ?? ''))
-                                        <img src="{{ $settings['site_logo'] }}" alt="로고" class="image-preview">
-                                    @else
-                                        <div class="image-upload-btn">
-                                            <i class="bi bi-cloud-upload"></i>
-                                            <span>업로드</span>
-                                        </div>
-                                    @endif
-                                    <input type="file" class="hidden-file-input" accept="image/*" data-type="logo">
-                                    <input type="hidden" name="site_logo" id="site_logo" value="{{ $settings['site_logo'] ?? '' }}">
+                            @endif
+                            <input type="file" class="hidden-file-input" accept="image/*" data-type="logo">
+                            <input type="hidden" name="site_logo" id="site_logo_mobile" value="{{ $settings['site_logo'] ?? '' }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">이미지 (다크모드)</label>
+                        <div class="image-upload-area {{ !empty($settings['site_logo_dark'] ?? '') ? 'has-image' : '' }}" 
+                             data-type="logo_dark" 
+                             data-input="site_logo_dark">
+                            @if(!empty($settings['site_logo_dark'] ?? ''))
+                                <img src="{{ $settings['site_logo_dark'] }}" alt="로고 (다크모드)" class="image-preview">
+                            @else
+                                <div class="image-upload-btn">
+                                    <i class="bi bi-cloud-upload"></i>
+                                    <span>업로드</span>
                                 </div>
-                            </td>
-                            <td>
-                                <div class="image-upload-area {{ !empty($settings['site_logo_dark'] ?? '') ? 'has-image' : '' }}" 
-                                     data-type="logo_dark" 
-                                     data-input="site_logo_dark">
-                                    @if(!empty($settings['site_logo_dark'] ?? ''))
-                                        <img src="{{ $settings['site_logo_dark'] }}" alt="로고 (다크모드)" class="image-preview">
-                                    @else
-                                        <div class="image-upload-btn">
-                                            <i class="bi bi-cloud-upload"></i>
-                                            <span>업로드</span>
-                                        </div>
-                                    @endif
-                                    <input type="file" class="hidden-file-input" accept="image/*" data-type="logo_dark">
-                                    <input type="hidden" name="site_logo_dark" id="site_logo_dark" value="{{ $settings['site_logo_dark'] ?? '' }}">
-                                </div>
-                            </td>
-                            <td>
-                                <input type="number" 
-                                       class="form-control form-control-sm size-input" 
-                                       name="logo_desktop_size" 
-                                       id="logo_desktop_size" 
+                            @endif
+                            <input type="file" class="hidden-file-input" accept="image/*" data-type="logo_dark">
+                            <input type="hidden" name="site_logo_dark" id="site_logo_dark_mobile" value="{{ $settings['site_logo_dark'] ?? '' }}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="form-label fw-bold">데스크탑 사이즈</label>
+                            <div class="input-group">
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="logo_desktop_size_mobile"
                                        value="{{ old('logo_desktop_size', $settings['logo_desktop_size'] ?? '300') }}"
                                        min="50" 
                                        max="1000">
-                                <small class="text-muted">px</small>
-                            </td>
-                            <td>
-                                <input type="number" 
-                                       class="form-control form-control-sm size-input" 
-                                       name="logo_mobile_size" 
-                                       id="logo_mobile_size" 
+                                <span class="input-group-text">px</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold">모바일 사이즈</label>
+                            <div class="input-group">
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="logo_mobile_size_mobile"
                                        value="{{ old('logo_mobile_size', $settings['logo_mobile_size'] ?? '200') }}"
                                        min="50" 
                                        max="1000">
-                                <small class="text-muted">px</small>
-                            </td>
-                            <td>
-                                <div class="image-upload-area {{ !empty($settings['site_favicon'] ?? '') ? 'has-image' : '' }}" 
-                                     data-type="favicon" 
-                                     data-input="site_favicon"
-                                     style="min-height: 60px;">
-                                    @if(!empty($settings['site_favicon'] ?? ''))
-                                        <img src="{{ $settings['site_favicon'] }}" alt="파비콘" class="image-preview" style="max-height: 60px;">
-                                    @else
-                                        <div class="image-upload-btn" style="padding: 0.5rem;">
-                                            <i class="bi bi-cloud-upload"></i>
-                                            <span style="font-size: 0.75rem;">업로드</span>
-                                        </div>
-                                    @endif
-                                    <input type="file" class="hidden-file-input" accept="image/*,.ico" data-type="favicon">
-                                    <input type="hidden" name="site_favicon" id="site_favicon" value="{{ $settings['site_favicon'] ?? '' }}">
-                                </div>
-                            </td>
-                            <td>
-                                <div class="image-upload-area {{ !empty($settings['og_image'] ?? '') ? 'has-image' : '' }}" 
-                                     data-type="og_image" 
-                                     data-input="og_image">
-                                    @if(!empty($settings['og_image'] ?? ''))
-                                        <img src="{{ $settings['og_image'] }}" alt="OG 이미지" class="image-preview">
-                                    @else
-                                        <div class="image-upload-btn">
-                                            <i class="bi bi-cloud-upload"></i>
-                                            <span>업로드</span>
-                                        </div>
-                                    @endif
-                                    <input type="file" class="hidden-file-input" accept="image/*" data-type="og_image">
-                                    <input type="hidden" name="og_image" id="og_image" value="{{ $settings['og_image'] ?? '' }}">
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                <span class="input-group-text">px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <!-- 파비콘 카드 -->
+            <div class="card mb-3 border">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-star me-2"></i>파비콘
+                        <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="파비콘은 브라우저 탭에 표시되는 작은 아이콘입니다. 권장 사이즈: 32x32px 또는 16x16px (ICO, PNG 형식)"></i>
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="image-upload-area {{ !empty($settings['site_favicon'] ?? '') ? 'has-image' : '' }}" 
+                         data-type="favicon" 
+                         data-input="site_favicon"
+                         style="min-height: 120px;">
+                        @if(!empty($settings['site_favicon'] ?? ''))
+                            <img src="{{ $settings['site_favicon'] }}" alt="파비콘" class="image-preview" style="max-height: 120px;">
+                        @else
+                            <div class="image-upload-btn">
+                                <i class="bi bi-cloud-upload"></i>
+                                <span>업로드</span>
+                            </div>
+                        @endif
+                        <input type="file" class="hidden-file-input" accept="image/*,.ico" data-type="favicon">
+                        <input type="hidden" name="site_favicon" id="site_favicon_mobile" value="{{ $settings['site_favicon'] ?? '' }}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- OG 이미지 카드 -->
+            <div class="card mb-3 border">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-share me-2"></i>OG 이미지
+                        <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="OG(Open Graph) 이미지는 소셜 미디어 공유 시 표시되는 이미지입니다. 권장 사이즈: 1200x630px (PNG, JPG 형식)"></i>
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="image-upload-area {{ !empty($settings['og_image'] ?? '') ? 'has-image' : '' }}" 
+                         data-type="og_image" 
+                         data-input="og_image">
+                        @if(!empty($settings['og_image'] ?? ''))
+                            <img src="{{ $settings['og_image'] }}" alt="OG 이미지" class="image-preview">
+                        @else
+                            <div class="image-upload-btn">
+                                <i class="bi bi-cloud-upload"></i>
+                                <span>업로드</span>
+                            </div>
+                        @endif
+                        <input type="file" class="hidden-file-input" accept="image/*" data-type="og_image">
+                        <input type="hidden" name="og_image" id="og_image_mobile" value="{{ $settings['og_image'] ?? '' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="d-flex justify-content-end mt-3">
             <button type="submit" form="settingsForm" class="btn btn-primary">
@@ -2034,6 +2169,89 @@
     });
 
     // 파일 input 클릭 시 이벤트 전파 중지 (이미지 업로드 영역 클릭 이벤트와 충돌 방지)
+    // 모바일/데스크탑 로고 설정 동기화
+    function syncLogoFields() {
+        // 로고 타입 동기화
+        const desktopLogoType = document.getElementById('logo_type');
+        const mobileLogoType = document.getElementById('logo_type_mobile');
+        if (desktopLogoType && mobileLogoType) {
+            mobileLogoType.addEventListener('change', function() {
+                desktopLogoType.value = this.value;
+                // 텍스트 공지 표시/숨김
+                const notice = document.getElementById('logo-text-notice');
+                const noticeMobile = document.getElementById('logo-text-notice-mobile');
+                if (this.value === 'text') {
+                    if (notice) notice.style.display = 'block';
+                    if (noticeMobile) noticeMobile.style.display = 'block';
+                } else {
+                    if (notice) notice.style.display = 'none';
+                    if (noticeMobile) noticeMobile.style.display = 'none';
+                }
+            });
+            desktopLogoType.addEventListener('change', function() {
+                mobileLogoType.value = this.value;
+                const notice = document.getElementById('logo-text-notice');
+                const noticeMobile = document.getElementById('logo-text-notice-mobile');
+                if (this.value === 'text') {
+                    if (notice) notice.style.display = 'block';
+                    if (noticeMobile) noticeMobile.style.display = 'block';
+                } else {
+                    if (notice) notice.style.display = 'none';
+                    if (noticeMobile) noticeMobile.style.display = 'none';
+                }
+            });
+        }
+
+        // 사이즈 동기화
+        const desktopSize = document.getElementById('logo_desktop_size');
+        const mobileSize = document.getElementById('logo_mobile_size');
+        const desktopSizeMobile = document.getElementById('logo_desktop_size_mobile');
+        const mobileSizeMobile = document.getElementById('logo_mobile_size_mobile');
+        
+        if (desktopSize && desktopSizeMobile) {
+            desktopSizeMobile.addEventListener('input', function() {
+                desktopSize.value = this.value;
+            });
+            desktopSize.addEventListener('input', function() {
+                desktopSizeMobile.value = this.value;
+            });
+        }
+        
+        if (mobileSize && mobileSizeMobile) {
+            mobileSizeMobile.addEventListener('input', function() {
+                mobileSize.value = this.value;
+            });
+            mobileSize.addEventListener('input', function() {
+                mobileSizeMobile.value = this.value;
+            });
+        }
+
+        // 이미지 업로드 후 hidden input 동기화
+        $(document).on('change', '.hidden-file-input', function() {
+            const $this = $(this);
+            const type = $this.data('type');
+            const inputId = $this.closest('.image-upload-area').data('input');
+            
+            // 모바일과 데스크탑의 hidden input 동기화
+            const desktopInput = document.getElementById(inputId);
+            const mobileInput = document.getElementById(inputId + '_mobile');
+            
+            if (desktopInput && mobileInput && $this.closest('.d-md-none').length > 0) {
+                // 모바일에서 업로드한 경우
+                setTimeout(function() {
+                    mobileInput.value = desktopInput.value;
+                }, 100);
+            } else if (desktopInput && mobileInput && $this.closest('.d-none').length > 0) {
+                // 데스크탑에서 업로드한 경우
+                setTimeout(function() {
+                    mobileInput.value = desktopInput.value;
+                }, 100);
+            }
+        });
+    }
+    
+    syncLogoFields();
+
     $(document).on('click', '.hidden-file-input', function(e) {
         e.stopPropagation();
         // 브라우저 기본 동작은 유지 (파일 선택 창 열기)
