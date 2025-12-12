@@ -217,12 +217,13 @@
             padding: 0;
             overflow: hidden;
             width: 100%;
+            position: relative;
         }
         .theme-preview {
             width: 1200px;
-            transform: scale(0.3);
+            transform: scale(0.23);
             transform-origin: left top;
-            margin-bottom: -840px; /* (1200px * 0.7) = 840px negative margin to compensate for scale */
+            margin-bottom: -924px; /* (1200px * 0.77) = 924px negative margin to compensate for scale */
             height: 200px;
         }
         .theme-preview-container {
