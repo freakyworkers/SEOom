@@ -713,11 +713,18 @@ class BoardController extends Controller
         $updateData['enable_attachments'] = ($enableAttachmentsValue == '1' || $enableAttachmentsValue === true || $enableAttachmentsValue === 'true' || $enableAttachmentsValue === 1);
         $updateData['enable_author_comment_adopt'] = ($request->input('enable_author_comment_adopt', '0') == '1' || $request->input('enable_author_comment_adopt') === true || $request->input('enable_author_comment_adopt') === 'true' || $request->input('enable_author_comment_adopt') === 1);
         $updateData['enable_admin_comment_adopt'] = ($request->input('enable_admin_comment_adopt', '0') == '1' || $request->input('enable_admin_comment_adopt') === true || $request->input('enable_admin_comment_adopt') === 'true' || $request->input('enable_admin_comment_adopt') === 1);
-        // enable_share 처리 (컬럼이 존재하는 경우에만 업데이트)
-        if (Schema::hasColumn('boards', 'enable_share')) {
-            $enableShareValue = $request->input('enable_share', '0');
-            $updateData['enable_share'] = ($enableShareValue == '1' || $enableShareValue === true || $enableShareValue === 'true' || $enableShareValue === 1);
+        // enable_share 처리 - 컬럼이 없으면 생성하고 항상 업데이트
+        if (!Schema::hasColumn('boards', 'enable_share')) {
+            try {
+                Schema::table('boards', function (Blueprint $table) {
+                    $table->boolean('enable_share')->default(false)->after('enable_attachments')->comment('공유 기능 활성화');
+                });
+            } catch (\Exception $e) {
+                \Log::error('Failed to create enable_share column: ' . $e->getMessage());
+            }
         }
+        $enableShareValue = $request->input('enable_share', '0');
+        $updateData['enable_share'] = ($enableShareValue == '1' || $enableShareValue === true || $enableShareValue === 'true' || $enableShareValue === 1);
 
         $board->update($updateData);
         $board->refresh();
