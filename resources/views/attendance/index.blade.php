@@ -104,7 +104,7 @@
                                 </td>
                                 <td style="text-align: center;">
                                     <x-user-rank :user="$attendance->user" :site="$site" />
-                                    {{ $attendance->user->name }}
+                                    {{ $attendance->user->nickname ?? $attendance->user->name }}
                                 </td>
                                 <td style="text-align: center;">
                                     {{ $attendance->greeting ?? '-' }}

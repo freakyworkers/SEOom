@@ -120,7 +120,7 @@
                             @forelse($allSubmissions as $submission)
                                 <tr data-user-id="{{ $submission->user_id }}" data-submission-id="{{ $submission->id }}">
                                     <td class="text-center">{{ $submission->created_at->format('Y.m.d H:i:s') }}</td>
-                                    <td class="text-center">{{ $submission->user->name }}</td>
+                                    <td class="text-center">{{ $submission->user ? ($submission->user->nickname ?? $submission->user->name) : '알 수 없음' }}</td>
                                     <td class="text-center">
                                         @if($submission->status === 'pending')
                                             <span style="color: #6c757d;">대기</span>

@@ -38,7 +38,7 @@
                             @forelse($submissions as $submission)
                                 <tr>
                                     <td class="text-center">{{ $submission->created_at->format('Y.m.d H:i:s') }}</td>
-                                    <td class="text-center">• {{ $submission->user->name }}</td>
+                                    <td class="text-center">• {{ $submission->user->nickname ?? $submission->user->name }}</td>
                                     @if($setting->form_fields)
                                         @foreach($setting->form_fields as $field)
                                             <td class="text-center">
@@ -103,7 +103,7 @@
                                 <!-- 유저 정보 -->
                                 <div class="mb-3">
                                     <div class="small text-muted mb-1" style="font-size: 0.75rem;">유저</div>
-                                    <div class="fw-medium" style="font-size: 0.9rem;">• {{ $submission->user->name }}</div>
+                                    <div class="fw-medium" style="font-size: 0.9rem;">• {{ $submission->user->nickname ?? $submission->user->name }}</div>
                                 </div>
 
                                 <!-- 동적 폼 필드들 -->

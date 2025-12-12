@@ -47,7 +47,7 @@
                                     <div class="flex-grow-1">
                                         <div class="message-content" style="line-height: 1.6;">
                                             <div class="mb-1">
-                                                <strong>{{ $type === 'received' ? $message->sender->name : $message->receiver->name }}</strong>
+                                                <strong>{{ $type === 'received' ? ($message->sender->nickname ?? $message->sender->name) : ($message->receiver->nickname ?? $message->receiver->name) }}</strong>
                                                 <small class="text-muted ms-2">{{ $message->created_at->format('Y-m-d H:i') }}</small>
                                             </div>
                                             <div class="text-muted" style="font-size: 0.9rem; word-break: break-word;">
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 let html = `
                     <div class="mb-3">
                         <label class="form-label fw-bold">${isReceived ? '보낸이' : '받는이'}</label>
-                        <div>${isReceived ? message.sender.name : message.receiver.name}</div>
+                        <div>${isReceived ? (message.sender.nickname || message.sender.name) : (message.receiver.nickname || message.receiver.name)}</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">내용</label>
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (isReceived && message.receiver_id === {{ auth()->id() }}) {
                     document.getElementById('replyMessageBtn').style.display = 'block';
                     replyToUserId = message.sender_id;
-                    replyToUserName = message.sender.name;
+                    replyToUserName = message.sender.nickname || message.sender.name;
                 } else {
                     document.getElementById('replyMessageBtn').style.display = 'none';
                 }

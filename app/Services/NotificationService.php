@@ -40,8 +40,9 @@ class NotificationService
             $commentCount = ($data['comment_count'] ?? 1) + 1;
             $commentUsers = $data['comment_users'] ?? [];
             
-            if (!in_array($comment->user->name, $commentUsers)) {
-                $commentUsers[] = $comment->user->name;
+            $commentUserNickname = $comment->user->nickname ?? $comment->user->name;
+            if (!in_array($commentUserNickname, $commentUsers)) {
+                $commentUsers[] = $commentUserNickname;
             }
             
             $data['comment_count'] = $commentCount;
@@ -63,7 +64,7 @@ class NotificationService
                 'user_id' => $post->user_id,
                 'type' => 'comment',
                 'title' => '댓글 알림',
-                'content' => $comment->user->name . '님이 글에 댓글을 남기셨습니다.' . "\n" . $post->title,
+                'content' => ($comment->user->nickname ?? $comment->user->name) . '님이 글에 댓글을 남기셨습니다.' . "\n" . $post->title,
                 'link' => route('posts.show', [
                     'site' => $post->site->slug,
                     'boardSlug' => $post->board->slug,
@@ -73,7 +74,7 @@ class NotificationService
                     'post_id' => $post->id,
                     'comment_id' => $comment->id,
                     'comment_count' => 1,
-                    'comment_users' => [$comment->user->name],
+                    'comment_users' => [$comment->user->nickname ?? $comment->user->name],
                 ],
             ]);
         }
@@ -256,8 +257,9 @@ class NotificationService
             $replyCount = ($data['reply_count'] ?? 1) + 1;
             $replyUsers = $data['reply_users'] ?? [];
             
-            if (!in_array($replyPost->user->name, $replyUsers)) {
-                $replyUsers[] = $replyPost->user->name;
+            $replyUserNickname = $replyPost->user->nickname ?? $replyPost->user->name;
+            if (!in_array($replyUserNickname, $replyUsers)) {
+                $replyUsers[] = $replyUserNickname;
             }
             
             $data['reply_count'] = $replyCount;
@@ -279,7 +281,7 @@ class NotificationService
                 'user_id' => $parentPost->user_id,
                 'type' => 'reply',
                 'title' => '답글 알림',
-                'content' => $replyPost->user->name . '님이 글에 답글을 남기셨습니다.' . "\n" . $parentPost->title,
+                'content' => ($replyPost->user->nickname ?? $replyPost->user->name) . '님이 글에 답글을 남기셨습니다.' . "\n" . $parentPost->title,
                 'link' => route('posts.show', [
                     'site' => $parentPost->site->slug,
                     'boardSlug' => $parentPost->board->slug,
@@ -289,7 +291,7 @@ class NotificationService
                     'post_id' => $parentPost->id,
                     'reply_id' => $replyPost->id,
                     'reply_count' => 1,
-                    'reply_users' => [$replyPost->user->name],
+                    'reply_users' => [$replyPost->user->nickname ?? $replyPost->user->name],
                 ],
             ]);
         }

@@ -119,10 +119,10 @@
                                     @endif
                                 </td>
                                 <td style="text-align: center; vertical-align: middle;">
-                                    {{ $message->sender->name ?? '삭제된 사용자' }}
+                                    {{ $message->sender ? ($message->sender->nickname ?? $message->sender->name) : '삭제된 사용자' }}
                                 </td>
                                 <td style="text-align: center; vertical-align: middle;">
-                                    {{ $message->receiver->name ?? '삭제된 사용자' }}
+                                    {{ $message->receiver ? ($message->receiver->nickname ?? $message->receiver->name) : '삭제된 사용자' }}
                                 </td>
                                 <td style="vertical-align: middle;">
                                     <textarea class="form-control form-control-sm message-content-{{ $message->id }}" 

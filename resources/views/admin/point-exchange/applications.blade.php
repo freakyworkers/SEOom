@@ -39,7 +39,7 @@
                             @forelse($applications as $application)
                                 <tr>
                                     <td class="text-center">{{ $application->created_at->format('Y.m.d H:i:s') }}</td>
-                                    <td class="text-center">• {{ $application->user->name }}</td>
+                                    <td class="text-center">• {{ $application->user->nickname ?? $application->user->name }}</td>
                                     <td class="text-center">{{ number_format($application->points) }}P</td>
                                     @if($setting->form_fields)
                                         @foreach($setting->form_fields as $field)
@@ -109,7 +109,7 @@
                                 <!-- 유저 정보 -->
                                 <div class="mb-3">
                                     <div class="small text-muted mb-1" style="font-size: 0.75rem;">유저</div>
-                                    <div class="fw-medium" style="font-size: 0.9rem;">• {{ $application->user->name }}</div>
+                                    <div class="fw-medium" style="font-size: 0.9rem;">• {{ $application->user->nickname ?? $application->user->name }}</div>
                                 </div>
 
                                 <!-- 동적 폼 필드들 -->

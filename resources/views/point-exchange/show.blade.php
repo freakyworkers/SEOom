@@ -145,7 +145,7 @@
                             @forelse($allApplications as $application)
                                 <tr data-user-id="{{ $application->user_id }}" data-application-id="{{ $application->id }}">
                                     <td class="text-center">{{ $application->created_at->format('Y.m.d H:i:s') }}</td>
-                                    <td class="text-center">{{ $application->user->name }}</td>
+                                    <td class="text-center">{{ $application->user ? ($application->user->nickname ?? $application->user->name) : '알 수 없음' }}</td>
                                     <td class="text-center">{{ number_format($application->points) }}P</td>
                                     <td class="text-center">
                                         @if($application->status === 'pending')
