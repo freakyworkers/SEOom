@@ -52,13 +52,17 @@
                         <p class="text-muted mt-3">제출된 데이터가 없습니다.</p>
                     </div>
                 @else
-                    <div class="table-responsive">
-                        <table class="table table-hover">
+                    <!-- PC 버전 테이블 -->
+                    <div class="table-responsive d-none d-md-block">
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
                                     @foreach($contactForm->fields as $field)
                                         <th>{{ $field['name'] }}</th>
                                     @endforeach
+                                    @if($contactForm->checkboxes && isset($contactForm->checkboxes['enabled']) && $contactForm->checkboxes['enabled'])
+                                        <th>체크 항목</th>
+                                    @endif
                                     @if($contactForm->has_inquiry_content)
                                         <th>문의내용</th>
                                     @endif
@@ -71,6 +75,15 @@
                                         @foreach($contactForm->fields as $field)
                                             <td>{{ $submission->data[$field['name']] ?? '-' }}</td>
                                         @endforeach
+                                        @if($contactForm->checkboxes && isset($contactForm->checkboxes['enabled']) && $contactForm->checkboxes['enabled'])
+                                            <td>
+                                                @if($submission->checkbox_data && count($submission->checkbox_data) > 0)
+                                                    {{ implode(', ', $submission->checkbox_data) }}
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                        @endif
                                         @if($contactForm->has_inquiry_content)
                                             <td>{{ $submission->inquiry_content ?? '-' }}</td>
                                         @endif
@@ -80,6 +93,53 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- 모바일 버전 카드 레이아웃 -->
+                    <div class="d-md-none">
+                        @foreach($submissions as $submission)
+                            <div class="card border mb-3">
+                                <div class="card-body p-3">
+                                    <!-- 폼 필드들 -->
+                                    @foreach($contactForm->fields as $field)
+                                        <div class="mb-3">
+                                            <div class="small text-muted mb-1" style="font-size: 0.75rem;">{{ $field['name'] }}</div>
+                                            <div class="fw-medium" style="font-size: 0.9rem;">{{ $submission->data[$field['name']] ?? '-' }}</div>
+                                        </div>
+                                    @endforeach
+
+                                    <!-- 체크박스 데이터 -->
+                                    @if($contactForm->checkboxes && isset($contactForm->checkboxes['enabled']) && $contactForm->checkboxes['enabled'])
+                                        <div class="mb-3">
+                                            <div class="small text-muted mb-1" style="font-size: 0.75rem;">체크 항목</div>
+                                            <div class="fw-medium" style="font-size: 0.9rem;">
+                                                @if($submission->checkbox_data && count($submission->checkbox_data) > 0)
+                                                    {{ implode(', ', $submission->checkbox_data) }}
+                                                @else
+                                                    -
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- 문의내용 -->
+                                    @if($contactForm->has_inquiry_content)
+                                        <div class="mb-3">
+                                            <div class="small text-muted mb-1" style="font-size: 0.75rem;">문의내용</div>
+                                            <div class="fw-medium" style="font-size: 0.9rem; white-space: pre-wrap;">{{ $submission->inquiry_content ?? '-' }}</div>
+                                        </div>
+                                    @endif
+
+                                    <!-- 제출일 -->
+                                    <div class="mb-0 pt-2 border-top">
+                                        <div class="small text-muted mb-1" style="font-size: 0.75rem;">제출일</div>
+                                        <div class="small text-muted" style="font-size: 0.85rem;">{{ $submission->created_at->format('Y-m-d H:i') }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Pagination -->
                     <div class="mt-3">
                         {{ $submissions->links() }}
                     </div>
@@ -88,6 +148,19 @@
         </div>
     </div>
 </div>
+
+@push('styles')
+<style>
+    /* 모바일 최적화 스타일 */
+    @media (max-width: 767.98px) {
+        /* 카드 스타일 최적화 */
+        .d-md-none .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+    }
+</style>
+@endpush
 @endsection
 
 
