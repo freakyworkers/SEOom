@@ -21,7 +21,7 @@ class AdminReportController extends Controller
 
         // Get reports with pagination
         $reports = Report::where('site_id', $site->id)
-            ->with(['reporter', 'reportedUser', 'post', 'chatMessage', 'reviewer'])
+            ->with(['reporter', 'reportedUser', 'post', 'comment', 'chatMessage', 'reviewer'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -48,7 +48,7 @@ class AdminReportController extends Controller
             abort(404);
         }
 
-        $report->load(['reporter', 'reportedUser', 'post', 'chatMessage', 'reviewer']);
+        $report->load(['reporter', 'reportedUser', 'post', 'comment', 'chatMessage', 'reviewer']);
 
         return view('admin.reports.show', compact('site', 'report'));
     }

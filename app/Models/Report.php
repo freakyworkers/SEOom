@@ -19,6 +19,7 @@ class Report extends Model
         'reported_nickname',
         'report_type',
         'post_id',
+        'comment_id',
         'chat_message_id',
         'reason',
         'status',
@@ -60,6 +61,14 @@ class Report extends Model
     public function post()
     {
         return $this->belongsTo(Post::class, 'post_id');
+    }
+
+    /**
+     * Get the reported comment.
+     */
+    public function comment()
+    {
+        return $this->belongsTo(Comment::class, 'comment_id');
     }
 
     /**

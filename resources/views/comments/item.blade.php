@@ -53,6 +53,7 @@
                                     {{ $comment->user->nickname ?? $comment->user->name }}
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="commentUserDropdownMobile{{ $comment->id }}">
+                                    <li><a class="dropdown-item" href="#" onclick="openReportModal('comment', {{ $comment->id }}, '{{ $site->slug }}', '{{ $boardSlug }}', {{ $comment->post_id }}); return false;">신고하기</a></li>
                                     <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $comment->user_id }}, '{{ $comment->user->nickname ?? $comment->user->name }}'); return false;">쪽지보내기</a></li>
                                 </ul>
                             </div>
@@ -138,6 +139,7 @@
                                     {{ $comment->user->nickname ?? $comment->user->name }}
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="commentUserDropdown{{ $comment->id }}">
+                                    <li><a class="dropdown-item" href="#" onclick="openReportModal('comment', {{ $comment->id }}, '{{ $site->slug }}', '{{ $boardSlug }}', {{ $comment->post_id }}); return false;">신고하기</a></li>
                                     <li><a class="dropdown-item" href="#" onclick="openSendMessageModal({{ $comment->user_id }}, '{{ $comment->user->nickname ?? $comment->user->name }}'); return false;">쪽지보내기</a></li>
                                 </ul>
                             </div>
@@ -442,5 +444,85 @@ $(document).ready(function() {
         });
     });
 });
+
+// 신고 모달 열기
+function openReportModal(type, id, siteSlug, boardSlug, postId) {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade show';
+    modal.style.display = 'block';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">신고하기</h5>
+                    <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="reportReason" class="form-label">신고 사유를 작성해주세요</label>
+                        <textarea class="form-control" id="reportReason" rows="4" placeholder="신고 사유를 입력하세요..." maxlength="500" required></textarea>
+                        <small class="text-muted">최대 500자까지 입력 가능합니다.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">취소</button>
+                    <button type="button" class="btn btn-primary" id="submitReport">신고하기</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // 신고 제출 버튼 클릭 이벤트
+    modal.querySelector('#submitReport').addEventListener('click', function() {
+        const reason = modal.querySelector('#reportReason').value.trim();
+        
+        if (!reason) {
+            alert('신고 사유를 입력해주세요.');
+            return;
+        }
+        
+        let url;
+        if (type === 'comment') {
+            url = '/site/' + siteSlug + '/api/boards/' + boardSlug + '/posts/' + postId + '/comments/' + id + '/report';
+        } else {
+            url = '/site/' + siteSlug + '/api/posts/' + id + '/report';
+        }
+        
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                reason: reason
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            modal.remove();
+            if (data.success) {
+                alert('신고가 접수되었습니다.');
+            } else {
+                alert(data.error || '신고 접수에 실패했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            modal.remove();
+            alert('신고 접수에 실패했습니다.');
+        });
+    });
+    
+    // 모달 외부 클릭 시 닫기
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
 </script>
 @endpush

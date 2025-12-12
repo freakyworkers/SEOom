@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -180,6 +181,59 @@ class CommentController extends Controller
         return response()->json([
             'success' => true,
             'message' => '댓글이 채택되었습니다.'
+        ]);
+    }
+
+    /**
+     * Report a comment (API).
+     */
+    public function reportComment(Site $site, $boardSlug, Post $post, Comment $comment, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'reason' => 'required|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        if ($comment->site_id !== $site->id || $comment->post_id !== $post->id) {
+            return response()->json(['error' => '댓글을 찾을 수 없습니다.'], 404);
+        }
+
+        // Get reporter info
+        $reporterId = Auth::id();
+        $reporterGuestSessionId = null;
+        $reporterNickname = null;
+        
+        if ($reporterId) {
+            $reporterNickname = Auth::user()->nickname ?? Auth::user()->name;
+        } else {
+            return response()->json(['error' => '로그인이 필요합니다.'], 403);
+        }
+
+        // Get reported user info
+        $reportedUserId = $comment->user_id;
+        $reportedNickname = $comment->user ? ($comment->user->nickname ?? $comment->user->name) : '알 수 없음';
+
+        // Create report
+        $report = \App\Models\Report::create([
+            'site_id' => $site->id,
+            'reporter_id' => $reporterId,
+            'reporter_guest_session_id' => $reporterGuestSessionId,
+            'reporter_nickname' => $reporterNickname,
+            'reported_user_id' => $reportedUserId,
+            'reported_nickname' => $reportedNickname,
+            'report_type' => 'comment',
+            'comment_id' => $comment->id,
+            'post_id' => $post->id, // 게시글 정보도 함께 저장
+            'reason' => $request->reason,
+            'status' => 'pending',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => '신고가 접수되었습니다.',
         ]);
     }
 }

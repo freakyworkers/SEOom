@@ -1005,6 +1005,9 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
         // Post Report API
         Route::post('/api/posts/{post}/report', [\App\Http\Controllers\PostController::class, 'reportPost'])->name('api.posts.report');
         
+        // Comment Report API
+        Route::post('/api/boards/{boardSlug}/posts/{post}/comments/{comment}/report', [\App\Http\Controllers\CommentController::class, 'reportComment'])->name('api.comments.report');
+        
         // Reports Management
         Route::get('/reports', [AdminReportController::class, 'index'])->name('admin.reports.index');
         Route::get('/reports/{report}', [AdminReportController::class, 'show'])->name('admin.reports.show');

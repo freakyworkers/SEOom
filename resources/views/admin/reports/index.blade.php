@@ -56,6 +56,8 @@
                                 <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                     @if($report->report_type === 'post' && $report->post)
                                         {{ Str::limit($report->post->title, 30) }}
+                                    @elseif($report->report_type === 'comment' && $report->comment)
+                                        {{ Str::limit($report->comment->content, 30) }}
                                     @elseif($report->report_type === 'chat' && $report->chatMessage)
                                         {{ Str::limit($report->chatMessage->message, 30) }}
                                     @else

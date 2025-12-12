@@ -1636,7 +1636,7 @@ class PostController extends Controller
         $reporterNickname = null;
         
         if ($reporterId) {
-            $reporterNickname = Auth::user()->name;
+            $reporterNickname = Auth::user()->nickname ?? Auth::user()->name;
         } else {
             $sessionId = session()->getId();
             $guestSession = \App\Models\ChatGuestSession::where('session_id', $sessionId)
@@ -1652,7 +1652,7 @@ class PostController extends Controller
 
         // Get reported user info
         $reportedUserId = $post->user_id;
-        $reportedNickname = $post->user ? $post->user->name : '알 수 없음';
+        $reportedNickname = $post->user ? ($post->user->nickname ?? $post->user->name) : '알 수 없음';
 
         // Create report
         $report = \App\Models\Report::create([

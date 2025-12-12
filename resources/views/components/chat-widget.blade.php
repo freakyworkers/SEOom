@@ -446,7 +446,7 @@
         
         messageDiv.innerHTML = `
             <div class="chat-message-header">
-                <span class="chat-message-nickname" data-user-id="${msg.user_id || ''}" data-guest-session-id="${msg.guest_session_id || ''}" data-nickname="${msg.nickname}">
+                <span class="chat-message-nickname" data-user-id="${msg.user_id || ''}" data-guest-session-id="${msg.guest_session_id || ''}" data-nickname="${msg.nickname}" data-message-id="${msg.id}">
                     ${msg.nickname}
                 </span>
                 <span class="chat-message-time">${time}</span>
@@ -575,6 +575,7 @@
         const userId = nicknameEl.dataset.userId;
         const guestSessionId = nicknameEl.dataset.guestSessionId;
         const targetNickname = nicknameEl.dataset.nickname;
+        const messageId = nicknameEl.dataset.messageId;
         
         // Remove existing menu
         const existingMenu = document.querySelector('.chat-user-menu');
@@ -591,10 +592,10 @@
         const menuItems = [];
         
         if (!isAdmin) {
-            menuItems.push({ text: '신고하기', action: () => reportUser(userId, guestSessionId, targetNickname) });
+            menuItems.push({ text: '신고하기', action: () => reportUser(userId, guestSessionId, targetNickname, messageId) });
             menuItems.push({ text: '차단하기', action: () => blockUser(userId, guestSessionId, targetNickname) });
         } else {
-            menuItems.push({ text: '신고하기', action: () => reportUser(userId, guestSessionId, targetNickname) });
+            menuItems.push({ text: '신고하기', action: () => reportUser(userId, guestSessionId, targetNickname, messageId) });
             menuItems.push({ text: '차단하기', action: () => blockUser(userId, guestSessionId, targetNickname) });
             menuItems.push({ text: '채팅금지', action: () => banUserChat(userId, guestSessionId, targetNickname) });
         }
@@ -621,35 +622,77 @@
     }
     
     // Report user
-    function reportUser(userId, guestSessionId, targetNickname) {
-        const messageId = prompt('신고할 메시지 ID를 입력하세요:');
-        if (!messageId) return;
+    function reportUser(userId, guestSessionId, targetNickname, messageId) {
+        // 신고 사유 입력 모달 생성
+        const modal = document.createElement('div');
+        modal.className = 'modal fade show';
+        modal.style.display = 'block';
+        modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">신고하기</h5>
+                        <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="reportReason" class="form-label">신고 사유를 작성해주세요</label>
+                            <textarea class="form-control" id="reportReason" rows="4" placeholder="신고 사유를 입력하세요..." maxlength="500"></textarea>
+                            <small class="text-muted">최대 500자까지 입력 가능합니다.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">취소</button>
+                        <button type="button" class="btn btn-primary" id="submitReport">신고하기</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
         
-        const reason = prompt('신고 사유를 입력하세요 (선택사항):');
-        
-        fetch(reportUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-            },
-            body: JSON.stringify({
-                message_id: messageId,
-                reason: reason || '',
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('신고가 접수되었습니다.');
-            } else {
-                alert(data.error || '신고 접수에 실패했습니다.');
+        // 신고 제출 버튼 클릭 이벤트
+        modal.querySelector('#submitReport').addEventListener('click', function() {
+            const reason = modal.querySelector('#reportReason').value.trim();
+            
+            if (!reason) {
+                alert('신고 사유를 입력해주세요.');
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('신고 접수에 실패했습니다.');
+            
+            fetch(reportUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    message_id: messageId,
+                    reason: reason,
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                modal.remove();
+                if (data.success) {
+                    alert('신고가 접수되었습니다.');
+                } else {
+                    alert(data.error || '신고 접수에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                modal.remove();
+                alert('신고 접수에 실패했습니다.');
+            });
+        });
+        
+        // 모달 외부 클릭 시 닫기
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
         });
     }
     
@@ -1862,7 +1905,7 @@
         
         messageDiv.innerHTML = `
             <div class="chat-message-header">
-                <span class="chat-message-nickname" data-user-id="${msg.user_id || ''}" data-guest-session-id="${msg.guest_session_id || ''}" data-nickname="${msg.nickname}">
+                <span class="chat-message-nickname" data-user-id="${msg.user_id || ''}" data-guest-session-id="${msg.guest_session_id || ''}" data-nickname="${msg.nickname}" data-message-id="${msg.id}">
                     ${msg.nickname}
                 </span>
                 <span class="chat-message-time">${time}</span>
@@ -1971,6 +2014,7 @@
         const userId = nicknameEl.dataset.userId;
         const guestSessionId = nicknameEl.dataset.guestSessionId;
         const targetNickname = nicknameEl.dataset.nickname;
+        const messageId = nicknameEl.dataset.messageId;
         
         const existingMenu = document.querySelector('.chat-user-menu');
         if (existingMenu) {
@@ -1986,10 +2030,10 @@
         const menuItems = [];
         
         if (!isAdmin) {
-            menuItems.push({ text: '신고하기', action: () => reportMobileUser(userId, guestSessionId, targetNickname) });
+            menuItems.push({ text: '신고하기', action: () => reportMobileUser(userId, guestSessionId, targetNickname, messageId) });
             menuItems.push({ text: '차단하기', action: () => blockMobileUser(userId, guestSessionId, targetNickname) });
         } else {
-            menuItems.push({ text: '신고하기', action: () => reportMobileUser(userId, guestSessionId, targetNickname) });
+            menuItems.push({ text: '신고하기', action: () => reportMobileUser(userId, guestSessionId, targetNickname, messageId) });
             menuItems.push({ text: '차단하기', action: () => blockMobileUser(userId, guestSessionId, targetNickname) });
             menuItems.push({ text: '채팅금지', action: () => banMobileUserChat(userId, guestSessionId, targetNickname) });
         }
@@ -2015,35 +2059,77 @@
     }
     
     // Report user (모바일용)
-    function reportMobileUser(userId, guestSessionId, targetNickname) {
-        const messageId = prompt('신고할 메시지 ID를 입력하세요:');
-        if (!messageId) return;
+    function reportMobileUser(userId, guestSessionId, targetNickname, messageId) {
+        // 신고 사유 입력 모달 생성
+        const modal = document.createElement('div');
+        modal.className = 'modal fade show';
+        modal.style.display = 'block';
+        modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">신고하기</h5>
+                        <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="reportReasonMobile" class="form-label">신고 사유를 작성해주세요</label>
+                            <textarea class="form-control" id="reportReasonMobile" rows="4" placeholder="신고 사유를 입력하세요..." maxlength="500"></textarea>
+                            <small class="text-muted">최대 500자까지 입력 가능합니다.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">취소</button>
+                        <button type="button" class="btn btn-primary" id="submitReportMobile">신고하기</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
         
-        const reason = prompt('신고 사유를 입력하세요 (선택사항):');
-        
-        fetch(reportUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-            },
-            body: JSON.stringify({
-                message_id: messageId,
-                reason: reason || '',
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('신고가 접수되었습니다.');
-            } else {
-                alert(data.error || '신고 접수에 실패했습니다.');
+        // 신고 제출 버튼 클릭 이벤트
+        modal.querySelector('#submitReportMobile').addEventListener('click', function() {
+            const reason = modal.querySelector('#reportReasonMobile').value.trim();
+            
+            if (!reason) {
+                alert('신고 사유를 입력해주세요.');
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('신고 접수에 실패했습니다.');
+            
+            fetch(reportUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    message_id: messageId,
+                    reason: reason,
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                modal.remove();
+                if (data.success) {
+                    alert('신고가 접수되었습니다.');
+                } else {
+                    alert(data.error || '신고 접수에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                modal.remove();
+                alert('신고 접수에 실패했습니다.');
+            });
+        });
+        
+        // 모달 외부 클릭 시 닫기
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
         });
     }
     

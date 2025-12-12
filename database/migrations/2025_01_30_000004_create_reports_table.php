@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('reported_user_id')->nullable()->constrained('users')->onDelete('cascade'); // 신고당한 사용자
             $table->string('reported_guest_session_id')->nullable(); // 신고당한 게스트 세션 ID
             $table->string('reported_nickname'); // 신고당한 사용자 닉네임
-            $table->string('report_type'); // 'post' 또는 'chat'
+            $table->string('report_type'); // 'post', 'comment', 또는 'chat'
             $table->foreignId('post_id')->nullable()->constrained('posts')->onDelete('cascade'); // 신고된 게시글
             $table->foreignId('chat_message_id')->nullable()->constrained('chat_messages')->onDelete('cascade'); // 신고된 채팅 메시지
             $table->text('reason')->nullable(); // 신고 사유
