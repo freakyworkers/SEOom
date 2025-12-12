@@ -500,8 +500,8 @@ Route::middleware('web')->group(function () {
             Route::post('/custom-pages/store', function (Request $request) use ($masterSite) {
                 return app(\App\Http\Controllers\AdminController::class)->storeCustomPage($request, $masterSite);
             })->name('master.admin.custom-pages.store');
-            Route::get('/custom-pages/{customPage}/edit', function (\App\Models\CustomPage $customPage) use ($masterSite) {
-                return app(\App\Http\Controllers\AdminController::class)->editCustomPage($masterSite, $customPage);
+            Route::get('/custom-pages/{customPage}/edit', function (Request $request, \App\Models\CustomPage $customPage) use ($masterSite) {
+                return app(\App\Http\Controllers\AdminController::class)->editCustomPage($masterSite, $customPage, $request);
             })->name('master.admin.custom-pages.edit');
             Route::put('/custom-pages/{customPage}', function (Request $request, \App\Models\CustomPage $customPage) use ($masterSite) {
                 return app(\App\Http\Controllers\AdminController::class)->updateCustomPage($request, $masterSite, $customPage);
