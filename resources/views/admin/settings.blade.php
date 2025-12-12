@@ -218,13 +218,14 @@
             overflow: hidden;
             width: 100%;
             position: relative;
+            height: 60px; /* 축소된 높이: 200px * 0.23 = 46px, 여유를 두고 60px */
         }
         .theme-preview {
             width: 1200px;
             transform: scale(0.23);
             transform-origin: left top;
-            margin-bottom: -924px; /* (1200px * 0.77) = 924px negative margin to compensate for scale */
             height: 200px;
+            display: block;
         }
         .theme-preview-container {
             width: 1200px;
