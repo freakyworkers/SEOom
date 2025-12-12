@@ -48,6 +48,8 @@
                             <td>
                                 @if($report->report_type === 'post')
                                     <span class="badge bg-info">게시글</span>
+                                @elseif($report->report_type === 'comment')
+                                    <span class="badge bg-success">댓글</span>
                                 @else
                                     <span class="badge bg-warning text-dark">채팅</span>
                                 @endif

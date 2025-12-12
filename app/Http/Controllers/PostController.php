@@ -1619,7 +1619,7 @@ class PostController extends Controller
     public function reportPost(Site $site, Post $post, Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'reason' => 'nullable|string|max:500',
+            'reason' => 'required|string|max:500',
         ]);
 
         if ($validator->fails()) {

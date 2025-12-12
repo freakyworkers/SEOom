@@ -36,6 +36,8 @@
                 <strong>신고 유형:</strong> 
                 @if($report->report_type === 'post')
                     <span class="badge bg-info">게시글</span>
+                @elseif($report->report_type === 'comment')
+                    <span class="badge bg-success">댓글</span>
                 @else
                     <span class="badge bg-warning text-dark">채팅</span>
                 @endif
@@ -66,6 +68,8 @@
                     @if($report->report_type === 'post' && $report->post)
                         <h6>{{ $report->post->title }}</h6>
                         <div>{!! $report->post->content !!}</div>
+                    @elseif($report->report_type === 'comment' && $report->comment)
+                        <p>{{ $report->comment->content }}</p>
                     @elseif($report->report_type === 'chat' && $report->chatMessage)
                         <p>{{ $report->chatMessage->message }}</p>
                         @if($report->chatMessage->attachment_path)

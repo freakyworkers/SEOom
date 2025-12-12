@@ -675,6 +675,12 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
     Route::post('/api/chat/report', [ChatController::class, 'reportMessage'])->name('api.chat.report');
     Route::post('/api/chat/block', [ChatController::class, 'blockUser'])->name('api.chat.block');
     
+    // Post and Comment Report API (for users - auth required)
+    Route::middleware('auth')->group(function () {
+        Route::post('/api/posts/{post}/report', [\App\Http\Controllers\PostController::class, 'reportPost'])->name('api.posts.report');
+        Route::post('/api/boards/{boardSlug}/posts/{post}/comments/{comment}/report', [\App\Http\Controllers\CommentController::class, 'reportComment'])->name('api.comments.report');
+    });
+    
     // SEO Routes (sitemap.xml과 robots.txt는 루트 레벨로 이동)
     Route::get('/robots.txt/download', [\App\Http\Controllers\RobotsController::class, 'download'])->name('robots.download');
     Route::get('/rss.xml', [\App\Http\Controllers\RssController::class, 'index'])->name('rss');
@@ -1001,12 +1007,6 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
         Route::put('/chat/settings', [AdminChatController::class, 'updateSettings'])->name('admin.chat.update-settings');
         Route::delete('/chat/messages/{message}', [AdminChatController::class, 'deleteMessage'])->name('admin.chat.delete-message');
         Route::post('/chat/ban-user', [AdminChatController::class, 'banUser'])->name('admin.chat.ban-user');
-        
-        // Post Report API
-        Route::post('/api/posts/{post}/report', [\App\Http\Controllers\PostController::class, 'reportPost'])->name('api.posts.report');
-        
-        // Comment Report API
-        Route::post('/api/boards/{boardSlug}/posts/{post}/comments/{comment}/report', [\App\Http\Controllers\CommentController::class, 'reportComment'])->name('api.comments.report');
         
         // Reports Management
         Route::get('/reports', [AdminReportController::class, 'index'])->name('admin.reports.index');
