@@ -84,11 +84,17 @@ class ChatController extends Controller
             ->get()
             ->reverse()
             ->map(function($msg) {
+                // user_id가 있으면 user의 현재 nickname을 사용, 없으면 저장된 nickname 사용
+                $displayNickname = $msg->nickname;
+                if ($msg->user_id && $msg->user) {
+                    $displayNickname = $msg->user->nickname ?? $msg->user->name ?? $msg->nickname;
+                }
+                
                 return [
                     'id' => $msg->id,
                     'user_id' => $msg->user_id,
                     'guest_session_id' => $msg->guest_session_id,
-                    'nickname' => $msg->nickname,
+                    'nickname' => $displayNickname,
                     'message' => $msg->message,
                     'content' => $msg->message, // alias for compatibility
                     'attachment_path' => $msg->attachment_path,
@@ -239,7 +245,7 @@ class ChatController extends Controller
         $reporterNickname = null;
         
         if ($reporterId) {
-            $reporterNickname = Auth::user()->name;
+            $reporterNickname = Auth::user()->nickname ?? Auth::user()->name;
         } else {
             $sessionId = session()->getId();
             $guestSession = ChatGuestSession::where('session_id', $sessionId)
