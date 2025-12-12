@@ -132,10 +132,23 @@
         .mobile-preview-wrapper {
             margin: 0 -1rem;
             padding: 0 1rem;
+            width: calc(100% + 2rem);
         }
         #mobile_header_preview {
             width: 375px !important;
-            max-width: 375px !important;
+            max-width: none !important;
+        }
+        .col-md-8 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .row > * {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
         }
     }
     .size-input {
@@ -815,8 +828,8 @@
                 <div class="col-md-8">
                     <div class="mb-3">
                         <label class="form-label">미리보기</label>
-                        <div class="mobile-preview-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
-                            <div id="mobile_header_preview" style="border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; min-height: 667px; width: 375px; max-width: 100%; background-color: #f8f9fa; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <div class="mobile-preview-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%;">
+                            <div id="mobile_header_preview" style="border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; min-height: 667px; width: 375px; background-color: #f8f9fa; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
                                 <div class="text-center text-muted">
                                     <i class="bi bi-phone"></i> 모바일 헤더 미리보기
                                 </div>
