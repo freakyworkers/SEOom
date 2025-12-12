@@ -18,7 +18,8 @@
     <div class="card-body">
         <form id="bannersForm">
             @csrf
-            <div class="table-responsive">
+            {{-- 데스크탑 버전 (테이블) --}}
+            <div class="table-responsive d-none d-md-block">
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
@@ -136,7 +137,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-4">
+                                <td colspan="7" class="text-center py-4">
                                     <i class="bi bi-inbox" style="font-size: 3rem; color: #dee2e6;"></i>
                                     <p class="mt-3 text-muted">등록된 배너가 없습니다.</p>
                                 </td>
@@ -144,6 +145,144 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            {{-- 모바일 버전 (카드 레이아웃) --}}
+            <div class="d-md-none">
+                <div class="d-grid gap-3" id="bannersCardBody">
+                    @forelse($banners as $banner)
+                        <div class="card" data-banner-id="{{ $banner->id }}">
+                            <div class="card-body">
+                                {{-- 이미지/HTML 섹션 --}}
+                                <div class="mb-3 text-center">
+                                    @if($banner->type === 'html')
+                                        <div class="banner-html-wrapper" style="position: relative; display: inline-block; max-width: 100%; max-height: 150px; overflow: auto; border: 1px solid #dee2e6; border-radius: 4px; padding: 5px;">
+                                            <div class="banner-html-preview" data-banner-id="{{ $banner->id }}">
+                                                {!! $banner->html_code !!}
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="banner-image-wrapper" style="position: relative; display: inline-block;">
+                                            <img src="{{ asset('storage/' . $banner->image_path) }}" 
+                                                 alt="배너 이미지" 
+                                                 class="banner-preview-image" 
+                                                 style="max-width: 100%; max-height: 150px; width: auto; height: auto; cursor: pointer; border: 1px solid #dee2e6; border-radius: 4px;"
+                                                 data-banner-id="{{ $banner->id }}">
+                                            <input type="file" 
+                                                   class="banner-image-input d-none" 
+                                                   accept="image/*"
+                                                   data-banner-id="{{ $banner->id }}">
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {{-- 링크/HTML 코드 섹션 --}}
+                                <div class="mb-3">
+                                    <label class="form-label small mb-1">링크/HTML 코드</label>
+                                    @if($banner->type === 'html')
+                                        <textarea class="form-control form-control-sm banner-html-input" 
+                                                  name="html_codes[{{ $banner->id }}]"
+                                                  rows="5"
+                                                  placeholder="HTML 코드를 입력하세요.">{{ $banner->html_code ?? '' }}</textarea>
+                                    @else
+                                        <input type="text" 
+                                               class="form-control form-control-sm banner-link-input" 
+                                               name="links[{{ $banner->id }}]"
+                                               value="{{ $banner->link ?? '' }}" 
+                                               placeholder="https://example.com">
+                                    @endif
+                                </div>
+
+                                {{-- 새 창으로 띄우기 --}}
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               name="open_new_windows[{{ $banner->id }}]"
+                                               value="1"
+                                               id="open_new_window_mobile_{{ $banner->id }}"
+                                               {{ $banner->open_new_window ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="open_new_window_mobile_{{ $banner->id }}">
+                                            새 창으로 띄우기
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {{-- 등록시각 --}}
+                                <div class="mb-3">
+                                    <label class="form-label small mb-1">등록시각</label>
+                                    <div class="text-muted small">{{ $banner->created_at->format('Y.m.d H:i:s') }}</div>
+                                </div>
+
+                                {{-- 정렬 버튼 --}}
+                                <div class="mb-3">
+                                    <label class="form-label small mb-1">정렬</label>
+                                    <div class="btn-group w-100" role="group">
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-secondary order-up-btn" 
+                                                data-banner-id="{{ $banner->id }}"
+                                                {{ $loop->first ? 'disabled' : '' }}>
+                                            <i class="bi bi-arrow-up"></i> 위로
+                                        </button>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-secondary order-down-btn" 
+                                                data-banner-id="{{ $banner->id }}"
+                                                {{ $loop->last ? 'disabled' : '' }}>
+                                            <i class="bi bi-arrow-down"></i> 아래로
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {{-- 고정 설정 --}}
+                                <div class="mb-3">
+                                    <label class="form-label small mb-1">고정 설정</label>
+                                    <div class="d-flex flex-column gap-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input banner-pinned-top-checkbox" 
+                                                   type="checkbox" 
+                                                   name="is_pinned_top[{{ $banner->id }}]"
+                                                   value="1"
+                                                   id="is_pinned_top_mobile_{{ $banner->id }}"
+                                                   data-banner-id="{{ $banner->id }}"
+                                                   {{ $banner->is_pinned_top ?? false ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="is_pinned_top_mobile_{{ $banner->id }}">
+                                                최상단 고정
+                                            </label>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <label for="pinned_position_mobile_{{ $banner->id }}" class="mb-0 small">위치:</label>
+                                            <input type="number" 
+                                                   class="form-control form-control-sm text-center banner-pinned-position-input" 
+                                                   name="pinned_position[{{ $banner->id }}]"
+                                                   id="pinned_position_mobile_{{ $banner->id }}"
+                                                   data-banner-id="{{ $banner->id }}"
+                                                   value="{{ $banner->pinned_position ?? 0 }}" 
+                                                   min="0"
+                                                   style="width: 80px;"
+                                                   placeholder="0">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- 삭제 버튼 --}}
+                                <div class="d-grid">
+                                    <button type="button" 
+                                            class="btn btn-sm btn-danger delete-banner-btn" 
+                                            data-banner-id="{{ $banner->id }}">
+                                        <i class="bi bi-trash"></i> 삭제
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="card">
+                            <div class="card-body text-center py-5">
+                                <i class="bi bi-inbox" style="font-size: 3rem; color: #dee2e6;"></i>
+                                <p class="mt-3 text-muted">등록된 배너가 없습니다.</p>
+                            </div>
+                        </div>
+                    @endforelse
+                </div>
             </div>
             
             <div class="mt-4">
@@ -224,12 +363,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const bannerLocation = '{{ $location }}';
     const addBannerModal = new bootstrap.Modal(document.getElementById('addBannerModal'));
     
-    // 배너 이미지 클릭 시 파일 선택
+    // 배너 이미지 클릭 시 파일 선택 (데스크탑 + 모바일)
     document.querySelectorAll('.banner-preview-image').forEach(function(img) {
         img.addEventListener('click', function() {
             const bannerId = this.getAttribute('data-banner-id');
             const fileInput = document.querySelector(`.banner-image-input[data-banner-id="${bannerId}"]`);
-            fileInput.click();
+            if (fileInput) {
+                fileInput.click();
+            }
         });
     });
     
@@ -312,10 +453,42 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // 위치 입력칸 기본값 설정 (0으로 초기화)
+    // 위치 입력칸 기본값 설정 (0으로 초기화) - 데스크탑 + 모바일
     document.querySelectorAll('.banner-pinned-position-input').forEach(function(input) {
         if (!input.value || input.value === '') {
             input.value = '0';
+        }
+    });
+
+    // 데스크탑과 모바일 체크박스 동기화
+    document.querySelectorAll('.banner-pinned-top-checkbox').forEach(function(checkbox) {
+        const bannerId = checkbox.getAttribute('data-banner-id');
+        const desktopCheckbox = document.getElementById(`is_pinned_top_${bannerId}`);
+        const mobileCheckbox = document.getElementById(`is_pinned_top_mobile_${bannerId}`);
+        
+        if (desktopCheckbox && mobileCheckbox) {
+            desktopCheckbox.addEventListener('change', function() {
+                mobileCheckbox.checked = this.checked;
+            });
+            mobileCheckbox.addEventListener('change', function() {
+                desktopCheckbox.checked = this.checked;
+            });
+        }
+    });
+
+    // 새 창으로 띄우기 체크박스 동기화
+    document.querySelectorAll('[id^="open_new_window_"]').forEach(function(checkbox) {
+        const bannerId = checkbox.id.replace('open_new_window_', '').replace('_mobile', '');
+        const desktopCheckbox = document.getElementById(`open_new_window_${bannerId}`);
+        const mobileCheckbox = document.getElementById(`open_new_window_mobile_${bannerId}`);
+        
+        if (desktopCheckbox && mobileCheckbox && desktopCheckbox !== checkbox && mobileCheckbox !== checkbox) {
+            desktopCheckbox.addEventListener('change', function() {
+                mobileCheckbox.checked = this.checked;
+            });
+            mobileCheckbox.addEventListener('change', function() {
+                desktopCheckbox.checked = this.checked;
+            });
         }
     });
     
@@ -470,8 +643,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // location 추가
         formData.append('location', '{{ $location }}');
         
-        // 각 banner_id를 개별적으로 추가
-        bannerIds.forEach(function(bannerId) {
+        // 각 banner_id를 개별적으로 추가 (데스크탑 + 모바일 모두 포함)
+        const allBannerElements = document.querySelectorAll('[data-banner-id]');
+        const uniqueBannerIds = new Set();
+        allBannerElements.forEach(function(element) {
+            const bannerId = element.getAttribute('data-banner-id');
+            if (bannerId) {
+                uniqueBannerIds.add(bannerId);
+            }
+        });
+        uniqueBannerIds.forEach(function(bannerId) {
             formData.append('banner_ids[]', bannerId);
         });
         
