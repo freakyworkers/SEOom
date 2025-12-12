@@ -38,7 +38,8 @@
 
 @if($boards->count() > 0)
     <div class="card">
-        <div class="table-responsive">
+        {{-- 데스크탑 버전 (테이블) --}}
+        <div class="table-responsive d-none d-md-block">
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
@@ -75,13 +76,13 @@
                                 <span class="badge bg-primary">{{ $board->activePosts()->count() }}</span>
                             </td>
                             <td>
-                                <div class="btn-group btn-group-sm">
+                                <div class="d-flex gap-2">
                                     <a href="{{ route('boards.show', ['site' => $site->slug, 'slug' => $board->slug]) }}" 
-                                       class="btn btn-outline-info" title="보기" target="_blank">
+                                       class="btn btn-outline-info btn-sm board-action-btn" title="보기" target="_blank">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                     <a href="{{ route('boards.edit', ['site' => $site->slug, 'board' => $board->id]) }}" 
-                                       class="btn btn-outline-primary" title="수정">
+                                       class="btn btn-outline-primary btn-sm board-action-btn" title="수정">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <form action="{{ route('boards.destroy', ['site' => $site->slug, 'board' => $board->id]) }}" 
@@ -90,7 +91,7 @@
                                           onsubmit="return confirm('정말 삭제하시겠습니까?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger" title="삭제">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm board-action-btn" title="삭제">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -100,6 +101,66 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+        
+        {{-- 모바일 버전 (카드 레이아웃) --}}
+        <div class="d-md-none">
+            <div class="d-grid gap-3 p-3">
+                @foreach($boards as $board)
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">{{ $board->name }}</h6>
+                                    <small class="text-muted d-block">
+                                        <code class="small">{{ $board->slug }}</code>
+                                    </small>
+                                </div>
+                                <div>
+                                    @if($board->is_active)
+                                        <span class="badge bg-success">활성</span>
+                                    @else
+                                        <span class="badge bg-secondary">비활성</span>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            @if($board->description)
+                                <p class="small text-muted mb-2">{{ Str::limit($board->description, 100) }}</p>
+                            @endif
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-secondary">ID: {{ $board->id }}</span>
+                                    <span class="badge bg-info">정렬: {{ $board->order }}</span>
+                                    <span class="badge bg-primary">게시글: {{ $board->activePosts()->count() }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('boards.show', ['site' => $site->slug, 'slug' => $board->slug]) }}" 
+                                   class="btn btn-outline-info btn-sm flex-fill board-action-btn" title="보기" target="_blank">
+                                    <i class="bi bi-eye me-1"></i>보기
+                                </a>
+                                <a href="{{ route('boards.edit', ['site' => $site->slug, 'board' => $board->id]) }}" 
+                                   class="btn btn-outline-primary btn-sm flex-fill board-action-btn" title="수정">
+                                    <i class="bi bi-pencil me-1"></i>수정
+                                </a>
+                                <form action="{{ route('boards.destroy', ['site' => $site->slug, 'board' => $board->id]) }}" 
+                                      method="POST" 
+                                      class="flex-fill"
+                                      onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-danger btn-sm w-100 board-action-btn" title="삭제">
+                                        <i class="bi bi-trash me-1"></i>삭제
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
         @if($boards->hasPages())
             <div class="card-footer bg-white">
@@ -127,6 +188,16 @@
         </div>
     </div>
 @endif
+
+@push('styles')
+<style>
+.board-action-btn {
+    border-radius: 0.375rem !important;
+    min-width: 38px;
+    padding: 0.375rem 0.75rem;
+}
+</style>
+@endpush
 
 @push('scripts')
 <script>
