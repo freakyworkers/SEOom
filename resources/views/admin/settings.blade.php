@@ -133,13 +133,16 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            overflow: hidden;
+            position: relative;
+            height: 160px; /* 축소된 높이: 667px * 0.24 = 160px */
         }
         #mobile_header_preview {
             width: 375px !important;
             max-width: 375px !important;
-            margin: 0 auto;
+            transform: scale(0.76);
+            transform-origin: left top;
+            margin: 0;
         }
         .col-md-8 {
             padding-left: 0.5rem;
