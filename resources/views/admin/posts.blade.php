@@ -279,109 +279,105 @@
 
             <!-- 모바일 버전 카드 레이아웃 -->
             <div class="d-md-none">
-                <div class="d-grid gap-3">
+                <div class="d-grid gap-2">
                     @foreach($posts as $post)
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="badge bg-secondary">ID: {{ $post->id }}</span>
-                                    @if($post->is_pinned)
-                                        <span class="badge bg-warning text-dark">고정</span>
-                                    @endif
-                                    @if($post->is_notice)
-                                        <span class="badge bg-info">공지</span>
-                                    @endif
-                                    @if(!$post->board)
-                                        <span class="badge bg-danger">삭제된 게시판</span>
-                                    @endif
+                        <div class="card border">
+                            <div class="card-body p-3">
+                                <!-- 헤더: ID와 배지 -->
+                                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-1">
+                                    <div class="d-flex align-items-center gap-1 flex-wrap">
+                                        <span class="badge bg-secondary" style="font-size: 0.7rem;">{{ $post->id }}</span>
+                                        @if($post->is_pinned)
+                                            <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">고정</span>
+                                        @endif
+                                        @if($post->is_notice)
+                                            <span class="badge bg-info" style="font-size: 0.7rem;">공지</span>
+                                        @endif
+                                        @if(!$post->board)
+                                            <span class="badge bg-danger" style="font-size: 0.7rem;">삭제된 게시판</span>
+                                        @endif
+                                    </div>
+                                    <div class="small text-muted">{{ $post->created_at->format('m-d H:i') }}</div>
                                 </div>
-                            </div>
-                            <div class="card-body">
+
                                 <!-- 제목 -->
-                                <div class="mb-3">
-                                    <label class="form-label small text-muted mb-1">제목</label>
+                                <div class="mb-2">
                                     @if($post->board)
-                                        <div>
-                                            <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
-                                               class="text-decoration-none text-dark fw-bold">
-                                                {{ Str::limit($post->title, 50) }}
-                                            </a>
-                                        </div>
+                                        <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
+                                           class="text-decoration-none text-dark fw-bold d-block" style="font-size: 0.95rem; line-height: 1.4;">
+                                            {{ Str::limit($post->title, 60) }}
+                                        </a>
                                     @else
-                                        <div class="text-muted">
-                                            {{ Str::limit($post->title, 50) }}
+                                        <div class="text-muted fw-bold" style="font-size: 0.95rem; line-height: 1.4;">
+                                            {{ Str::limit($post->title, 60) }}
+                                            <small class="text-danger">(삭제된 게시판)</small>
                                         </div>
                                     @endif
                                 </div>
 
-                                <!-- 게시판 -->
-                                <div class="mb-3">
-                                    <label class="form-label small text-muted mb-1">게시판</label>
-                                    <select class="form-select form-select-sm board-select-mobile" 
-                                            data-post-id="{{ $post->id }}" 
-                                            data-current-board="{{ $post->board_id }}">
-                                        @foreach($boards as $board)
-                                            <option value="{{ $board->id }}" {{ $post->board_id == $board->id ? 'selected' : '' }}>
-                                                {{ $board->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <!-- 작성자 -->
-                                <div class="mb-3">
-                                    <label class="form-label small text-muted mb-1">작성자</label>
-                                    <div class="small">{{ $post->user->name ?? '알 수 없음' }}</div>
-                                </div>
-
-                                <!-- 조회수 -->
-                                <div class="mb-3">
-                                    <label class="form-label small text-muted mb-1">조회수</label>
-                                    <div class="input-group input-group-sm">
-                                        <input type="number" 
-                                               class="form-control views-input-mobile" 
-                                               value="{{ $post->views }}" 
-                                               min="0"
-                                               data-post-id="{{ $post->id }}"
-                                               style="text-align: right;">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-eye"></i>
-                                        </span>
+                                <!-- 정보 그리드: 게시판, 작성자, 조회수 -->
+                                <div class="row g-2 mb-2">
+                                    <div class="col-12">
+                                        <select class="form-select form-select-sm board-select-mobile" 
+                                                data-post-id="{{ $post->id }}" 
+                                                data-current-board="{{ $post->board_id }}"
+                                                style="font-size: 0.85rem;">
+                                            @foreach($boards as $board)
+                                                <option value="{{ $board->id }}" {{ $post->board_id == $board->id ? 'selected' : '' }}>
+                                                    {{ $board->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="small text-muted" style="font-size: 0.75rem;">작성자</div>
+                                        <div class="small fw-medium" style="font-size: 0.85rem;">{{ $post->user->name ?? '알 수 없음' }}</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="small text-muted mb-1" style="font-size: 0.75rem;">조회수</div>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" 
+                                                   class="form-control views-input-mobile" 
+                                                   value="{{ $post->views }}" 
+                                                   min="0"
+                                                   data-post-id="{{ $post->id }}"
+                                                   style="text-align: right; font-size: 0.85rem; padding: 0.25rem 0.5rem;">
+                                            <span class="input-group-text" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                                                <i class="bi bi-eye"></i>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- 작성일 -->
-                                <div class="mb-3">
-                                    <label class="form-label small text-muted mb-1">작성일</label>
-                                    <div class="small text-muted">{{ $post->created_at->format('Y-m-d H:i') }}</div>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="d-grid gap-2">
+                                <!-- 작업 버튼 -->
+                                <div class="d-flex gap-2 mt-2">
                                     @if($post->board)
                                         <a href="{{ route('posts.edit', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
-                                           class="btn btn-outline-primary btn-sm">
-                                            <i class="bi bi-pencil me-1"></i>수정
+                                           class="btn btn-outline-primary btn-sm flex-fill" style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                            <i class="bi bi-pencil"></i> 수정
                                         </a>
                                         <form action="{{ route('posts.destroy', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
                                               method="POST" 
+                                              class="flex-fill"
                                               onsubmit="return confirm('정말 삭제하시겠습니까?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                                                <i class="bi bi-trash me-1"></i>삭제
+                                            <button type="submit" class="btn btn-outline-danger btn-sm w-100" style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                                <i class="bi bi-trash"></i> 삭제
                                             </button>
                                         </form>
                                     @else
                                         <button type="button" 
-                                                class="btn btn-outline-secondary btn-sm" 
-                                                disabled>
-                                            <i class="bi bi-pencil me-1"></i>수정 불가 (게시판 삭제됨)
+                                                class="btn btn-outline-secondary btn-sm flex-fill" 
+                                                disabled
+                                                style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                            <i class="bi bi-pencil"></i> 수정 불가
                                         </button>
                                         <button type="button" 
-                                                class="btn btn-outline-secondary btn-sm" 
-                                                onclick="alert('게시판이 삭제되어 삭제할 수 없습니다.');">
-                                            <i class="bi bi-trash me-1"></i>삭제 불가
+                                                class="btn btn-outline-secondary btn-sm flex-fill" 
+                                                onclick="alert('게시판이 삭제되어 삭제할 수 없습니다.');"
+                                                style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                            <i class="bi bi-trash"></i> 삭제 불가
                                         </button>
                                     @endif
                                 </div>
@@ -413,17 +409,46 @@
 
 @push('styles')
 <style>
-    /* 모바일 드롭다운 텍스트 잘림 방지 */
+    /* 모바일 최적화 스타일 */
     @media (max-width: 767.98px) {
+        /* 카드 간격 최소화 */
+        .d-md-none .d-grid {
+            gap: 0.75rem !important;
+        }
+        
+        /* 카드 스타일 최적화 */
+        .d-md-none .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* 드롭다운 텍스트 잘림 방지 */
         .board-select-mobile {
-            font-size: 14px;
-            padding: 0.5rem;
+            font-size: 0.85rem;
+            padding: 0.375rem 0.5rem;
         }
         .board-select-mobile option {
-            font-size: 14px;
+            font-size: 0.85rem;
             padding: 0.5rem;
             white-space: normal;
             overflow: visible;
+        }
+        
+        /* 입력 필드 최적화 */
+        .views-input-mobile {
+            font-size: 0.85rem !important;
+        }
+        
+        /* 버튼 최적화 */
+        .d-md-none .btn-sm {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.5rem;
+        }
+        
+        /* 배지 최적화 */
+        .d-md-none .badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
         }
     }
 </style>
