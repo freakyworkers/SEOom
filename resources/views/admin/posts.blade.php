@@ -178,16 +178,29 @@
                             <tr>
                                 <td>{{ $post->id }}</td>
                                 <td>
-                                    <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
-                                       class="text-decoration-none text-dark">
-                                        {{ Str::limit($post->title, 50) }}
-                                        @if($post->is_pinned)
-                                            <span class="badge bg-warning text-dark">고정</span>
-                                        @endif
-                                        @if($post->is_notice)
-                                            <span class="badge bg-info">공지</span>
-                                        @endif
-                                    </a>
+                                    @if($post->board)
+                                        <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
+                                           class="text-decoration-none text-dark">
+                                            {{ Str::limit($post->title, 50) }}
+                                            @if($post->is_pinned)
+                                                <span class="badge bg-warning text-dark">고정</span>
+                                            @endif
+                                            @if($post->is_notice)
+                                                <span class="badge bg-info">공지</span>
+                                            @endif
+                                        </a>
+                                    @else
+                                        <span class="text-muted">
+                                            {{ Str::limit($post->title, 50) }}
+                                            @if($post->is_pinned)
+                                                <span class="badge bg-warning text-dark">고정</span>
+                                            @endif
+                                            @if($post->is_notice)
+                                                <span class="badge bg-info">공지</span>
+                                            @endif
+                                            <small class="text-danger">(삭제된 게시판)</small>
+                                        </span>
+                                    @endif
                                 </td>
                                 <td>
                                     <select class="form-select form-select-sm board-select" 
@@ -202,7 +215,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <small>{{ $post->user->name }}</small>
+                                    <small>{{ $post->user->name ?? '알 수 없음' }}</small>
                                 </td>
                                 <td>
                                     <div class="input-group input-group-sm" style="max-width: 120px;">
@@ -222,16 +235,30 @@
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <a href="{{ route('posts.edit', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
-                                           class="btn btn-outline-primary btn-sm rounded" 
-                                           title="수정"
-                                           style="border-radius: 0.375rem !important;">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <form action="{{ route('posts.destroy', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
-                                              method="POST" 
-                                              class="d-inline"
-                                              onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                        @if($post->board)
+                                            <a href="{{ route('posts.edit', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
+                                               class="btn btn-outline-primary btn-sm rounded" 
+                                               title="수정"
+                                               style="border-radius: 0.375rem !important;">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form action="{{ route('posts.destroy', ['site' => $site->slug, 'boardSlug' => $post->board->slug, 'post' => $post->id]) }}" 
+                                                  method="POST" 
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                        @else
+                                            <button type="button" 
+                                                    class="btn btn-outline-secondary btn-sm rounded" 
+                                                    title="수정 불가 (게시판 삭제됨)"
+                                                    disabled
+                                                    style="border-radius: 0.375rem !important;">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <form action="#" 
+                                                  method="POST" 
+                                                  class="d-inline"
+                                                  onsubmit="alert('게시판이 삭제되어 삭제할 수 없습니다.'); return false;">
+                                        @endif
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 
