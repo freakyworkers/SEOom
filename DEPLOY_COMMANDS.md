@@ -2,13 +2,20 @@
 
 **GitHub 푸시 완료! 이제 서버에서 다음 명령어를 실행하세요!**
 
+## 📋 서버 정보
+
+- **AWS EC2 퍼블릭 IPv4 주소:** `52.79.104.130`
+- **키 파일 경로:** `C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem`
+- **마스터 사이트:** `seoomweb.com`
+- **마스터 계정:** `master@seoom.com` / `Qkqh090909!`
+
 ---
 
 ## 📋 서버 배포 명령어 (순서대로 실행)
 
 ### 1단계: 서버 접속
 ```bash
-ssh -i "키파일경로.pem" ubuntu@서버IP주소
+ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.104.130
 ```
 
 ### 2단계: 프로젝트 폴더로 이동
@@ -80,7 +87,9 @@ sudo bash deploy.sh
    - 도메인으로 접속: `https://seoomweb.com`
 
 2. **마스터 콘솔 로그인 확인**
-   - `https://도메인주소/master/login` 접속
+   - `https://seoomweb.com/master/login` 접속
+   - 이메일: `master@seoom.com`
+   - 비밀번호: `Qkqh090909!`
 
 3. **컨텍트폼 드롭다운 테스트**
    - 관리자 → 메인 위젯 → 위젯 수정 → 컨텍트폼 선택

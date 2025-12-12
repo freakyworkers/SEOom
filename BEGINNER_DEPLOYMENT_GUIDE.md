@@ -266,7 +266,7 @@ Cloudflare는 **완전 무료**예요! 카드 정보도 필요 없어요! 🎉
    - 인스턴스 상태가 **"실행 중"**이 될 때까지 기다리기 (1-2분)
 3. 인스턴스를 클릭하면 상세 정보가 보여요
 4. **"퍼블릭 IPv4 주소"** 복사해두세요!
-   - 예: `54.123.45.67`
+   - 실제 IP: `52.79.104.130`
    - 이게 서버 주소예요!
    - ⚠️ **중요:** 이 주소를 메모해두세요!
 
@@ -306,9 +306,9 @@ Cloudflare는 **완전 무료**예요! 카드 정보도 필요 없어요! 🎉
    ssh -i "C:\Users\사용자이름\Downloads\seoom-key.pem" ubuntu@퍼블릭IP주소
    ```
    - `사용자이름`과 경로를 실제 경로로 변경하세요
-   - **예시 (키 파일이 `C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem`에 있고, IP가 `54.123.45.67`인 경우):**
+   - **실제 서버 정보:**
      ```powershell
-     ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@54.123.45.67
+     ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.104.130
      ```
 
 5. **첫 접속 시 확인 메시지**
@@ -338,7 +338,7 @@ Cloudflare는 **완전 무료**예요! 카드 정보도 필요 없어요! 🎉
 
 4. **PuTTY로 접속**
    - PuTTY 실행
-   - **"Host Name"**: `ubuntu@퍼블릭IP주소` 입력
+   - **"Host Name"**: `ubuntu@52.79.104.130` 입력
    - **"Port"**: `22`
    - 왼쪽 메뉴에서 **"Connection"** → **"SSH"** → **"Auth"** 클릭
    - **"Browse"** 클릭 → `.ppk` 파일 선택
@@ -354,8 +354,8 @@ Cloudflare는 **완전 무료**예요! 카드 정보도 필요 없어요! 🎉
 icacls "C:\Users\사용자이름\Downloads\seoom-key.pem" /inheritance:r
 icacls "C:\Users\사용자이름\Downloads\seoom-key.pem" /grant:r "%USERNAME%:R"
 
-# 서버 접속
-ssh -i "C:\Users\사용자이름\Downloads\seoom-key.pem" ubuntu@퍼블릭IP주소
+# 서버 접속 (실제 서버 정보)
+ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.104.130
 ```
 
 ### 6-2. 서버 업데이트
@@ -660,19 +660,19 @@ sudo systemctl restart apache2
 
 **A 레코드 추가:**
 - **"이름"**: `@` (또는 비워두기)
-- **"IPv4 주소"**: AWS EC2 퍼블릭 IP 주소 입력
+- **"IPv4 주소"**: `52.79.104.130` 입력
 - **"프록시 상태"**: 🟠 **프록시됨** (주황색 구름)
 - **"저장"** 클릭
 
 **A 레코드 추가 (www):**
 - **"이름"**: `www`
-- **"IPv4 주소"**: AWS EC2 퍼블릭 IP 주소 입력
+- **"IPv4 주소"**: `52.79.104.130` 입력
 - **"프록시 상태"**: 🟠 **프록시됨**
 - **"저장"** 클릭
 
 **와일드카드 A 레코드 추가 (서브도메인용):**
 - **"이름"**: `*`
-- **"IPv4 주소"**: AWS EC2 퍼블릭 IP 주소 입력
+- **"IPv4 주소"**: `52.79.104.130` 입력
 - **"프록시 상태"**: 🟠 **프록시됨**
 - **"저장"** 클릭
 
@@ -698,10 +698,10 @@ sudo systemctl restart apache2
 
 ### 8-2. 마스터 로그인 확인
 
-1. `https://도메인주소/master/login` 접속
+1. `https://seoomweb.com/master/login` 접속
 2. 마스터 계정으로 로그인
-   - 이메일: `admin@seoom.com`
-   - 비밀번호: `admin123`
+   - 이메일: `master@seoom.com`
+   - 비밀번호: `Qkqh090909!`
    - ⚠️ **보안을 위해 비밀번호를 변경하세요!**
 
 ### 8-3. 사이트 생성 테스트

@@ -30,15 +30,10 @@ icacls "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" /grant:r "%USER
 
 ### 2단계: 서버 접속
 
-**퍼블릭 IP 주소를 확인한 후** 다음 명령어를 실행하세요:
+**서버 접속 명령어:**
 
 ```powershell
-ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@퍼블릭IP주소
-```
-
-**예시 (퍼블릭 IP가 54.123.45.67인 경우):**
-```powershell
-ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@54.123.45.67
+ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.104.130
 ```
 
 **실행 방법:**
@@ -58,16 +53,12 @@ ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@54.123.4
 
 ---
 
-## 🔍 퍼블릭 IP 주소 확인 방법
+## 🔍 서버 정보
 
-아직 퍼블릭 IP 주소를 모르시나요?
-
-1. AWS EC2 콘솔 접속
-2. **"인스턴스"** 메뉴 클릭
-3. `seoom-builder` 인스턴스 찾기
-4. 인스턴스를 클릭하면 상세 정보가 보여요
-5. **"퍼블릭 IPv4 주소"** 복사
-   - 예: `54.123.45.67`
+- **AWS EC2 퍼블릭 IPv4 주소:** `52.79.104.130`
+- **키 파일 경로:** `C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem`
+- **마스터 사이트:** `seoomweb.com`
+- **마스터 계정:** `master@seoom.com` / `Qkqh090909!`
 
 ---
 
@@ -80,13 +71,8 @@ ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@54.123.4
 icacls "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" /inheritance:r
 icacls "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" /grant:r "%USERNAME%:R"
 
-# 2단계: 서버 접속 (퍼블릭IP주소를 실제 IP로 변경!)
-ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@퍼블릭IP주소
-```
-
-**예시 (IP가 54.123.45.67인 경우):**
-```powershell
-ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@54.123.45.67
+# 2단계: 서버 접속
+ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.104.130
 ```
 
 ---
