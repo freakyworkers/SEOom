@@ -391,6 +391,19 @@ $(document).ready(function() {
     $('#ranksForm').on('submit', function(e) {
         e.preventDefault();
         e.stopPropagation();
+        saveRanks();
+        return false;
+    });
+    
+    // 저장 버튼 클릭 이벤트 (추가 보장)
+    $('button[type="submit"]').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $('#ranksForm').trigger('submit');
+        return false;
+    });
+    
+    function saveRanks() {
         
         // 모든 required 속성 제거 (validation 오류 방지)
         $('#ranksForm input[required]').removeAttr('required');
