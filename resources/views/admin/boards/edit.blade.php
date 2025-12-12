@@ -1431,6 +1431,7 @@
         const excludeFromRssCheckbox = document.getElementById('exclude_from_rss');
         const preventDragCheckbox = document.getElementById('prevent_drag');
         const enableAttachmentsCheckbox = document.getElementById('enable_attachments');
+        const enableShareCheckbox = document.getElementById('enable_share');
         const enableAuthorCommentAdoptCheckbox = document.getElementById('enable_author_comment_adopt');
         const enableAdminCommentAdoptCheckbox = document.getElementById('enable_admin_comment_adopt');
         
@@ -1453,6 +1454,7 @@
         formData.append('exclude_from_rss', excludeFromRssCheckbox?.checked ? '1' : '0');
         formData.append('prevent_drag', preventDragCheckbox?.checked ? '1' : '0');
         formData.append('enable_attachments', enableAttachmentsCheckbox?.checked ? '1' : '0');
+        formData.append('enable_share', enableShareCheckbox?.checked ? '1' : '0');
         formData.append('enable_author_comment_adopt', enableAuthorCommentAdoptCheckbox?.checked ? '1' : '0');
         formData.append('enable_admin_comment_adopt', enableAdminCommentAdoptCheckbox?.checked ? '1' : '0');
         const savedPostsEnabledCheckbox = document.getElementById('saved_posts_enabled');
