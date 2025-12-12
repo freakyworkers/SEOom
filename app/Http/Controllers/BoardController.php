@@ -725,9 +725,24 @@ class BoardController extends Controller
         }
         $enableShareValue = $request->input('enable_share', '0');
         $updateData['enable_share'] = ($enableShareValue == '1' || $enableShareValue === true || $enableShareValue === 'true' || $enableShareValue === 1);
+        
+        // 디버깅: enable_share 값 로깅
+        \Log::info('enable_share update', [
+            'request_value' => $request->input('enable_share'),
+            'parsed_value' => $enableShareValue,
+            'final_value' => $updateData['enable_share'],
+            'board_id' => $board->id
+        ]);
 
         $board->update($updateData);
         $board->refresh();
+        
+        // 디버깅: 업데이트 후 실제 DB 값 확인
+        \Log::info('enable_share after update', [
+            'board_id' => $board->id,
+            'enable_share' => $board->enable_share,
+            'enable_share_type' => gettype($board->enable_share)
+        ]);
 
         // AJAX 요청인 경우 JSON 응답
         if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
