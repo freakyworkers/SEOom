@@ -1360,62 +1360,110 @@
         <form method="POST" action="{{ route('admin.settings.update', ['site' => $site->slug]) }}" id="featureForm">
             @csrf
             @method('PUT')
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>방문자수 표기</th>
-                            <th>방문자수 변경</th>
-                            <th>이메일 알림</th>
-                            <th>일반 로그인</th>
-                            <th style="width: 100px;">설정</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="show_visitor_count" id="show_visitor_count" value="1" {{ (!isset($settings['show_visitor_count']) || $settings['show_visitor_count'] == '1') ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="show_visitor_count">
-                                        방문자수 표기
-                                    </label>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <input type="number" 
-                                           class="form-control form-control-sm" 
-                                           name="visitor_count_adjust" 
-                                           id="visitor_count_adjust" 
-                                           value="0"
-                                           min="0"
-                                           step="1"
-                                           style="width: 100px;">
-                                    <button type="button" class="btn btn-sm btn-secondary" id="increaseVisitorBtn">증가</button>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="email_notification" id="email_notification" value="1" {{ (!isset($settings['email_notification']) || $settings['email_notification'] == '1') ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="email_notification">
-                                        이메일 알림
-                                    </label>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="general_login" id="general_login" value="1" {{ (!isset($settings['general_login']) || $settings['general_login'] == '1') ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="general_login">
-                                        일반 로그인
-                                    </label>
-                                </div>
-                            </td>
-                            <td>
-                                <button type="submit" form="featureForm" class="btn btn-sm btn-primary w-100">저장</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            
+            {{-- 데스크탑 버전 (기존 테이블) --}}
+            <div class="d-none d-md-block">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>방문자수 표기</th>
+                                <th>방문자수 변경</th>
+                                <th>이메일 알림</th>
+                                <th>일반 로그인</th>
+                                <th style="width: 100px;">설정</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="show_visitor_count" id="show_visitor_count" value="1" {{ (!isset($settings['show_visitor_count']) || $settings['show_visitor_count'] == '1') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="show_visitor_count">
+                                            방문자수 표기
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="number" 
+                                               class="form-control form-control-sm" 
+                                               name="visitor_count_adjust" 
+                                               id="visitor_count_adjust" 
+                                               value="0"
+                                               min="0"
+                                               step="1"
+                                               style="width: 100px;">
+                                        <button type="button" class="btn btn-sm btn-secondary" id="increaseVisitorBtn">증가</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="email_notification" id="email_notification" value="1" {{ (!isset($settings['email_notification']) || $settings['email_notification'] == '1') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="email_notification">
+                                            이메일 알림
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="general_login" id="general_login" value="1" {{ (!isset($settings['general_login']) || $settings['general_login'] == '1') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="general_login">
+                                            일반 로그인
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="submit" form="featureForm" class="btn btn-sm btn-primary w-100">저장</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- 모바일 버전 (카드 레이아웃) --}}
+            <div class="d-md-none">
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="show_visitor_count" id="show_visitor_count_mobile" value="1" {{ (!isset($settings['show_visitor_count']) || $settings['show_visitor_count'] == '1') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="show_visitor_count_mobile">
+                            방문자수 표기
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="visitor_count_adjust_mobile" class="form-label">방문자수 변경</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="number" 
+                               class="form-control form-control-sm" 
+                               name="visitor_count_adjust" 
+                               id="visitor_count_adjust_mobile" 
+                               value="0"
+                               min="0"
+                               step="1">
+                        <button type="button" class="btn btn-sm btn-secondary" id="increaseVisitorBtnMobile">증가</button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="email_notification" id="email_notification_mobile" value="1" {{ (!isset($settings['email_notification']) || $settings['email_notification'] == '1') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="email_notification_mobile">
+                            이메일 알림
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="general_login" id="general_login_mobile" value="1" {{ (!isset($settings['general_login']) || $settings['general_login'] == '1') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="general_login_mobile">
+                            일반 로그인
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" form="featureForm" class="btn btn-primary w-100">저장</button>
+                </div>
             </div>
         </form>
     </div>
@@ -2969,21 +3017,25 @@ $(document).ready(function() {
         $('input[name="email_notification"][type="hidden"]').remove();
         $('input[name="general_login"][type="hidden"]').remove();
         
-        // 체크되지 않은 체크박스만 hidden input으로 값 전달
-        if (!$('#show_visitor_count').is(':checked')) {
+        // 체크되지 않은 체크박스만 hidden input으로 값 전달 (데스크탑 또는 모바일 중 하나라도 체크되어 있으면 체크된 것으로 간주)
+        const showVisitorCountChecked = $('#show_visitor_count').is(':checked') || $('#show_visitor_count_mobile').is(':checked');
+        const emailNotificationChecked = $('#email_notification').is(':checked') || $('#email_notification_mobile').is(':checked');
+        const generalLoginChecked = $('#general_login').is(':checked') || $('#general_login_mobile').is(':checked');
+        
+        if (!showVisitorCountChecked) {
             $(this).append('<input type="hidden" name="show_visitor_count" value="0">');
         }
         
-        if (!$('#email_notification').is(':checked')) {
+        if (!emailNotificationChecked) {
             $(this).append('<input type="hidden" name="email_notification" value="0">');
         }
         
-        if (!$('#general_login').is(':checked')) {
+        if (!generalLoginChecked) {
             $(this).append('<input type="hidden" name="general_login" value="0">');
         }
     });
 
-    // 방문자수 증가 버튼 클릭
+    // 방문자수 증가 버튼 클릭 (데스크탑)
     $('#increaseVisitorBtn').on('click', function(e) {
         e.preventDefault();
         var adjustValue = parseInt($('#visitor_count_adjust').val()) || 0;
@@ -3009,6 +3061,7 @@ $(document).ready(function() {
                 if (response.success) {
                     alert('방문자수가 ' + adjustValue + '만큼 증가되었습니다.');
                     $('#visitor_count_adjust').val(0);
+                    $('#visitor_count_adjust_mobile').val(0);
                 } else {
                     alert('방문자수 증가에 실패했습니다: ' + (response.message || '알 수 없는 오류'));
                 }
@@ -3021,6 +3074,98 @@ $(document).ready(function() {
                 alert(errorMessage);
             }
         });
+    });
+
+    // 방문자수 증가 버튼 클릭 (모바일)
+    $('#increaseVisitorBtnMobile').on('click', function(e) {
+        e.preventDefault();
+        var adjustValue = parseInt($('#visitor_count_adjust_mobile').val()) || 0;
+        
+        if (adjustValue <= 0) {
+            alert('1 이상의 숫자를 입력해주세요.');
+            return;
+        }
+        
+        if (!confirm('방문자수를 ' + adjustValue + '만큼 증가시키시겠습니까?')) {
+            return;
+        }
+        
+        // AJAX로 방문자수 증가 요청
+        $.ajax({
+            url: '{{ route("admin.settings.increase-visitor", ["site" => $site->slug]) }}',
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                amount: adjustValue
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert('방문자수가 ' + adjustValue + '만큼 증가되었습니다.');
+                    $('#visitor_count_adjust').val(0);
+                    $('#visitor_count_adjust_mobile').val(0);
+                } else {
+                    alert('방문자수 증가에 실패했습니다: ' + (response.message || '알 수 없는 오류'));
+                }
+            },
+            error: function(xhr) {
+                var errorMessage = '방문자수 증가에 실패했습니다.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                alert(errorMessage);
+            }
+        });
+    });
+
+    // 기능 ON/OFF 데스크탑과 모바일 동기화
+    document.addEventListener('DOMContentLoaded', function() {
+        // 방문자수 표기 체크박스 동기화
+        const desktopShowVisitorCount = document.getElementById('show_visitor_count');
+        const mobileShowVisitorCount = document.getElementById('show_visitor_count_mobile');
+        if (desktopShowVisitorCount && mobileShowVisitorCount) {
+            desktopShowVisitorCount.addEventListener('change', function() {
+                mobileShowVisitorCount.checked = this.checked;
+            });
+            mobileShowVisitorCount.addEventListener('change', function() {
+                desktopShowVisitorCount.checked = this.checked;
+            });
+        }
+
+        // 방문자수 변경 입력 동기화
+        const desktopVisitorCountAdjust = document.getElementById('visitor_count_adjust');
+        const mobileVisitorCountAdjust = document.getElementById('visitor_count_adjust_mobile');
+        if (desktopVisitorCountAdjust && mobileVisitorCountAdjust) {
+            desktopVisitorCountAdjust.addEventListener('change', function() {
+                mobileVisitorCountAdjust.value = this.value;
+            });
+            mobileVisitorCountAdjust.addEventListener('change', function() {
+                desktopVisitorCountAdjust.value = this.value;
+            });
+        }
+
+        // 이메일 알림 체크박스 동기화
+        const desktopEmailNotification = document.getElementById('email_notification');
+        const mobileEmailNotification = document.getElementById('email_notification_mobile');
+        if (desktopEmailNotification && mobileEmailNotification) {
+            desktopEmailNotification.addEventListener('change', function() {
+                mobileEmailNotification.checked = this.checked;
+            });
+            mobileEmailNotification.addEventListener('change', function() {
+                desktopEmailNotification.checked = this.checked;
+            });
+        }
+
+        // 일반 로그인 체크박스 동기화
+        const desktopGeneralLogin = document.getElementById('general_login');
+        const mobileGeneralLogin = document.getElementById('general_login_mobile');
+        if (desktopGeneralLogin && mobileGeneralLogin) {
+            desktopGeneralLogin.addEventListener('change', function() {
+                mobileGeneralLogin.checked = this.checked;
+            });
+            mobileGeneralLogin.addEventListener('change', function() {
+                desktopGeneralLogin.checked = this.checked;
+            });
+        }
     });
 
     // settingsForm 제출 시 로그 및 확인
