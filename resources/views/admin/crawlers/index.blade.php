@@ -175,10 +175,28 @@
 
         <!-- 크롤러 커스텀 항목 -->
         <div class="card shadow-sm">
-            <div class="card-header bg-white">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="bi bi-gear me-2"></i>크롤러 커스텀 항목</h5>
+                <button type="button" class="btn btn-primary btn-sm" onclick="openCrawlerModal()">
+                    <i class="bi bi-plus-circle me-1"></i>크롤러 추가
+                </button>
             </div>
             <div class="card-body">
+                <p class="text-muted mb-0">크롤러를 추가하려면 위의 "크롤러 추가" 버튼을 클릭하세요.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 크롤러 생성/수정 모달 -->
+<div class="modal fade" id="crawlerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="crawlerModalTitle">크롤러 추가</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
                 <form id="crawlerForm">
                     <input type="hidden" id="crawler_id" name="id">
                     
@@ -254,15 +272,6 @@
                         <small class="text-muted">체크 시 Cloudflare 보안 및 안티봇 기능을 우회하여 크롤링합니다</small>
                     </div>
 
-                    <div class="mb-3">
-                        <button type="button" class="btn btn-outline-secondary" onclick="testCrawler()">
-                            <i class="bi bi-play-circle me-2"></i>테스트
-                        </button>
-                        <button type="button" class="btn btn-primary" onclick="saveCrawler()">
-                            <i class="bi bi-save me-2"></i>저장
-                        </button>
-                    </div>
-
                     <!-- 테스트 결과 -->
                     <div id="test_result" style="display: none;" class="mt-4">
                         <div class="card border-primary">
@@ -275,6 +284,15 @@
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" onclick="testCrawler()">
+                    <i class="bi bi-play-circle me-2"></i>테스트
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="saveCrawler()">
+                    <i class="bi bi-save me-2"></i>저장
+                </button>
             </div>
         </div>
     </div>
@@ -306,6 +324,16 @@
 
 @push('scripts')
 <script>
+// 모달이 닫힐 때 폼 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    const crawlerModal = document.getElementById('crawlerModal');
+    if (crawlerModal) {
+        crawlerModal.addEventListener('hidden.bs.modal', function() {
+            resetCrawlerForm();
+        });
+    }
+});
+
 function runAllCrawlers() {
     if (!confirm('모든 활성화된 크롤러를 실행하시겠습니까?')) {
         return;
@@ -376,9 +404,76 @@ function toggleActive(crawlerId) {
     });
 }
 
+function openCrawlerModal() {
+    // 폼 초기화
+    resetCrawlerForm();
+    document.getElementById('crawlerModalTitle').textContent = '크롤러 추가';
+    const modal = new bootstrap.Modal(document.getElementById('crawlerModal'));
+    modal.show();
+}
+
 function editCrawler(crawlerId) {
-    // TODO: 크롤러 수정 폼 로드
-    alert('크롤러 수정 기능은 추후 구현 예정입니다.');
+    // 크롤러 데이터 가져오기
+    fetch('{{ route("admin.crawlers.show", ["site" => $site->slug, "crawler" => ":id"]) }}'.replace(':id', crawlerId), {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.crawler) {
+            const crawler = data.crawler;
+            
+            // 폼에 데이터 채우기
+            document.getElementById('crawler_id').value = crawler.id;
+            document.getElementById('crawler_name').value = crawler.name || '';
+            document.getElementById('crawler_url').value = crawler.url || '';
+            document.getElementById('list_title_selector').value = crawler.list_title_selector || '';
+            document.getElementById('post_title_selector').value = crawler.post_title_selector || '';
+            document.getElementById('post_content_selector').value = crawler.post_content_selector || '';
+            document.getElementById('board_id').value = crawler.board_id || '';
+            document.getElementById('author_nickname').value = crawler.author_nickname || '';
+            document.getElementById('use_random_user').checked = crawler.use_random_user || false;
+            document.getElementById('bypass_cloudflare').checked = crawler.bypass_cloudflare || false;
+            
+            // 작성자 닉네임 필드 활성화/비활성화
+            toggleAuthorNickname();
+            
+            // 게시판이 선택되어 있으면 주제 로드
+            if (crawler.board_id) {
+                loadTopics().then(() => {
+                    if (crawler.topic_id) {
+                        document.getElementById('topic_id').value = crawler.topic_id;
+                    }
+                });
+            }
+            
+            // 모달 제목 변경
+            document.getElementById('crawlerModalTitle').textContent = '크롤러 수정';
+            
+            // 모달 열기
+            const modal = new bootstrap.Modal(document.getElementById('crawlerModal'));
+            modal.show();
+        } else {
+            alert('크롤러 데이터를 불러오는 중 오류가 발생했습니다.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('크롤러 데이터를 불러오는 중 오류가 발생했습니다.');
+    });
+}
+
+function resetCrawlerForm() {
+    document.getElementById('crawlerForm').reset();
+    document.getElementById('crawler_id').value = '';
+    document.getElementById('topic_container').style.display = 'none';
+    document.getElementById('topic_id').innerHTML = '<option value="">주제 선택 (선택사항)</option>';
+    document.getElementById('test_result').style.display = 'none';
+    document.getElementById('test_result_content').innerHTML = '';
+    toggleAuthorNickname();
 }
 
 function deleteCrawler(crawlerId) {
@@ -415,10 +510,10 @@ function loadTopics() {
 
     if (!boardId) {
         topicContainer.style.display = 'none';
-        return;
+        return Promise.resolve();
     }
 
-    fetch(`{{ route("admin.boards.topics", ["site" => $site->slug, "board" => ":id"]) }}`.replace(':id', boardId), {
+    return fetch(`{{ route("admin.boards.topics", ["site" => $site->slug, "board" => ":id"]) }}`.replace(':id', boardId), {
         method: 'GET',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -539,6 +634,11 @@ function saveCrawler() {
     .then(data => {
         if (data.success) {
             alert(data.message);
+            // 모달 닫기
+            const modal = bootstrap.Modal.getInstance(document.getElementById('crawlerModal'));
+            if (modal) {
+                modal.hide();
+            }
             location.reload();
         } else {
             alert('오류: ' + (data.message || '알 수 없는 오류'));

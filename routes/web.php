@@ -872,6 +872,7 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
         // Crawler management routes
         Route::get('/crawlers', [AdminController::class, 'crawlersIndex'])->name('admin.crawlers.index');
         Route::post('/crawlers', [AdminController::class, 'crawlersStore'])->name('admin.crawlers.store');
+        Route::get('/crawlers/{crawler}', [AdminController::class, 'crawlersShow'])->name('admin.crawlers.show');
         Route::get('/crawlers/{crawler}/edit', [AdminController::class, 'crawlersEdit'])->name('admin.crawlers.edit');
         Route::put('/crawlers/{crawler}', [AdminController::class, 'crawlersUpdate'])->name('admin.crawlers.update');
         Route::delete('/crawlers/{crawler}', [AdminController::class, 'crawlersDestroy'])->name('admin.crawlers.delete');

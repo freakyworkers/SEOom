@@ -4957,6 +4957,23 @@ class AdminController extends Controller
     }
 
     /**
+     * Get crawler data as JSON for modal editing.
+     */
+    public function crawlersShow(Site $site, Crawler $crawler)
+    {
+        if ($crawler->site_id !== $site->id) {
+            abort(403);
+        }
+        
+        $crawler->load(['board', 'topic']);
+        
+        return response()->json([
+            'success' => true,
+            'crawler' => $crawler,
+        ]);
+    }
+
+    /**
      * Update the specified crawler in storage.
      */
     public function crawlersUpdate(Site $site, Crawler $crawler, Request $request)
