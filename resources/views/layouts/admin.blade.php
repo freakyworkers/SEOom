@@ -119,18 +119,87 @@
             opacity: 0.8;
         }
         
+        /* 모바일 헤더 */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: var(--sidebar-bg);
+            z-index: 1001;
+            padding: 0 1rem;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .mobile-header .admin-title {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .mobile-header .hamburger-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+        }
+        
+        .mobile-header .hamburger-btn:hover {
+            opacity: 0.8;
+        }
+        
+        /* 사이드바 오버레이 */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .sidebar-overlay.show {
+            opacity: 1;
+        }
+        
         @media (max-width: 768px) {
+            .mobile-header {
+                display: flex;
+            }
+            
             .sidebar {
                 transform: translateX(-100%);
-                transition: transform 0.3s;
+                transition: transform 0.3s ease-in-out;
+                top: 56px;
+                height: calc(100vh - 56px);
             }
             
             .sidebar.show {
                 transform: translateX(0);
             }
             
+            .sidebar-overlay {
+                display: block;
+            }
+            
             .main-content {
                 margin-left: 0;
+                padding-top: calc(2rem + 56px);
             }
         }
     </style>
@@ -138,9 +207,20 @@
     @stack('styles')
 </head>
 <body>
+    <!-- 모바일 헤더 -->
+    <div class="mobile-header">
+        <h5 class="admin-title mb-0">관리자</h5>
+        <button class="hamburger-btn" id="hamburgerBtn" type="button" aria-label="메뉴 열기">
+            <i class="bi bi-list" id="hamburgerIcon"></i>
+        </button>
+    </div>
+    
+    <!-- 사이드바 오버레이 -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
     <div class="d-flex">
         <!-- Sidebar -->
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h4 class="text-white mb-0">
                     <i class="bi bi-speedometer2 me-2"></i>관리자
@@ -446,6 +526,54 @@
     <!-- Summernote JS -->
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/lang/summernote-ko-KR.min.js"></script>
+    
+    <script>
+        // 모바일 햄버거 메뉴 토글
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const hamburgerIcon = document.getElementById('hamburgerIcon');
+            
+            if (hamburgerBtn && sidebar && sidebarOverlay) {
+                // 햄버거 버튼 클릭
+                hamburgerBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                    sidebarOverlay.classList.toggle('show');
+                    
+                    // 아이콘 변경 (햄버거 <-> X)
+                    if (sidebar.classList.contains('show')) {
+                        hamburgerIcon.classList.remove('bi-list');
+                        hamburgerIcon.classList.add('bi-x-lg');
+                    } else {
+                        hamburgerIcon.classList.remove('bi-x-lg');
+                        hamburgerIcon.classList.add('bi-list');
+                    }
+                });
+                
+                // 오버레이 클릭 시 사이드바 닫기
+                sidebarOverlay.addEventListener('click', function() {
+                    sidebar.classList.remove('show');
+                    sidebarOverlay.classList.remove('show');
+                    hamburgerIcon.classList.remove('bi-x-lg');
+                    hamburgerIcon.classList.add('bi-list');
+                });
+                
+                // 사이드바 메뉴 링크 클릭 시 모바일에서 사이드바 닫기
+                if (window.innerWidth <= 768) {
+                    const sidebarLinks = sidebar.querySelectorAll('.nav-link');
+                    sidebarLinks.forEach(function(link) {
+                        link.addEventListener('click', function() {
+                            sidebar.classList.remove('show');
+                            sidebarOverlay.classList.remove('show');
+                            hamburgerIcon.classList.remove('bi-x-lg');
+                            hamburgerIcon.classList.add('bi-list');
+                        });
+                    });
+                }
+            }
+        });
+    </script>
     
     @stack('scripts')
 </body>
