@@ -1230,67 +1230,122 @@
         <form method="POST" action="{{ route('admin.settings.update', ['site' => $site->slug]) }}" id="boardForm">
             @csrf
             @method('PUT')
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th style="width: 150px;">베스트 글 기준</th>
-                            <th>글쓰기 텀 (초)</th>
-                            <th>새글 기준 (시간)</th>
-                            <th>조회수 공개</th>
-                            <th>게시글/댓글 시각 표시</th>
-                            <th style="width: 100px;">설정</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <select class="form-select form-select-sm" name="best_post_criteria" id="best_post_criteria">
-                                    <option value="views" {{ ($settings['best_post_criteria'] ?? 'views') === 'views' ? 'selected' : '' }}>조회수</option>
-                                    <option value="likes" {{ ($settings['best_post_criteria'] ?? '') === 'likes' ? 'selected' : '' }}>추천수</option>
-                                    <option value="comments" {{ ($settings['best_post_criteria'] ?? '') === 'comments' ? 'selected' : '' }}>댓글수</option>
-                                </select>
-                            </td>
-                            <td>
-                                <input type="number" 
-                                       class="form-control form-control-sm" 
-                                       name="write_interval" 
-                                       id="write_interval" 
-                                       value="{{ old('write_interval', $settings['write_interval'] ?? '0') }}"
-                                       min="0"
-                                       step="1">
-                            </td>
-                            <td>
-                                <input type="number" 
-                                       class="form-control form-control-sm" 
-                                       name="new_post_hours" 
-                                       id="new_post_hours" 
-                                       value="{{ old('new_post_hours', $settings['new_post_hours'] ?? '24') }}"
-                                       min="0"
-                                       step="1">
-                            </td>
-                            <td>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="show_views" id="show_views" value="1" {{ (!isset($settings['show_views']) || $settings['show_views'] == '1') ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="show_views">
-                                        조회수 공개
-                                    </label>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="show_datetime" id="show_datetime" value="1" {{ (!isset($settings['show_datetime']) || $settings['show_datetime'] == '1') ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="show_datetime">
-                                        시각 표시
-                                    </label>
-                                </div>
-                            </td>
-                            <td>
-                                <button type="submit" form="boardForm" class="btn btn-sm btn-primary w-100">저장</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            
+            {{-- 데스크탑 버전 (기존 테이블) --}}
+            <div class="d-none d-md-block">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 150px;">베스트 글 기준</th>
+                                <th>글쓰기 텀 (초)</th>
+                                <th>새글 기준 (시간)</th>
+                                <th>조회수 공개</th>
+                                <th>게시글/댓글 시각 표시</th>
+                                <th style="width: 100px;">설정</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <select class="form-select form-select-sm" name="best_post_criteria" id="best_post_criteria">
+                                        <option value="views" {{ ($settings['best_post_criteria'] ?? 'views') === 'views' ? 'selected' : '' }}>조회수</option>
+                                        <option value="likes" {{ ($settings['best_post_criteria'] ?? '') === 'likes' ? 'selected' : '' }}>추천수</option>
+                                        <option value="comments" {{ ($settings['best_post_criteria'] ?? '') === 'comments' ? 'selected' : '' }}>댓글수</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           name="write_interval" 
+                                           id="write_interval" 
+                                           value="{{ old('write_interval', $settings['write_interval'] ?? '0') }}"
+                                           min="0"
+                                           step="1">
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           name="new_post_hours" 
+                                           id="new_post_hours" 
+                                           value="{{ old('new_post_hours', $settings['new_post_hours'] ?? '24') }}"
+                                           min="0"
+                                           step="1">
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="show_views" id="show_views" value="1" {{ (!isset($settings['show_views']) || $settings['show_views'] == '1') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="show_views">
+                                            조회수 공개
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="show_datetime" id="show_datetime" value="1" {{ (!isset($settings['show_datetime']) || $settings['show_datetime'] == '1') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="show_datetime">
+                                            시각 표시
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="submit" form="boardForm" class="btn btn-sm btn-primary w-100">저장</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- 모바일 버전 (카드 레이아웃) --}}
+            <div class="d-md-none">
+                <div class="mb-3">
+                    <label for="best_post_criteria_mobile" class="form-label">베스트 글 기준</label>
+                    <select class="form-select form-select-sm" name="best_post_criteria" id="best_post_criteria_mobile">
+                        <option value="views" {{ ($settings['best_post_criteria'] ?? 'views') === 'views' ? 'selected' : '' }}>조회수</option>
+                        <option value="likes" {{ ($settings['best_post_criteria'] ?? '') === 'likes' ? 'selected' : '' }}>추천수</option>
+                        <option value="comments" {{ ($settings['best_post_criteria'] ?? '') === 'comments' ? 'selected' : '' }}>댓글수</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="write_interval_mobile" class="form-label">글쓰기 텀 (초)</label>
+                    <input type="number" 
+                           class="form-control form-control-sm" 
+                           name="write_interval" 
+                           id="write_interval_mobile" 
+                           value="{{ old('write_interval', $settings['write_interval'] ?? '0') }}"
+                           min="0"
+                           step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="new_post_hours_mobile" class="form-label">새글 기준 (시간)</label>
+                    <input type="number" 
+                           class="form-control form-control-sm" 
+                           name="new_post_hours" 
+                           id="new_post_hours_mobile" 
+                           value="{{ old('new_post_hours', $settings['new_post_hours'] ?? '24') }}"
+                           min="0"
+                           step="1">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="show_views" id="show_views_mobile" value="1" {{ (!isset($settings['show_views']) || $settings['show_views'] == '1') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="show_views_mobile">
+                            조회수 공개
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="show_datetime" id="show_datetime_mobile" value="1" {{ (!isset($settings['show_datetime']) || $settings['show_datetime'] == '1') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="show_datetime_mobile">
+                            게시글/댓글 시각 표시
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" form="boardForm" class="btn btn-primary w-100">저장</button>
+                </div>
             </div>
         </form>
     </div>
@@ -2831,13 +2886,79 @@ $(document).ready(function() {
         $('input[name="show_views"][type="hidden"]').remove();
         $('input[name="show_datetime"][type="hidden"]').remove();
         
-        // 체크되지 않은 체크박스만 hidden input으로 값 전달
-        if (!$('#show_views').is(':checked')) {
+        // 체크되지 않은 체크박스만 hidden input으로 값 전달 (데스크탑 또는 모바일 중 하나라도 체크되어 있으면 체크된 것으로 간주)
+        const showViewsChecked = $('#show_views').is(':checked') || $('#show_views_mobile').is(':checked');
+        const showDatetimeChecked = $('#show_datetime').is(':checked') || $('#show_datetime_mobile').is(':checked');
+        
+        if (!showViewsChecked) {
             $(this).append('<input type="hidden" name="show_views" value="0">');
         }
         
-        if (!$('#show_datetime').is(':checked')) {
+        if (!showDatetimeChecked) {
             $(this).append('<input type="hidden" name="show_datetime" value="0">');
+        }
+    });
+
+    // 게시판 설정 데스크탑과 모바일 동기화
+    document.addEventListener('DOMContentLoaded', function() {
+        // 베스트 글 기준 동기화
+        const desktopBestPostCriteria = document.getElementById('best_post_criteria');
+        const mobileBestPostCriteria = document.getElementById('best_post_criteria_mobile');
+        if (desktopBestPostCriteria && mobileBestPostCriteria) {
+            desktopBestPostCriteria.addEventListener('change', function() {
+                mobileBestPostCriteria.value = this.value;
+            });
+            mobileBestPostCriteria.addEventListener('change', function() {
+                desktopBestPostCriteria.value = this.value;
+            });
+        }
+
+        // 글쓰기 텀 동기화
+        const desktopWriteInterval = document.getElementById('write_interval');
+        const mobileWriteInterval = document.getElementById('write_interval_mobile');
+        if (desktopWriteInterval && mobileWriteInterval) {
+            desktopWriteInterval.addEventListener('change', function() {
+                mobileWriteInterval.value = this.value;
+            });
+            mobileWriteInterval.addEventListener('change', function() {
+                desktopWriteInterval.value = this.value;
+            });
+        }
+
+        // 새글 기준 동기화
+        const desktopNewPostHours = document.getElementById('new_post_hours');
+        const mobileNewPostHours = document.getElementById('new_post_hours_mobile');
+        if (desktopNewPostHours && mobileNewPostHours) {
+            desktopNewPostHours.addEventListener('change', function() {
+                mobileNewPostHours.value = this.value;
+            });
+            mobileNewPostHours.addEventListener('change', function() {
+                desktopNewPostHours.value = this.value;
+            });
+        }
+
+        // 조회수 공개 체크박스 동기화
+        const desktopShowViews = document.getElementById('show_views');
+        const mobileShowViews = document.getElementById('show_views_mobile');
+        if (desktopShowViews && mobileShowViews) {
+            desktopShowViews.addEventListener('change', function() {
+                mobileShowViews.checked = this.checked;
+            });
+            mobileShowViews.addEventListener('change', function() {
+                desktopShowViews.checked = this.checked;
+            });
+        }
+
+        // 시각 표시 체크박스 동기화
+        const desktopShowDatetime = document.getElementById('show_datetime');
+        const mobileShowDatetime = document.getElementById('show_datetime_mobile');
+        if (desktopShowDatetime && mobileShowDatetime) {
+            desktopShowDatetime.addEventListener('change', function() {
+                mobileShowDatetime.checked = this.checked;
+            });
+            mobileShowDatetime.addEventListener('change', function() {
+                desktopShowDatetime.checked = this.checked;
+            });
         }
     });
 
