@@ -773,65 +773,124 @@
             <div class="card-body">
                 <div class="mb-3">
                     <h6>주제 ({{ $board->topics()->count() }}개)</h6>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th style="width: 200px;">이름</th>
-                                <th style="width: 100px;">색상</th>
-                                <th style="width: 120px;">표시 순서</th>
-                                <th style="width: 80px;">삭제</th>
-                            </tr>
-                        </thead>
-                        <tbody id="topicsTableBody">
+                    {{-- 데스크탑 버전 (테이블) --}}
+                    <div class="d-none d-md-block">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width: 200px;">이름</th>
+                                    <th style="width: 100px;">색상</th>
+                                    <th style="width: 120px;">표시 순서</th>
+                                    <th style="width: 80px;">삭제</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topicsTableBody">
+                                @foreach($board->topics()->ordered()->get() as $index => $topic)
+                                <tr data-topic-id="{{ $topic->id }}" data-display-order="{{ $topic->display_order }}">
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm topic-name-input" value="{{ $topic->name }}" data-topic-id="{{ $topic->id }}" data-original-name="{{ $topic->name }}">
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <input type="color" class="form-control form-control-color topic-color-input" value="{{ $topic->color }}" style="width: 50px; height: 38px;" data-topic-id="{{ $topic->id }}" data-original-color="{{ $topic->color }}">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary move-up-btn" data-topic-id="{{ $topic->id }}" {{ $index === 0 ? 'disabled' : '' }}>
+                                                <i class="bi bi-arrow-up"></i>
+                                            </button>
+                                            <span class="badge bg-secondary">{{ $topic->display_order }}</span>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary move-down-btn" data-topic-id="{{ $topic->id }}" {{ $index === $board->topics()->count() - 1 ? 'disabled' : '' }}>
+                                                <i class="bi bi-arrow-down"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-danger delete-topic-btn" data-topic-id="{{ $topic->id }}">삭제</button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {{-- 모바일 버전 (카드 레이아웃) --}}
+                    <div class="d-md-none">
+                        <div class="d-grid gap-3" id="topicsCardBody">
                             @foreach($board->topics()->ordered()->get() as $index => $topic)
-                            <tr data-topic-id="{{ $topic->id }}" data-display-order="{{ $topic->display_order }}">
-                                <td>
-                                    <input type="text" class="form-control form-control-sm topic-name-input" value="{{ $topic->name }}" data-topic-id="{{ $topic->id }}" data-original-name="{{ $topic->name }}">
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <input type="color" class="form-control form-control-color topic-color-input" value="{{ $topic->color }}" style="width: 50px; height: 38px;" data-topic-id="{{ $topic->id }}" data-original-color="{{ $topic->color }}">
+                            <div class="card shadow-sm" data-topic-id="{{ $topic->id }}" data-display-order="{{ $topic->display_order }}">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold mb-1">이름</label>
+                                        <input type="text" class="form-control form-control-sm topic-name-input" value="{{ $topic->name }}" data-topic-id="{{ $topic->id }}" data-original-name="{{ $topic->name }}">
                                     </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-1">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary move-up-btn" data-topic-id="{{ $topic->id }}" {{ $index === 0 ? 'disabled' : '' }}>
-                                            <i class="bi bi-arrow-up"></i>
-                                        </button>
-                                        <span class="badge bg-secondary">{{ $topic->display_order }}</span>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary move-down-btn" data-topic-id="{{ $topic->id }}" {{ $index === $board->topics()->count() - 1 ? 'disabled' : '' }}>
-                                            <i class="bi bi-arrow-down"></i>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold mb-1">색상</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <input type="color" class="form-control form-control-color topic-color-input" value="{{ $topic->color }}" style="width: 80px; height: 50px; cursor: pointer; border: 2px solid #dee2e6; border-radius: 4px;" data-topic-id="{{ $topic->id }}" data-original-color="{{ $topic->color }}">
+                                            <span class="small text-muted">색상 선택</span>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold mb-1">표시 순서</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary move-up-btn flex-fill" data-topic-id="{{ $topic->id }}" {{ $index === 0 ? 'disabled' : '' }}>
+                                                <i class="bi bi-arrow-up me-1"></i>위로
+                                            </button>
+                                            <span class="badge bg-secondary" style="min-width: 40px; text-align: center;">{{ $topic->display_order }}</span>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary move-down-btn flex-fill" data-topic-id="{{ $topic->id }}" {{ $index === $board->topics()->count() - 1 ? 'disabled' : '' }}>
+                                                <i class="bi bi-arrow-down me-1"></i>아래로
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-danger w-100 delete-topic-btn" data-topic-id="{{ $topic->id }}">
+                                            <i class="bi bi-trash me-1"></i>삭제
                                         </button>
                                     </div>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-danger delete-topic-btn" data-topic-id="{{ $topic->id }}">삭제</button>
-                                </td>
-                            </tr>
+                                </div>
+                            </div>
                             @endforeach
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <h6>주제 추가</h6>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>주제 이름</th>
-                                <th style="width: 100px;">추가</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <input type="text" class="form-control" id="newTopicName" placeholder="주제 이름을 입력하세요">
-                                </td>
-                                <td style="width: 100px;">
-                                    <button type="button" class="btn btn-primary btn-sm w-100" id="addTopicBtn">추가</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    {{-- 데스크탑 버전 (테이블) --}}
+                    <div class="d-none d-md-block">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>주제 이름</th>
+                                    <th style="width: 100px;">추가</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="form-control" id="newTopicName" placeholder="주제 이름을 입력하세요">
+                                    </td>
+                                    <td style="width: 100px;">
+                                        <button type="button" class="btn btn-primary btn-sm w-100" id="addTopicBtn">추가</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {{-- 모바일 버전 (카드 레이아웃) --}}
+                    <div class="d-md-none">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <label for="newTopicName_mobile" class="form-label fw-bold mb-2">주제 이름</label>
+                                <input type="text" class="form-control form-control-sm mb-3" id="newTopicName_mobile" placeholder="주제 이름을 입력하세요">
+                                <button type="button" class="btn btn-primary btn-sm w-100" id="addTopicBtn_mobile">
+                                    <i class="bi bi-plus-circle me-1"></i>추가
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="d-flex justify-content-end mt-3">
                     <button type="button" class="btn btn-primary" id="saveTopicsBtn">저장</button>
@@ -1516,7 +1575,8 @@
     // 주제 관리 함수들 (전역 스코프에 명시적으로 등록)
     window.addTopic = function() {
         console.log('addTopic called');
-        const nameInput = document.getElementById('newTopicName');
+        // 모바일과 데스크탑 입력 필드 모두 확인
+        const nameInput = document.getElementById('newTopicName') || document.getElementById('newTopicName_mobile');
         if (!nameInput) {
             console.error('newTopicName input not found');
             alert('주제 입력 필드를 찾을 수 없습니다.');
@@ -1557,6 +1617,13 @@
             console.log('Response data:', data);
             if (data.success) {
                 alert('주제가 추가되었습니다.');
+                // 입력 필드 초기화
+                if (document.getElementById('newTopicName')) {
+                    document.getElementById('newTopicName').value = '';
+                }
+                if (document.getElementById('newTopicName_mobile')) {
+                    document.getElementById('newTopicName_mobile').value = '';
+                }
                 window.location.reload();
             } else {
                 alert(data.message || '주제 추가 중 오류가 발생했습니다.');
@@ -1571,34 +1638,64 @@
     // 전역 스코프에 함수가 등록되었는지 확인
     console.log('addTopic function registered:', typeof window.addTopic);
 
-    // 위로 이동
+    // 위로 이동 (데스크탑 + 모바일)
     document.addEventListener('click', function(e) {
         if (e.target.closest('.move-up-btn')) {
             const btn = e.target.closest('.move-up-btn');
-            const row = btn.closest('tr');
-            const prevRow = row.previousElementSibling;
+            const topicId = btn.dataset.topicId;
             
-            if (prevRow) {
-                const tbody = row.parentElement;
-                tbody.insertBefore(row, prevRow);
-                updateMoveButtons();
+            // 데스크탑 테이블
+            const row = btn.closest('tr');
+            if (row) {
+                const prevRow = row.previousElementSibling;
+                if (prevRow) {
+                    const tbody = row.parentElement;
+                    tbody.insertBefore(row, prevRow);
+                    updateMoveButtons();
+                }
+            }
+            
+            // 모바일 카드
+            const card = btn.closest('.card[data-topic-id]');
+            if (card) {
+                const prevCard = card.previousElementSibling;
+                if (prevCard && prevCard.classList.contains('card')) {
+                    const container = card.parentElement;
+                    container.insertBefore(card, prevCard);
+                    updateMoveButtonsMobile();
+                }
             }
         }
         
-        // 아래로 이동
+        // 아래로 이동 (데스크탑 + 모바일)
         if (e.target.closest('.move-down-btn')) {
             const btn = e.target.closest('.move-down-btn');
-            const row = btn.closest('tr');
-            const nextRow = row.nextElementSibling;
+            const topicId = btn.dataset.topicId;
             
-            if (nextRow) {
-                const tbody = row.parentElement;
-                tbody.insertBefore(nextRow, row);
-                updateMoveButtons();
+            // 데스크탑 테이블
+            const row = btn.closest('tr');
+            if (row) {
+                const nextRow = row.nextElementSibling;
+                if (nextRow) {
+                    const tbody = row.parentElement;
+                    tbody.insertBefore(nextRow, row);
+                    updateMoveButtons();
+                }
+            }
+            
+            // 모바일 카드
+            const card = btn.closest('.card[data-topic-id]');
+            if (card) {
+                const nextCard = card.nextElementSibling;
+                if (nextCard && nextCard.classList.contains('card')) {
+                    const container = card.parentElement;
+                    container.insertBefore(nextCard, card);
+                    updateMoveButtonsMobile();
+                }
             }
         }
         
-        // 삭제 버튼 (즉시 삭제)
+        // 삭제 버튼 (즉시 삭제) - 데스크탑 + 모바일
         if (e.target.closest('.delete-topic-btn')) {
             const btn = e.target.closest('.delete-topic-btn');
             const topicId = btn.dataset.topicId;
@@ -1641,7 +1738,7 @@
         }
     });
 
-    // 위/아래 버튼 상태 업데이트
+    // 위/아래 버튼 상태 업데이트 (데스크탑)
     function updateMoveButtons() {
         const rows = document.querySelectorAll('#topicsTableBody tr');
         rows.forEach((row, index) => {
@@ -1660,51 +1757,122 @@
             }
         });
     }
-
-    // 저장 버튼 클릭 시 모든 변경사항 저장
-    document.getElementById('saveTopicsBtn').addEventListener('click', function() {
-        const rows = document.querySelectorAll('#topicsTableBody tr');
-        const updates = [];
-        const newTopicName = document.getElementById('newTopicName').value.trim();
+    
+    // 위/아래 버튼 상태 업데이트 (모바일)
+    function updateMoveButtonsMobile() {
+        const cards = document.querySelectorAll('#topicsCardBody .card[data-topic-id]');
+        cards.forEach((card, index) => {
+            const upBtn = card.querySelector('.move-up-btn');
+            const downBtn = card.querySelector('.move-down-btn');
+            const badge = card.querySelector('.badge');
+            
+            if (upBtn) {
+                upBtn.disabled = index === 0;
+            }
+            if (downBtn) {
+                downBtn.disabled = index === cards.length - 1;
+            }
+            if (badge) {
+                badge.textContent = index + 1;
+            }
+        });
+    }
+    
+    // 페이지 로드 시 모바일 버튼 상태 업데이트
+    document.addEventListener('DOMContentLoaded', function() {
+        updateMoveButtons();
+        updateMoveButtonsMobile();
         
-        // 새 주제 추가가 있으면 먼저 처리
+        // 모바일과 데스크탑 주제 추가 입력 필드 동기화
+        const newTopicNameDesktop = document.getElementById('newTopicName');
+        const newTopicNameMobile = document.getElementById('newTopicName_mobile');
+        
+        if (newTopicNameDesktop && newTopicNameMobile) {
+            newTopicNameDesktop.addEventListener('input', function() {
+                newTopicNameMobile.value = this.value;
+            });
+            newTopicNameMobile.addEventListener('input', function() {
+                newTopicNameDesktop.value = this.value;
+            });
+        }
+    });
+
+    // 저장 버튼 클릭 시 모든 변경사항 저장 (데스크탑 + 모바일)
+    document.getElementById('saveTopicsBtn').addEventListener('click', function() {
+        const isMobile = window.innerWidth < 768;
+        const updates = [];
+        
+        // 새 주제 추가 확인 (모바일과 데스크탑 모두)
+        const newTopicName = (document.getElementById('newTopicName') || document.getElementById('newTopicName_mobile'))?.value.trim();
+        
         if (newTopicName) {
-            // 새 주제 추가 후 페이지 리로드되므로 여기서 종료
             addTopic();
             return;
         }
         
-        // 기존 주제 업데이트
-        rows.forEach((row, index) => {
-            const topicId = row.dataset.topicId;
-            const nameInput = row.querySelector('.topic-name-input');
-            const colorInput = row.querySelector('.topic-color-input');
-            
-            if (nameInput && colorInput && topicId) {
-                const name = nameInput.value.trim();
-                const color = colorInput.value;
-                const originalName = nameInput.dataset.originalName;
-                const originalColor = colorInput.dataset.originalColor;
-                const newDisplayOrder = index + 1;
-                const originalDisplayOrder = parseInt(row.dataset.displayOrder);
+        if (isMobile) {
+            // 모바일 카드에서 데이터 수집
+            const cards = document.querySelectorAll('#topicsCardBody .card[data-topic-id]');
+            cards.forEach((card, index) => {
+                const topicId = card.dataset.topicId;
+                const nameInput = card.querySelector('.topic-name-input');
+                const colorInput = card.querySelector('.topic-color-input');
                 
-                // 이름이 비어있으면 스킵
-                if (!name) {
-                    alert('주제 이름을 입력해주세요.');
-                    return;
+                if (nameInput && colorInput && topicId) {
+                    const name = nameInput.value.trim();
+                    const color = colorInput.value;
+                    const originalName = nameInput.dataset.originalName;
+                    const originalColor = colorInput.dataset.originalColor;
+                    const newDisplayOrder = index + 1;
+                    const originalDisplayOrder = parseInt(card.dataset.displayOrder);
+                    
+                    if (!name) {
+                        alert('주제 이름을 입력해주세요.');
+                        return;
+                    }
+                    
+                    if (name !== originalName || color !== originalColor || newDisplayOrder !== originalDisplayOrder) {
+                        updates.push({
+                            id: topicId,
+                            name: name,
+                            color: color,
+                            display_order: newDisplayOrder
+                        });
+                    }
                 }
+            });
+        } else {
+            // 데스크탑 테이블에서 데이터 수집
+            const rows = document.querySelectorAll('#topicsTableBody tr');
+            rows.forEach((row, index) => {
+                const topicId = row.dataset.topicId;
+                const nameInput = row.querySelector('.topic-name-input');
+                const colorInput = row.querySelector('.topic-color-input');
                 
-                // 변경사항이 있으면 업데이트 목록에 추가
-                if (name !== originalName || color !== originalColor || newDisplayOrder !== originalDisplayOrder) {
-                    updates.push({
-                        id: topicId,
-                        name: name,
-                        color: color,
-                        display_order: newDisplayOrder
-                    });
+                if (nameInput && colorInput && topicId) {
+                    const name = nameInput.value.trim();
+                    const color = colorInput.value;
+                    const originalName = nameInput.dataset.originalName;
+                    const originalColor = colorInput.dataset.originalColor;
+                    const newDisplayOrder = index + 1;
+                    const originalDisplayOrder = parseInt(row.dataset.displayOrder);
+                    
+                    if (!name) {
+                        alert('주제 이름을 입력해주세요.');
+                        return;
+                    }
+                    
+                    if (name !== originalName || color !== originalColor || newDisplayOrder !== originalDisplayOrder) {
+                        updates.push({
+                            id: topicId,
+                            name: name,
+                            color: color,
+                            display_order: newDisplayOrder
+                        });
+                    }
                 }
-            }
-        });
+            });
+        }
         
         // 업데이트가 없으면 저장할 내용 없음
         if (updates.length === 0) {
@@ -1753,9 +1921,11 @@
 
     // 주제 추가 버튼 이벤트 리스너
     $(document).ready(function() {
-        $(document).on('click', '#addTopicBtn', function(e) {
+        // 주제 추가 버튼 (데스크탑 + 모바일)
+        $(document).on('click', '#addTopicBtn, #addTopicBtn_mobile', function(e) {
             e.preventDefault();
-            const nameInput = $('#newTopicName');
+            // 모바일과 데스크탑 입력 필드 모두 확인
+            const nameInput = $('#newTopicName').length ? $('#newTopicName') : $('#newTopicName_mobile');
             const name = nameInput.val().trim();
             
             if (!name) {
@@ -1788,6 +1958,9 @@
             .then(data => {
                 if (data.success) {
                     alert('주제가 추가되었습니다.');
+                    // 입력 필드 초기화
+                    $('#newTopicName').val('');
+                    $('#newTopicName_mobile').val('');
                     window.location.reload();
                 } else {
                     alert(data.message || '주제 추가 중 오류가 발생했습니다.');
