@@ -47,7 +47,7 @@ class ChatController extends Controller
         $nickname = null;
         
         if ($userId) {
-            $nickname = Auth::user()->name;
+            $nickname = Auth::user()->nickname ?? Auth::user()->name;
         } else {
             $sessionId = session()->getId();
             $guestSession = ChatGuestSession::getOrCreate($sessionId, $site->id, $request->ip(), $request->userAgent());
@@ -145,7 +145,7 @@ class ChatController extends Controller
         $nickname = null;
         
         if ($userId) {
-            $nickname = Auth::user()->name;
+            $nickname = Auth::user()->nickname ?? Auth::user()->name;
         } else {
             $sessionId = session()->getId();
             $guestSession = ChatGuestSession::getOrCreate($sessionId, $site->id, $request->ip(), $request->userAgent());
