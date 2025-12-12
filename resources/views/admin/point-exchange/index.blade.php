@@ -245,8 +245,9 @@
                 </button>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
+                <!-- PC 버전 테이블 -->
+                <div class="table-responsive d-none d-md-block">
+                    <table class="table table-hover mb-0">
                         <thead>
                             <tr>
                                 <th>썸네일</th>
@@ -307,6 +308,109 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                <!-- 모바일 버전 카드 레이아웃 -->
+                <div class="d-md-none">
+                    @forelse($products as $product)
+                        <div class="card border mb-2">
+                            <div class="card-body p-3">
+                                <!-- 상단: 썸네일과 기본 정보 -->
+                                <div class="d-flex gap-3 mb-3">
+                                    <!-- 썸네일 -->
+                                    <div class="flex-shrink-0">
+                                        @if($product->thumbnail_path)
+                                            <img src="{{ asset('storage/' . $product->thumbnail_path) }}" 
+                                                 alt="{{ $product->item_content }}" 
+                                                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 0.375rem;">
+                                        @else
+                                            <div class="bg-light d-flex align-items-center justify-content-center" 
+                                                 style="width: 80px; height: 80px; border-radius: 0.375rem;">
+                                                <i class="bi bi-image text-muted"></i>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <!-- 항목명과 항목내용 -->
+                                    <div class="flex-grow-1">
+                                        <div class="mb-1">
+                                            <span class="small text-muted">항목명</span>
+                                            <div class="fw-medium" style="font-size: 0.9rem;">{{ $product->item_name }}</div>
+                                        </div>
+                                        <div>
+                                            <span class="small text-muted">항목내용</span>
+                                            <div class="fw-bold" style="font-size: 0.95rem;">{{ $product->item_content }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 통계 정보 그리드 -->
+                                <div class="row g-2 mb-3">
+                                    <div class="col-3">
+                                        <div class="text-center p-2 bg-light rounded">
+                                            <div class="small text-muted mb-1" style="font-size: 0.7rem;">대기</div>
+                                            <div class="fw-bold" style="font-size: 0.9rem;">{{ $product->pending_count }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="text-center p-2 bg-light rounded">
+                                            <div class="small text-muted mb-1" style="font-size: 0.7rem;">완료</div>
+                                            <div class="fw-bold text-success" style="font-size: 0.9rem;">{{ $product->completed_count }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="text-center p-2 bg-light rounded">
+                                            <div class="small text-muted mb-1" style="font-size: 0.7rem;">보류</div>
+                                            <div class="fw-bold text-danger" style="font-size: 0.9rem;">{{ $product->rejected_count }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="text-center p-2 bg-light rounded">
+                                            <div class="small text-muted mb-1" style="font-size: 0.7rem;">총합</div>
+                                            <div class="fw-bold" style="font-size: 0.9rem;">{{ $product->total_count }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 총액 -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center p-2 bg-primary bg-opacity-10 rounded">
+                                        <span class="small text-muted">총액</span>
+                                        <span class="fw-bold text-primary" style="font-size: 1rem;">{{ number_format($product->total_amount) }}P</span>
+                                    </div>
+                                </div>
+
+                                <!-- 작업 버튼 -->
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editProductModal{{ $product->id }}"
+                                            style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                        <i class="bi bi-pencil"></i> 수정
+                                    </button>
+                                    <a href="{{ route('admin.point-exchange.applications', ['site' => $site->slug, 'product' => $product->id]) }}" 
+                                       class="btn btn-sm btn-outline-info"
+                                       style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                        <i class="bi bi-list"></i> 신청목록
+                                    </a>
+                                    <form action="{{ route('admin.point-exchange.destroy-product', ['site' => $site->slug, 'product' => $product->id]) }}" 
+                                          method="POST" 
+                                          onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger w-100"
+                                                style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                                            <i class="bi bi-trash"></i> 삭제
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox display-1 text-muted"></i>
+                            <h4 class="mt-3 mb-2">등록된 상품이 없습니다</h4>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -399,6 +503,35 @@
     </div>
 </div>
 @endforeach
+
+@push('styles')
+<style>
+    /* 모바일 최적화 스타일 */
+    @media (max-width: 767.98px) {
+        /* 카드 간격 최소화 */
+        .d-md-none .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* 통계 박스 스타일 */
+        .d-md-none .bg-light {
+            background-color: #f8f9fa !important;
+        }
+        
+        /* 버튼 최적화 */
+        .d-md-none .btn-sm {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.5rem;
+        }
+        
+        /* 총액 박스 스타일 */
+        .d-md-none .bg-primary.bg-opacity-10 {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+    }
+</style>
+@endpush
 
 @push('scripts')
 <script>
