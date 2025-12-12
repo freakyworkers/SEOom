@@ -165,10 +165,11 @@
                                     <label class="form-label small fw-bold mb-1">색상</label>
                                     <div class="d-flex align-items-center gap-2">
                                         <input type="color" 
-                                               class="form-control form-control-color form-control-sm" 
+                                               class="form-control form-control-color form-control-sm rank-color-input" 
                                                name="ranks[{{ $rank->id }}][color]" 
                                                value="{{ $rank->color ?? '#000000' }}" 
-                                               style="width: 60px; height: 38px;">
+                                               id="color_mobile_{{ $rank->id }}"
+                                               style="width: 80px; height: 50px; cursor: pointer; border: 2px solid #dee2e6; border-radius: 4px;">
                                         <span class="small text-muted">색상 선택</span>
                                     </div>
                                 </div>
@@ -261,7 +262,7 @@ $(document).ready(function() {
         if (displayType === 'color') {
             colorCell = '<td class="color-cell"><input type="color" class="form-control form-control-color form-control-sm" name="ranks[' + newId + '][color]" value="#000000" style="width: 60px; height: 38px;"></td>';
             iconCell = '<td class="icon-cell" style="display: none;"></td>';
-            colorCellMobile = '<div class="mb-2 color-cell-mobile"><label class="form-label small fw-bold mb-1">색상</label><div class="d-flex align-items-center gap-2"><input type="color" class="form-control form-control-color form-control-sm" name="ranks[' + newId + '][color]" value="#000000" style="width: 60px; height: 38px;"><span class="small text-muted">색상 선택</span></div></div>';
+            colorCellMobile = '<div class="mb-2 color-cell-mobile"><label class="form-label small fw-bold mb-1">색상</label><div class="d-flex align-items-center gap-2"><input type="color" class="form-control form-control-color form-control-sm rank-color-input" name="ranks[' + newId + '][color]" value="#000000" id="color_mobile_' + newId + '" style="width: 80px; height: 50px; cursor: pointer; border: 2px solid #dee2e6; border-radius: 4px;"><span class="small text-muted">색상 선택</span></div></div>';
             iconCellMobile = '<div class="mb-2 icon-cell-mobile" style="display: none;"></div>';
         } else {
             colorCell = '<td class="color-cell" style="display: none;"></td>';
@@ -390,10 +391,14 @@ $(document).ready(function() {
     $('#ranksForm').on('submit', function(e) {
         e.preventDefault();
         
-        const formData = new FormData(this);
+        const formData = new FormData();
+        
+        // 전역 설정
         formData.append('criteria_type', $('#rank_criteria_type').val());
         formData.append('display_type', $('#rank_display_type').val());
+        formData.append('_token', '{{ csrf_token() }}');
         
+        // 관리자/매니저 아이콘
         if ($('#admin_icon')[0].files.length > 0) {
             formData.append('admin_icon', $('#admin_icon')[0].files[0]);
         }
@@ -401,7 +406,59 @@ $(document).ready(function() {
             formData.append('manager_icon', $('#manager_icon')[0].files[0]);
         }
         
-        formData.append('_token', '{{ csrf_token() }}');
+        // 등급 데이터 수집 (표시된 것만 수집)
+        const isMobile = window.innerWidth < 768;
+        const ranks = [];
+        
+        if (isMobile) {
+            // 모바일 카드에서 데이터 수집
+            $('#ranksCardBody .card[data-rank-id]').each(function() {
+                const rankId = $(this).data('rank-id');
+                const card = $(this);
+                
+                formData.append('ranks[' + rankId + '][id]', rankId);
+                formData.append('ranks[' + rankId + '][rank]', card.find('input[name*="[rank]"]').val());
+                formData.append('ranks[' + rankId + '][name]', card.find('input[name*="[name]"]').val());
+                formData.append('ranks[' + rankId + '][criteria_value]', card.find('input[name*="[criteria_value]"]').val());
+                formData.append('ranks[' + rankId + '][display_type]', card.find('input[name*="[display_type]"]').val());
+                
+                // 색상 추가
+                const colorInput = card.find('input[name*="[color]"]');
+                if (colorInput.length && colorInput.is(':visible')) {
+                    formData.append('ranks[' + rankId + '][color]', colorInput.val());
+                }
+                
+                // 아이콘 파일 추가
+                const iconInput = card.find('input[type="file"][name*="[icon]"]');
+                if (iconInput.length && iconInput.is(':visible') && iconInput[0].files.length > 0) {
+                    formData.append('ranks[' + rankId + '][icon]', iconInput[0].files[0]);
+                }
+            });
+        } else {
+            // 데스크탑 테이블에서 데이터 수집
+            $('#ranksTableBody tr[data-rank-id]').each(function() {
+                const rankId = $(this).data('rank-id');
+                const row = $(this);
+                
+                formData.append('ranks[' + rankId + '][id]', rankId);
+                formData.append('ranks[' + rankId + '][rank]', row.find('input[name*="[rank]"]').val());
+                formData.append('ranks[' + rankId + '][name]', row.find('input[name*="[name]"]').val());
+                formData.append('ranks[' + rankId + '][criteria_value]', row.find('input[name*="[criteria_value]"]').val());
+                formData.append('ranks[' + rankId + '][display_type]', row.next('input[name*="[display_type]"]').val());
+                
+                // 색상 추가
+                const colorInput = row.find('input[name*="[color]"]');
+                if (colorInput.length && colorInput.is(':visible')) {
+                    formData.append('ranks[' + rankId + '][color]', colorInput.val());
+                }
+                
+                // 아이콘 파일 추가
+                const iconInput = row.find('input[type="file"][name*="[icon]"]');
+                if (iconInput.length && iconInput.is(':visible') && iconInput[0].files.length > 0) {
+                    formData.append('ranks[' + rankId + '][icon]', iconInput[0].files[0]);
+                }
+            });
+        }
 
         $.ajax({
             url: '{{ route("admin.user-ranks.update", ["site" => $site->slug]) }}',
@@ -413,11 +470,16 @@ $(document).ready(function() {
                 if (response.success) {
                     alert('저장되었습니다.');
                     location.reload();
+                } else {
+                    alert('저장 중 오류가 발생했습니다: ' + (response.message || '알 수 없는 오류'));
                 }
             },
             error: function(xhr) {
+                console.error('Error:', xhr);
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     alert('오류: ' + Object.values(xhr.responseJSON.errors).flat().join(', '));
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    alert('오류: ' + xhr.responseJSON.message);
                 } else {
                     alert('오류가 발생했습니다.');
                 }
