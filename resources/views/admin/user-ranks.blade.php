@@ -72,7 +72,8 @@
     </div>
     <div class="card-body">
         <form id="ranksForm">
-            <div class="table-responsive">
+            {{-- 데스크탑 버전 (테이블) --}}
+            <div class="table-responsive d-none d-md-block">
                 <table class="table table-hover">
                     <thead>
                             <tr>
@@ -125,6 +126,91 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- 모바일 버전 (카드 레이아웃) --}}
+            <div class="d-md-none">
+                <div class="d-grid gap-3" id="ranksCardBody">
+                    @foreach($ranks as $rank)
+                        <div class="card shadow-sm" data-rank-id="{{ $rank->id }}">
+                            <div class="card-body">
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold mb-1">등급</label>
+                                        <input type="number" 
+                                               class="form-control form-control-sm" 
+                                               name="ranks[{{ $rank->id }}][rank]" 
+                                               value="{{ $rank->rank }}" 
+                                               min="1" 
+                                               required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold mb-1">기준</label>
+                                        <input type="number" 
+                                               class="form-control form-control-sm" 
+                                               name="ranks[{{ $rank->id }}][criteria_value]" 
+                                               value="{{ $rank->criteria_value }}" 
+                                               min="0" 
+                                               required>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold mb-1">이름</label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           name="ranks[{{ $rank->id }}][name]" 
+                                           value="{{ $rank->name }}" 
+                                           required>
+                                </div>
+                                <div class="mb-2 color-cell-mobile" style="display: {{ $displayType == 'color' ? 'block' : 'none' }};">
+                                    <label class="form-label small fw-bold mb-1">색상</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" 
+                                               class="form-control form-control-color form-control-sm" 
+                                               name="ranks[{{ $rank->id }}][color]" 
+                                               value="{{ $rank->color ?? '#000000' }}" 
+                                               style="width: 60px; height: 38px;">
+                                        <span class="small text-muted">색상 선택</span>
+                                    </div>
+                                </div>
+                                <div class="mb-2 icon-cell-mobile" style="display: {{ $displayType == 'icon' ? 'block' : 'none' }};">
+                                    <label class="form-label small fw-bold mb-1">아이콘</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="file" 
+                                               class="form-control form-control-sm rank-icon-input" 
+                                               name="ranks[{{ $rank->id }}][icon]" 
+                                               accept="image/*" 
+                                               id="icon_mobile_{{ $rank->id }}" 
+                                               style="display: none;">
+                                        <label for="icon_mobile_{{ $rank->id }}" style="cursor: pointer; margin: 0;">
+                                            @if($rank->icon_path)
+                                                <img src="{{ asset('storage/' . $rank->icon_path) }}" 
+                                                     alt="Icon" 
+                                                     class="rank-icon-preview" 
+                                                     style="width: 50px; height: 50px; object-fit: contain; border: 1px solid #dee2e6; border-radius: 4px;">
+                                            @else
+                                                <div class="rank-icon-placeholder" 
+                                                     style="width: 50px; height: 50px; border: 1px solid #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
+                                                    <i class="bi bi-image text-muted"></i>
+                                                </div>
+                                            @endif
+                                        </label>
+                                        <span class="small text-muted">아이콘 선택</span>
+                                    </div>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="button" 
+                                            class="btn btn-danger btn-sm delete-rank" 
+                                            data-rank-id="{{ $rank->id }}">
+                                        <i class="bi bi-trash"></i> 삭제
+                                    </button>
+                                </div>
+                                <input type="hidden" name="ranks[{{ $rank->id }}][id]" value="{{ $rank->id }}">
+                                <input type="hidden" name="ranks[{{ $rank->id }}][display_type]" value="{{ $rank->display_type }}">
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
             <div class="mt-3 d-flex justify-content-between align-items-center">
                 <button type="button" class="btn btn-success" id="addRankBtn">
                     <i class="bi bi-plus-circle me-1"></i>추가
@@ -140,39 +226,51 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // display_type 변경 시 테이블 헤더/셀 표시/숨김
+    // display_type 변경 시 테이블 헤더/셀 표시/숨김 (데스크탑 + 모바일)
     function updateDisplayType() {
         const displayType = $('#rank_display_type').val();
         if (displayType === 'color') {
             $('.color-header, .color-cell').show();
             $('.icon-header, .icon-cell').hide();
+            $('.color-cell-mobile').show();
+            $('.icon-cell-mobile').hide();
         } else {
             $('.icon-header, .icon-cell').show();
             $('.color-header, .color-cell').hide();
+            $('.icon-cell-mobile').show();
+            $('.color-cell-mobile').hide();
         }
     }
 
     $('#rank_display_type').on('change', updateDisplayType);
     updateDisplayType();
 
-    // 새 등급 추가
+    // 새 등급 추가 (데스크탑 + 모바일)
     let newRankCounter = 0;
     function addNewRankRow() {
         const displayType = $('#rank_display_type').val();
         const tbody = $('#ranksTableBody');
+        const cardBody = $('#ranksCardBody');
         const newId = 'new_' + (++newRankCounter);
         
         let colorCell = '';
         let iconCell = '';
+        let colorCellMobile = '';
+        let iconCellMobile = '';
         
         if (displayType === 'color') {
             colorCell = '<td class="color-cell"><input type="color" class="form-control form-control-color form-control-sm" name="ranks[' + newId + '][color]" value="#000000" style="width: 60px; height: 38px;"></td>';
             iconCell = '<td class="icon-cell" style="display: none;"></td>';
+            colorCellMobile = '<div class="mb-2 color-cell-mobile"><label class="form-label small fw-bold mb-1">색상</label><div class="d-flex align-items-center gap-2"><input type="color" class="form-control form-control-color form-control-sm" name="ranks[' + newId + '][color]" value="#000000" style="width: 60px; height: 38px;"><span class="small text-muted">색상 선택</span></div></div>';
+            iconCellMobile = '<div class="mb-2 icon-cell-mobile" style="display: none;"></div>';
         } else {
             colorCell = '<td class="color-cell" style="display: none;"></td>';
             iconCell = '<td class="icon-cell"><div class="d-flex align-items-center gap-2"><input type="file" class="form-control form-control-sm rank-icon-input" name="ranks[' + newId + '][icon]" accept="image/*" id="icon_' + newId + '" style="display: none;"><label for="icon_' + newId + '" style="cursor: pointer; margin: 0;"><div class="rank-icon-placeholder" style="width: 40px; height: 40px; border: 1px solid #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center; background: #f8f9fa;"><i class="bi bi-image text-muted" style="font-size: 0.8rem;"></i></div></label></div></td>';
+            colorCellMobile = '<div class="mb-2 color-cell-mobile" style="display: none;"></div>';
+            iconCellMobile = '<div class="mb-2 icon-cell-mobile"><label class="form-label small fw-bold mb-1">아이콘</label><div class="d-flex align-items-center gap-2"><input type="file" class="form-control form-control-sm rank-icon-input" name="ranks[' + newId + '][icon]" accept="image/*" id="icon_mobile_' + newId + '" style="display: none;"><label for="icon_mobile_' + newId + '" style="cursor: pointer; margin: 0;"><div class="rank-icon-placeholder" style="width: 50px; height: 50px; border: 1px solid #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center; background: #f8f9fa;"><i class="bi bi-image text-muted"></i></div></label><span class="small text-muted">아이콘 선택</span></div></div>';
         }
         
+        // 데스크탑 테이블 행
         const newRow = '<tr data-rank-id="' + newId + '" class="new-rank-row">' +
             '<td><input type="number" class="form-control form-control-sm" name="ranks[' + newId + '][rank]" value="1" min="1" required></td>' +
             '<td><input type="text" class="form-control form-control-sm" name="ranks[' + newId + '][name]" value="" required></td>' +
@@ -184,33 +282,79 @@ $(document).ready(function() {
             '<input type="hidden" name="ranks[' + newId + '][id]" value="' + newId + '">' +
             '<input type="hidden" name="ranks[' + newId + '][display_type]" value="' + displayType + '">';
         
+        // 모바일 카드
+        const newCard = '<div class="card shadow-sm new-rank-card" data-rank-id="' + newId + '">' +
+            '<div class="card-body">' +
+            '<div class="row g-2 mb-2">' +
+            '<div class="col-6"><label class="form-label small fw-bold mb-1">등급</label><input type="number" class="form-control form-control-sm" name="ranks[' + newId + '][rank]" value="1" min="1" required></div>' +
+            '<div class="col-6"><label class="form-label small fw-bold mb-1">기준</label><input type="number" class="form-control form-control-sm" name="ranks[' + newId + '][criteria_value]" value="0" min="0" required></div>' +
+            '</div>' +
+            '<div class="mb-2"><label class="form-label small fw-bold mb-1">이름</label><input type="text" class="form-control form-control-sm" name="ranks[' + newId + '][name]" value="" required></div>' +
+            colorCellMobile +
+            iconCellMobile +
+            '<div class="d-grid"><button type="button" class="btn btn-danger btn-sm remove-rank-row"><i class="bi bi-trash"></i> 삭제</button></div>' +
+            '<input type="hidden" name="ranks[' + newId + '][id]" value="' + newId + '">' +
+            '<input type="hidden" name="ranks[' + newId + '][display_type]" value="' + displayType + '">' +
+            '</div>' +
+            '</div>';
+        
         tbody.append(newRow);
+        if (cardBody.length) {
+            cardBody.append(newCard);
+        }
     }
     
     $('#addRankBtn').on('click', addNewRankRow);
 
-    // 새로 추가된 행 제거
+    // 새로 추가된 행 제거 (데스크탑 + 모바일)
     $(document).on('click', '.remove-rank-row', function() {
-        const row = $(this).closest('tr');
-        const rankId = row.data('rank-id');
-        row.next('input[type="hidden"][name*="[' + rankId + ']"]').remove();
-        row.remove();
+        const container = $(this).closest('[data-rank-id]');
+        const rankId = container.data('rank-id');
+        
+        // 데스크탑 테이블 행 제거
+        const row = $('#ranksTableBody tr[data-rank-id="' + rankId + '"]');
+        if (row.length) {
+            row.next('input[type="hidden"][name*="[' + rankId + ']"]').remove();
+            row.remove();
+        }
+        
+        // 모바일 카드 제거
+        const card = $('#ranksCardBody .card[data-rank-id="' + rankId + '"]');
+        if (card.length) {
+            card.remove();
+        }
     });
 
-    // 아이콘 파일 선택 시 미리보기 업데이트
+    // 아이콘 파일 선택 시 미리보기 업데이트 (데스크탑 + 모바일)
     $(document).on('change', '.rank-icon-input', function() {
         const input = this;
         const file = input.files[0];
-        const label = $(input).siblings('label');
+        const inputId = $(input).attr('id');
+        const rankId = inputId.replace('icon_', '').replace('icon_mobile_', '');
         
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                const preview = label.find('.rank-icon-preview');
-                if (preview.length) {
-                    preview.attr('src', e.target.result);
-                } else {
-                    label.find('.rank-icon-placeholder').replaceWith('<img src="' + e.target.result + '" alt="Icon" class="rank-icon-preview" style="width: 40px; height: 40px; object-fit: contain; border: 1px solid #dee2e6; border-radius: 4px;">');
+                // 데스크탑 미리보기 업데이트
+                const desktopLabel = $('#icon_' + rankId).siblings('label');
+                if (desktopLabel.length) {
+                    const preview = desktopLabel.find('.rank-icon-preview');
+                    if (preview.length) {
+                        preview.attr('src', e.target.result);
+                    } else {
+                        desktopLabel.find('.rank-icon-placeholder').replaceWith('<img src="' + e.target.result + '" alt="Icon" class="rank-icon-preview" style="width: 40px; height: 40px; object-fit: contain; border: 1px solid #dee2e6; border-radius: 4px;">');
+                    }
+                }
+                
+                // 모바일 미리보기 업데이트
+                const mobileLabel = $('#icon_mobile_' + rankId).siblings('label');
+                if (mobileLabel.length) {
+                    const preview = mobileLabel.find('.rank-icon-preview');
+                    if (preview.length) {
+                        preview.attr('src', e.target.result);
+                    } else {
+                        mobileLabel.find('.rank-icon-placeholder').replaceWith('<img src="' + e.target.result + '" alt="Icon" class="rank-icon-preview" style="width: 50px; height: 50px; object-fit: contain; border: 1px solid #dee2e6; border-radius: 4px;">');
+                    }
                 }
             };
             reader.readAsDataURL(file);
