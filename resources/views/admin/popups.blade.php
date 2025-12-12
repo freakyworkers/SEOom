@@ -180,7 +180,51 @@
         <div class="d-md-none">
             <div class="d-grid gap-3" id="popupsCardBody">
                 @forelse($popups as $popup)
-                    <div class="card" data-popup-id="{{ $popup->id }}">
+                    <div class="card shadow-sm" data-popup-id="{{ $popup->id }}">
+                        {{-- 카드 헤더: 위치와 액션 버튼 --}}
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <div class="flex-grow-1">
+                                <select class="form-select form-select-sm popup-target-type-select d-inline-block" 
+                                        name="target_types[{{ $popup->id }}]"
+                                        data-popup-id="{{ $popup->id }}"
+                                        style="width: auto; min-width: 100px;">
+                                    <option value="all" {{ $popup->target_type == 'all' ? 'selected' : '' }}>전체</option>
+                                    <option value="main" {{ $popup->target_type == 'main' ? 'selected' : '' }}>메인</option>
+                                    <option value="attendance" {{ $popup->target_type == 'attendance' ? 'selected' : '' }}>출첵</option>
+                                    <option value="point-exchange" {{ $popup->target_type == 'point-exchange' ? 'selected' : '' }}>{{ $pointExchangeTitle }}</option>
+                                    <option value="event-application" {{ $popup->target_type == 'event-application' ? 'selected' : '' }}>{{ $eventApplicationTitle }}</option>
+                                    @foreach($boards as $board)
+                                        <option value="board_{{ $board->id }}" {{ ($popup->target_type == 'board' && $popup->target_board_id == $board->id) ? 'selected' : '' }}>
+                                            {{ $board->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <span class="badge bg-secondary ms-2">{{ $popup->created_at->format('m.d') }}</span>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-secondary popup-order-up-btn" 
+                                        data-popup-id="{{ $popup->id }}"
+                                        {{ $loop->first ? 'disabled' : '' }}
+                                        title="위로">
+                                    <i class="bi bi-arrow-up"></i>
+                                </button>
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-secondary popup-order-down-btn" 
+                                        data-popup-id="{{ $popup->id }}"
+                                        {{ $loop->last ? 'disabled' : '' }}
+                                        title="아래로">
+                                    <i class="bi bi-arrow-down"></i>
+                                </button>
+                                <button type="button" 
+                                        class="btn btn-sm btn-danger delete-popup-btn" 
+                                        data-popup-id="{{ $popup->id }}"
+                                        title="삭제">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
                         <div class="card-body">
                             {{-- 이미지/HTML 섹션 --}}
                             <div class="mb-3 text-center">
@@ -216,11 +260,11 @@
 
                             {{-- 링크/HTML 코드 섹션 --}}
                             <div class="mb-3">
-                                <label class="form-label small mb-1">링크/HTML 코드</label>
+                                <label class="form-label small mb-1 fw-bold">링크/HTML 코드</label>
                                 @if($popup->type === 'html')
                                     <textarea class="form-control form-control-sm popup-html-input" 
                                               name="html_codes[{{ $popup->id }}]"
-                                              rows="5"
+                                              rows="4"
                                               placeholder="HTML 코드를 입력하세요.">{{ $popup->html_code ?? '' }}</textarea>
                                 @else
                                     <input type="text" 
@@ -232,7 +276,7 @@
                             </div>
 
                             {{-- 새 창으로 띄우기 --}}
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <div class="form-check">
                                     <input class="form-check-input popup-open-new-window-checkbox" 
                                            type="checkbox" 
@@ -241,63 +285,10 @@
                                            id="open_new_window_mobile_{{ $popup->id }}"
                                            data-popup-id="{{ $popup->id }}"
                                            {{ $popup->open_new_window ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="open_new_window_mobile_{{ $popup->id }}">
+                                    <label class="form-check-label small" for="open_new_window_mobile_{{ $popup->id }}">
                                         새 창으로 띄우기
                                     </label>
                                 </div>
-                            </div>
-
-                            {{-- 등록시각 --}}
-                            <div class="mb-3">
-                                <label class="form-label small mb-1">등록시각</label>
-                                <div class="text-muted small">{{ $popup->created_at->format('Y.m.d H:i:s') }}</div>
-                            </div>
-
-                            {{-- 순서 버튼 --}}
-                            <div class="mb-3">
-                                <label class="form-label small mb-1">순서</label>
-                                <div class="btn-group w-100" role="group">
-                                    <button type="button" 
-                                            class="btn btn-sm btn-outline-secondary popup-order-up-btn" 
-                                            data-popup-id="{{ $popup->id }}"
-                                            {{ $loop->first ? 'disabled' : '' }}>
-                                        <i class="bi bi-arrow-up"></i> 위로
-                                    </button>
-                                    <button type="button" 
-                                            class="btn btn-sm btn-outline-secondary popup-order-down-btn" 
-                                            data-popup-id="{{ $popup->id }}"
-                                            {{ $loop->last ? 'disabled' : '' }}>
-                                        <i class="bi bi-arrow-down"></i> 아래로
-                                    </button>
-                                </div>
-                            </div>
-
-                            {{-- 위치 선택 --}}
-                            <div class="mb-3">
-                                <label class="form-label small mb-1">위치</label>
-                                <select class="form-select form-select-sm popup-target-type-select" 
-                                        name="target_types[{{ $popup->id }}]"
-                                        data-popup-id="{{ $popup->id }}">
-                                    <option value="all" {{ $popup->target_type == 'all' ? 'selected' : '' }}>전체</option>
-                                    <option value="main" {{ $popup->target_type == 'main' ? 'selected' : '' }}>메인</option>
-                                    <option value="attendance" {{ $popup->target_type == 'attendance' ? 'selected' : '' }}>출첵</option>
-                                    <option value="point-exchange" {{ $popup->target_type == 'point-exchange' ? 'selected' : '' }}>{{ $pointExchangeTitle }}</option>
-                                    <option value="event-application" {{ $popup->target_type == 'event-application' ? 'selected' : '' }}>{{ $eventApplicationTitle }}</option>
-                                    @foreach($boards as $board)
-                                        <option value="board_{{ $board->id }}" {{ ($popup->target_type == 'board' && $popup->target_board_id == $board->id) ? 'selected' : '' }}>
-                                            {{ $board->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            {{-- 삭제 버튼 --}}
-                            <div class="d-grid">
-                                <button type="button" 
-                                        class="btn btn-sm btn-danger delete-popup-btn" 
-                                        data-popup-id="{{ $popup->id }}">
-                                    <i class="bi bi-trash"></i> 삭제
-                                </button>
                             </div>
                         </div>
                     </div>
