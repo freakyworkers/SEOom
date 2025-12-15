@@ -2270,5 +2270,4 @@
 </script>
 @endpush
 @endif
-@endif
 
