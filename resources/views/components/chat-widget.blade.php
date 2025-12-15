@@ -33,7 +33,7 @@
     }
 
     // Check penalties
-    $hasPenalty = \App\Models\Penalty::where('site_id', $site->id)
+    $chatPenalty = \App\Models\Penalty::where('site_id', $site->id)
         ->where(function($q) use ($userId, $guestSessionId) {
             if ($userId) {
                 $q->where('user_id', $userId);
@@ -47,7 +47,20 @@
             $q->whereNull('expires_at')
               ->orWhere('expires_at', '>', now());
         })
-        ->exists();
+        ->orderByDesc('created_at')
+        ->first();
+        
+    $hasPenalty = !is_null($chatPenalty);
+    $penaltyExpiresAt = $chatPenalty && $chatPenalty->expires_at ? $chatPenalty->expires_at->toIso8601String() : null;
+    $penaltyRemainingText = $chatPenalty
+        ? ($chatPenalty->expires_at
+            ? now()->diffForHumans($chatPenalty->expires_at, [
+                'parts' => 2,
+                'short' => true,
+                'syntax' => \Carbon\CarbonInterface::DIFF_ABSOLUTE
+            ])
+            : '제한 없음')
+        : null;
 
     // Get API routes
     $apiBaseUrl = "/site/{$site->slug}";
@@ -58,16 +71,17 @@
     $csrfToken = csrf_token();
 @endphp
 
-@if($hasPenalty)
-    <div class="alert alert-warning mb-0">
-        <i class="bi bi-exclamation-triangle me-2"></i>채팅이 금지되었습니다.
-    </div>
-@else
 <div class="chat-widget-container d-none d-md-block" id="chatWidget_{{ $site->id }}" data-site-id="{{ $site->id }}">
     <div class="chat-widget-header">
         <h6 class="mb-0"><i class="bi bi-chat-dots me-2"></i>채팅</h6>
         <button type="button" class="btn-close d-md-none" id="chatWidgetCloseBtn_{{ $site->id }}" aria-label="Close" style="display: none;"></button>
     </div>
+    
+    @if($hasPenalty)
+    <div class="alert alert-warning mb-0 rounded-0" style="border-left: none; border-right: none; border-top: none;">
+        <small><i class="bi bi-exclamation-triangle me-1"></i>채팅이 금지되었습니다. @if($penaltyRemainingText) (남은기간: {{ $penaltyRemainingText }}) @endif</small>
+    </div>
+    @endif
     
     @if($chatSetting->notice)
     <div class="chat-notice alert alert-info mb-0 rounded-0" style="border-left: none; border-right: none; border-top: none;">
@@ -108,6 +122,31 @@
                         <i class="bi bi-x"></i>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 채팅 금지 안내 모달 -->
+<div class="modal fade" id="chatBanModal_{{ $site->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">채팅이 금지되었습니다.</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-1">채팅 금지 패널티가 적용 중입니다.</p>
+                <p class="text-muted mb-0" id="chatBanRemaining_{{ $site->id }}">
+                    @if($penaltyRemainingText)
+                        남은기간: {{ $penaltyRemainingText }}
+                    @else
+                        남은기간 정보가 없습니다.
+                    @endif
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
             </div>
         </div>
     </div>
@@ -401,9 +440,25 @@
     const isGuest = {{ $isGuest ? 'true' : 'false' }};
     const isAdmin = {{ auth()->check() && auth()->user()->canManage() ? 'true' : 'false' }};
     const allowGuestChat = {{ $allowGuestChat ? 'true' : 'false' }};
+    const hasChatPenalty = {{ $hasPenalty ? 'true' : 'false' }};
+    const chatPenaltyRemainingText = {!! $penaltyRemainingText ? "'남은기간: {$penaltyRemainingText}'" : "null" !!};
     
     let selectedFile = null;
     let pollInterval = null;
+    
+    function showChatBanModal() {
+        const remainingEl = document.getElementById('chatBanRemaining_' + siteId);
+        if (remainingEl && chatPenaltyRemainingText) {
+            remainingEl.textContent = chatPenaltyRemainingText;
+        }
+        const modalEl = document.getElementById('chatBanModal_' + siteId);
+        if (modalEl && window.bootstrap) {
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        } else {
+            alert('채팅이 금지되었습니다.' + (chatPenaltyRemainingText ? '\\n' + chatPenaltyRemainingText : ''));
+        }
+    }
     
     // Load messages
     function loadMessages() {
@@ -490,6 +545,11 @@
             return;
         }
         
+        if (hasChatPenalty) {
+            showChatBanModal();
+            return;
+        }
+        
         // 모바일 모달이 열려있으면 모바일 모달의 입력 필드 사용, 아니면 원본 사용
         const widget = document.getElementById(widgetId);
         const isMobileModal = widget && widget.classList.contains('mobile-modal');
@@ -527,6 +587,10 @@
         .then(response => response.json())
         .then(data => {
             if (data.error) {
+                if (data.error === '채팅이 금지되었습니다.') {
+                    showChatBanModal();
+                    return;
+                }
                 if (data.error === '금지 단어가 포함되었습니다.') {
                     alert('금지 단어가 포함되었습니다.');
                 } else {
@@ -842,7 +906,7 @@
 @endpush
 
 {{-- 모바일 채팅 아이콘 및 모달 --}}
-@if($site->hasFeature('chat_widget') && !$hasPenalty)
+@if($site->hasFeature('chat_widget'))
 @php
     // 모바일 고정메뉴 존재 여부 확인
     $hasMobileMenu = false;

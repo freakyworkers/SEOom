@@ -55,27 +55,6 @@ class ChatController extends Controller
             $nickname = $guestSession->getNickname();
         }
 
-        // Check penalties
-        $penalties = Penalty::where('site_id', $site->id)
-            ->where(function($q) use ($userId, $guestSessionId) {
-                if ($userId) {
-                    $q->where('user_id', $userId);
-                } else {
-                    $q->where('guest_session_id', $guestSessionId);
-                }
-            })
-            ->where('type', 'chat_ban')
-            ->where('is_active', true)
-            ->where(function($q) {
-                $q->whereNull('expires_at')
-                  ->orWhere('expires_at', '>', now());
-            })
-            ->exists();
-
-        if ($penalties) {
-            return response()->json(['error' => '채팅이 금지되었습니다.'], 403);
-        }
-
         // Get messages (last 20)
         $messages = ChatMessage::where('site_id', $site->id)
             ->with('user')
