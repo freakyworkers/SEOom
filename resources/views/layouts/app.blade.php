@@ -1385,21 +1385,20 @@
         .header-transparent-overlay .navbar,
         .header-transparent-overlay nav.navbar,
         .header-transparent-overlay .pc-header,
-        .header-transparent-overlay nav.pc-header {
+        .header-transparent-overlay nav.pc-header,
+        .header-transparent-overlay nav[style*="background-color"] {
             background-color: transparent !important;
             background: none !important;
             background-image: none !important;
         }
         
-        /* 투명헤더일 때 nav 내부 요소들도 투명하게 */
-        .header-transparent-overlay * {
-            background-color: transparent !important;
+        /* :root CSS 변수 오버라이드 */
+        .header-transparent-overlay {
+            --header-bg-color: transparent !important;
         }
         
-        /* 단, nav 내부의 버튼이나 링크는 예외 */
-        .header-transparent-overlay .btn,
-        .header-transparent-overlay .nav-link,
-        .header-transparent-overlay .navbar-brand {
+        .header-transparent-overlay nav,
+        .header-transparent-overlay .navbar {
             background-color: transparent !important;
         }
         
