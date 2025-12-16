@@ -113,6 +113,10 @@
                 // 폰트 설정
                 $fontDesign = $site->getSetting('font_design', 'noto-sans');
                 $fontSize = $site->getSetting('font_size', 'normal');
+                
+                // 투명헤더 설정 (기본값, 나중에 재정의됨)
+                $headerTransparent = false;
+                $isHomePage = false;
             }
         } catch (\Exception $e) {
             // 에러 발생 시 기본값 사용
@@ -151,6 +155,8 @@
             $colorDarkPointBg = '#212529';
             $fontDesign = 'noto-sans';
             $fontSize = 'normal';
+            $headerTransparent = false;
+            $isHomePage = false;
         }
     @endphp
     
