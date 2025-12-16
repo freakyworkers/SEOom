@@ -37,10 +37,14 @@
     $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
     $headerSticky = $site->getSetting('header_sticky', '0') == '1';
     
+    // 메인 페이지인지 확인
+    $isHomePage = request()->routeIs('home');
+    
     // 헤더 스타일 생성
     $headerStyle = "color: {$headerTextColor};";
-    if ($headerTransparent && !$headerSticky) {
-        // 투명헤더가 활성화되고 헤더 고정이 아닌 경우 배경색 제거
+    // 메인 페이지에서만 투명 헤더 적용
+    if ($headerTransparent && $isHomePage && !$headerSticky) {
+        // 투명헤더가 활성화되고 메인 페이지이며 헤더 고정이 아닌 경우 배경색 제거
         $headerStyle .= " background-color: transparent;";
     } else {
         $headerStyle .= " background-color: {$headerBgColor};";
@@ -54,9 +58,9 @@
     
     // 헤더 고정이 활성화된 경우 스크롤 시 배경색 표시를 위한 클래스 추가
     $headerClass = '';
-    if ($headerSticky && $headerTransparent) {
+    if ($headerSticky && $headerTransparent && $isHomePage) {
         $headerClass = 'header-transparent-sticky';
-    } elseif ($headerTransparent) {
+    } elseif ($headerTransparent && $isHomePage) {
         $headerClass = 'header-transparent';
     }
     
@@ -645,23 +649,38 @@
     </nav>
 @endif
 
-@if($headerSticky && $headerTransparent)
+@if($headerSticky && $headerTransparent && $isHomePage)
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const header = document.querySelector('.header-transparent-sticky');
     if (header) {
         const bgColor = header.getAttribute('data-bg-color');
+        const textColor = '{{ $headerTextColor }}';
         
         function handleScroll() {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             
             if (scrollTop > 10) {
-                // 스크롤 시 배경색 표시
+                // 스크롤 시 지정된 배경색과 텍스트 색상 적용
                 header.style.backgroundColor = bgColor;
-                header.style.transition = 'background-color 0.3s ease';
+                header.style.color = textColor;
+                header.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+                
+                // 헤더 내 모든 링크와 텍스트 색상도 변경
+                const links = header.querySelectorAll('a, .nav-link, .navbar-brand');
+                links.forEach(link => {
+                    link.style.color = textColor + ' !important';
+                });
             } else {
                 // 상단에 있을 때 투명
                 header.style.backgroundColor = 'transparent';
+                header.style.color = textColor;
+                
+                // 헤더 내 모든 링크와 텍스트 색상도 유지
+                const links = header.querySelectorAll('a, .nav-link, .navbar-brand');
+                links.forEach(link => {
+                    link.style.color = textColor + ' !important';
+                });
             }
         }
         

@@ -5,7 +5,7 @@
 @section('content')
 {{-- 메인 위젯 표시 --}}
 @if(isset($mainWidgetContainers) && $mainWidgetContainers->isNotEmpty())
-    @foreach($mainWidgetContainers as $container)
+    @foreach($mainWidgetContainers as $index => $container)
         @php
             $verticalAlign = $container->vertical_align ?? 'top';
             $alignClass = '';
@@ -27,6 +27,7 @@
                 $containerStyle .= ($containerStyle ? ' ' : '') . 'height: 100vh; overflow: hidden;';
                 $containerClass .= ' full-height-container';
             }
+            
             $rowStyle = $isFullWidth ? 'margin-left: 0; margin-right: 0; width: 100%;' : '';
             if ($isFullHeight) {
                 $rowStyle .= ($rowStyle ? ' ' : '') . 'height: 100%;';

@@ -159,6 +159,7 @@ class SiteSettingController extends Controller
             'theme_top' => 'nullable|string',
             'theme_top_header_show' => 'nullable|in:0,1',
             'header_sticky' => 'nullable|in:0,1',
+            'header_transparent' => 'nullable|in:0,1',
             'theme_bottom' => 'nullable|string',
             'theme_main' => 'nullable|in:round,square',
             'theme_sidebar' => 'nullable|in:left,right,none',

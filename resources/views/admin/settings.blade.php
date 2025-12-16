@@ -846,6 +846,12 @@
                             </label>
                         </div>
                         <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" name="header_transparent" id="header_transparent" value="1" {{ (isset($settings['header_transparent']) && $settings['header_transparent'] == '1') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="header_transparent">
+                                투명 헤더
+                            </label>
+                        </div>
+                        <div class="form-check mt-2">
                             <input class="form-check-input" type="checkbox" name="theme_full_width" id="theme_full_width" value="1" {{ (isset($settings['theme_full_width']) && $settings['theme_full_width'] == '1') ? 'checked' : '' }}>
                             <label class="form-check-label" for="theme_full_width">
                                 가로100%

@@ -659,6 +659,8 @@
         // 체크박스 값 비교 (문자열 '1' 또는 숫자 1 모두 처리)
         $showTopHeader = ($themeTopHeaderShow == '1' || $themeTopHeaderShow === '1' || $themeTopHeaderShow === 1);
         $isHeaderSticky = ($headerSticky == '1' || $headerSticky === '1' || $headerSticky === 1);
+        $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
+        $isHomePage = request()->routeIs('home');
     @endphp
     
     {{-- 헤더 배너 (최상단 헤더 상단) - sticky wrapper 밖에 배치하여 스크롤 시 자연스럽게 사라지도록 --}}
@@ -793,8 +795,13 @@
     @php
         // 헤더 고정 시 top을 0으로 설정
         $stickyTop = $isHeaderSticky ? '0' : '';
+        // 헤더가 항상 최상단에 표시되도록 z-index 설정
+        $headerWrapperStyle = 'position: relative; z-index: 1030;';
+        if ($isHeaderSticky) {
+            $headerWrapperStyle = 'position: sticky; top: ' . $stickyTop . '; z-index: 1030;';
+        }
     @endphp
-    <div class="{{ $isHeaderSticky ? 'sticky-header-wrapper' : '' }}" style="{{ $isHeaderSticky ? 'position: sticky; top: ' . $stickyTop . '; z-index: 1030;' : '' }}">
+    <div class="{{ $isHeaderSticky ? 'sticky-header-wrapper' : '' }}" style="{{ $headerWrapperStyle }}">
         {{-- PC 헤더 (데스크탑에서만 표시) --}}
         <x-header-theme 
             :theme="$themeTop" 
