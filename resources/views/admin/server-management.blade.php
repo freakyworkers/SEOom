@@ -151,11 +151,11 @@
             <div class="card-body">
                 <div class="d-grid gap-2">
                     @if($masterSite)
-                        <a href="{{ route('user-sites.change-plan-site', ['site' => $masterSite->slug, 'userSite' => $site->slug]) }}" 
+                        <a href="https://seoomweb.com" target="_blank" 
                            class="btn btn-outline-primary">
                             <i class="bi bi-arrow-left-right me-2"></i>플랜 변경하기
                         </a>
-                        <a href="{{ route('user-sites.server-upgrade', ['site' => $masterSite->slug, 'userSite' => $site->slug]) }}" 
+                        <a href="https://seoomweb.com" target="_blank" 
                            class="btn btn-outline-primary">
                             <i class="bi bi-server me-2"></i>서버 업그레이드
                         </a>

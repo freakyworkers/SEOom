@@ -1882,6 +1882,18 @@ $(document).ready(function() {
         setupImageLinkFeature();
     }, 2000);
 });
+
+// 저장용량 초과 체크 및 모달 표시
+document.addEventListener('DOMContentLoaded', function() {
+    const postForm = document.getElementById('postCreateForm');
+    if (postForm) {
+        postForm.addEventListener('submit', function(e) {
+            // 폼 제출 전 저장용량 체크는 서버에서 처리
+            // 서버에서 403 에러가 반환되면 모달 표시
+        });
+    }
+});
 </script>
+@include('components.storage-exceeded-modal')
 @endpush
 @endsection

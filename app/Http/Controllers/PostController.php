@@ -143,6 +143,23 @@ class PostController extends Controller
             return back()->with('error', '게시글 작성 권한이 없습니다.')->withInput();
         }
 
+        // 저장용량 초과 체크
+        $storageLimit = $site->getTotalStorageLimit();
+        if ($storageLimit !== null) {
+            $storageUsed = $site->storage_used_mb ?? 0;
+            if ($storageUsed >= $storageLimit) {
+                $errorMessage = '저장 용량이 가득 찼습니다. 플랜을 업그레이드하거나 서버 용량을 추가 구매해주세요.';
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'error' => $errorMessage,
+                        'storage_used' => $storageUsed,
+                        'storage_limit' => $storageLimit,
+                    ], 403);
+                }
+                return back()->with('error', $errorMessage)->withInput();
+            }
+        }
+
         // 하루 최대 글 수 체크
         if ($board->max_posts_per_day > 0) {
             $todayPostsCount = Post::where('board_id', $board->id)

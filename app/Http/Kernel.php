@@ -37,6 +37,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\ResolveSiteByDomain::class, // 도메인 기반 라우팅
+            \App\Http\Middleware\CheckTrafficLimit::class, // 트래픽 제한 확인
             \App\Http\Middleware\TrackVisitor::class,
             \App\Http\Middleware\TrackTraffic::class, // 트래픽 추적
         ],

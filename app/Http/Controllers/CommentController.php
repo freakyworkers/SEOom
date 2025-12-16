@@ -35,6 +35,22 @@ class CommentController extends Controller
             return back()->with('error', '댓글 작성 권한이 없습니다.');
         }
 
+        // 저장용량 초과 체크
+        $storageLimit = $site->getTotalStorageLimit();
+        if ($storageLimit !== null) {
+            $storageUsed = $site->storage_used_mb ?? 0;
+            if ($storageUsed >= $storageLimit) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'error' => '저장 용량이 가득 찼습니다. 플랜을 업그레이드하거나 서버 용량을 추가 구매해주세요.',
+                        'storage_used' => $storageUsed,
+                        'storage_limit' => $storageLimit,
+                    ], 403);
+                }
+                return back()->with('error', '저장 용량이 가득 찼습니다. 플랜을 업그레이드하거나 서버 용량을 추가 구매해주세요.');
+            }
+        }
+
         $validator = Validator::make($request->all(), [
             'content' => 'required|string',
             'parent_id' => 'nullable|exists:comments,id',

@@ -117,7 +117,7 @@
                         </div>
                         @if($site->traffic_reset_date)
                             <small class="text-muted">
-                                <i class="bi bi-calendar me-1"></i>다음 리셋일: {{ \Carbon\Carbon::parse($site->traffic_reset_date)->format('Y-m-d') }}
+                                <i class="bi bi-calendar me-1"></i>다음 리셋일: {{ \Carbon\Carbon::parse($site->traffic_reset_date)->addMonth()->startOfMonth()->format('Y-m-d') }}
                             </small>
                         @endif
                     @else
