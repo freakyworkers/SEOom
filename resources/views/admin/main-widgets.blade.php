@@ -2126,7 +2126,17 @@ function addMainWidget() {
         },
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            if (response.status === 413) {
+                throw new Error('요청 데이터가 너무 큽니다. 이미지 파일 크기를 줄이거나 설정 데이터를 간소화해주세요.');
+            }
+            return response.json().then(data => {
+                throw new Error(data.message || '알 수 없는 오류');
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             hideAddWidgetForm();
@@ -2137,7 +2147,7 @@ function addMainWidget() {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('위젯 추가 중 오류가 발생했습니다.');
+        alert('위젯 추가 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
     });
 }
 
@@ -3948,7 +3958,15 @@ function saveMainWidgetSettings() {
         console.error('Error:', error);
         console.error('Error stack:', error.stack);
         restoreButton();
-        alert('위젯 수정 중 오류가 발생했습니다: ' + error.message);
+        
+        let errorMessage = '위젯 수정 중 오류가 발생했습니다.';
+        if (error.message && error.message.includes('413')) {
+            errorMessage = '요청 데이터가 너무 큽니다. 이미지 파일 크기를 줄이거나 설정 데이터를 간소화해주세요.';
+        } else if (error.message) {
+            errorMessage = '위젯 수정 중 오류가 발생했습니다: ' + error.message;
+        }
+        
+        alert(errorMessage);
     });
 }
 

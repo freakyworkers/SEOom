@@ -471,12 +471,12 @@
     @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat' && $widget->type !== 'chat_widget' && $widget->type !== 'create_site' && $widget->type !== 'countdown')
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
-            <div class="card-header" style="background-color: white;{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '' }} border: none !important; border-bottom: 1px solid #dee2e6 !important;">
+            <div class="card-header" style="background-color: white;{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' }} border: none !important; border-bottom: 1px solid #dee2e6 !important;">
                 <h6 class="mb-0">{{ $widget->title }}</h6>
             </div>
             @endif
         @else
-        <div class="card-header" style="background-color: white; {{ $widgetTopBorderStyle }}{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '' }} border: none !important; border-bottom: 1px solid #dee2e6 !important;">
+        <div class="card-header" style="background-color: white; {{ $widgetTopBorderStyle }}{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' }} border: none !important; border-bottom: 1px solid #dee2e6 !important;">
             <h6 class="mb-0">{{ $widget->title }}</h6>
         </div>
         @endif
@@ -485,6 +485,10 @@
         $cardBodyStyle = ($widget->type === 'tab_menu' || $widget->type === 'user_ranking' || $widget->type === 'toggle_menu') ? 'padding-top: 0 !important;' : '';
         if ($isFullHeight) {
             $cardBodyStyle .= ($cardBodyStyle ? ' ' : '') . 'flex: 1; display: flex; flex-direction: column; min-height: 0;';
+        }
+        // 라운드 테마일 때 card-body에 하단 라운드 추가 (card-header가 없는 경우)
+        if ($isRoundTheme && ($widget->type === 'user_ranking' || $widget->type === 'marquee_board' || $widget->type === 'block' || $widget->type === 'block_slide' || $widget->type === 'image' || $widget->type === 'image_slide' || $widget->type === 'tab_menu' || $widget->type === 'toggle_menu' || $widget->type === 'chat' || $widget->type === 'chat_widget' || $widget->type === 'create_site' || $widget->type === 'countdown' || ($widget->type === 'gallery' && empty($widget->title)))) {
+            $cardBodyStyle .= ($cardBodyStyle ? ' ' : '') . 'border-bottom-left-radius: 0.5rem !important; border-bottom-right-radius: 0.5rem !important;';
         }
     @endphp
     <div class="card-body" style="{{ $cardBodyStyle }}">

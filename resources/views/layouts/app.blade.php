@@ -660,6 +660,13 @@
         $showTopHeader = ($themeTopHeaderShow == '1' || $themeTopHeaderShow === '1' || $themeTopHeaderShow === 1);
         $isHeaderSticky = ($headerSticky == '1' || $headerSticky === '1' || $headerSticky === 1);
         $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
+        
+        // 사이드바 설정 확인 (투명헤더는 사이드바가 없을 때만 적용 가능)
+        $hasSidebar = $themeSidebar !== 'none';
+        if ($hasSidebar) {
+            $headerTransparent = false;
+        }
+        
         $isHomePage = request()->routeIs('home');
     @endphp
     

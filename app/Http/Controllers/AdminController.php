@@ -3522,118 +3522,136 @@ class AdminController extends Controller
      */
     public function storeMainWidget(Site $site, Request $request)
     {
-        $request->validate([
-            'container_id' => 'required|exists:main_widget_containers,id',
-            'column_index' => 'required|integer|min:0',
-            'type' => 'required|string',
-            'title' => 'nullable|string|max:255',
-            'settings' => 'nullable|string',
-        ]);
+        try {
+            $request->validate([
+                'container_id' => 'required|exists:main_widget_containers,id',
+                'column_index' => 'required|integer|min:0',
+                'type' => 'required|string',
+                'title' => 'nullable|string|max:255',
+                'settings' => 'nullable|string',
+            ]);
 
-        // Ensure container belongs to site
-        $container = MainWidgetContainer::where('id', $request->container_id)
-            ->where('site_id', $site->id)
-            ->first();
-        
-        if (!$container) {
-            return response()->json([
-                'success' => false,
-                'message' => '컨테이너를 찾을 수 없습니다.',
-            ], 404);
-        }
-
-        // Validate column_index
-        if ($request->column_index >= $container->columns) {
-            return response()->json([
-                'success' => false,
-                'message' => '잘못된 칸 인덱스입니다.',
-            ], 400);
-        }
-
-        $maxOrder = MainWidget::where('container_id', $container->id)
-            ->where('column_index', $request->column_index)
-            ->max('order') ?? 0;
-
-        // settings 처리
-        $settings = [];
-        if ($request->has('settings') && !empty($request->settings)) {
-            $settingsInput = $request->settings;
-            if (is_string($settingsInput)) {
-                $decoded = json_decode($settingsInput, true);
-                $settings = is_array($decoded) ? $decoded : [];
-            } elseif (is_array($settingsInput)) {
-                $settings = $settingsInput;
+            // Ensure container belongs to site
+            $container = MainWidgetContainer::where('id', $request->container_id)
+                ->where('site_id', $site->id)
+                ->first();
+            
+            if (!$container) {
+                return response()->json([
+                    'success' => false,
+                    'message' => '컨테이너를 찾을 수 없습니다.',
+                ], 404);
             }
-        }
-        
-        // 블록 타입 이미지 업로드 처리
-        if ($request->type === 'block' && $request->hasFile('block_background_image_file')) {
-            $image = $request->file('block_background_image_file');
-            $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
-            $result = $this->fileUploadService->upload($image, $directory);
-            $settings['background_image_url'] = asset('storage/' . $result['file_path']);
-        }
-        
-        // 블록 슬라이드 타입 이미지 업로드 처리
-        if ($request->type === 'block_slide' && isset($settings['blocks']) && is_array($settings['blocks'])) {
-            foreach ($settings['blocks'] as $index => &$block) {
-                if (isset($block['background_type']) && $block['background_type'] === 'image') {
-                    $fileKey = "block_slide.{$index}.background_image_file";
+
+            // Validate column_index
+            if ($request->column_index >= $container->columns) {
+                return response()->json([
+                    'success' => false,
+                    'message' => '잘못된 칸 인덱스입니다.',
+                ], 400);
+            }
+
+            $maxOrder = MainWidget::where('container_id', $container->id)
+                ->where('column_index', $request->column_index)
+                ->max('order') ?? 0;
+
+            // settings 처리
+            $settings = [];
+            if ($request->has('settings') && !empty($request->settings)) {
+                $settingsInput = $request->settings;
+                if (is_string($settingsInput)) {
+                    $decoded = json_decode($settingsInput, true);
+                    $settings = is_array($decoded) ? $decoded : [];
+                } elseif (is_array($settingsInput)) {
+                    $settings = $settingsInput;
+                }
+            }
+            
+            // 블록 타입 이미지 업로드 처리
+            if ($request->type === 'block' && $request->hasFile('block_background_image_file')) {
+                $image = $request->file('block_background_image_file');
+                $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+                $result = $this->fileUploadService->upload($image, $directory);
+                $settings['background_image_url'] = asset('storage/' . $result['file_path']);
+            }
+            
+            // 블록 슬라이드 타입 이미지 업로드 처리
+            if ($request->type === 'block_slide' && isset($settings['blocks']) && is_array($settings['blocks'])) {
+                foreach ($settings['blocks'] as $index => &$block) {
+                    if (isset($block['background_type']) && $block['background_type'] === 'image') {
+                        $fileKey = "block_slide.{$index}.background_image_file";
+                        if ($request->hasFile($fileKey)) {
+                            $image = $request->file($fileKey);
+                            $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+                            $result = $this->fileUploadService->upload($image, $directory);
+                            $block['background_image_url'] = asset('storage/' . $result['file_path']);
+                        }
+                    }
+                }
+                unset($block);
+            }
+            
+            // 이미지 위젯 이미지 업로드 처리
+            if ($request->type === 'image' && $request->hasFile('image_file')) {
+                $image = $request->file('image_file');
+                $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+                $result = $this->fileUploadService->upload($image, $directory);
+                $settings['image_url'] = asset('storage/' . $result['file_path']);
+            }
+            
+            // 이미지 슬라이드 타입 이미지 업로드 처리
+            if ($request->type === 'image_slide' && isset($settings['images']) && is_array($settings['images'])) {
+                foreach ($settings['images'] as $index => &$imageItem) {
+                    $fileKey = "image_slide.{$index}.image_file";
                     if ($request->hasFile($fileKey)) {
                         $image = $request->file($fileKey);
                         $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
                         $result = $this->fileUploadService->upload($image, $directory);
-                        $block['background_image_url'] = asset('storage/' . $result['file_path']);
+                        $imageItem['image_url'] = asset('storage/' . $result['file_path']);
                     }
                 }
+                unset($imageItem);
             }
-            unset($block);
-        }
-        
-        // 이미지 위젯 이미지 업로드 처리
-        if ($request->type === 'image' && $request->hasFile('image_file')) {
-            $image = $request->file('image_file');
-            $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
-            $result = $this->fileUploadService->upload($image, $directory);
-            $settings['image_url'] = asset('storage/' . $result['file_path']);
-        }
-        
-        // 이미지 슬라이드 타입 이미지 업로드 처리
-        if ($request->type === 'image_slide' && isset($settings['images']) && is_array($settings['images'])) {
-            foreach ($settings['images'] as $index => &$imageItem) {
-                $fileKey = "image_slide.{$index}.image_file";
-                if ($request->hasFile($fileKey)) {
-                    $image = $request->file($fileKey);
-                    $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
-                    $result = $this->fileUploadService->upload($image, $directory);
-                    $imageItem['image_url'] = asset('storage/' . $result['file_path']);
-                }
+            
+            // 제목 처리: 갤러리 위젯의 경우 제목이 없으면 빈 문자열로 저장
+            $title = $request->title;
+            if ($request->type === 'gallery' && (empty($title) || trim($title) === '')) {
+                $title = '';
             }
-            unset($imageItem);
-        }
-        
-        // 제목 처리: 갤러리 위젯의 경우 제목이 없으면 빈 문자열로 저장
-        $title = $request->title;
-        if ($request->type === 'gallery' && (empty($title) || trim($title) === '')) {
-            $title = '';
-        }
-        
-        $widget = MainWidget::create([
-            'site_id' => $site->id,
-            'container_id' => $container->id,
-            'column_index' => $request->column_index,
-            'type' => $request->type,
-            'title' => $title ?? '',
-            'settings' => $settings,
-            'order' => $maxOrder + 1,
-            'is_active' => true,
-        ]);
+            
+            $widget = MainWidget::create([
+                'site_id' => $site->id,
+                'container_id' => $container->id,
+                'column_index' => $request->column_index,
+                'type' => $request->type,
+                'title' => $title ?? '',
+                'settings' => $settings,
+                'order' => $maxOrder + 1,
+                'is_active' => true,
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => '위젯이 추가되었습니다.',
-            'widget' => $widget,
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => '위젯이 추가되었습니다.',
+                'widget' => $widget,
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => '입력 정보를 확인해주세요.',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('위젯 추가 오류: ' . $e->getMessage(), [
+                'site_id' => $site->id,
+                'request' => $request->all(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => '위젯 추가 중 오류가 발생했습니다: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
