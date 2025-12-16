@@ -77,7 +77,7 @@ class MasterPluginController extends Controller
             $data['image'] = $imagePath;
         }
 
-        $data['is_active'] = $request->has('is_active') ? true : false;
+        $data['is_active'] = $request->has('is_active') && $request->is_active ? true : false;
         $data['sort_order'] = $request->sort_order ?? 0;
 
         Plugin::create($data);
@@ -135,7 +135,7 @@ class MasterPluginController extends Controller
             $data['image'] = $imagePath;
         }
 
-        $data['is_active'] = $request->has('is_active') ? true : false;
+        $data['is_active'] = $request->has('is_active') && $request->is_active ? true : false;
         $data['sort_order'] = $request->sort_order ?? 0;
 
         $plugin->update($data);
