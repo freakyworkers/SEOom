@@ -68,15 +68,15 @@ class SocialLoginController extends Controller
         } elseif ($provider === 'kakao') {
             if ($site->isMasterSite()) {
                 $clientId = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                $clientSecret = $site->getSetting('social_login_kakao_client_secret', $site->getSetting('kakao_client_secret', ''));
             } else {
                 $clientId = $site->getSetting('kakao_client_id', '');
+                $clientSecret = $site->getSetting('kakao_client_secret', '');
             }
-            // 카카오는 더 이상 Client Secret을 사용하지 않음
-            $clientSecret = '';
         }
 
-        // 카카오는 Client ID만 확인, 다른 제공자는 Client ID와 Secret 모두 확인
-        if (empty($clientId) || ($provider !== 'kakao' && empty($clientSecret))) {
+        // 모든 제공자는 Client ID와 Secret 모두 확인
+        if (empty($clientId) || empty($clientSecret)) {
             if ($site->isMasterSite()) {
                 return redirect()->route('master.login')
                     ->with('error', '소셜 로그인 설정이 완료되지 않았습니다.');
@@ -128,8 +128,7 @@ class SocialLoginController extends Controller
                 ->redirect();
         } elseif ($provider === 'kakao') {
             config(['services.kakao.client_id' => $clientId]);
-            // 카카오는 더 이상 Client Secret을 사용하지 않음
-            config(['services.kakao.client_secret' => '']);
+            config(['services.kakao.client_secret' => $clientSecret]);
             config(['services.kakao.redirect' => $redirectUrl]);
             
             // 카카오 드라이버가 등록되지 않은 경우 직접 등록
@@ -345,11 +344,11 @@ class SocialLoginController extends Controller
             } elseif ($provider === 'kakao') {
                 if ($site->isMasterSite()) {
                     $clientId = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                    $clientSecret = $site->getSetting('social_login_kakao_client_secret', $site->getSetting('kakao_client_secret', ''));
                 } else {
                     $clientId = $site->getSetting('kakao_client_id', '');
+                    $clientSecret = $site->getSetting('kakao_client_secret', '');
                 }
-                // 카카오는 더 이상 Client Secret을 사용하지 않음
-                $clientSecret = '';
             }
 
             // 공통 콜백 URI
@@ -381,8 +380,7 @@ class SocialLoginController extends Controller
                 $socialUser = $driver->user();
             } elseif ($provider === 'kakao') {
                 config(['services.kakao.client_id' => $clientId]);
-                // 카카오는 더 이상 Client Secret을 사용하지 않음
-                config(['services.kakao.client_secret' => '']);
+                config(['services.kakao.client_secret' => $clientSecret]);
                 config(['services.kakao.redirect' => $redirectUrl]);
                 
                 \Log::info('Kakao OAuth - Attempting to get user', [

@@ -355,7 +355,7 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="row mb-3">
-                                                <div class="col-md-12">
+                                                <div class="col-md-6">
                                                     <label for="kakao_client_id" class="form-label fw-bold">Client ID (REST API Key)</label>
                                                     <input type="text" 
                                                            class="form-control" 
@@ -363,10 +363,15 @@
                                                            name="kakao_client_id" 
                                                            value="{{ $settings['kakao_client_id'] ?? '' }}" 
                                                            placeholder="카카오 REST API Key">
-                                                    <small class="text-muted d-block mt-1">
-                                                        <i class="bi bi-info-circle me-1"></i>
-                                                        카카오는 더 이상 Client Secret을 사용하지 않습니다.
-                                                    </small>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="kakao_client_secret" class="form-label fw-bold">Client Secret</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="kakao_client_secret" 
+                                                           name="kakao_client_secret" 
+                                                           value="{{ $settings['kakao_client_secret'] ?? '' }}" 
+                                                           placeholder="카카오 Client Secret">
                                                 </div>
                                             </div>
                                             <small class="text-muted d-block">
