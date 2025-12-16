@@ -13,10 +13,12 @@ class StoreController extends Controller
     /**
      * Show store page with plans and server capacity options.
      */
-    public function index(Site $site)
+    public function index()
     {
-        // 마스터 사이트인지 확인
-        if (!$site->isMasterSite()) {
+        // 마스터 사이트 가져오기
+        $site = Site::getMasterSite();
+        
+        if (!$site || !$site->isMasterSite()) {
             abort(404);
         }
 
