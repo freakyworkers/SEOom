@@ -35,7 +35,11 @@ class AppServiceProvider extends ServiceProvider
 
                 // 카카오 소셜 로그인 프로바이더 등록
                 $socialite->extend('kakao', function ($app) use ($socialite) {
-                    $config = $app['config']['services.kakao'];
+                    $config = $app['config']['services.kakao'] ?? [
+                        'client_id' => '',
+                        'client_secret' => '',
+                        'redirect' => '',
+                    ];
                     return $socialite->buildProvider(
                         \App\Socialite\KakaoProvider::class,
                         $config
