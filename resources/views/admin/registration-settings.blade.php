@@ -355,7 +355,7 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="row mb-3">
-                                                <div class="col-md-6">
+                                                <div class="col-md-12">
                                                     <label for="kakao_client_id" class="form-label fw-bold">Client ID (REST API Key)</label>
                                                     <input type="text" 
                                                            class="form-control" 
@@ -363,20 +363,15 @@
                                                            name="kakao_client_id" 
                                                            value="{{ $settings['kakao_client_id'] ?? '' }}" 
                                                            placeholder="카카오 REST API Key">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="kakao_client_secret" class="form-label fw-bold">Client Secret</label>
-                                                    <input type="text" 
-                                                           class="form-control" 
-                                                           id="kakao_client_secret" 
-                                                           name="kakao_client_secret" 
-                                                           value="{{ $settings['kakao_client_secret'] ?? '' }}" 
-                                                           placeholder="카카오 Client Secret">
+                                                    <small class="text-muted d-block mt-1">
+                                                        <i class="bi bi-info-circle me-1"></i>
+                                                        카카오는 더 이상 Client Secret을 사용하지 않습니다.
+                                                    </small>
                                                 </div>
                                             </div>
                                             <small class="text-muted d-block">
                                                 <i class="bi bi-info-circle me-1"></i>
-                                                <a href="https://developers.kakao.com/console/app" target="_blank">카카오 개발자 콘솔</a>에서 애플리케이션을 등록하세요.
+                                                <a href="https://developers.kakao.com/" target="_blank">카카오 디벨로퍼</a>에서 애플리케이션을 등록하세요.
                                             </small>
                                         </div>
                                     </div>

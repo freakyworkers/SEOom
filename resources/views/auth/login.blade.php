@@ -97,25 +97,39 @@ document.addEventListener('DOMContentLoaded', function() {
                     </form>
 
                     {{-- 소셜 로그인 --}}
-                    @if($site->getSetting('registration_enable_social_login', false))
+                    @php
+                        $socialLoginEnabled = $site->isMasterSite() 
+                            ? $site->getSetting('social_login_enabled', false)
+                            : $site->getSetting('registration_enable_social_login', false);
+                        $googleClientId = $site->isMasterSite()
+                            ? $site->getSetting('social_login_google_client_id', '')
+                            : $site->getSetting('google_client_id', '');
+                        $naverClientId = $site->isMasterSite()
+                            ? $site->getSetting('social_login_naver_client_id', '')
+                            : $site->getSetting('naver_client_id', '');
+                        $kakaoClientId = $site->isMasterSite()
+                            ? $site->getSetting('social_login_kakao_client_id', '')
+                            : $site->getSetting('kakao_client_id', '');
+                    @endphp
+                    @if($socialLoginEnabled)
                     <div class="mt-4">
                         <div class="text-center mb-3">
                             <small class="text-muted">또는</small>
                         </div>
                         <div class="d-grid gap-2">
-                            @if(!empty($site->getSetting('google_client_id', '')))
+                            @if(!empty($googleClientId))
                             <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'google']) : route('social.login', ['site' => $site->slug, 'provider' => 'google']) }}" 
                                class="btn btn-outline-danger">
                                 <i class="bi bi-google me-2"></i>구글로 로그인
                             </a>
                             @endif
-                            @if(!empty($site->getSetting('naver_client_id', '')))
+                            @if(!empty($naverClientId))
                             <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'naver']) : route('social.login', ['site' => $site->slug, 'provider' => 'naver']) }}" 
                                class="btn btn-outline-success" style="background-color: #03C75A; border-color: #03C75A; color: white;">
                                 <i class="bi bi-chat-dots me-2"></i>네이버로 로그인
                             </a>
                             @endif
-                            @if(!empty($site->getSetting('kakao_client_id', '')))
+                            @if(!empty($kakaoClientId))
                             <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'kakao']) : route('social.login', ['site' => $site->slug, 'provider' => 'kakao']) }}" 
                                class="btn btn-outline-warning" style="background-color: #FEE500; border-color: #FEE500; color: #000;">
                                 <i class="bi bi-chat-fill me-2"></i>카카오로 로그인

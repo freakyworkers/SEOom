@@ -26,7 +26,12 @@ class SocialLoginController extends Controller
     public function redirectToProvider(Site $site, $provider)
     {
         // 소셜 로그인이 활성화되어 있는지 확인
-        if (!$site->getSetting('registration_enable_social_login', false)) {
+        // 마스터 사이트는 social_login_enabled 키 사용, 일반 사이트는 registration_enable_social_login 사용
+        $socialLoginEnabled = $site->isMasterSite() 
+            ? $site->getSetting('social_login_enabled', false)
+            : $site->getSetting('registration_enable_social_login', false);
+        
+        if (!$socialLoginEnabled) {
             if ($site->isMasterSite()) {
                 return redirect()->route('master.login')
                     ->with('error', '소셜 로그인이 비활성화되어 있습니다.');
@@ -36,21 +41,34 @@ class SocialLoginController extends Controller
         }
 
         // 제공자별 Client ID 확인
+        // 마스터 사이트는 social_login_* 키 사용, 일반 사이트는 * 키 사용
         $clientId = null;
         $clientSecret = null;
         
         if ($provider === 'google') {
-            $clientId = $site->getSetting('google_client_id', '');
-            $clientSecret = $site->getSetting('google_client_secret', '');
+            $clientId = $site->isMasterSite() 
+                ? $site->getSetting('social_login_google_client_id', '')
+                : $site->getSetting('google_client_id', '');
+            $clientSecret = $site->isMasterSite()
+                ? $site->getSetting('social_login_google_client_secret', '')
+                : $site->getSetting('google_client_secret', '');
         } elseif ($provider === 'naver') {
-            $clientId = $site->getSetting('naver_client_id', '');
-            $clientSecret = $site->getSetting('naver_client_secret', '');
+            $clientId = $site->isMasterSite()
+                ? $site->getSetting('social_login_naver_client_id', '')
+                : $site->getSetting('naver_client_id', '');
+            $clientSecret = $site->isMasterSite()
+                ? $site->getSetting('social_login_naver_client_secret', '')
+                : $site->getSetting('naver_client_secret', '');
         } elseif ($provider === 'kakao') {
-            $clientId = $site->getSetting('kakao_client_id', '');
-            $clientSecret = $site->getSetting('kakao_client_secret', '');
+            $clientId = $site->isMasterSite()
+                ? $site->getSetting('social_login_kakao_client_id', '')
+                : $site->getSetting('kakao_client_id', '');
+            // 카카오는 더 이상 Client Secret을 사용하지 않음
+            $clientSecret = '';
         }
 
-        if (empty($clientId) || empty($clientSecret)) {
+        // 카카오는 Client ID만 확인, 다른 제공자는 Client ID와 Secret 모두 확인
+        if (empty($clientId) || ($provider !== 'kakao' && empty($clientSecret))) {
             if ($site->isMasterSite()) {
                 return redirect()->route('master.login')
                     ->with('error', '소셜 로그인 설정이 완료되지 않았습니다.');
@@ -102,7 +120,8 @@ class SocialLoginController extends Controller
                 ->redirect();
         } elseif ($provider === 'kakao') {
             config(['services.kakao.client_id' => $clientId]);
-            config(['services.kakao.client_secret' => $clientSecret]);
+            // 카카오는 더 이상 Client Secret을 사용하지 않음
+            config(['services.kakao.client_secret' => '']);
             config(['services.kakao.redirect' => $redirectUrl]);
             $driver = Socialite::driver('kakao');
             if ($httpClient) {
@@ -276,18 +295,30 @@ class SocialLoginController extends Controller
             }
 
             // 제공자별 Client ID/Secret 가져오기
+            // 마스터 사이트는 social_login_* 키 사용, 일반 사이트는 * 키 사용
             $clientId = null;
             $clientSecret = null;
             
             if ($provider === 'google') {
-                $clientId = $site->getSetting('google_client_id', '');
-                $clientSecret = $site->getSetting('google_client_secret', '');
+                $clientId = $site->isMasterSite()
+                    ? $site->getSetting('social_login_google_client_id', '')
+                    : $site->getSetting('google_client_id', '');
+                $clientSecret = $site->isMasterSite()
+                    ? $site->getSetting('social_login_google_client_secret', '')
+                    : $site->getSetting('google_client_secret', '');
             } elseif ($provider === 'naver') {
-                $clientId = $site->getSetting('naver_client_id', '');
-                $clientSecret = $site->getSetting('naver_client_secret', '');
+                $clientId = $site->isMasterSite()
+                    ? $site->getSetting('social_login_naver_client_id', '')
+                    : $site->getSetting('naver_client_id', '');
+                $clientSecret = $site->isMasterSite()
+                    ? $site->getSetting('social_login_naver_client_secret', '')
+                    : $site->getSetting('naver_client_secret', '');
             } elseif ($provider === 'kakao') {
-                $clientId = $site->getSetting('kakao_client_id', '');
-                $clientSecret = $site->getSetting('kakao_client_secret', '');
+                $clientId = $site->isMasterSite()
+                    ? $site->getSetting('social_login_kakao_client_id', '')
+                    : $site->getSetting('kakao_client_id', '');
+                // 카카오는 더 이상 Client Secret을 사용하지 않음
+                $clientSecret = '';
             }
 
             // 공통 콜백 URI
@@ -319,7 +350,8 @@ class SocialLoginController extends Controller
                 $socialUser = $driver->user();
             } elseif ($provider === 'kakao') {
                 config(['services.kakao.client_id' => $clientId]);
-                config(['services.kakao.client_secret' => $clientSecret]);
+                // 카카오는 더 이상 Client Secret을 사용하지 않음
+                config(['services.kakao.client_secret' => '']);
                 config(['services.kakao.redirect' => $redirectUrl]);
                 $driver = Socialite::driver('kakao');
                 if ($httpClient) {
