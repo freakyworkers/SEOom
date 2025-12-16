@@ -314,8 +314,8 @@
             .navbar-brand, .navbar-nav .nav-link {
                 color: var(--header-text-color) !important;
             }
-        @else
-
+        @endif
+        @if($themeDarkMode !== 'dark')
             :root {
                 --header-text-color: {{ $colorLightHeaderText }};
                 --header-bg-color: {{ $colorLightHeaderBg }};
