@@ -316,7 +316,7 @@
                 background-color: var(--header-bg-color) !important;
                 color: var(--header-text-color);
             }
-            /* 투명헤더일 때는 오버라이드됨 (아래 @if 블록에서 처리) */
+            /* 투명헤더일 때는 오버라이드됨 (아래 블록에서 처리) */
             .navbar-brand, .navbar-nav .nav-link {
                 color: var(--header-text-color) !important;
             }
@@ -338,7 +338,7 @@
             .navbar {
                 background-color: var(--header-bg-color) !important;
             }
-            /* 투명헤더일 때는 오버라이드됨 (아래 @if 블록에서 처리) */
+            /* 투명헤더일 때는 오버라이드됨 (아래 블록에서 처리) */
         @endif
         
         /* 투명헤더일 때 CSS 변수 오버라이드 (PHP에서 설정한 CSS 변수보다 나중에 적용) */
