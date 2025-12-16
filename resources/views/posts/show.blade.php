@@ -2686,6 +2686,59 @@ function openReportModal(type, id, siteSlug, boardSlug = null, postId = null) {
         }
     });
 }
+
+// 댓글 작성 폼 제출 시 저장용량 초과 에러 처리
+document.addEventListener('DOMContentLoaded', function() {
+    const commentForm = document.querySelector('form[action*="comments.store"]');
+    if (commentForm) {
+        commentForm.addEventListener('submit', function(e) {
+            const form = this;
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+            })
+            .then(response => {
+                if (response.status === 403) {
+                    return response.json().then(data => {
+                        if (data.error && data.error.includes('저장 용량이 가득 찼습니다')) {
+                            e.preventDefault();
+                            showStorageExceededModal(data.storage_used, data.storage_limit);
+                            return;
+                        }
+                        throw new Error(data.error || '댓글 작성에 실패했습니다.');
+                    });
+                }
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error || data.message || '댓글 작성에 실패했습니다.');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (!error.message.includes('저장 용량')) {
+                    alert(error.message || '댓글 작성에 실패했습니다.');
+                }
+            });
+            
+            // 기본 폼 제출 방지 (AJAX로 처리)
+            e.preventDefault();
+        });
+    }
+});
 </script>
+@include('components.storage-exceeded-modal')
 @endpush
 
