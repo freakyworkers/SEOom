@@ -385,29 +385,99 @@ class SocialLoginController extends Controller
                 config(['services.kakao.client_secret' => '']);
                 config(['services.kakao.redirect' => $redirectUrl]);
                 
-                // 카카오 드라이버가 등록되지 않은 경우 직접 등록
+                \Log::info('Kakao OAuth - Attempting to get user', [
+                    'redirect' => config('services.kakao.redirect'),
+                    'client_id_length' => strlen($clientId ?? ''),
+                    'request_state' => $request->get('state') ? 'present' : 'missing',
+                    'has_code' => $request->has('code'),
+                    'has_error' => $request->has('error')
+                ]);
+                
                 try {
-                    $driver = Socialite::driver('kakao');
-                } catch (\InvalidArgumentException $e) {
-                    // 드라이버가 등록되지 않은 경우 직접 등록
-                    $socialite = app(\Laravel\Socialite\Contracts\Factory::class);
-                    $socialite->extend('kakao', function ($app) use ($socialite) {
-                        $config = $app['config']['services.kakao'] ?? [
-                            'client_id' => '',
-                            'client_secret' => '',
-                            'redirect' => '',
-                        ];
-                        return $socialite->buildProvider(
-                            \App\Socialite\KakaoProvider::class,
-                            $config
-                        );
-                    });
-                    $driver = Socialite::driver('kakao');
+                    // OAuth 콜백에서 code 확인
+                    if (!$request->has('code')) {
+                        $error = $request->get('error');
+                        $errorDescription = $request->get('error_description');
+                        \Log::error('Kakao OAuth - Missing code', [
+                            'error' => $error,
+                            'error_description' => $errorDescription,
+                            'request_params' => $request->except(['code', 'state']),
+                            'has_state' => $request->has('state')
+                        ]);
+                        
+                        // 사용자가 취소한 경우
+                        if ($error === 'access_denied') {
+                            if ($site->isMasterSite()) {
+                                return redirect('/')
+                                    ->with('error', '카카오 로그인이 취소되었습니다.');
+                            }
+                            return redirect()->route('login', ['site' => $site->slug])
+                                ->with('error', '카카오 로그인이 취소되었습니다.');
+                        }
+                        
+                        throw new \Exception('OAuth 인증 코드를 받지 못했습니다. ' . ($errorDescription ?? $error ?? '알 수 없는 오류'));
+                    }
+                    
+                    // 카카오 드라이버가 등록되지 않은 경우 직접 등록
+                    try {
+                        $driver = Socialite::driver('kakao')->stateless();
+                    } catch (\InvalidArgumentException $e) {
+                        // 드라이버가 등록되지 않은 경우 직접 등록
+                        $socialite = app(\Laravel\Socialite\Contracts\Factory::class);
+                        $socialite->extend('kakao', function ($app) use ($socialite) {
+                            $config = $app['config']['services.kakao'] ?? [
+                                'client_id' => '',
+                                'client_secret' => '',
+                                'redirect' => '',
+                            ];
+                            return $socialite->buildProvider(
+                                \App\Socialite\KakaoProvider::class,
+                                $config
+                            );
+                        });
+                        $driver = Socialite::driver('kakao')->stateless();
+                    }
+                    
+                    if ($httpClient) {
+                        $driver->setHttpClient($httpClient);
+                    }
+                    
+                    \Log::info('Kakao OAuth - Before user() call', [
+                        'redirect' => config('services.kakao.redirect'),
+                        'has_client_id' => !empty(config('services.kakao.client_id')),
+                        'has_code' => $request->has('code'),
+                        'has_state' => $request->has('state')
+                    ]);
+                    
+                    $socialUser = $driver->user();
+                    \Log::info('Kakao OAuth - User retrieved', [
+                        'user_id' => $socialUser->getId(),
+                        'email' => $socialUser->getEmail(),
+                        'name' => $socialUser->getName()
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Kakao OAuth - Failed to get user', [
+                        'error' => $e->getMessage(),
+                        'error_code' => $e->getCode(),
+                        'error_class' => get_class($e),
+                        'trace' => substr($e->getTraceAsString(), 0, 2000),
+                        'request_params' => array_keys($request->all()),
+                        'has_code' => $request->has('code'),
+                        'has_state' => $request->has('state'),
+                        'config_client_id' => !empty(config('services.kakao.client_id')),
+                        'config_redirect' => config('services.kakao.redirect')
+                    ]);
+                    
+                    if ($site) {
+                        if ($site->isMasterSite()) {
+                            return redirect('/')
+                                ->with('error', '카카오 로그인 처리 중 오류가 발생했습니다: ' . $e->getMessage());
+                        }
+                        return redirect()->route('login', ['site' => $site->slug])
+                            ->with('error', '카카오 로그인 처리 중 오류가 발생했습니다: ' . $e->getMessage());
+                    }
+                    throw $e;
                 }
-                if ($httpClient) {
-                    $driver->setHttpClient($httpClient);
-                }
-                $socialUser = $driver->user();
             } else {
                 config(['services.google.client_id' => $clientId]);
                 config(['services.google.client_secret' => $clientSecret]);
