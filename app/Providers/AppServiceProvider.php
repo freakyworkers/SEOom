@@ -26,7 +26,11 @@ class AppServiceProvider extends ServiceProvider
                 
                 // 네이버 소셜 로그인 프로바이더 등록
                 $socialite->extend('naver', function ($app) use ($socialite) {
-                    $config = $app['config']['services.naver'];
+                    $config = $app['config']['services.naver'] ?? [
+                        'client_id' => '',
+                        'client_secret' => '',
+                        'redirect' => '',
+                    ];
                     return $socialite->buildProvider(
                         \App\Socialite\NaverProvider::class,
                         $config

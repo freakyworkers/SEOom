@@ -119,7 +119,26 @@ class SocialLoginController extends Controller
             config(['services.naver.client_id' => $clientId]);
             config(['services.naver.client_secret' => $clientSecret]);
             config(['services.naver.redirect' => $redirectUrl]);
-            $driver = Socialite::driver('naver');
+            
+            // 네이버 드라이버가 등록되지 않은 경우 직접 등록
+            try {
+                $driver = Socialite::driver('naver');
+            } catch (\InvalidArgumentException $e) {
+                // 드라이버가 등록되지 않은 경우 직접 등록
+                $socialite = app(\Laravel\Socialite\Contracts\Factory::class);
+                $socialite->extend('naver', function ($app) use ($socialite) {
+                    $config = $app['config']['services.naver'] ?? [
+                        'client_id' => '',
+                        'client_secret' => '',
+                        'redirect' => '',
+                    ];
+                    return $socialite->buildProvider(
+                        \App\Socialite\NaverProvider::class,
+                        $config
+                    );
+                });
+                $driver = Socialite::driver('naver');
+            }
             if ($httpClient) {
                 $driver->setHttpClient($httpClient);
             }
