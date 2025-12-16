@@ -354,11 +354,11 @@
                                                 @endphp
                                                 @if($hasSubscription)
                                                     <div class="d-flex gap-2">
-                                                        <a href="https://seoomweb.com" target="_blank" class="btn btn-sm btn-outline-secondary flex-fill plan-change-btn">
+                                                        <a href="{{ route('user-sites.change-plan-site', ['site' => $site->slug, 'userSite' => $userSite->slug]) }}" class="btn btn-sm btn-outline-secondary flex-fill plan-change-btn">
                                                             <i class="bi bi-arrow-left-right me-1"></i><span>플랜 변경하기</span>
                                                         </a>
                                                         @if($isActive && !$isFreePlan)
-                                                            <a href="https://seoomweb.com" target="_blank" class="btn btn-sm btn-outline-secondary flex-fill server-upgrade-btn">
+                                                            <a href="{{ route('user-sites.server-upgrade', ['site' => $site->slug, 'userSite' => $userSite->slug]) }}" class="btn btn-sm btn-outline-secondary flex-fill server-upgrade-btn">
                                                                 <i class="bi bi-server me-1"></i><span>서버 업그레이드</span>
                                                             </a>
                                                         @endif

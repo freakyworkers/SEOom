@@ -90,9 +90,12 @@ class UserMySitesController extends Controller
         }
 
         $user = Auth::user();
-
-        // 사용자가 만든 사이트 목록 가져오기 (구독이 있는 사이트만)
-        $userSites = Site::where('created_by', $user->id)
+        
+        // 로그인하지 않은 사용자도 페이지를 볼 수 있음
+        $userSites = collect([]);
+        if ($user) {
+            // 사용자가 만든 사이트 목록 가져오기 (구독이 있는 사이트만)
+            $userSites = Site::where('created_by', $user->id)
             ->where('is_master_site', false)
             ->with(['subscription.plan'])
             ->orderBy('created_at', 'desc')
@@ -108,11 +111,12 @@ class UserMySitesController extends Controller
                 }
                 return $site->subscription !== null;
             });
+        }
 
         // 특정 사이트가 지정된 경우
         if ($userSite) {
-            // 사용자가 소유한 사이트인지 확인
-            if ($userSite->created_by !== $user->id) {
+            // 로그인한 사용자인 경우에만 소유권 확인
+            if ($user && $userSite->created_by !== $user->id) {
                 abort(403, '이 사이트를 변경할 권한이 없습니다.');
             }
         }
@@ -370,10 +374,22 @@ class UserMySitesController extends Controller
         }
 
         $user = Auth::user();
-
-        // 사용자가 소유한 사이트인지 확인
-        if ($userSite->created_by !== $user->id) {
+        
+        // 로그인한 사용자인 경우에만 소유권 확인
+        if ($user && $userSite->created_by !== $user->id) {
             abort(403, '이 사이트를 변경할 권한이 없습니다.');
+        }
+        
+        // 로그인하지 않은 사용자도 페이지를 볼 수 있음
+        if (!$user) {
+            // 로그인하지 않은 사용자도 페이지를 볼 수 있도록 빈 데이터로 표시
+            $subscription = null;
+            $serverPlans = Plan::where('is_active', true)
+                ->where('type', 'server')
+                ->orderBy('price', 'asc')
+                ->get();
+            
+            return view('user-sites.server-upgrade', compact('site', 'userSite', 'subscription', 'serverPlans'));
         }
 
         // 구독 정보 가져오기

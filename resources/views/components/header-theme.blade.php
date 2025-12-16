@@ -130,7 +130,7 @@
                     @auth
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center position-relative" href="#" id="navbarDropdown1" role="button" data-bs-toggle="dropdown" style="color: {{ $headerTextColor }} !important;">
-                                <i class="bi bi-person-circle me-1"></i>{{ auth()->user()->name }}
+                                <i class="bi bi-person-circle me-1"></i>{{ auth()->user()->nickname ?? auth()->user()->name }}
                                 @if($unreadNotificationCount > 0)
                                     <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="width: 8px; height: 8px; margin-left: 2px;"></span>
                                 @endif

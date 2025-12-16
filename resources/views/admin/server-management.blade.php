@@ -150,15 +150,34 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    @if($masterSite)
-                        <a href="https://seoomweb.com" target="_blank" 
+                    @if($masterSite && $site->isMasterSite() && auth()->check() && $site->created_by === auth()->id())
+                        <a href="{{ route('user-sites.change-plan-site', ['site' => $masterSite->slug, 'userSite' => $site->slug]) }}" 
                            class="btn btn-outline-primary">
                             <i class="bi bi-arrow-left-right me-2"></i>플랜 변경하기
                         </a>
-                        <a href="https://seoomweb.com" target="_blank" 
-                           class="btn btn-outline-primary">
-                            <i class="bi bi-server me-2"></i>서버 업그레이드
-                        </a>
+                        @if($subscription && $subscription->status === 'active' && $plan && $plan->billing_type !== 'free')
+                            <a href="{{ route('user-sites.server-upgrade', ['site' => $masterSite->slug, 'userSite' => $site->slug]) }}" 
+                               class="btn btn-outline-primary">
+                                <i class="bi bi-server me-2"></i>서버 업그레이드
+                            </a>
+                        @endif
+                    @elseif($masterSite && auth()->check())
+                        @php
+                            // 현재 사이트가 사용자가 소유한 사이트인지 확인
+                            $isOwnedSite = $site->created_by === auth()->id();
+                        @endphp
+                        @if($isOwnedSite)
+                            <a href="{{ route('user-sites.change-plan-site', ['site' => $masterSite->slug, 'userSite' => $site->slug]) }}" 
+                               class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-left-right me-2"></i>플랜 변경하기
+                            </a>
+                            @if($subscription && $subscription->status === 'active' && $plan && $plan->billing_type !== 'free')
+                                <a href="{{ route('user-sites.server-upgrade', ['site' => $masterSite->slug, 'userSite' => $site->slug]) }}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="bi bi-server me-2"></i>서버 업그레이드
+                                </a>
+                            @endif
+                        @endif
                     @endif
                 </div>
             </div>

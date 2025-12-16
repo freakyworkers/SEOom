@@ -717,10 +717,15 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
         Route::get('/profile', [\App\Http\Controllers\UserController::class, 'profile'])->name('users.profile.slug');
         Route::put('/profile', [\App\Http\Controllers\UserController::class, 'updateProfile'])->name('users.profile.update');
         Route::get('/my-sites', [\App\Http\Controllers\UserMySitesController::class, 'index'])->name('users.my-sites.slug');
-        Route::get('/my-sites/change-plan', [\App\Http\Controllers\UserMySitesController::class, 'showChangePlan'])->name('user-sites.change-plan');
-        Route::get('/my-sites/{userSite}/change-plan', [\App\Http\Controllers\UserMySitesController::class, 'showChangePlan'])->name('user-sites.change-plan-site');
         Route::post('/my-sites/change-plan', [\App\Http\Controllers\UserMySitesController::class, 'changePlan'])->name('user-sites.change-plan-process');
-        Route::get('/my-sites/{userSite}/server-upgrade', [\App\Http\Controllers\UserMySitesController::class, 'showServerUpgrade'])->name('user-sites.server-upgrade');
+    });
+    
+    // 플랜 변경 및 서버 업그레이드 페이지는 로그인하지 않아도 볼 수 있음 (컨트롤러에서 로그인 체크)
+    Route::get('/my-sites/change-plan', [\App\Http\Controllers\UserMySitesController::class, 'showChangePlan'])->name('user-sites.change-plan');
+    Route::get('/my-sites/{userSite}/change-plan', [\App\Http\Controllers\UserMySitesController::class, 'showChangePlan'])->name('user-sites.change-plan-site');
+    Route::get('/my-sites/{userSite}/server-upgrade', [\App\Http\Controllers\UserMySitesController::class, 'showServerUpgrade'])->name('user-sites.server-upgrade');
+    
+    Route::middleware('auth')->group(function () {
         Route::get('/my-sites/{userSite}/addons', [\App\Http\Controllers\UserMySitesController::class, 'showAddons'])->name('user-sites.addons');
         Route::get('/my-sites/{userSite}/sso', [\App\Http\Controllers\UserMySitesController::class, 'ssoToSiteAdmin'])->name('user-sites.sso');
         Route::put('/my-sites/{userSite}/domain', [\App\Http\Controllers\UserMySitesController::class, 'updateDomain'])->name('user-sites.update-domain');
