@@ -34,7 +34,7 @@
                                 @endif
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title">{{ $plugin->name }}</h5>
-                                    <p class="card-text text-muted small mb-3">{{ $plugin->description }}</p>
+                                    <p class="card-text text-muted small mb-3">{{ strip_tags($plugin->description) }}</p>
                                     
                                     <div class="mb-3">
                                         <h3 class="text-primary">
@@ -93,7 +93,7 @@
                                         @if($plugin->thumbnail)
                                             <img src="{{ asset('storage/' . $plugin->thumbnail) }}" class="img-fluid rounded mb-3" alt="{{ $plugin->name }}">
                                         @endif
-                                        <p class="mb-3">{{ $plugin->description }}</p>
+                                        <p class="mb-3">{{ strip_tags($plugin->description) }}</p>
                                         <div class="mb-3">
                                             <h6>가격</h6>
                                             <p class="h4 text-primary">
