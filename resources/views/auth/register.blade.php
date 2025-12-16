@@ -3,10 +3,17 @@
 @section('title', '회원가입')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
+@php
+    // 포인트 컬러 설정
+    $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
+    $pointColor = $themeDarkMode === 'dark' 
+        ? $site->getSetting('color_dark_point_main', '#ffffff')
+        : $site->getSetting('color_light_point_main', '#0d6efd');
+@endphp
+<div class="row">
+    <div class="col-12">
         <div class="card shadow">
-            <div class="card-header bg-success text-white text-center py-3">
+            <div class="card-header bg-light text-center py-3">
                 <h4 class="mb-0">
                     <i class="bi bi-person-plus me-2"></i>회원가입
                 </h4>
@@ -50,9 +57,6 @@
                 @endphp
                 @if($socialLoginEnabled && (!empty($googleClientId) || !empty($naverClientId) || !empty($kakaoClientId)))
                 <div class="mb-4">
-                    <div class="text-center mb-3">
-                        <small class="text-muted">또는</small>
-                    </div>
                     <div class="d-grid gap-2">
                         @if(!empty($googleClientId))
                         <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'google']) : route('social.login', ['site' => $site->slug, 'provider' => 'google']) }}" 
@@ -207,7 +211,7 @@
                         </div>
                         @if($site->getSetting('registration_enable_email_verification', false))
                             <div class="mt-2">
-                                <button type="button" class="btn btn-outline-primary w-100" id="emailVerifyBtn">
+                                <button type="button" class="btn w-100" id="emailVerifyBtn" style="background-color: {{ $pointColor }}; border-color: {{ $pointColor }}; color: white;">
                                     인증하기
                                 </button>
                             </div>
@@ -227,7 +231,7 @@
                                            pattern="[0-9]{6}"
                                            placeholder="6자리 인증번호를 입력하세요"
                                            style="font-size: 18px; letter-spacing: 4px; text-align: center;">
-                                    <button type="button" class="btn btn-primary" id="verifyCodeBtn">인증 확인</button>
+                                    <button type="button" class="btn" id="verifyCodeBtn" style="background-color: {{ $pointColor }}; border-color: {{ $pointColor }}; color: white;">인증 확인</button>
                                 </div>
                                 <div id="codeVerifyStatus" class="mt-2"></div>
                             </div>
@@ -254,7 +258,7 @@
                                    {{ $site->getSetting('registration_enable_phone_verification', false) && session('verified_phone') ? 'readonly' : '' }}
                                    @if($site->getSetting('registration_enable_phone_verification', false)) required @endif>
                             @if($site->getSetting('registration_enable_phone_verification', false))
-                                <button type="button" class="btn btn-outline-primary" id="phoneVerifyBtn">
+                                <button type="button" class="btn" id="phoneVerifyBtn" style="background-color: {{ $pointColor }}; border-color: {{ $pointColor }}; color: white;">
                                     인증하기
                                 </button>
                             @endif
@@ -273,7 +277,7 @@
                                            placeholder="6자리 인증번호를 입력하세요"
                                            maxlength="6"
                                            pattern="[0-9]{6}">
-                                    <button type="button" class="btn btn-primary" id="verifyPhoneCodeBtn">인증 확인</button>
+                                    <button type="button" class="btn" id="verifyPhoneCodeBtn" style="background-color: {{ $pointColor }}; border-color: {{ $pointColor }}; color: white;">인증 확인</button>
                                 </div>
                                 @error('phone_verification_code')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -347,7 +351,7 @@
                                    name="referrer_nickname" 
                                    value="{{ old('referrer_nickname') }}" 
                                    placeholder="추천인 닉네임 또는 이름을 입력하세요">
-                            <button type="button" class="btn btn-outline-primary" id="verifyReferrerBtn">
+                            <button type="button" class="btn" id="verifyReferrerBtn" style="background-color: {{ $pointColor }}; border-color: {{ $pointColor }}; color: white;">
                                 확인
                             </button>
                         </div>
@@ -360,7 +364,7 @@
                     @endif
 
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-success btn-lg">
+                        <button type="submit" class="btn btn-lg" style="background-color: #e9ecef; border-color: #e9ecef; color: #495057;" onmouseover="this.style.backgroundColor='#6c757d'; this.style.borderColor='#6c757d'; this.style.color='white';" onmouseout="this.style.backgroundColor='#e9ecef'; this.style.borderColor='#e9ecef'; this.style.color='#495057';">
                             <i class="bi bi-person-plus me-2"></i>회원가입
                         </button>
                     </div>
@@ -370,7 +374,7 @@
 
                 <div class="text-center">
                     <p class="mb-0 text-muted">이미 계정이 있으신가요?</p>
-                    <a href="{{ route('login', ['site' => $site->slug]) }}" class="btn btn-outline-primary mt-2">
+                    <a href="{{ route('login', ['site' => $site->slug]) }}" class="btn mt-2" style="background-color: {{ $pointColor }}; border-color: {{ $pointColor }}; color: white;">
                         <i class="bi bi-box-arrow-in-right me-1"></i>로그인
                     </a>
                 </div>
@@ -550,8 +554,9 @@ document.addEventListener('DOMContentLoaded', function() {
         emailVerified.value = '1';
         emailVerifyBtn.textContent = '인증 완료';
         emailVerifyBtn.disabled = true;
-        emailVerifyBtn.classList.remove('btn-outline-primary');
-        emailVerifyBtn.classList.add('btn-success');
+        emailVerifyBtn.style.backgroundColor = '#28a745';
+        emailVerifyBtn.style.borderColor = '#28a745';
+        emailVerifyBtn.style.color = 'white';
     @endif
     
     // 이메일 업데이트 함수
@@ -708,13 +713,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     emailVerified.value = '1';
                     emailVerifyBtn.textContent = '인증 완료';
                     emailVerifyBtn.disabled = true;
-                    emailVerifyBtn.classList.remove('btn-outline-primary');
-                    emailVerifyBtn.classList.add('btn-success');
+                    emailVerifyBtn.style.backgroundColor = '#28a745';
+                    emailVerifyBtn.style.borderColor = '#28a745';
+                    emailVerifyBtn.style.color = 'white';
                     verificationCodeInput.readOnly = true;
                     btn.disabled = true;
                     btn.textContent = '인증 완료';
-                    btn.classList.remove('btn-primary');
-                    btn.classList.add('btn-success');
+                    btn.style.backgroundColor = '#28a745';
+                    btn.style.borderColor = '#28a745';
+                    btn.style.color = 'white';
                 } else {
                     codeStatus.innerHTML = '<div class="alert alert-danger mb-0 py-2"><i class="bi bi-x-circle me-2"></i>' + (data.message || '인증번호가 일치하지 않습니다.') + '</div>';
                     btn.disabled = false;
@@ -824,8 +831,9 @@ document.addEventListener('DOMContentLoaded', function() {
         phoneInput.readOnly = true;
         phoneVerifyBtn.textContent = '인증 완료';
         phoneVerifyBtn.disabled = true;
-        phoneVerifyBtn.classList.remove('btn-outline-primary');
-        phoneVerifyBtn.classList.add('btn-success');
+                phoneVerifyBtn.style.backgroundColor = '#28a745';
+                phoneVerifyBtn.style.borderColor = '#28a745';
+                phoneVerifyBtn.style.color = 'white';
         phoneVerificationCodeInputDiv.style.display = 'none';
     }
     
@@ -933,8 +941,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 phoneVerified.value = '1';
                 phoneVerifyBtn.textContent = '인증 완료';
                 phoneVerifyBtn.disabled = true;
-                phoneVerifyBtn.classList.remove('btn-outline-primary');
-                phoneVerifyBtn.classList.add('btn-success');
+                phoneVerifyBtn.style.backgroundColor = '#28a745';
+                phoneVerifyBtn.style.borderColor = '#28a745';
+                phoneVerifyBtn.style.color = 'white';
                 phoneVerificationCodeInputDiv.style.display = 'none';
                 phoneInput.readOnly = true;
             } else {
