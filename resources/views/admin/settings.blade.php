@@ -846,10 +846,22 @@
                             </label>
                         </div>
                         <div class="form-check mt-2">
-                            <input class="form-check-input" type="checkbox" name="header_transparent" id="header_transparent" value="1" {{ (isset($settings['header_transparent']) && $settings['header_transparent'] == '1') ? 'checked' : '' }}>
+                            @php
+                                $hasSidebar = isset($settings['theme_sidebar']) && $settings['theme_sidebar'] !== 'none';
+                                $headerTransparentDisabled = $hasSidebar;
+                            @endphp
+                            <input class="form-check-input" type="checkbox" name="header_transparent" id="header_transparent" value="1" {{ (isset($settings['header_transparent']) && $settings['header_transparent'] == '1') ? 'checked' : '' }} {{ $headerTransparentDisabled ? 'disabled' : '' }}>
                             <label class="form-check-label" for="header_transparent">
                                 투명 헤더
+                                <i class="bi bi-question-circle help-icon" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="{{ $headerTransparentDisabled ? '사이드바가 활성화된 경우 투명 헤더를 사용할 수 없습니다.' : '메인 페이지에서 헤더 배경을 투명하게 표시합니다. 사이드바가 활성화된 경우 사용할 수 없습니다.' }}"
+                                   style="cursor: help; color: #6c757d; margin-left: 0.25rem;"></i>
                             </label>
+                            @if($headerTransparentDisabled)
+                                <input type="hidden" name="header_transparent" value="0">
+                            @endif
                         </div>
                         <div class="form-check mt-2">
                             <input class="form-check-input" type="checkbox" name="theme_full_width" id="theme_full_width" value="1" {{ (isset($settings['theme_full_width']) && $settings['theme_full_width'] == '1') ? 'checked' : '' }}>
@@ -3327,6 +3339,42 @@ $(document).ready(function() {
 
     $('#logo_type').on('change', toggleLogoType);
     toggleLogoType(); // 초기 상태 확인
+    
+    // 사이드바 변경 시 투명헤더 체크박스 제어
+    function updateHeaderTransparentCheckbox() {
+        const sidebarValue = $('#theme_sidebar').val();
+        const headerTransparentCheckbox = $('#header_transparent');
+        const headerTransparentLabel = headerTransparentCheckbox.closest('.form-check').find('label');
+        const helpIcon = headerTransparentLabel.find('.help-icon');
+        
+        if (sidebarValue !== 'none') {
+            // 사이드바가 있는 경우 투명헤더 비활성화
+            headerTransparentCheckbox.prop('disabled', true);
+            headerTransparentCheckbox.prop('checked', false);
+            // hidden input 추가하여 0 값 전송
+            if (headerTransparentCheckbox.closest('.form-check').find('input[type="hidden"][name="header_transparent"]').length === 0) {
+                headerTransparentCheckbox.closest('.form-check').append('<input type="hidden" name="header_transparent" value="0">');
+            }
+            helpIcon.attr('title', '사이드바가 활성화된 경우 투명 헤더를 사용할 수 없습니다.');
+        } else {
+            // 사이드바가 없는 경우 투명헤더 활성화
+            headerTransparentCheckbox.prop('disabled', false);
+            headerTransparentCheckbox.closest('.form-check').find('input[type="hidden"][name="header_transparent"]').remove();
+            helpIcon.attr('title', '메인 페이지에서 헤더 배경을 투명하게 표시합니다. 사이드바가 활성화된 경우 사용할 수 없습니다.');
+        }
+        
+        // 툴팁 재초기화
+        if (helpIcon.length) {
+            const existingTooltip = bootstrap.Tooltip.getInstance(helpIcon[0]);
+            if (existingTooltip) {
+                existingTooltip.dispose();
+            }
+            new bootstrap.Tooltip(helpIcon[0]);
+        }
+    }
+    
+    $('#theme_sidebar').on('change', updateHeaderTransparentCheckbox);
+    updateHeaderTransparentCheckbox(); // 초기 상태 확인
 });
 </script>
 @endpush

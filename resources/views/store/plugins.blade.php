@@ -120,7 +120,7 @@
                                             <div class="mb-3">
                                                 <h6>상품 타입</h6>
                                                 <p class="mb-0">
-                                                    <i class="bi bi-tag text-info me-2"></i>{{ $plugin->type }}
+                                                    <i class="bi bi-tag text-info me-2"></i>{{ $plugin->type_name_ko }}
                                                 </p>
                                             </div>
                                         @endif

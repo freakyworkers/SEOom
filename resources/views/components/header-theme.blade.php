@@ -37,6 +37,15 @@
     $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
     $headerSticky = $site->getSetting('header_sticky', '0') == '1';
     
+    // 사이드바 설정 확인 (투명헤더는 사이드바가 없을 때만 적용 가능)
+    $themeSidebar = $site->getSetting('theme_sidebar', 'left');
+    $hasSidebar = $themeSidebar !== 'none';
+    
+    // 사이드바가 있으면 투명헤더 비활성화
+    if ($hasSidebar) {
+        $headerTransparent = false;
+    }
+    
     // 메인 페이지인지 확인
     $isHomePage = request()->routeIs('home');
     

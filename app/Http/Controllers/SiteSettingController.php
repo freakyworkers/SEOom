@@ -578,6 +578,12 @@ class SiteSettingController extends Controller
             $menuLoginShow = $request->get('menu_login_show', $settings['menu_login_show'] ?? '0');
             $headerSticky = $request->get('header_sticky', $settings['header_sticky'] ?? '0');
             $headerTransparent = $request->get('header_transparent', $settings['header_transparent'] ?? '0');
+            
+            // 사이드바가 있는 경우 투명헤더 비활성화
+            $themeSidebar = $request->get('theme_sidebar', $settings['theme_sidebar'] ?? 'left');
+            if ($themeSidebar !== 'none') {
+                $headerTransparent = '0';
+            }
             $headerShadow = $request->get('header_shadow', $settings['header_shadow'] ?? '0');
             $headerBorder = $request->get('header_border', $settings['header_border'] ?? '0');
             $headerBorderWidth = $request->get('header_border_width', $settings['header_border_width'] ?? '1');

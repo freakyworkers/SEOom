@@ -2391,7 +2391,7 @@
                 @endphp
                 @if($map && $map->site_id === $site->id)
                     <div class="map-widget-container">
-                        <div class="map-widget" style="width: 100%; height: 400px; border: 1px solid #dee2e6; border-radius: 0.375rem 0.375rem 0 0; overflow: hidden;">
+                        <div class="map-widget" style="width: 100%; height: 400px; border: 1px solid #dee2e6; border-radius: 0.375rem; overflow: hidden;">
                             @if($map->map_type === 'google' && !empty($googleApiKey))
                                 <div id="google-map-{{ $map->id }}" style="width: 100%; height: 100%;"></div>
                                 @push('scripts')

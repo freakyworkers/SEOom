@@ -83,5 +83,24 @@ class AddonProduct extends Model
         }
         return round(($this->price / $this->amount_mb) * 1024, 2);
     }
+
+    /**
+     * Get type name in Korean.
+     */
+    public function getTypeNameKoAttribute(): string
+    {
+        $typeMap = [
+            'storage' => '저장 용량',
+            'traffic' => '트래픽',
+            'feature_crawler' => '크롤러',
+            'feature_event_application' => '신청형 이벤트',
+            'feature_point_exchange' => '포인트 교환',
+            'board_type_event' => '이벤트',
+            'registration_referral' => '추천인 기능',
+            'feature_point_message' => '포인트 쪽지',
+        ];
+
+        return $typeMap[$this->type] ?? $this->type;
+    }
 }
 

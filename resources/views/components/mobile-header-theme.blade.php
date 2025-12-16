@@ -26,10 +26,23 @@
     // 투명헤더 설정
     $mobileHeaderTransparent = $site->getSetting('mobile_header_transparent', '0') == '1';
     
+    // 사이드바 설정 확인 (투명헤더는 사이드바가 없을 때만 적용 가능)
+    $themeSidebar = $site->getSetting('theme_sidebar', 'left');
+    $hasSidebar = $themeSidebar !== 'none';
+    
+    // 사이드바가 있으면 투명헤더 비활성화
+    if ($hasSidebar) {
+        $mobileHeaderTransparent = false;
+    }
+    
+    // 메인 페이지인지 확인
+    $isHomePage = request()->routeIs('home');
+    
     // 헤더 스타일 생성
     $headerStyle = "color: {$headerTextColor};";
-    if ($mobileHeaderTransparent) {
-        // 투명헤더가 활성화된 경우 배경색 제거
+    // 메인 페이지에서만 투명 헤더 적용
+    if ($mobileHeaderTransparent && $isHomePage) {
+        // 투명헤더가 활성화되고 메인 페이지인 경우 배경색 제거
         $headerStyle .= " background-color: transparent;";
     } else {
         $headerStyle .= " background-color: {$headerBgColor};";
