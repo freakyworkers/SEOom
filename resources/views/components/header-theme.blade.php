@@ -54,7 +54,7 @@
     // 메인 페이지에서만 투명 헤더 적용
     if ($headerTransparent && $isHomePage) {
         // 투명헤더가 활성화되고 메인 페이지인 경우 배경색 제거 (sticky일 때는 스크롤 시 배경색 표시)
-        $headerStyle .= " background-color: transparent;";
+        $headerStyle .= " background-color: transparent !important;";
     } else {
         $headerStyle .= " background-color: {$headerBgColor};";
     }
@@ -62,6 +62,9 @@
     // 그림자는 headerShadow 설정에 따라 적용 (투명헤더와 관계없이)
     if ($headerShadow) {
         $headerStyle .= " box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
+    } else {
+        // 그림자가 비활성화된 경우 명시적으로 제거
+        $headerStyle .= " box-shadow: none !important;";
     }
     if ($headerBorder) {
         $headerStyle .= " border-bottom: {$headerBorderWidth}px solid {$headerBorderColor};";

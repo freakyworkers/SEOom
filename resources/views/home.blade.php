@@ -58,16 +58,19 @@
             $prevContainer = $index > 0 ? $mainWidgetContainers[$index - 1] : null;
             $prevIsFullHeight = $prevContainer ? ($prevContainer->full_height ?? false) : false;
             
+            // 컨테이너 여백 처리
             // 첫 번째 컨테이너가 full_height이고 두 번째 컨테이너가 일반 컨테이너인 경우 여백 적용
-            // 이전 컨테이너가 full_height이고 현재 컨테이너가 일반 컨테이너인 경우 여백 적용
             if ($prevIsFullHeight && !$isFullHeight) {
                 // 이전 컨테이너가 full_height이고 현재 컨테이너가 일반 컨테이너인 경우 여백 적용
                 $containerMarginBottom = 'mb-' . min(max($containerSpacing, 0), 5);
             } elseif (!$prevIsFullHeight && !$isFullHeight) {
                 // 둘 다 일반 컨테이너인 경우 여백 적용
                 $containerMarginBottom = 'mb-' . min(max($containerSpacing, 0), 5);
+            } elseif ($isFullHeight) {
+                // 현재 컨테이너가 full_height인 경우 여백 없음
+                $containerMarginBottom = 'mb-0';
             } else {
-                // 그 외의 경우 여백 없음 (현재 컨테이너가 full_height이거나 이전 컨테이너가 일반 컨테이너인 경우)
+                // 그 외의 경우 여백 없음
                 $containerMarginBottom = 'mb-0';
             }
         @endphp
