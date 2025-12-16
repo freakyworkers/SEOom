@@ -384,7 +384,26 @@ class SocialLoginController extends Controller
                 // 카카오는 더 이상 Client Secret을 사용하지 않음
                 config(['services.kakao.client_secret' => '']);
                 config(['services.kakao.redirect' => $redirectUrl]);
-                $driver = Socialite::driver('kakao');
+                
+                // 카카오 드라이버가 등록되지 않은 경우 직접 등록
+                try {
+                    $driver = Socialite::driver('kakao');
+                } catch (\InvalidArgumentException $e) {
+                    // 드라이버가 등록되지 않은 경우 직접 등록
+                    $socialite = app(\Laravel\Socialite\Contracts\Factory::class);
+                    $socialite->extend('kakao', function ($app) use ($socialite) {
+                        $config = $app['config']['services.kakao'] ?? [
+                            'client_id' => '',
+                            'client_secret' => '',
+                            'redirect' => '',
+                        ];
+                        return $socialite->buildProvider(
+                            \App\Socialite\KakaoProvider::class,
+                            $config
+                        );
+                    });
+                    $driver = Socialite::driver('kakao');
+                }
                 if ($httpClient) {
                     $driver->setHttpClient($httpClient);
                 }
