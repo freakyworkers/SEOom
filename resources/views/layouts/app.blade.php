@@ -667,7 +667,8 @@
             $headerTransparent = false;
         }
         
-        $isHomePage = request()->routeIs('home');
+        // 메인 페이지인지 확인 (라우트 이름 또는 경로로 확인)
+        $isHomePage = request()->routeIs('home') || request()->path() === '/' || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
     @endphp
     
     {{-- 헤더 배너 (최상단 헤더 상단) - sticky wrapper 밖에 배치하여 스크롤 시 자연스럽게 사라지도록 --}}
@@ -1375,6 +1376,15 @@
             right: 0;
             z-index: 1030;
             width: 100%;
+            background: none !important;
+            background-color: transparent !important;
+        }
+        
+        /* 투명헤더일 때 :root의 헤더 배경 변수 무시 */
+        .header-transparent-overlay nav,
+        .header-transparent-overlay .navbar {
+            background-color: transparent !important;
+            background: none !important;
         }
         
         /* 투명헤더일 때 메인 컨텐츠 영역의 상단 마진 제거 */
@@ -1394,9 +1404,10 @@
             position: fixed !important;
         }
         
-        /* 첫 번째 컨테이너에 헤더 높이만큼 padding-top 추가 (JavaScript로 동적 조정) */
+        /* 투명헤더일 때 첫 번째 컨테이너의 패딩 제거 */
         .first-container-with-transparent-header {
-            padding-top: 80px !important; /* 기본값, JavaScript로 조정 */
+            padding-top: 0 !important;
+            margin-top: 0 !important;
         }
     </style>
     <script>
@@ -1410,9 +1421,17 @@
                 
                 // 투명헤더일 때는 첫 번째 컨테이너의 상단 마진과 패딩 제거 (헤더가 오버레이되므로)
                 if (firstContainer) {
-                    firstContainer.style.marginTop = '0';
-                    firstContainer.style.paddingTop = '0';
+                    firstContainer.style.setProperty('margin-top', '0', 'important');
+                    firstContainer.style.setProperty('padding-top', '0', 'important');
                     firstContainer.classList.add('first-container-with-transparent-header');
+                }
+                
+                // row 요소도 확인하여 패딩 제거
+                const rowElement = document.querySelector('.main-widget-container');
+                if (rowElement && rowElement.closest('div[class*="container"], div[class*="container-fluid"]') === firstContainer) {
+                    rowElement.style.setProperty('margin-top', '0', 'important');
+                    rowElement.style.setProperty('padding-top', '0', 'important');
+                    rowElement.classList.add('first-container-with-transparent-header');
                 }
                 
                 // sticky 헤더인 경우 스크롤 이벤트 처리
