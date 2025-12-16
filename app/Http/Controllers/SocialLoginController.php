@@ -26,10 +26,12 @@ class SocialLoginController extends Controller
     public function redirectToProvider(Site $site, $provider)
     {
         // 소셜 로그인이 활성화되어 있는지 확인
-        // 마스터 사이트는 social_login_enabled 키 사용, 일반 사이트는 registration_enable_social_login 사용
-        $socialLoginEnabledRaw = $site->isMasterSite() 
-            ? $site->getSetting('social_login_enabled', false)
-            : $site->getSetting('registration_enable_social_login', false);
+        // 마스터 사이트는 두 가지 설정 키 모두 확인 (마스터 콘솔 설정 또는 일반 관리자 설정)
+        if ($site->isMasterSite()) {
+            $socialLoginEnabledRaw = $site->getSetting('social_login_enabled', $site->getSetting('registration_enable_social_login', false));
+        } else {
+            $socialLoginEnabledRaw = $site->getSetting('registration_enable_social_login', false);
+        }
         // 문자열 "1", "true", 숫자 1 등을 boolean으로 변환
         $socialLoginEnabled = filter_var($socialLoginEnabledRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
         
@@ -43,28 +45,32 @@ class SocialLoginController extends Controller
         }
 
         // 제공자별 Client ID 확인
-        // 마스터 사이트는 social_login_* 키 사용, 일반 사이트는 * 키 사용
+        // 마스터 사이트는 두 가지 설정 키 모두 확인 (마스터 콘솔 설정 또는 일반 관리자 설정)
         $clientId = null;
         $clientSecret = null;
         
         if ($provider === 'google') {
-            $clientId = $site->isMasterSite() 
-                ? $site->getSetting('social_login_google_client_id', '')
-                : $site->getSetting('google_client_id', '');
-            $clientSecret = $site->isMasterSite()
-                ? $site->getSetting('social_login_google_client_secret', '')
-                : $site->getSetting('google_client_secret', '');
+            if ($site->isMasterSite()) {
+                $clientId = $site->getSetting('social_login_google_client_id', $site->getSetting('google_client_id', ''));
+                $clientSecret = $site->getSetting('social_login_google_client_secret', $site->getSetting('google_client_secret', ''));
+            } else {
+                $clientId = $site->getSetting('google_client_id', '');
+                $clientSecret = $site->getSetting('google_client_secret', '');
+            }
         } elseif ($provider === 'naver') {
-            $clientId = $site->isMasterSite()
-                ? $site->getSetting('social_login_naver_client_id', '')
-                : $site->getSetting('naver_client_id', '');
-            $clientSecret = $site->isMasterSite()
-                ? $site->getSetting('social_login_naver_client_secret', '')
-                : $site->getSetting('naver_client_secret', '');
+            if ($site->isMasterSite()) {
+                $clientId = $site->getSetting('social_login_naver_client_id', $site->getSetting('naver_client_id', ''));
+                $clientSecret = $site->getSetting('social_login_naver_client_secret', $site->getSetting('naver_client_secret', ''));
+            } else {
+                $clientId = $site->getSetting('naver_client_id', '');
+                $clientSecret = $site->getSetting('naver_client_secret', '');
+            }
         } elseif ($provider === 'kakao') {
-            $clientId = $site->isMasterSite()
-                ? $site->getSetting('social_login_kakao_client_id', '')
-                : $site->getSetting('kakao_client_id', '');
+            if ($site->isMasterSite()) {
+                $clientId = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+            } else {
+                $clientId = $site->getSetting('kakao_client_id', '');
+            }
             // 카카오는 더 이상 Client Secret을 사용하지 않음
             $clientSecret = '';
         }
@@ -297,28 +303,32 @@ class SocialLoginController extends Controller
             }
 
             // 제공자별 Client ID/Secret 가져오기
-            // 마스터 사이트는 social_login_* 키 사용, 일반 사이트는 * 키 사용
+            // 마스터 사이트는 두 가지 설정 키 모두 확인 (마스터 콘솔 설정 또는 일반 관리자 설정)
             $clientId = null;
             $clientSecret = null;
             
             if ($provider === 'google') {
-                $clientId = $site->isMasterSite()
-                    ? $site->getSetting('social_login_google_client_id', '')
-                    : $site->getSetting('google_client_id', '');
-                $clientSecret = $site->isMasterSite()
-                    ? $site->getSetting('social_login_google_client_secret', '')
-                    : $site->getSetting('google_client_secret', '');
+                if ($site->isMasterSite()) {
+                    $clientId = $site->getSetting('social_login_google_client_id', $site->getSetting('google_client_id', ''));
+                    $clientSecret = $site->getSetting('social_login_google_client_secret', $site->getSetting('google_client_secret', ''));
+                } else {
+                    $clientId = $site->getSetting('google_client_id', '');
+                    $clientSecret = $site->getSetting('google_client_secret', '');
+                }
             } elseif ($provider === 'naver') {
-                $clientId = $site->isMasterSite()
-                    ? $site->getSetting('social_login_naver_client_id', '')
-                    : $site->getSetting('naver_client_id', '');
-                $clientSecret = $site->isMasterSite()
-                    ? $site->getSetting('social_login_naver_client_secret', '')
-                    : $site->getSetting('naver_client_secret', '');
+                if ($site->isMasterSite()) {
+                    $clientId = $site->getSetting('social_login_naver_client_id', $site->getSetting('naver_client_id', ''));
+                    $clientSecret = $site->getSetting('social_login_naver_client_secret', $site->getSetting('naver_client_secret', ''));
+                } else {
+                    $clientId = $site->getSetting('naver_client_id', '');
+                    $clientSecret = $site->getSetting('naver_client_secret', '');
+                }
             } elseif ($provider === 'kakao') {
-                $clientId = $site->isMasterSite()
-                    ? $site->getSetting('social_login_kakao_client_id', '')
-                    : $site->getSetting('kakao_client_id', '');
+                if ($site->isMasterSite()) {
+                    $clientId = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                } else {
+                    $clientId = $site->getSetting('kakao_client_id', '');
+                }
                 // 카카오는 더 이상 Client Secret을 사용하지 않음
                 $clientSecret = '';
             }

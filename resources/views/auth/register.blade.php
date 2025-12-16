@@ -33,20 +33,20 @@
 
                 {{-- 소셜 로그인 --}}
                 @php
-                    $socialLoginEnabledRaw = $site->isMasterSite() 
-                        ? $site->getSetting('social_login_enabled', false)
-                        : $site->getSetting('registration_enable_social_login', false);
+                    // 마스터 사이트는 두 가지 설정 키 모두 확인 (마스터 콘솔 설정 또는 일반 관리자 설정)
+                    if ($site->isMasterSite()) {
+                        $socialLoginEnabledRaw = $site->getSetting('social_login_enabled', $site->getSetting('registration_enable_social_login', false));
+                        $googleClientId = $site->getSetting('social_login_google_client_id', $site->getSetting('google_client_id', ''));
+                        $naverClientId = $site->getSetting('social_login_naver_client_id', $site->getSetting('naver_client_id', ''));
+                        $kakaoClientId = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                    } else {
+                        $socialLoginEnabledRaw = $site->getSetting('registration_enable_social_login', false);
+                        $googleClientId = $site->getSetting('google_client_id', '');
+                        $naverClientId = $site->getSetting('naver_client_id', '');
+                        $kakaoClientId = $site->getSetting('kakao_client_id', '');
+                    }
                     // 문자열 "1", "true", 숫자 1 등을 boolean으로 변환
                     $socialLoginEnabled = filter_var($socialLoginEnabledRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
-                    $googleClientId = $site->isMasterSite()
-                        ? $site->getSetting('social_login_google_client_id', '')
-                        : $site->getSetting('google_client_id', '');
-                    $naverClientId = $site->isMasterSite()
-                        ? $site->getSetting('social_login_naver_client_id', '')
-                        : $site->getSetting('naver_client_id', '');
-                    $kakaoClientId = $site->isMasterSite()
-                        ? $site->getSetting('social_login_kakao_client_id', '')
-                        : $site->getSetting('kakao_client_id', '');
                 @endphp
                 @if($socialLoginEnabled && (!empty($googleClientId) || !empty($naverClientId) || !empty($kakaoClientId)))
                 <div class="mb-4">
