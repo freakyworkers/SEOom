@@ -98,11 +98,12 @@ class AuthController extends Controller
                     return redirect($intendedUrl);
                 }
                 
-                // 마스터 사이트인 경우 관리자 대시보드로 리다이렉트, 일반 사이트는 /site/{slug}로
+                // 마스터 사이트인 경우 관리자 대시보드로 리다이렉트
                 if ($site->isMasterSite()) {
                     return redirect()->route('master.admin.dashboard');
                 }
-                return redirect()->route('home', ['site' => $site->slug]);
+                // 커스텀 도메인/서브도메인인 경우 루트 경로로, 아니면 /site/{slug}로
+                return redirect($site->getHomeUrl());
             }
         }
 
@@ -124,7 +125,7 @@ class AuthController extends Controller
                 return redirect($intendedUrl);
             }
             
-            // 마스터 사이트인 경우 관리자 대시보드로 리다이렉트, 일반 사이트는 /site/{slug}로
+            // 마스터 사이트인 경우 관리자 대시보드로 리다이렉트
             if ($site->isMasterSite()) {
                 // 관리자 권한이 있는 경우에만 대시보드로, 아니면 홈으로
                 $user = auth()->user();
@@ -133,7 +134,8 @@ class AuthController extends Controller
                 }
                 return redirect('/');
             }
-            return redirect()->route('home', ['site' => $site->slug]);
+            // 커스텀 도메인/서브도메인인 경우 루트 경로로, 아니면 /site/{slug}로
+            return redirect($site->getHomeUrl());
         }
 
         $errorMessage = $loginMethod === 'username' 
@@ -240,11 +242,12 @@ class AuthController extends Controller
 
         $this->authService->login($request->only('email', 'password') + ['site_id' => $site->id]);
 
-        // 마스터 사이트인 경우 루트로 리다이렉트, 일반 사이트는 /site/{slug}로
+        // 마스터 사이트인 경우 루트로 리다이렉트
         if ($site->isMasterSite()) {
             return redirect('/');
         }
-        return redirect()->route('home', ['site' => $site->slug]);
+        // 커스텀 도메인/서브도메인인 경우 루트 경로로, 아니면 /site/{slug}로
+        return redirect($site->getHomeUrl());
     }
 
     /**
@@ -254,11 +257,12 @@ class AuthController extends Controller
     {
         $this->authService->logout();
 
-        // 마스터 사이트인 경우 루트로 리다이렉트, 일반 사이트는 /site/{slug}로
+        // 마스터 사이트인 경우 루트로 리다이렉트
         if ($site->isMasterSite()) {
             return redirect('/');
         }
-        return redirect()->route('home', ['site' => $site->slug]);
+        // 커스텀 도메인/서브도메인인 경우 루트 경로로, 아니면 /site/{slug}로
+        return redirect($site->getHomeUrl());
     }
 
     /**

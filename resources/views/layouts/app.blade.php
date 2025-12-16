@@ -315,14 +315,14 @@
                 color: var(--header-text-color) !important;
             }
         @else
-            :root {
-                --header-text-color: {{ $colorLightHeaderText }};
-                --header-bg-color: {{ $colorLightHeaderBg }};
-                --body-text-color: {{ $colorLightBodyText }};
-                --body-bg-color: {{ $colorLightBodyBg }};
-                --point-main-color: {{ $colorLightPointMain }};
-                --point-bg-color: {{ $colorLightPointBg }};
-            }
+            <?php echo ':root {'; ?><?php echo "\n                "; ?>
+                --header-text-color: <?php echo $colorLightHeaderText; ?>;
+                --header-bg-color: <?php echo $colorLightHeaderBg; ?>;
+                --body-text-color: <?php echo $colorLightBodyText; ?>;
+                --body-bg-color: <?php echo $colorLightBodyBg; ?>;
+                --point-main-color: <?php echo $colorLightPointMain; ?>;
+                --point-bg-color: <?php echo $colorLightPointBg; ?>;
+            <?php echo "\n            }"; ?>
             body {
                 background-color: var(--body-bg-color);
                 color: var(--body-text-color);
@@ -818,7 +818,7 @@
                                         @endphp
                                         @if($canShowAdminButton)
                                             <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item" href="{{ ($site->isMasterSite() ?? false) ? route('master.admin.dashboard') : route('admin.dashboard', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
+                                            <li><a class="dropdown-item" href="{{ ($site->isMasterSite() ?? false) ? route('master.admin.dashboard') : $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
                                             @if($isMasterUser && $isMasterSite)
                                                 <li><a class="dropdown-item" href="#" onclick="openMasterConsole(event); return false;"><i class="bi bi-gear-fill me-2"></i>마스터 콘솔</a></li>
                                             @endif

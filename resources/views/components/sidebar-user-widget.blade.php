@@ -232,7 +232,7 @@
             @endphp
             @if($canShowAdminButton)
                 <div class="border-top pt-2 mt-2">
-                    <a href="{{ $site->isMasterSite() ? route('master.admin.dashboard') : route('admin.dashboard', ['site' => $site->slug ?? 'default']) }}" class="text-decoration-none d-block text-center mb-2" style="color: {{ $pointColor }}; font-size: 0.875rem; font-weight: 500;">
+                    <a href="{{ $site->isMasterSite() ? route('master.admin.dashboard') : $site->getAdminDashboardUrl() }}" class="text-decoration-none d-block text-center mb-2" style="color: {{ $pointColor }}; font-size: 0.875rem; font-weight: 500;">
                         <i class="bi bi-shield-check me-1"></i>관리자 페이지
                     </a>
                     {{-- 마스터 콘솔 바로가기 (마스터 사이트에서 마스터 사용자만 표시) --}}

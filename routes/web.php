@@ -635,6 +635,91 @@ Route::middleware('web')->group(function () {
 
 // 도메인 기반 접근을 위한 라우트 그룹 (미들웨어에서 site가 설정된 경우)
 // 이 라우트들은 site/{site} prefix 없이 직접 접근 가능
+// 서브도메인/커스텀 도메인으로 접근할 때 사용
+Route::middleware(['block.ip', 'verify.site.user'])->group(function () {
+    // 어드민 라우트 (서브도메인/커스텀 도메인용)
+    Route::prefix('admin')->middleware('auth')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->dashboard($site);
+        });
+        
+        Route::get('/dashboard/chart-data', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->getChartData($site);
+        });
+        
+        // Users
+        Route::get('/users', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->users($site, $request);
+        });
+        
+        Route::post('/users', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->storeUser($request, $site);
+        });
+        
+        Route::get('/users/{user}', function (Request $request, \App\Models\User $user) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->userDetail($site, $user);
+        });
+        
+        Route::put('/users/{user}', function (Request $request, \App\Models\User $user) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateUser($request, $site, $user);
+        });
+        
+        // Settings
+        Route::get('/settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\SiteSettingController::class)->index($site);
+        });
+        
+        Route::put('/settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\SiteSettingController::class)->update($request, $site);
+        });
+        
+        Route::post('/settings/upload-image', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\SiteSettingController::class)->uploadImage($request, $site);
+        });
+        
+        // 나머지 어드민 라우트는 필요시 추가
+        // 일단 주요 라우트만 정의하고, 나머지는 slug 기반 라우트로 리다이렉트하거나
+        // 필요에 따라 추가
+    });
+});
+
 Route::middleware(['block.ip', 'verify.site.user', 'auth'])->group(function () {
     Route::get('/my-sites', function (Request $request) {
         $site = $request->attributes->get('site');

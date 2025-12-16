@@ -212,7 +212,7 @@
                                                                 <i class="bi bi-box-arrow-up-right me-1"></i>사이트 보기
                                                             </a>
                                                             @if(auth()->user()->canManage() || $userSite->users()->where('id', auth()->id())->exists())
-                                                                <a href="{{ route('admin.dashboard', ['site' => $userSite->slug]) }}" class="btn btn-sm btn-outline-secondary flex-fill">
+                                                                <a href="{{ $userSite->getAdminDashboardUrl() }}" class="btn btn-sm btn-outline-secondary flex-fill">
                                                                     <i class="bi bi-gear me-1"></i>관리
                                                                 </a>
                                                             @endif

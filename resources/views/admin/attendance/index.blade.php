@@ -184,7 +184,7 @@
     </div>
 
     <div class="d-flex justify-content-end gap-2">
-        <a href="{{ route('admin.dashboard', ['site' => $site->slug]) }}" class="btn btn-secondary">
+        <a href="{{ $site->getAdminDashboardUrl() }}" class="btn btn-secondary">
             <i class="bi bi-arrow-left me-1"></i>취소
         </a>
         <button type="submit" class="btn btn-primary">

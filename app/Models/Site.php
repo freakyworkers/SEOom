@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Route;
 
 class Site extends Model
 {
@@ -135,6 +136,119 @@ class Site extends Model
     public function isMasterSite(): bool
     {
         return $this->is_master_site === true;
+    }
+    
+    /**
+     * Check if current request is using custom domain or subdomain (not slug-based routing).
+     */
+    public function isUsingDirectDomain(): bool
+    {
+        if (!$this->slug) {
+            return false;
+        }
+        
+        $currentHost = request()->getHost();
+        $masterDomain = config('app.master_domain', 'seoomweb.com');
+        
+        // 커스텀 도메인 체크
+        if ($this->domain && ($currentHost === $this->domain || $currentHost === 'www.' . $this->domain)) {
+            return true;
+        }
+        
+        // 서브도메인 체크 (예: adfreak1.seoomweb.com)
+        $subdomainPattern = $this->slug . '.' . $masterDomain;
+        if ($currentHost === $subdomainPattern || $currentHost === 'www.' . $subdomainPattern) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Get home URL for this site (custom domain/subdomain or slug-based).
+     */
+    public function getHomeUrl(): string
+    {
+        if ($this->isUsingDirectDomain()) {
+            return '/';
+        }
+        
+        if ($this->isMasterSite()) {
+            return '/';
+        }
+        
+        return route('home', ['site' => $this->slug]);
+    }
+    
+    /**
+     * Get admin dashboard URL for this site (custom domain/subdomain or slug-based).
+     */
+    public function getAdminDashboardUrl(): string
+    {
+        if ($this->isMasterSite()) {
+            return route('master.admin.dashboard');
+        }
+        
+        if ($this->isUsingDirectDomain()) {
+            return '/admin/dashboard';
+        }
+        
+        return route('admin.dashboard', ['site' => $this->slug]);
+    }
+    
+    /**
+     * Get admin route URL for this site (custom domain/subdomain or slug-based).
+     */
+    public function getAdminRouteUrl(string $routeName, array $parameters = []): string
+    {
+        if ($this->isMasterSite()) {
+            $masterRouteName = 'master.' . $routeName;
+            if (Route::has($masterRouteName)) {
+                return route($masterRouteName, $parameters);
+            }
+        }
+        
+        if ($this->isUsingDirectDomain()) {
+            // 커스텀 도메인/서브도메인인 경우 /admin/{route} 형태로 변환
+            // routeName 예: 'admin.dashboard', 'admin.users.detail'
+            $routePath = str_replace('admin.', '', $routeName);
+            $routePath = str_replace('.', '/', $routePath);
+            $url = '/admin/' . $routePath;
+            
+            // 파라미터가 있으면 URL 경로에 포함 (site 파라미터 제외)
+            // 예: admin.users.detail + ['user' => 1] => /admin/users/1
+            $pathParams = [];
+            $queryParams = [];
+            
+            foreach ($parameters as $key => $value) {
+                if ($key === 'site') {
+                    continue; // site 파라미터는 제외
+                }
+                
+                // URL 경로에 포함할 파라미터인지 확인 (일반적으로 모델 ID 등)
+                // 쿼리 스트링으로 보낼 파라미터인지 확인
+                if (is_numeric($value) || is_string($value)) {
+                    // 라우트 경로에 포함 (예: /admin/users/{user})
+                    $pathParams[] = $value;
+                } else {
+                    $queryParams[$key] = $value;
+                }
+            }
+            
+            // 경로 파라미터가 있으면 URL에 추가
+            if (!empty($pathParams)) {
+                $url .= '/' . implode('/', $pathParams);
+            }
+            
+            // 쿼리 파라미터가 있으면 쿼리 스트링으로 추가
+            if (!empty($queryParams)) {
+                $url .= '?' . http_build_query($queryParams);
+            }
+            
+            return $url;
+        }
+        
+        return route($routeName, array_merge(['site' => $this->slug], $parameters));
     }
 
     /**
@@ -524,4 +638,5 @@ public function hasMainWidgetType(string $widgetType): bool
         return $this->hasMany(\App\Models\UserAddon::class);
     }
 }
+
 

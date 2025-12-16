@@ -822,9 +822,11 @@ class SocialLoginController extends Controller
             \Log::info('=== Social login SUCCESS - Redirecting to site home ===', [
                 'user_id' => $user->id,
                 'site_id' => $site->id,
-                'site_slug' => $site->slug
+                'site_slug' => $site->slug,
+                'is_using_direct_domain' => $site->isUsingDirectDomain()
             ]);
-            return redirect()->route('home', ['site' => $site->slug])
+            // 커스텀 도메인/서브도메인인 경우 루트 경로로, 아니면 /site/{slug}로
+            return redirect($site->getHomeUrl())
                 ->with('success', '로그인되었습니다.');
 
         } catch (\Exception $e) {
