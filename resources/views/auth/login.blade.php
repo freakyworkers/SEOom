@@ -118,23 +118,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="text-center mb-3">
                             <small class="text-muted">또는</small>
                         </div>
-                        <div class="d-grid gap-2">
+                        <div class="d-flex gap-2 justify-content-center">
                             @if(!empty($googleClientId))
                             <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'google']) : route('social.login', ['site' => $site->slug, 'provider' => 'google']) }}" 
-                               class="btn btn-outline-danger">
-                                <i class="bi bi-google me-2"></i>구글로 로그인
+                               class="btn btn-outline-danger btn-sm" style="flex: 0 0 auto;">
+                                <i class="bi bi-google me-1"></i>구글
                             </a>
                             @endif
                             @if(!empty($naverClientId))
                             <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'naver']) : route('social.login', ['site' => $site->slug, 'provider' => 'naver']) }}" 
-                               class="btn btn-outline-success" style="background-color: #03C75A; border-color: #03C75A; color: white;">
-                                <span class="fw-bold me-2" style="font-size: 1.1em;">N</span>네이버로 로그인
+                               class="btn btn-sm" style="background-color: #03C75A; border-color: #03C75A; color: white; flex: 0 0 auto;">
+                                <span class="fw-bold me-1" style="font-size: 1em;">N</span>네이버
                             </a>
                             @endif
                             @if(!empty($kakaoClientId))
                             <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'kakao']) : route('social.login', ['site' => $site->slug, 'provider' => 'kakao']) }}" 
-                               class="btn btn-outline-warning" style="background-color: #FEE500; border-color: #FEE500; color: #000;">
-                                <i class="bi bi-chat-fill me-2"></i>카카오로 로그인
+                               class="btn btn-sm" style="background-color: #FEE500; border-color: #FEE500; color: #000; flex: 0 0 auto;">
+                                <i class="bi bi-chat-fill me-1"></i>카카오
                             </a>
                             @endif
                         </div>
