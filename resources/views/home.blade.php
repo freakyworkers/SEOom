@@ -37,9 +37,9 @@
             $containerClass = $isFullWidth ? 'container-fluid px-0' : '';
             $containerStyle = $isFullWidth ? 'width: 100vw; position: relative; left: 50%; transform: translateX(-50%); padding: 0;' : '';
             
-            // 투명헤더가 활성화된 경우 첫 번째 컨테이너에 padding-top 추가
+            // 투명헤더가 활성화된 경우 첫 번째 컨테이너에 padding-top 추가하고 상단 마진 제거
             if ($shouldAddHeaderPadding && $index === 0) {
-                $containerStyle .= ($containerStyle ? ' ' : '') . 'padding-top: ' . $estimatedHeaderHeight . 'px;';
+                $containerStyle .= ($containerStyle ? ' ' : '') . 'padding-top: ' . $estimatedHeaderHeight . 'px; margin-top: 0 !important;';
             }
             
             if ($isFullHeight) {
@@ -54,10 +54,22 @@
             
             // 컨테이너 간격 처리
             $containerSpacing = $container->widget_spacing ?? 3;
-            // 이전 컨테이너가 full_height가 아니고 현재 컨테이너도 full_height가 아니면 여백 적용
+            // 이전 컨테이너 확인
             $prevContainer = $index > 0 ? $mainWidgetContainers[$index - 1] : null;
             $prevIsFullHeight = $prevContainer ? ($prevContainer->full_height ?? false) : false;
-            $containerMarginBottom = ($isFullHeight || $prevIsFullHeight) ? 'mb-0' : 'mb-' . min(max($containerSpacing, 0), 5);
+            
+            // 첫 번째 컨테이너가 full_height이고 두 번째 컨테이너가 일반 컨테이너인 경우 여백 적용
+            // 이전 컨테이너가 full_height가 아니고 현재 컨테이너도 full_height가 아니면 여백 적용
+            if ($prevIsFullHeight && !$isFullHeight) {
+                // 이전 컨테이너가 full_height이고 현재 컨테이너가 일반 컨테이너인 경우 여백 적용
+                $containerMarginBottom = 'mb-' . min(max($containerSpacing, 0), 5);
+            } elseif (!$prevIsFullHeight && !$isFullHeight) {
+                // 둘 다 일반 컨테이너인 경우 여백 적용
+                $containerMarginBottom = 'mb-' . min(max($containerSpacing, 0), 5);
+            } else {
+                // 그 외의 경우 여백 없음
+                $containerMarginBottom = 'mb-0';
+            }
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
             <div class="row main-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">

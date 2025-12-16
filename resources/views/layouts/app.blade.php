@@ -1400,9 +1400,10 @@
                 // 헤더 높이 계산
                 const headerHeight = headerWrapper.offsetHeight;
                 
-                // 첫 번째 컨테이너에 padding-top 적용
+                // 첫 번째 컨테이너에 padding-top 적용하고 상단 마진 제거
                 if (firstContainer) {
                     firstContainer.style.paddingTop = headerHeight + 'px';
+                    firstContainer.style.marginTop = '0';
                     firstContainer.classList.add('first-container-with-transparent-header');
                 }
                 

@@ -55,11 +55,13 @@
     if ($headerTransparent && $isHomePage) {
         // 투명헤더가 활성화되고 메인 페이지인 경우 배경색 제거 (sticky일 때는 스크롤 시 배경색 표시)
         $headerStyle .= " background-color: transparent;";
+        // 투명헤더일 때는 그림자 제거
     } else {
         $headerStyle .= " background-color: {$headerBgColor};";
-    }
-    if ($headerShadow) {
-        $headerStyle .= " box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
+        // 일반 헤더일 때만 그림자 적용
+        if ($headerShadow) {
+            $headerStyle .= " box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
+        }
     }
     if ($headerBorder) {
         $headerStyle .= " border-bottom: {$headerBorderWidth}px solid {$headerBorderColor};";
@@ -717,21 +719,46 @@
 @endif
 
 @if($headerSticky && $headerTransparent && $isHomePage)
+<style>
+.header-transparent-sticky.scrolled {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
+    backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.15),
+        0 4px 16px 0 rgba(0, 0, 0, 0.08),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 1px 0 rgba(255, 255, 255, 0.1) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 다크 모드일 때 글래스 모피즘 */
+[data-theme="dark"] .header-transparent-sticky.scrolled,
+.theme-dark .header-transparent-sticky.scrolled {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2)) !important;
+    backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+</style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const header = document.querySelector('.header-transparent-sticky');
+    const headerWrapper = document.querySelector('.header-transparent-sticky-overlay');
     if (header) {
-        const bgColor = header.getAttribute('data-bg-color');
         const textColor = '{{ $headerTextColor }}';
         
         function handleScroll() {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             
             if (scrollTop > 10) {
-                // 스크롤 시 지정된 배경색과 텍스트 색상 적용
-                header.style.backgroundColor = bgColor;
+                // 스크롤 시 글래스 모피즘 배경 적용
+                header.classList.add('scrolled');
+                if (headerWrapper) {
+                    headerWrapper.classList.add('scrolled');
+                }
                 header.style.color = textColor;
-                header.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+                header.style.transition = 'all 0.3s ease';
                 
                 // 헤더 내 모든 링크와 텍스트 색상도 변경
                 const links = header.querySelectorAll('a, .nav-link, .navbar-brand');
@@ -740,6 +767,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             } else {
                 // 상단에 있을 때 투명
+                header.classList.remove('scrolled');
+                if (headerWrapper) {
+                    headerWrapper.classList.remove('scrolled');
+                }
                 header.style.backgroundColor = 'transparent';
                 header.style.color = textColor;
                 
