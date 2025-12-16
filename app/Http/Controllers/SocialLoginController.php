@@ -27,9 +27,11 @@ class SocialLoginController extends Controller
     {
         // 소셜 로그인이 활성화되어 있는지 확인
         // 마스터 사이트는 social_login_enabled 키 사용, 일반 사이트는 registration_enable_social_login 사용
-        $socialLoginEnabled = $site->isMasterSite() 
+        $socialLoginEnabledRaw = $site->isMasterSite() 
             ? $site->getSetting('social_login_enabled', false)
             : $site->getSetting('registration_enable_social_login', false);
+        // 문자열 "1", "true", 숫자 1 등을 boolean으로 변환
+        $socialLoginEnabled = filter_var($socialLoginEnabledRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
         
         if (!$socialLoginEnabled) {
             if ($site->isMasterSite()) {

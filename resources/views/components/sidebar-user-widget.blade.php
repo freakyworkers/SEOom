@@ -272,9 +272,11 @@
                 
                 {{-- 소셜 로그인 버튼 --}}
                 @php
-                    $socialLoginEnabled = $site->isMasterSite() 
+                    $socialLoginEnabledRaw = $site->isMasterSite() 
                         ? $site->getSetting('social_login_enabled', false)
                         : $site->getSetting('registration_enable_social_login', false);
+                    // 문자열 "1", "true", 숫자 1 등을 boolean으로 변환
+                    $socialLoginEnabled = filter_var($socialLoginEnabledRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
                     $googleClientId = $site->isMasterSite()
                         ? $site->getSetting('social_login_google_client_id', '')
                         : $site->getSetting('google_client_id', '');
@@ -285,7 +287,7 @@
                         ? $site->getSetting('social_login_kakao_client_id', '')
                         : $site->getSetting('kakao_client_id', '');
                 @endphp
-                @if($socialLoginEnabled)
+                @if($socialLoginEnabled && (!empty($googleClientId) || !empty($naverClientId) || !empty($kakaoClientId)))
                 <div class="mb-2">
                     <div class="d-flex gap-1 justify-content-center">
                         @if(!empty($googleClientId))
