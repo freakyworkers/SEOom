@@ -242,11 +242,18 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
         form.addEventListener('submit', function(e) {
             try {
+                // amount_mb 필드가 숨겨져 있으면 required 속성 제거
+                if (amountMbContainer && amountMbContainer.style.display === 'none') {
+                    amountMbInput.removeAttribute('required');
+                    amountMbInput.required = false;
+                }
+                
                 // 숨겨진 필드의 required 속성 제거
                 const hiddenRequiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
                 hiddenRequiredFields.forEach(function(field) {
-                    if (field.offsetParent === null || field.style.display === 'none') {
+                    if (field.offsetParent === null || field.style.display === 'none' || field.closest('[style*="display: none"]')) {
                         field.removeAttribute('required');
+                        field.required = false;
                     }
                 });
                 
