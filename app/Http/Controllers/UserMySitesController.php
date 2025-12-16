@@ -360,7 +360,14 @@ class UserMySitesController extends Controller
             ->with('addonProduct')
             ->get();
 
-        return view('user-sites.addons', compact('site', 'userSite', 'addonProducts', 'subscription', 'activeAddons'));
+        // 플러그인 페이지에서 선택한 addon이 있으면 가져오기
+        $selectedAddonSlug = request()->query('addon');
+        $selectedAddon = null;
+        if ($selectedAddonSlug) {
+            $selectedAddon = AddonProduct::where('slug', $selectedAddonSlug)->where('is_active', true)->first();
+        }
+
+        return view('user-sites.addons', compact('site', 'userSite', 'addonProducts', 'subscription', 'activeAddons', 'selectedAddon'));
     }
 
     /**

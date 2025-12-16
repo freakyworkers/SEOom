@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Site;
 use App\Models\Plan;
-use App\Models\Plugin;
+use App\Models\AddonProduct;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -78,8 +78,8 @@ class StoreController extends Controller
             abort(404);
         }
 
-        // 활성화된 플러그인 가져오기
-        $plugins = Plugin::where('is_active', true)
+        // 활성화된 추가 구매 상품(플러그인) 가져오기
+        $plugins = AddonProduct::where('is_active', true)
             ->orderBy('sort_order', 'asc')
             ->orderBy('price', 'asc')
             ->get();

@@ -25,8 +25,8 @@
                     @foreach($plugins as $plugin)
                         <div class="col-md-4">
                             <div class="card h-100 shadow-sm">
-                                @if($plugin->image)
-                                    <img src="{{ asset('storage/' . $plugin->image) }}" class="card-img-top" alt="{{ $plugin->name }}" style="height: 200px; object-fit: cover;">
+                                @if($plugin->thumbnail)
+                                    <img src="{{ asset('storage/' . $plugin->thumbnail) }}" class="card-img-top" alt="{{ $plugin->name }}" style="height: 200px; object-fit: cover;">
                                 @else
                                     <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
                                         <i class="bi bi-puzzle display-4 text-muted"></i>
@@ -38,28 +38,26 @@
                                     
                                     <div class="mb-3">
                                         <h3 class="text-primary">
-                                            @if($plugin->billing_type === 'free')
+                                            @if($plugin->price == 0)
                                                 <span class="text-success">무료</span>
-                                            @elseif($plugin->billing_type === 'one_time' && $plugin->one_time_price > 0)
-                                                {{ number_format($plugin->one_time_price) }}원
+                                            @elseif($plugin->billing_cycle === 'one_time')
+                                                {{ number_format($plugin->price) }}원
                                                 <small class="text-muted fw-light" style="font-size: 0.4em;">(1회 결제)</small>
-                                            @elseif($plugin->billing_type === 'monthly' && $plugin->price > 0)
+                                            @elseif($plugin->billing_cycle === 'monthly')
                                                 {{ number_format($plugin->price) }}원
                                                 <small class="text-muted fw-light">/월</small>
                                             @else
-                                                <span class="text-success">무료</span>
+                                                {{ number_format($plugin->price) }}원
                                             @endif
                                         </h3>
                                     </div>
 
-                                    @if($plugin->features)
+                                    @if($plugin->amount_mb > 0)
                                         <div class="mb-3">
-                                            <h6 class="small text-muted mb-2">포함된 기능:</h6>
-                                            <ul class="list-unstyled small">
-                                                @foreach($plugin->features as $feature)
-                                                    <li><i class="bi bi-check-circle text-success me-2"></i>{{ $feature }}</li>
-                                                @endforeach
-                                            </ul>
+                                            <h6 class="small text-muted mb-2">제공 용량:</h6>
+                                            <p class="small mb-0">
+                                                <i class="bi bi-hdd text-info me-2"></i>{{ number_format($plugin->amount_mb / 1024, 2) }} GB
+                                            </p>
                                         </div>
                                     @endif
 
@@ -92,32 +90,38 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
-                                        @if($plugin->image)
-                                            <img src="{{ asset('storage/' . $plugin->image) }}" class="img-fluid rounded mb-3" alt="{{ $plugin->name }}">
+                                        @if($plugin->thumbnail)
+                                            <img src="{{ asset('storage/' . $plugin->thumbnail) }}" class="img-fluid rounded mb-3" alt="{{ $plugin->name }}">
                                         @endif
                                         <p class="mb-3">{{ $plugin->description }}</p>
                                         <div class="mb-3">
                                             <h6>가격</h6>
                                             <p class="h4 text-primary">
-                                                @if($plugin->billing_type === 'free')
+                                                @if($plugin->price == 0)
                                                     <span class="text-success">무료</span>
-                                                @elseif($plugin->billing_type === 'one_time' && $plugin->one_time_price > 0)
-                                                    {{ number_format($plugin->one_time_price) }}원 <small class="text-muted" style="font-size: 0.4em;">(1회 결제)</small>
-                                                @elseif($plugin->billing_type === 'monthly' && $plugin->price > 0)
+                                                @elseif($plugin->billing_cycle === 'one_time')
+                                                    {{ number_format($plugin->price) }}원 <small class="text-muted" style="font-size: 0.4em;">(1회 결제)</small>
+                                                @elseif($plugin->billing_cycle === 'monthly')
                                                     {{ number_format($plugin->price) }}원/월
                                                 @else
-                                                    <span class="text-success">무료</span>
+                                                    {{ number_format($plugin->price) }}원
                                                 @endif
                                             </p>
                                         </div>
-                                        @if($plugin->features)
+                                        @if($plugin->amount_mb > 0)
                                             <div class="mb-3">
-                                                <h6>포함된 기능</h6>
-                                                <ul class="list-unstyled">
-                                                    @foreach($plugin->features as $feature)
-                                                        <li><i class="bi bi-check-circle text-success me-2"></i>{{ $feature }}</li>
-                                                    @endforeach
-                                                </ul>
+                                                <h6>제공 용량</h6>
+                                                <p class="mb-0">
+                                                    <i class="bi bi-hdd text-info me-2"></i>{{ number_format($plugin->amount_mb / 1024, 2) }} GB
+                                                </p>
+                                            </div>
+                                        @endif
+                                        @if($plugin->type)
+                                            <div class="mb-3">
+                                                <h6>상품 타입</h6>
+                                                <p class="mb-0">
+                                                    <i class="bi bi-tag text-info me-2"></i>{{ $plugin->type }}
+                                                </p>
                                             </div>
                                         @endif
                                         
@@ -148,13 +152,9 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                                         @if($userSites->isNotEmpty())
-                                            <form method="POST" action="{{ route('payment.process-plugin', ['plugin' => $plugin->id]) }}" class="d-inline" id="pluginForm{{ $plugin->id }}">
-                                                @csrf
-                                                <input type="hidden" name="target_site_id" id="pluginSiteId{{ $plugin->id }}" value="">
-                                                <button type="submit" class="btn btn-primary" id="pluginSubmit{{ $plugin->id }}" disabled>
-                                                    <i class="bi bi-check-circle me-1"></i>구매하기
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-primary" id="pluginSubmit{{ $plugin->id }}" onclick="purchasePlugin({{ $plugin->id }}, '{{ $plugin->slug }}')" disabled>
+                                                <i class="bi bi-check-circle me-1"></i>구매하기
+                                            </button>
                                         @endif
                                     </div>
                                 </div>
@@ -174,16 +174,13 @@ document.addEventListener('DOMContentLoaded', function() {
     @foreach($plugins as $plugin)
         @if($userSites->isNotEmpty())
             const pluginSiteSelect{{ $plugin->id }} = document.getElementById('pluginSiteSelect{{ $plugin->id }}');
-            const pluginSiteId{{ $plugin->id }} = document.getElementById('pluginSiteId{{ $plugin->id }}');
             const pluginSubmit{{ $plugin->id }} = document.getElementById('pluginSubmit{{ $plugin->id }}');
             
             if (pluginSiteSelect{{ $plugin->id }}) {
                 pluginSiteSelect{{ $plugin->id }}.addEventListener('change', function() {
                     if (this.value) {
-                        pluginSiteId{{ $plugin->id }}.value = this.value;
                         pluginSubmit{{ $plugin->id }}.disabled = false;
                     } else {
-                        pluginSiteId{{ $plugin->id }}.value = '';
                         pluginSubmit{{ $plugin->id }}.disabled = true;
                     }
                 });
@@ -191,6 +188,28 @@ document.addEventListener('DOMContentLoaded', function() {
         @endif
     @endforeach
 });
+
+function purchasePlugin(pluginId, pluginSlug) {
+    const siteSelect = document.getElementById('pluginSiteSelect' + pluginId);
+    if (!siteSelect || !siteSelect.value) {
+        alert('적용할 사이트를 선택해주세요.');
+        return;
+    }
+    
+    const siteId = siteSelect.value;
+    
+    // 사이트 slug 찾기
+    const siteSlugs = {
+        @foreach($userSites as $userSite)
+            {{ $userSite->id }}: '{{ $userSite->slug }}',
+        @endforeach
+    };
+    
+    const userSiteSlug = siteSlugs[siteId];
+    if (userSiteSlug) {
+        window.location.href = '{{ route("user-sites.addons", ["site" => $site->slug, "userSite" => ":userSite"]) }}'.replace(':userSite', userSiteSlug) + '?addon=' + pluginSlug;
+    }
+}
 </script>
 @endpush
 @endsection

@@ -110,8 +110,6 @@ Route::middleware('web')->group(function () {
         Route::get('/payment/change-plan-checkout', [PaymentController::class, 'changePlanCheckout'])->name('payment.change-plan-checkout');
         Route::post('/my-sites/{userSite}/addons/{addonProduct}/purchase', [PaymentController::class, 'processAddon'])->name('payment.process-addon');
         Route::get('/payment/addon-checkout', [PaymentController::class, 'addonCheckout'])->name('payment.addon-checkout');
-        Route::post('/plugins/{plugin}/purchase', [PaymentController::class, 'processPlugin'])->name('payment.process-plugin');
-        Route::get('/payment/plugin-checkout', [PaymentController::class, 'pluginCheckout'])->name('payment.plugin-checkout');
         Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
         Route::get('/payment/fail', [PaymentController::class, 'fail'])->name('payment.fail');
         Route::get('/payment/success-page', [PaymentController::class, 'successPage'])->name('payment.success-page');
