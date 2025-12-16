@@ -237,11 +237,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // 폼 제출 전 Summernote 내용을 textarea에 저장
+    // 폼 제출 전 Summernote 내용을 textarea에 저장 및 숨겨진 필드의 required 제거
     const form = document.querySelector('form');
     if (form) {
         form.addEventListener('submit', function(e) {
             try {
+                // 숨겨진 필드의 required 속성 제거
+                const hiddenRequiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+                hiddenRequiredFields.forEach(function(field) {
+                    if (field.offsetParent === null || field.style.display === 'none') {
+                        field.removeAttribute('required');
+                    }
+                });
+                
+                // Summernote 내용 저장
                 if (typeof $ !== 'undefined' && typeof $.fn.summernote !== 'undefined') {
                     const summernoteInstance = $('#description');
                     if (summernoteInstance.length && summernoteInstance.summernote('code')) {
@@ -249,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             } catch (error) {
-                console.error('Summernote 저장 중 오류:', error);
+                console.error('Form 제출 중 오류:', error);
             }
         });
     }
