@@ -46,8 +46,8 @@
         $headerTransparent = false;
     }
     
-    // 메인 페이지인지 확인
-    $isHomePage = request()->routeIs('home');
+    // 메인 페이지인지 확인 (라우트 이름 또는 경로로 확인)
+    $isHomePage = request()->routeIs('home') || request()->path() === '/' || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
     
     // 헤더 스타일 생성
     $headerStyle = "color: {$headerTextColor};";
