@@ -99,6 +99,9 @@ Route::middleware('web')->group(function () {
             return app(\App\Http\Controllers\AuthController::class)->logout($request, $masterSite);
         })->middleware('auth')->name('master.logout');
         
+        // Store Routes (스토어)
+        Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
+        
         // Payment Routes (마스터 사이트용)
         Route::get('/plans/{plan}/subscribe', [PaymentController::class, 'subscribe'])->name('payment.subscribe');
         Route::post('/plans/{plan}/subscribe', [PaymentController::class, 'processSubscription'])->name('payment.process-subscription');

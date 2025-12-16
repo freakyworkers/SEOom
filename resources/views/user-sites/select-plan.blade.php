@@ -3,7 +3,7 @@
 @section('title', '플랜 선택 - ' . $site->name)
 
 @section('content')
-<div class="container py-5">
+<div class="container">
     <div class="row justify-content-center">
         <div class="col-12">
             <div class="card shadow-sm">

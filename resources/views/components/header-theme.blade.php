@@ -126,6 +126,13 @@
                     @if($menus->count() > 0)
                         @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
                     @endif
+                    @if($site->isMasterSite())
+                        <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
+                            <a class="nav-link {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.index') ? $pointColor : $headerTextColor }};">
+                                <i class="bi bi-shop me-1"></i>스토어
+                            </a>
+                        </li>
+                    @endif
                     @if($showMenuLogin)
                     @auth
                         <li class="nav-item dropdown">
@@ -209,6 +216,13 @@
                 <ul class="navbar-nav mx-auto">
                     @if($menus->count() > 0)
                         @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                    @endif
+                    @if($site->isMasterSite())
+                        <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
+                            <a class="nav-link {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.index') ? $pointColor : $headerTextColor }};">
+                                <i class="bi bi-shop me-1"></i>스토어
+                            </a>
+                        </li>
                     @endif
                 </ul>
                 <div class="d-flex align-items-center">
@@ -294,6 +308,13 @@
                 <ul class="navbar-nav">
                     @if($menus->count() > 0)
                         @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                    @endif
+                    @if($site->isMasterSite())
+                        <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
+                            <a class="nav-link {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.index') ? $pointColor : $headerTextColor }};">
+                                <i class="bi bi-shop me-1"></i>스토어
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>
@@ -462,6 +483,13 @@
                                 </a>
                             </li>
                         @endif
+                        @if($site->isMasterSite())
+                            <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
+                                <a class="nav-link {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.index') ? $pointColor : $headerTextColor }};">
+                                    <i class="bi bi-shop me-1"></i>스토어
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -497,6 +525,13 @@
                             <li class="nav-item me-3">
                                 <a class="nav-link {{ request()->routeIs('search') ? 'active' : '' }}" href="{{ route('search', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
                                     <i class="bi bi-search me-1"></i>검색
+                                </a>
+                            </li>
+                        @endif
+                        @if($site->isMasterSite())
+                            <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
+                                <a class="nav-link {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.index') ? $pointColor : $headerTextColor }};">
+                                    <i class="bi bi-shop me-1"></i>스토어
                                 </a>
                             </li>
                         @endif
@@ -633,6 +668,13 @@
                     @endif
                     @if($menus->count() > 0)
                         @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                    @endif
+                    @if($site->isMasterSite())
+                        <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
+                            <a class="nav-link {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.index') ? $pointColor : $headerTextColor }};">
+                                <i class="bi bi-shop me-1"></i>스토어
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>

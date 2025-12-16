@@ -3,7 +3,7 @@
 @section('title', '서버 업그레이드 - ' . $site->name)
 
 @section('content')
-<div class="container py-5">
+<div class="container">
     <div class="row justify-content-center">
         <div class="col-12">
             <div class="card shadow-sm">
