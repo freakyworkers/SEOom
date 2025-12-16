@@ -2922,13 +2922,24 @@ $(document).ready(function() {
         
         // 모든 체크박스 값을 명시적으로 전달 (체크된 경우도 hidden input으로 추가)
         // 이렇게 하면 체크박스가 체크 해제되어도 값이 제대로 전달됨
+        // 체크박스의 name 속성은 제거하지 않고, hidden input만 사용하여 중복 전달 방지
         const themeTopHeaderShow = $('#theme_top_header_show').is(':checked') ? '1' : '0';
+        // 체크 해제된 경우에만 체크박스의 name을 임시로 제거 (hidden input이 전달되도록)
+        if (! $('#theme_top_header_show').is(':checked')) {
+            $('#theme_top_header_show').attr('name', 'theme_top_header_show_disabled');
+        }
         $(this).append('<input type="hidden" name="theme_top_header_show" value="' + themeTopHeaderShow + '">');
         
         const topHeaderLoginShow = $('#top_header_login_show').is(':checked') ? '1' : '0';
+        if (! $('#top_header_login_show').is(':checked')) {
+            $('#top_header_login_show').attr('name', 'top_header_login_show_disabled');
+        }
         $(this).append('<input type="hidden" name="top_header_login_show" value="' + topHeaderLoginShow + '">');
         
         const headerSticky = $('#header_sticky').is(':checked') ? '1' : '0';
+        if (! $('#header_sticky').is(':checked')) {
+            $('#header_sticky').attr('name', 'header_sticky_disabled');
+        }
         $(this).append('<input type="hidden" name="header_sticky" value="' + headerSticky + '">');
         
         // header_transparent 체크박스 처리 (disabled 상태가 아닐 때만)
@@ -2936,16 +2947,28 @@ $(document).ready(function() {
         let headerTransparent = '0';
         if (headerTransparentCheckbox.length && !headerTransparentCheckbox.prop('disabled')) {
             headerTransparent = headerTransparentCheckbox.is(':checked') ? '1' : '0';
+            if (! headerTransparentCheckbox.is(':checked')) {
+                headerTransparentCheckbox.attr('name', 'header_transparent_disabled');
+            }
         }
         $(this).append('<input type="hidden" name="header_transparent" value="' + headerTransparent + '">');
         
         const menuLoginShow = $('#menu_login_show').is(':checked') ? '1' : '0';
+        if (! $('#menu_login_show').is(':checked')) {
+            $('#menu_login_show').attr('name', 'menu_login_show_disabled');
+        }
         $(this).append('<input type="hidden" name="menu_login_show" value="' + menuLoginShow + '">');
         
         const headerShadow = $('#header_shadow').is(':checked') ? '1' : '0';
+        if (! $('#header_shadow').is(':checked')) {
+            $('#header_shadow').attr('name', 'header_shadow_disabled');
+        }
         $(this).append('<input type="hidden" name="header_shadow" value="' + headerShadow + '">');
         
         const headerBorder = $('#header_border').is(':checked') ? '1' : '0';
+        if (! $('#header_border').is(':checked')) {
+            $('#header_border').attr('name', 'header_border_disabled');
+        }
         $(this).append('<input type="hidden" name="header_border" value="' + headerBorder + '">');
     });
 

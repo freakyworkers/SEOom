@@ -31,6 +31,7 @@ use App\Http\Controllers\AdminReportController;
 */
 
 // Root route - 도메인 기반 또는 마스터 사이트 홈페이지
+// 커스텀 도메인을 연결한 경우 루트 경로가 메인 페이지로 동작해야 하므로 라우트 이름 부여
 Route::get('/', function (Request $request) {
     // 도메인 기반 접근 시 미들웨어에서 설정한 사이트 사용
     $site = $request->attributes->get('site');
@@ -50,7 +51,7 @@ Route::get('/', function (Request $request) {
     
     // 마스터 사이트가 없으면 welcome 페이지 표시
     return view('welcome');
-});
+})->name('home.root'); // 루트 경로에도 라우트 이름 부여
 
 // SEO Routes - 도메인 기반 (site/{site} prefix 없이)
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');

@@ -13,7 +13,30 @@
         if ($hasSidebar) {
             $headerTransparent = false;
         }
-        $isHomePage = request()->routeIs('home');
+        // 메인 페이지인지 확인 - 루트 경로(/)와 /site/{site} 모두 HomeController::index를 호출하므로 동일하게 처리
+        $currentPath = request()->path();
+        $currentHost = request()->getHost();
+        $isCustomDomain = $site->domain && ($currentHost === $site->domain || $currentHost === 'www.' . $site->domain);
+        
+        // 루트 경로(/)와 /site/{site} 모두 메인 페이지로 간주
+        // 커스텀 도메인을 연결한 경우 루트 경로가 메인 페이지
+        $isHomePage = request()->routeIs('home') 
+            || request()->routeIs('home.root')  // 루트 경로 라우트 이름
+            || $currentPath === '/' 
+            || $currentPath === ''
+            || ($isCustomDomain && ($currentPath === '/' || $currentPath === ''))
+            || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
+        
+        // 추가 확인: 현재 라우트의 액션이 HomeController::index인지 확인
+        $currentRoute = request()->route();
+        if ($currentRoute && !$isHomePage) {
+            $action = $currentRoute->getActionName();
+            if ($action === 'App\\Http\\Controllers\\HomeController@index' || 
+                $action === 'App\\Http\\Controllers\\HomeController::index' ||
+                (is_string($action) && str_contains($action, 'HomeController') && str_contains($action, 'index'))) {
+                $isHomePage = true;
+            }
+        }
         $shouldAddHeaderPadding = $headerTransparent && $isHomePage;
         
         // 헤더 높이 추정 (실제 헤더 높이는 JavaScript로 계산)

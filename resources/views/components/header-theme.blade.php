@@ -47,18 +47,30 @@
     }
     
     // 메인 페이지인지 확인 (라우트 이름 또는 경로로 확인)
-    // 커스텀 도메인 사용 시 request()->path() === '/' 도 체크
-    // 루트 경로이거나, routeIs('home')이거나, /site/{slug} 형태인 경우 메인 페이지로 간주
+    // 메인 페이지인지 확인 - 루트 경로(/)와 /site/{site} 모두 HomeController::index를 호출하므로 동일하게 처리
     $currentPath = request()->path();
     $currentHost = request()->getHost();
     $isCustomDomain = $site->domain && ($currentHost === $site->domain || $currentHost === 'www.' . $site->domain);
     
-    // 커스텀 도메인이고 루트 경로인 경우 항상 메인 페이지로 간주
+    // 루트 경로(/)와 /site/{site} 모두 메인 페이지로 간주
+    // 커스텀 도메인을 연결한 경우 루트 경로가 메인 페이지
     $isHomePage = request()->routeIs('home') 
+        || request()->routeIs('home.root')  // 루트 경로 라우트 이름
         || $currentPath === '/' 
-        || ($currentPath === '' && $isCustomDomain)
-        || ($isCustomDomain && $currentPath === '/')
+        || $currentPath === ''
+        || ($isCustomDomain && ($currentPath === '/' || $currentPath === ''))
         || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
+    
+    // 추가 확인: 현재 라우트의 액션이 HomeController::index인지 확인
+    $currentRoute = request()->route();
+    if ($currentRoute && !$isHomePage) {
+        $action = $currentRoute->getActionName();
+        if ($action === 'App\\Http\\Controllers\\HomeController@index' || 
+            $action === 'App\\Http\\Controllers\\HomeController::index' ||
+            (is_string($action) && str_contains($action, 'HomeController') && str_contains($action, 'index'))) {
+            $isHomePage = true;
+        }
+    }
     
     // 로고 링크 생성: 커스텀 도메인 사용 시 slug 없이 루트로 이동
     $homeUrl = '/';

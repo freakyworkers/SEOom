@@ -105,7 +105,7 @@ class UserSiteController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:sites,slug',
+            'slug' => 'required|string|max:255|regex:/^[a-zA-Z0-9-]+$/|unique:sites,slug',
             'login_method' => 'required|in:email,username',
             'admin_username' => [
                 'required',
@@ -119,6 +119,8 @@ class UserSiteController extends Controller
             ],
             'admin_password' => 'required|string|min:8|confirmed',
         ], [
+            'slug.required' => '사이트 주소(슬러그)는 필수입니다.',
+            'slug.regex' => '사이트 주소는 영문, 숫자, 하이픈(-)만 사용 가능합니다.',
             'admin_username.regex' => '아이디는 영문, 숫자, 언더스코어(_)만 사용할 수 있습니다.',
         ]);
 
@@ -145,9 +147,7 @@ class UserSiteController extends Controller
         }
 
         $data = $request->all();
-        if (empty($data['slug']) || $data['slug'] === 'null' || $data['slug'] === null) {
-            $data['slug'] = Str::slug($data['name']);
-        }
+        // slug는 필수 입력이므로 자동 생성 로직 제거
 
         // 기본값 설정
         $data['plan'] = $plan->slug; // 선택한 플랜 사용
