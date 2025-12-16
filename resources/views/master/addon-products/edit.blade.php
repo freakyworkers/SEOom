@@ -201,10 +201,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (isResourceType) {
             amountMbInput.required = true;
+            amountMbInput.disabled = false;
             amountMbContainer.style.display = 'block';
             amountMbRequired.style.display = 'inline';
         } else {
             amountMbInput.required = false;
+            amountMbInput.disabled = true; // disabled 필드는 form 제출 시 무시됨
             amountMbContainer.style.display = 'none';
             amountMbRequired.style.display = 'none';
         }
@@ -242,10 +244,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
         form.addEventListener('submit', function(e) {
             try {
-                // amount_mb 필드가 숨겨져 있으면 required 속성 제거
+                // amount_mb 필드가 숨겨져 있으면 required 속성 제거 및 disabled 설정
                 if (amountMbContainer && amountMbContainer.style.display === 'none') {
                     amountMbInput.removeAttribute('required');
                     amountMbInput.required = false;
+                    amountMbInput.disabled = true; // disabled 필드는 form 제출 시 무시됨
                 }
                 
                 // 숨겨진 필드의 required 속성 제거
