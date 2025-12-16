@@ -315,6 +315,7 @@
                 color: var(--header-text-color) !important;
             }
         @else
+
             :root {
                 --header-text-color: {{ $colorLightHeaderText }};
                 --header-bg-color: {{ $colorLightHeaderBg }};
