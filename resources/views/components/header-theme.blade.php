@@ -127,10 +127,14 @@
                         @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
                     @endif
                     @if($site->isMasterSite())
-                        <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
-                            <a class="nav-link {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.index') ? $pointColor : $headerTextColor }};">
+                        <li class="nav-item dropdown" style="margin-right: {{ $menuFontPadding }};">
+                            <a class="nav-link dropdown-toggle {{ request()->routeIs('store.*') ? 'active' : '' }}" href="#" id="storeDropdown{{ $designType }}" role="button" data-bs-toggle="dropdown" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.*') ? $pointColor : $headerTextColor }};">
                                 <i class="bi bi-shop me-1"></i>스토어
                             </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
+                            </ul>
                         </li>
                     @endif
                     @if($showMenuLogin)
@@ -218,10 +222,14 @@
                         @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
                     @endif
                     @if($site->isMasterSite())
-                        <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
-                            <a class="nav-link {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.index') ? $pointColor : $headerTextColor }};">
+                        <li class="nav-item dropdown" style="margin-right: {{ $menuFontPadding }};">
+                            <a class="nav-link dropdown-toggle {{ request()->routeIs('store.*') ? 'active' : '' }}" href="#" id="storeDropdown{{ $designType }}" role="button" data-bs-toggle="dropdown" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.*') ? $pointColor : $headerTextColor }};">
                                 <i class="bi bi-shop me-1"></i>스토어
                             </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
+                            </ul>
                         </li>
                     @endif
                 </ul>
@@ -310,10 +318,14 @@
                         @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
                     @endif
                     @if($site->isMasterSite())
-                        <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
-                            <a class="nav-link {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.index') ? $pointColor : $headerTextColor }};">
+                        <li class="nav-item dropdown" style="margin-right: {{ $menuFontPadding }};">
+                            <a class="nav-link dropdown-toggle {{ request()->routeIs('store.*') ? 'active' : '' }}" href="#" id="storeDropdown{{ $designType }}" role="button" data-bs-toggle="dropdown" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.*') ? $pointColor : $headerTextColor }};">
                                 <i class="bi bi-shop me-1"></i>스토어
                             </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
+                            </ul>
                         </li>
                     @endif
                 </ul>
@@ -670,10 +682,14 @@
                         @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
                     @endif
                     @if($site->isMasterSite())
-                        <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
-                            <a class="nav-link {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.index') ? $pointColor : $headerTextColor }};">
+                        <li class="nav-item dropdown" style="margin-right: {{ $menuFontPadding }};">
+                            <a class="nav-link dropdown-toggle {{ request()->routeIs('store.*') ? 'active' : '' }}" href="#" id="storeDropdown{{ $designType }}" role="button" data-bs-toggle="dropdown" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ request()->routeIs('store.*') ? $pointColor : $headerTextColor }};">
                                 <i class="bi bi-shop me-1"></i>스토어
                             </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
+                            </ul>
                         </li>
                     @endif
                 </ul>

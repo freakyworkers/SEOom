@@ -8,6 +8,7 @@ use App\Http\Controllers\Master\MasterMonitoringController;
 use App\Http\Controllers\Master\MasterBackupController;
 use App\Http\Controllers\Master\MasterMasterSiteController;
 use App\Http\Controllers\Master\MasterPlanController;
+use App\Http\Controllers\Master\MasterPluginController;
 use App\Http\Controllers\Master\MasterAddonProductController;
 use App\Http\Controllers\Master\MasterMapApiController;
 
@@ -87,6 +88,16 @@ Route::middleware(['web', 'auth:master'])->group(function () {
         Route::get('/{plan}/edit', [MasterPlanController::class, 'edit'])->name('master.plans.edit');
         Route::put('/{plan}', [MasterPlanController::class, 'update'])->name('master.plans.update');
         Route::delete('/{plan}', [MasterPlanController::class, 'destroy'])->name('master.plans.destroy');
+    });
+    
+    // Plugins Management (플러그인 관리)
+    Route::prefix('plugins')->group(function () {
+        Route::get('/', [MasterPluginController::class, 'index'])->name('master.plugins.index');
+        Route::get('/create', [MasterPluginController::class, 'create'])->name('master.plugins.create');
+        Route::post('/', [MasterPluginController::class, 'store'])->name('master.plugins.store');
+        Route::get('/{plugin}/edit', [MasterPluginController::class, 'edit'])->name('master.plugins.edit');
+        Route::put('/{plugin}', [MasterPluginController::class, 'update'])->name('master.plugins.update');
+        Route::delete('/{plugin}', [MasterPluginController::class, 'destroy'])->name('master.plugins.destroy');
     });
     
     // Addon Products Management (추가 구매 상품 관리)

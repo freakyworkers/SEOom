@@ -3,22 +3,21 @@
 @section('title', '스토어 - ' . $site->name)
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
+<div class="container py-5">
+    <div class="row">
         <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="bi bi-shop me-2"></i>스토어
-                    </h4>
-                </div>
-                <div class="card-body">
-                    {{-- 무료 플랜 섹션 --}}
-                    @if($freePlans->isNotEmpty())
-                        <div class="mb-5">
-                            <h5 class="mb-3">
-                                <i class="bi bi-gift me-2 text-success"></i>무료 플랜
-                            </h5>
+            <div class="mb-4">
+                <h2 class="mb-0">
+                    <i class="bi bi-shop me-2"></i>스토어
+                </h2>
+            </div>
+            {{-- 무료 플랜 블록 --}}
+            @if($freePlans->isNotEmpty())
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4">
+                            <i class="bi bi-gift me-2 text-success"></i>무료 플랜
+                        </h4>
                             <div class="row g-3">
                                 @foreach($freePlans as $plan)
                                     <div class="col-md-4">
@@ -145,15 +144,17 @@
                                     </div>
                                 @endforeach
                             </div>
-                        </div>
-                    @endif
+                    </div>
+                </div>
+            @endif
 
-                    {{-- 유료 플랜 섹션 --}}
-                    @if($paidPlans->isNotEmpty())
-                        <div class="mb-5">
-                            <h5 class="mb-3">
-                                <i class="bi bi-credit-card me-2 text-primary"></i>유료 플랜
-                            </h5>
+            {{-- 유료 플랜 블록 --}}
+            @if($paidPlans->isNotEmpty())
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4">
+                            <i class="bi bi-credit-card me-2 text-primary"></i>유료 플랜
+                        </h4>
                             <div class="row g-3">
                                 @foreach($paidPlans as $plan)
                                     <div class="col-md-4">
@@ -300,15 +301,17 @@
                                     </div>
                                 @endforeach
                             </div>
-                        </div>
-                    @endif
+                    </div>
+                </div>
+            @endif
 
-                    {{-- 서버 용량 섹션 --}}
-                    @if($serverPlans->isNotEmpty())
-                        <div class="mb-4">
-                            <h5 class="mb-3">
-                                <i class="bi bi-server me-2 text-primary"></i>서버 용량
-                            </h5>
+            {{-- 서버 용량 블록 --}}
+            @if($serverPlans->isNotEmpty())
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4">
+                            <i class="bi bi-server me-2 text-primary"></i>서버 용량
+                        </h4>
                             <div class="row g-3">
                                 @foreach($serverPlans as $plan)
                                     <div class="col-md-4">
@@ -435,10 +438,9 @@
                                     </div>
                                 @endforeach
                             </div>
-                        </div>
-                    @endif
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </div>

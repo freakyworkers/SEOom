@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Site;
 use App\Models\Plan;
+use App\Models\Plugin;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +64,36 @@ class StoreController extends Controller
         }
 
         return view('store.index', compact('site', 'freePlans', 'paidPlans', 'serverPlans', 'userSites'));
+    }
+
+    /**
+     * Show plugins page.
+     */
+    public function plugins()
+    {
+        // 마스터 사이트 가져오기
+        $site = Site::getMasterSite();
+        
+        if (!$site || !$site->isMasterSite()) {
+            abort(404);
+        }
+
+        // 활성화된 플러그인 가져오기
+        $plugins = Plugin::where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('price', 'asc')
+            ->get();
+
+        // 로그인한 사용자의 사이트 목록 가져오기
+        $userSites = collect([]);
+        if (Auth::check()) {
+            $userSites = Site::where('created_by', Auth::id())
+                ->where('is_master_site', false)
+                ->with(['subscription.plan'])
+                ->get();
+        }
+
+        return view('store.plugins', compact('site', 'plugins', 'userSites'));
     }
 }
 
