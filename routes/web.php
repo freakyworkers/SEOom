@@ -743,7 +743,7 @@ Route::middleware(['block.ip', 'verify.site.user', 'auth'])->group(function () {
             abort(404);
         }
         return app(\App\Http\Controllers\UserSiteController::class)->selectPlan($site);
-    })->name('user-sites.select-plan');
+    })->name('user-sites.select-plan.master');
 });
 
 // Site-based routes (멀티테넌트 구조 - slug 사용)
