@@ -37,9 +37,9 @@
             $containerClass = $isFullWidth ? 'container-fluid px-0' : '';
             $containerStyle = $isFullWidth ? 'width: 100vw; position: relative; left: 50%; transform: translateX(-50%); padding: 0;' : '';
             
-            // 투명헤더가 활성화된 경우 첫 번째 컨테이너에 padding-top 추가하고 상단 마진 제거
+            // 투명헤더가 활성화된 경우 첫 번째 컨테이너의 상단 마진과 패딩 제거 (헤더가 오버레이되므로)
             if ($shouldAddHeaderPadding && $index === 0) {
-                $containerStyle .= ($containerStyle ? ' ' : '') . 'padding-top: ' . $estimatedHeaderHeight . 'px; margin-top: 0 !important;';
+                $containerStyle .= ($containerStyle ? ' ' : '') . 'margin-top: 0 !important; padding-top: 0 !important;';
             }
             
             if ($isFullHeight) {
@@ -59,7 +59,7 @@
             $prevIsFullHeight = $prevContainer ? ($prevContainer->full_height ?? false) : false;
             
             // 첫 번째 컨테이너가 full_height이고 두 번째 컨테이너가 일반 컨테이너인 경우 여백 적용
-            // 이전 컨테이너가 full_height가 아니고 현재 컨테이너도 full_height가 아니면 여백 적용
+            // 이전 컨테이너가 full_height이고 현재 컨테이너가 일반 컨테이너인 경우 여백 적용
             if ($prevIsFullHeight && !$isFullHeight) {
                 // 이전 컨테이너가 full_height이고 현재 컨테이너가 일반 컨테이너인 경우 여백 적용
                 $containerMarginBottom = 'mb-' . min(max($containerSpacing, 0), 5);
@@ -67,7 +67,7 @@
                 // 둘 다 일반 컨테이너인 경우 여백 적용
                 $containerMarginBottom = 'mb-' . min(max($containerSpacing, 0), 5);
             } else {
-                // 그 외의 경우 여백 없음
+                // 그 외의 경우 여백 없음 (현재 컨테이너가 full_height이거나 이전 컨테이너가 일반 컨테이너인 경우)
                 $containerMarginBottom = 'mb-0';
             }
         @endphp

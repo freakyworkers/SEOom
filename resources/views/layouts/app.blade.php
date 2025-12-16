@@ -1377,6 +1377,14 @@
             width: 100%;
         }
         
+        /* 투명헤더일 때 메인 컨텐츠 영역의 상단 마진 제거 */
+        @if($headerTransparent && $isHomePage)
+        main.container {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+        @endif
+        
         /* 투명헤더 sticky 오버레이 - 스크롤 시 fixed로 변경 */
         .header-transparent-sticky-overlay {
             transition: background-color 0.3s ease;
@@ -1400,10 +1408,10 @@
                 // 헤더 높이 계산
                 const headerHeight = headerWrapper.offsetHeight;
                 
-                // 첫 번째 컨테이너에 padding-top 적용하고 상단 마진 제거
+                // 투명헤더일 때는 첫 번째 컨테이너의 상단 마진과 패딩 제거 (헤더가 오버레이되므로)
                 if (firstContainer) {
-                    firstContainer.style.paddingTop = headerHeight + 'px';
                     firstContainer.style.marginTop = '0';
+                    firstContainer.style.paddingTop = '0';
                     firstContainer.classList.add('first-container-with-transparent-header');
                 }
                 
