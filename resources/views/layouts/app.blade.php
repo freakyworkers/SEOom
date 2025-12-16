@@ -670,9 +670,14 @@
         // 메인 페이지인지 확인 (라우트 이름 또는 경로로 확인)
         // 루트 경로이거나, routeIs('home')이거나, /site/{slug} 형태인 경우 메인 페이지로 간주
         $currentPath = request()->path();
+        $currentHost = request()->getHost();
+        $isCustomDomain = $site->domain && ($currentHost === $site->domain || $currentHost === 'www.' . $site->domain);
+        
+        // 커스텀 도메인이고 루트 경로인 경우 항상 메인 페이지로 간주
         $isHomePage = request()->routeIs('home') 
             || $currentPath === '/' 
-            || ($currentPath === '' && request()->getHost() === ($site->domain ?? ''))
+            || ($currentPath === '' && $isCustomDomain)
+            || ($isCustomDomain && $currentPath === '/')
             || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
     @endphp
     
@@ -1390,14 +1395,16 @@
             --header-bg-color: transparent !important;
         }
         
-        /* 투명헤더일 때 :root의 헤더 배경 변수 무시 */
+        /* 투명헤더일 때 :root의 헤더 배경 변수 무시 - 모든 nav 요소에 강제 적용 */
         .header-transparent-overlay nav,
         .header-transparent-overlay .navbar,
         .header-transparent-overlay nav.navbar,
         .header-transparent-overlay .pc-header,
         .header-transparent-overlay nav.pc-header,
         .header-transparent-overlay nav[style*="background-color"],
-        .header-transparent-overlay .navbar[style*="background-color"] {
+        .header-transparent-overlay .navbar[style*="background-color"],
+        .header-transparent-overlay nav[style],
+        .header-transparent-overlay .navbar[style] {
             background-color: transparent !important;
             background: none !important;
             background-image: none !important;
@@ -1407,6 +1414,15 @@
         .header-transparent-overlay nav.navbar,
         .header-transparent-overlay .navbar {
             background-color: transparent !important;
+        }
+        
+        /* 인라인 스타일이 있어도 투명하게 강제 적용 */
+        .header-transparent-overlay nav[style*="background-color: rgb"],
+        .header-transparent-overlay nav[style*="background-color: #"],
+        .header-transparent-overlay .navbar[style*="background-color: rgb"],
+        .header-transparent-overlay .navbar[style*="background-color: #"] {
+            background-color: transparent !important;
+            background: none !important;
         }
         
         /* 투명헤더일 때 메인 컨텐츠 영역의 상단 마진 제거 */
@@ -1433,12 +1449,28 @@
         }
     </style>
     <script>
+        // 즉시 실행 (DOMContentLoaded 전에도 실행)
+        (function() {
+            const headerWrapper = document.querySelector('.header-transparent-overlay');
+            if (headerWrapper) {
+                // 헤더 내부의 nav 요소들도 투명하게 설정
+                const navElements = headerWrapper.querySelectorAll('nav, .navbar, .pc-header');
+                navElements.forEach(nav => {
+                    nav.style.setProperty('background-color', 'transparent', 'important');
+                    nav.style.setProperty('background', 'none', 'important');
+                    nav.style.setProperty('background-image', 'none', 'important');
+                    // CSS 변수도 오버라이드
+                    nav.style.setProperty('--header-bg-color', 'transparent', 'important');
+                });
+            }
+        })();
+        
         document.addEventListener('DOMContentLoaded', function() {
             const headerWrapper = document.querySelector('.header-transparent-overlay');
             if (!headerWrapper) return;
             
-            // 헤더 내부의 nav 요소들도 투명하게 설정
-            const navElements = headerWrapper.querySelectorAll('nav, .navbar');
+            // 헤더 내부의 nav 요소들도 투명하게 설정 (재확인)
+            const navElements = headerWrapper.querySelectorAll('nav, .navbar, .pc-header');
             navElements.forEach(nav => {
                 nav.style.setProperty('background-color', 'transparent', 'important');
                 nav.style.setProperty('background', 'none', 'important');

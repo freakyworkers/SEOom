@@ -50,9 +50,14 @@
     // 커스텀 도메인 사용 시 request()->path() === '/' 도 체크
     // 루트 경로이거나, routeIs('home')이거나, /site/{slug} 형태인 경우 메인 페이지로 간주
     $currentPath = request()->path();
+    $currentHost = request()->getHost();
+    $isCustomDomain = $site->domain && ($currentHost === $site->domain || $currentHost === 'www.' . $site->domain);
+    
+    // 커스텀 도메인이고 루트 경로인 경우 항상 메인 페이지로 간주
     $isHomePage = request()->routeIs('home') 
         || $currentPath === '/' 
-        || ($currentPath === '' && request()->getHost() === ($site->domain ?? ''))
+        || ($currentPath === '' && $isCustomDomain)
+        || ($isCustomDomain && $currentPath === '/')
         || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
     
     // 로고 링크 생성: 커스텀 도메인 사용 시 slug 없이 루트로 이동
@@ -70,7 +75,8 @@
     // 메인 페이지에서만 투명 헤더 적용
     if ($headerTransparent && $isHomePage) {
         // 투명헤더가 활성화되고 메인 페이지인 경우 배경색 제거 (sticky일 때는 스크롤 시 배경색 표시)
-        $headerStyle .= " background-color: transparent !important;";
+        // 인라인 스타일로도 투명하게 설정하여 CSS가 덮어쓰지 못하도록 함
+        $headerStyle .= " background-color: transparent !important; background: none !important; background-image: none !important;";
     } else {
         $headerStyle .= " background-color: {$headerBgColor};";
     }

@@ -2920,42 +2920,33 @@ $(document).ready(function() {
         $('input[name="header_shadow"][type="hidden"]').remove();
         $('input[name="header_border"][type="hidden"]').remove();
         
-        // 체크되지 않은 체크박스만 hidden input으로 값 전달
-        // 체크된 체크박스는 value="1"이 자동으로 전달됨
-        if (!$('#theme_top_header_show').is(':checked')) {
-            $(this).append('<input type="hidden" name="theme_top_header_show" value="0">');
-        }
+        // 모든 체크박스 값을 명시적으로 전달 (체크된 경우도 hidden input으로 추가)
+        // 이렇게 하면 체크박스가 체크 해제되어도 값이 제대로 전달됨
+        const themeTopHeaderShow = $('#theme_top_header_show').is(':checked') ? '1' : '0';
+        $(this).append('<input type="hidden" name="theme_top_header_show" value="' + themeTopHeaderShow + '">');
         
-        if (!$('#top_header_login_show').is(':checked')) {
-            $(this).append('<input type="hidden" name="top_header_login_show" value="0">');
-        }
+        const topHeaderLoginShow = $('#top_header_login_show').is(':checked') ? '1' : '0';
+        $(this).append('<input type="hidden" name="top_header_login_show" value="' + topHeaderLoginShow + '">');
         
-        if (!$('#header_sticky').is(':checked')) {
-            $(this).append('<input type="hidden" name="header_sticky" value="0">');
-        }
+        const headerSticky = $('#header_sticky').is(':checked') ? '1' : '0';
+        $(this).append('<input type="hidden" name="header_sticky" value="' + headerSticky + '">');
         
         // header_transparent 체크박스 처리 (disabled 상태가 아닐 때만)
         const headerTransparentCheckbox = $('#header_transparent');
+        let headerTransparent = '0';
         if (headerTransparentCheckbox.length && !headerTransparentCheckbox.prop('disabled')) {
-            if (!headerTransparentCheckbox.is(':checked')) {
-                $(this).append('<input type="hidden" name="header_transparent" value="0">');
-            }
-        } else {
-            // disabled 상태이면 강제로 0으로 설정
-            $(this).append('<input type="hidden" name="header_transparent" value="0">');
+            headerTransparent = headerTransparentCheckbox.is(':checked') ? '1' : '0';
         }
+        $(this).append('<input type="hidden" name="header_transparent" value="' + headerTransparent + '">');
         
-        if (!$('#menu_login_show').is(':checked')) {
-            $(this).append('<input type="hidden" name="menu_login_show" value="0">');
-        }
+        const menuLoginShow = $('#menu_login_show').is(':checked') ? '1' : '0';
+        $(this).append('<input type="hidden" name="menu_login_show" value="' + menuLoginShow + '">');
         
-        if (!$('#header_shadow').is(':checked')) {
-            $(this).append('<input type="hidden" name="header_shadow" value="0">');
-        }
+        const headerShadow = $('#header_shadow').is(':checked') ? '1' : '0';
+        $(this).append('<input type="hidden" name="header_shadow" value="' + headerShadow + '">');
         
-        if (!$('#header_border').is(':checked')) {
-            $(this).append('<input type="hidden" name="header_border" value="0">');
-        }
+        const headerBorder = $('#header_border').is(':checked') ? '1' : '0';
+        $(this).append('<input type="hidden" name="header_border" value="' + headerBorder + '">');
     });
 
     // 게시판 form 제출 시 체크박스 처리

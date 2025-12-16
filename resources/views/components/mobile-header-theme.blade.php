@@ -38,9 +38,14 @@
     // 메인 페이지인지 확인 (라우트 이름 또는 경로로 확인)
     // 루트 경로이거나, routeIs('home')이거나, /site/{slug} 형태인 경우 메인 페이지로 간주
     $currentPath = request()->path();
+    $currentHost = request()->getHost();
+    $isCustomDomain = $site->domain && ($currentHost === $site->domain || $currentHost === 'www.' . $site->domain);
+    
+    // 커스텀 도메인이고 루트 경로인 경우 항상 메인 페이지로 간주
     $isHomePage = request()->routeIs('home') 
         || $currentPath === '/' 
-        || ($currentPath === '' && request()->getHost() === ($site->domain ?? ''))
+        || ($currentPath === '' && $isCustomDomain)
+        || ($isCustomDomain && $currentPath === '/')
         || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
     
     // 헤더 스타일 생성
