@@ -300,12 +300,12 @@
         /* 테마 설정 적용 */
         @if($themeDarkMode === 'dark')
             :root {
-                --header-text-color: {{ $colorDarkHeaderText }};
-                --header-bg-color: {{ $colorDarkHeaderBg }};
-                --body-text-color: {{ $colorDarkBodyText }};
-                --body-bg-color: {{ $colorDarkBodyBg }};
-                --point-main-color: {{ $colorDarkPointMain }};
-                --point-bg-color: {{ $colorDarkPointBg }};
+                --header-text-color: {{ $colorDarkHeaderText ?? '#ffffff' }};
+                --header-bg-color: {{ $colorDarkHeaderBg ?? '#000000' }};
+                --body-text-color: {{ $colorDarkBodyText ?? '#ffffff' }};
+                --body-bg-color: {{ $colorDarkBodyBg ?? '#000000' }};
+                --point-main-color: {{ $colorDarkPointMain ?? '#ffffff' }};
+                --point-bg-color: {{ $colorDarkPointBg ?? '#212529' }};
             }
             body {
                 background-color: var(--body-bg-color);
@@ -323,12 +323,12 @@
         @endif
         @if($themeDarkMode !== 'dark')
             :root {
-                --header-text-color: {{ $colorLightHeaderText }};
-                --header-bg-color: {{ $colorLightHeaderBg }};
-                --body-text-color: {{ $colorLightBodyText }};
-                --body-bg-color: {{ $colorLightBodyBg }};
-                --point-main-color: {{ $colorLightPointMain }};
-                --point-bg-color: {{ $colorLightPointBg }};
+                --header-text-color: {{ $colorLightHeaderText ?? '#000000' }};
+                --header-bg-color: {{ $colorLightHeaderBg ?? '#ffffff' }};
+                --body-text-color: {{ $colorLightBodyText ?? '#000000' }};
+                --body-bg-color: {{ $colorLightBodyBg ?? '#f8f9fa' }};
+                --point-main-color: {{ $colorLightPointMain ?? '#0d6efd' }};
+                --point-bg-color: {{ $colorLightPointBg ?? '#000000' }};
             }
             body {
                 background-color: var(--body-bg-color);
