@@ -303,7 +303,7 @@
                            class="btn btn-sm" 
                            style="background-color: #03C75A; border-color: #03C75A; color: white; padding: 0.4rem 0.6rem; border-radius: 0.375rem; flex: 1;" 
                            title="네이버로 로그인">
-                            <i class="bi bi-chat-dots"></i>
+                            <span class="fw-bold" style="font-size: 1em;">N</span>
                         </a>
                         @endif
                         @if(!empty($kakaoClientId))

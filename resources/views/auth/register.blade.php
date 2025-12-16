@@ -63,7 +63,7 @@
                         @if(!empty($naverClientId))
                         <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'naver']) : route('social.login', ['site' => $site->slug, 'provider' => 'naver']) }}" 
                            class="btn btn-outline-success" style="background-color: #03C75A; border-color: #03C75A; color: white;">
-                            <i class="bi bi-chat-dots me-2"></i>네이버로 시작하기
+                            <span class="fw-bold me-2" style="font-size: 1.1em;">N</span>네이버로 시작하기
                         </a>
                         @endif
                         @if(!empty($kakaoClientId))
