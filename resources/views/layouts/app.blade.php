@@ -845,7 +845,7 @@
     </div>
 
     <!-- Main Content -->
-    <main class="container my-4 flex-grow-1">
+    <main class="container {{ ($headerTransparent && $isHomePage) ? '' : 'my-4' }} flex-grow-1">
         @if(session('error'))
             @if(str_contains(session('error'), '비밀글'))
                 {{-- 비밀글 에러는 모달로 표시 --}}
