@@ -5,7 +5,7 @@
 @section('page-subtitle', $addonProduct->name . ' 정보 수정')
 
 @section('content')
-<form method="POST" action="{{ route('master.addon-products.update', $addonProduct) }}">
+<form method="POST" action="{{ route('master.addon-products.update', $addonProduct) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     
@@ -238,11 +238,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // 폼 제출 전 Summernote 내용을 textarea에 저장
-    document.querySelector('form').addEventListener('submit', function(e) {
-        if (typeof $.fn.summernote !== 'undefined' && $('#description').summernote('code')) {
-            $('#description').val($('#description').summernote('code'));
-        }
-    });
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            try {
+                if (typeof $ !== 'undefined' && typeof $.fn.summernote !== 'undefined') {
+                    const summernoteInstance = $('#description');
+                    if (summernoteInstance.length && summernoteInstance.summernote('code')) {
+                        summernoteInstance.val(summernoteInstance.summernote('code'));
+                    }
+                }
+            } catch (error) {
+                console.error('Summernote 저장 중 오류:', error);
+            }
+        });
+    }
     
     // 썸네일 미리보기
     const thumbnailInput = document.getElementById('thumbnail');
