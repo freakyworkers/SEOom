@@ -316,7 +316,6 @@
             }
         @endif
         @if($themeDarkMode !== 'dark')
-            <?php echo "\n"; ?>
             :root {
                 --header-text-color: {{ $colorLightHeaderText }};
                 --header-bg-color: {{ $colorLightHeaderBg }};
