@@ -52,8 +52,8 @@
     // 헤더 스타일 생성
     $headerStyle = "color: {$headerTextColor};";
     // 메인 페이지에서만 투명 헤더 적용
-    if ($headerTransparent && $isHomePage && !$headerSticky) {
-        // 투명헤더가 활성화되고 메인 페이지이며 헤더 고정이 아닌 경우 배경색 제거
+    if ($headerTransparent && $isHomePage) {
+        // 투명헤더가 활성화되고 메인 페이지인 경우 배경색 제거 (sticky일 때는 스크롤 시 배경색 표시)
         $headerStyle .= " background-color: transparent;";
     } else {
         $headerStyle .= " background-color: {$headerBgColor};";

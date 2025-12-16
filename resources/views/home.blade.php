@@ -5,6 +5,20 @@
 @section('content')
 {{-- 메인 위젯 표시 --}}
 @if(isset($mainWidgetContainers) && $mainWidgetContainers->isNotEmpty())
+    @php
+        // 투명헤더 설정 확인 (첫 번째 컨테이너에 padding-top 추가용)
+        $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
+        $themeSidebar = $site->getSetting('theme_sidebar', 'left');
+        $hasSidebar = $themeSidebar !== 'none';
+        if ($hasSidebar) {
+            $headerTransparent = false;
+        }
+        $isHomePage = request()->routeIs('home');
+        $shouldAddHeaderPadding = $headerTransparent && $isHomePage;
+        
+        // 헤더 높이 추정 (실제 헤더 높이는 JavaScript로 계산)
+        $estimatedHeaderHeight = 80; // 기본 헤더 높이 (px)
+    @endphp
     @foreach($mainWidgetContainers as $index => $container)
         @php
             $verticalAlign = $container->vertical_align ?? 'top';
@@ -18,11 +32,16 @@
             }
             
             // 가로 100% 설정 확인 (사이드바가 없을 때만 적용)
-            $themeSidebar = $site->getSetting('theme_sidebar', 'left');
             $isFullWidth = ($container->full_width ?? false) && ($themeSidebar === 'none');
             $isFullHeight = ($container->full_height ?? false);
             $containerClass = $isFullWidth ? 'container-fluid px-0' : '';
             $containerStyle = $isFullWidth ? 'width: 100vw; position: relative; left: 50%; transform: translateX(-50%); padding: 0;' : '';
+            
+            // 투명헤더가 활성화된 경우 첫 번째 컨테이너에 padding-top 추가
+            if ($shouldAddHeaderPadding && $index === 0) {
+                $containerStyle .= ($containerStyle ? ' ' : '') . 'padding-top: ' . $estimatedHeaderHeight . 'px;';
+            }
+            
             if ($isFullHeight) {
                 $containerStyle .= ($containerStyle ? ' ' : '') . 'height: 100vh; overflow: hidden;';
                 $containerClass .= ' full-height-container';
@@ -33,9 +52,12 @@
                 $rowStyle .= ($rowStyle ? ' ' : '') . 'height: 100%;';
             }
             
-            // 컨테이너 간격도 widget_spacing으로 통일
+            // 컨테이너 간격 처리
             $containerSpacing = $container->widget_spacing ?? 3;
-            $containerMarginBottom = $isFullHeight ? 'mb-0' : 'mb-' . min(max($containerSpacing, 0), 5);
+            // 이전 컨테이너가 full_height가 아니고 현재 컨테이너도 full_height가 아니면 여백 적용
+            $prevContainer = $index > 0 ? $mainWidgetContainers[$index - 1] : null;
+            $prevIsFullHeight = $prevContainer ? ($prevContainer->full_height ?? false) : false;
+            $containerMarginBottom = ($isFullHeight || $prevIsFullHeight) ? 'mb-0' : 'mb-' . min(max($containerSpacing, 0), 5);
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
             <div class="row main-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">

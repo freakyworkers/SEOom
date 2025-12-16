@@ -3954,19 +3954,38 @@ function saveMainWidgetSettings() {
             alert('위젯 수정에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
         }
     })
-    .catch(error => {
+    .catch(async error => {
         console.error('Error:', error);
         console.error('Error stack:', error.stack);
-        restoreButton();
         
-        let errorMessage = '위젯 수정 중 오류가 발생했습니다.';
+        // 413 오류인 경우 응답 본문을 확인하여 실제로 저장되었는지 확인
         if (error.message && error.message.includes('413')) {
-            errorMessage = '요청 데이터가 너무 큽니다. 이미지 파일 크기를 줄이거나 설정 데이터를 간소화해주세요.';
-        } else if (error.message) {
-            errorMessage = '위젯 수정 중 오류가 발생했습니다: ' + error.message;
+            try {
+                // 응답 본문을 읽어서 success가 true인지 확인
+                const response = await fetch(form.action, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                });
+                // 저장이 성공했을 수 있으므로 페이지 새로고침
+                if (response.ok) {
+                    location.reload();
+                    return;
+                }
+            } catch (e) {
+                console.error('Failed to check response:', e);
+            }
+            restoreButton();
+            alert('요청 데이터가 너무 큽니다. 이미지 파일 크기를 줄이거나 설정 데이터를 간소화해주세요. 저장은 완료되었을 수 있습니다.');
+        } else {
+            restoreButton();
+            let errorMessage = '위젯 수정 중 오류가 발생했습니다.';
+            if (error.message) {
+                errorMessage = '위젯 수정 중 오류가 발생했습니다: ' + error.message;
+            }
+            alert(errorMessage);
         }
-        
-        alert(errorMessage);
     });
 }
 

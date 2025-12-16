@@ -802,13 +802,28 @@
     @php
         // 헤더 고정 시 top을 0으로 설정
         $stickyTop = $isHeaderSticky ? '0' : '';
-        // 헤더가 항상 최상단에 표시되도록 z-index 설정
-        $headerWrapperStyle = 'position: relative; z-index: 1030;';
-        if ($isHeaderSticky) {
-            $headerWrapperStyle = 'position: sticky; top: ' . $stickyTop . '; z-index: 1030;';
+        
+        // 투명헤더가 활성화되고 메인 페이지인 경우 헤더를 absolute로 위치시켜 첫 번째 컨테이너 위로 오버레이
+        $headerWrapperStyle = '';
+        $headerWrapperClass = '';
+        if ($headerTransparent && $isHomePage) {
+            // 투명헤더: absolute position으로 첫 번째 컨테이너 위에 오버레이
+            $headerWrapperStyle = 'position: absolute; top: 0; left: 0; right: 0; z-index: 1030; width: 100%;';
+            $headerWrapperClass = 'header-transparent-overlay';
+            if ($isHeaderSticky) {
+                // sticky일 때는 스크롤 시 fixed로 변경되도록 클래스 추가
+                $headerWrapperClass .= ' header-transparent-sticky-overlay';
+            }
+        } else {
+            // 일반 헤더: relative 또는 sticky
+            $headerWrapperStyle = 'position: relative; z-index: 1030;';
+            if ($isHeaderSticky) {
+                $headerWrapperStyle = 'position: sticky; top: ' . $stickyTop . '; z-index: 1030;';
+                $headerWrapperClass = 'sticky-header-wrapper';
+            }
         }
     @endphp
-    <div class="{{ $isHeaderSticky ? 'sticky-header-wrapper' : '' }}" style="{{ $headerWrapperStyle }}">
+    <div class="{{ $headerWrapperClass }}" style="{{ $headerWrapperStyle }}">
         {{-- PC 헤더 (데스크탑에서만 표시) --}}
         <x-header-theme 
             :theme="$themeTop" 
@@ -1350,9 +1365,71 @@
     });
     </script>
     
-    @if($isHeaderSticky)
+    @if($headerTransparent && $isHomePage)
     <style>
-        /* 헤더만 고정되도록 설정 */
+        /* 투명헤더 오버레이 스타일 */
+        .header-transparent-overlay {
+            position: absolute !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            width: 100%;
+        }
+        
+        /* 투명헤더 sticky 오버레이 - 스크롤 시 fixed로 변경 */
+        .header-transparent-sticky-overlay {
+            transition: background-color 0.3s ease;
+        }
+        
+        .header-transparent-sticky-overlay.scrolled {
+            position: fixed !important;
+        }
+        
+        /* 첫 번째 컨테이너에 헤더 높이만큼 padding-top 추가 (JavaScript로 동적 조정) */
+        .first-container-with-transparent-header {
+            padding-top: 80px !important; /* 기본값, JavaScript로 조정 */
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const headerWrapper = document.querySelector('.header-transparent-overlay');
+            const firstContainer = document.querySelector('.main-widget-container')?.closest('div[class*="container"], div[class*="container-fluid"]');
+            
+            if (headerWrapper && firstContainer) {
+                // 헤더 높이 계산
+                const headerHeight = headerWrapper.offsetHeight;
+                
+                // 첫 번째 컨테이너에 padding-top 적용
+                if (firstContainer) {
+                    firstContainer.style.paddingTop = headerHeight + 'px';
+                    firstContainer.classList.add('first-container-with-transparent-header');
+                }
+                
+                // sticky 헤더인 경우 스크롤 이벤트 처리
+                const stickyOverlay = document.querySelector('.header-transparent-sticky-overlay');
+                if (stickyOverlay) {
+                    let lastScrollTop = 0;
+                    window.addEventListener('scroll', function() {
+                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                        
+                        if (scrollTop > 50) {
+                            stickyOverlay.classList.add('scrolled');
+                            // 스크롤 시 배경색 적용 (헤더 컴포넌트에서 처리)
+                        } else {
+                            stickyOverlay.classList.remove('scrolled');
+                        }
+                        
+                        lastScrollTop = scrollTop;
+                    });
+                }
+            }
+        });
+    </script>
+    @endif
+    
+    @if($isHeaderSticky && !($headerTransparent && $isHomePage))
+    <style>
         .sticky-header-wrapper {
             background-color: transparent;
         }
