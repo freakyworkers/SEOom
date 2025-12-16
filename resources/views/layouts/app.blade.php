@@ -315,14 +315,14 @@
                 color: var(--header-text-color) !important;
             }
         @else
-            <?php echo ':root {'; ?><?php echo "\n"; ?>
+            <?php echo ':root {'; ?><?php echo "\n"; ?><?php echo "                "; ?>
                 --header-text-color: {{ $colorLightHeaderText }};
                 --header-bg-color: {{ $colorLightHeaderBg }};
                 --body-text-color: {{ $colorLightBodyText }};
                 --body-bg-color: {{ $colorLightBodyBg }};
                 --point-main-color: {{ $colorLightPointMain }};
                 --point-bg-color: {{ $colorLightPointBg }};
-            <?php echo '}'; ?><?php echo "\n"; ?>
+            <?php echo "\n"; ?><?php echo '            }'; ?><?php echo "\n"; ?>
             body {
                 background-color: var(--body-bg-color);
                 color: var(--body-text-color);
