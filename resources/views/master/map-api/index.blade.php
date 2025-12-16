@@ -64,8 +64,8 @@
                                value="{{ old('kakao_api_key', $kakaoApiKey) }}"
                                placeholder="카카오 지도 JavaScript 키를 입력하세요">
                         <small class="text-muted">
-                            <a href="https://developers.kakao.com/console/app" target="_blank" class="text-decoration-none">
-                                카카오 개발자 콘솔에서 API 키 발급받기
+                            <a href="https://developers.kakao.com/" target="_blank" class="text-decoration-none">
+                                카카오 디벨로퍼에서 API 키 발급받기
                             </a>
                         </small>
                     </div>

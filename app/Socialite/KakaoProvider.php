@@ -57,10 +57,15 @@ class KakaoProvider extends AbstractProvider implements ProviderInterface
 
     /**
      * {@inheritdoc}
+     * 카카오는 Client Secret을 사용하지 않으므로 client_secret을 제거합니다.
      */
     protected function getTokenFields($code)
     {
-        return array_merge(parent::getTokenFields($code), [
+        $fields = parent::getTokenFields($code);
+        // 카카오는 Client Secret을 사용하지 않으므로 제거
+        unset($fields['client_secret']);
+        
+        return array_merge($fields, [
             'grant_type' => 'authorization_code',
         ]);
     }
