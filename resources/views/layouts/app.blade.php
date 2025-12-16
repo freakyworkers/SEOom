@@ -1382,9 +1382,25 @@
         
         /* 투명헤더일 때 :root의 헤더 배경 변수 무시 */
         .header-transparent-overlay nav,
-        .header-transparent-overlay .navbar {
+        .header-transparent-overlay .navbar,
+        .header-transparent-overlay nav.navbar,
+        .header-transparent-overlay .pc-header,
+        .header-transparent-overlay nav.pc-header {
             background-color: transparent !important;
             background: none !important;
+            background-image: none !important;
+        }
+        
+        /* 투명헤더일 때 nav 내부 요소들도 투명하게 */
+        .header-transparent-overlay * {
+            background-color: transparent !important;
+        }
+        
+        /* 단, nav 내부의 버튼이나 링크는 예외 */
+        .header-transparent-overlay .btn,
+        .header-transparent-overlay .nav-link,
+        .header-transparent-overlay .navbar-brand {
+            background-color: transparent !important;
         }
         
         /* 투명헤더일 때 메인 컨텐츠 영역의 상단 마진 제거 */
