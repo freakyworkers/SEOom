@@ -35,8 +35,13 @@
         $mobileHeaderTransparent = false;
     }
     
-    // 메인 페이지인지 확인
-    $isHomePage = request()->routeIs('home');
+    // 메인 페이지인지 확인 (라우트 이름 또는 경로로 확인)
+    // 루트 경로이거나, routeIs('home')이거나, /site/{slug} 형태인 경우 메인 페이지로 간주
+    $currentPath = request()->path();
+    $isHomePage = request()->routeIs('home') 
+        || $currentPath === '/' 
+        || ($currentPath === '' && request()->getHost() === ($site->domain ?? ''))
+        || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
     
     // 헤더 스타일 생성
     $headerStyle = "color: {$headerTextColor};";

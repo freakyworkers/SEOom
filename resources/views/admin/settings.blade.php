@@ -2915,6 +2915,7 @@ $(document).ready(function() {
         $('input[name="theme_top_header_show"][type="hidden"]').remove();
         $('input[name="top_header_login_show"][type="hidden"]').remove();
         $('input[name="header_sticky"][type="hidden"]').remove();
+        $('input[name="header_transparent"][type="hidden"]').remove();
         $('input[name="menu_login_show"][type="hidden"]').remove();
         $('input[name="header_shadow"][type="hidden"]').remove();
         $('input[name="header_border"][type="hidden"]').remove();
@@ -2931,6 +2932,17 @@ $(document).ready(function() {
         
         if (!$('#header_sticky').is(':checked')) {
             $(this).append('<input type="hidden" name="header_sticky" value="0">');
+        }
+        
+        // header_transparent 체크박스 처리 (disabled 상태가 아닐 때만)
+        const headerTransparentCheckbox = $('#header_transparent');
+        if (headerTransparentCheckbox.length && !headerTransparentCheckbox.prop('disabled')) {
+            if (!headerTransparentCheckbox.is(':checked')) {
+                $(this).append('<input type="hidden" name="header_transparent" value="0">');
+            }
+        } else {
+            // disabled 상태이면 강제로 0으로 설정
+            $(this).append('<input type="hidden" name="header_transparent" value="0">');
         }
         
         if (!$('#menu_login_show').is(':checked')) {

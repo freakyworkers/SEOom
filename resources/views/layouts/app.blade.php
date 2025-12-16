@@ -668,7 +668,12 @@
         }
         
         // 메인 페이지인지 확인 (라우트 이름 또는 경로로 확인)
-        $isHomePage = request()->routeIs('home') || request()->path() === '/' || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
+        // 루트 경로이거나, routeIs('home')이거나, /site/{slug} 형태인 경우 메인 페이지로 간주
+        $currentPath = request()->path();
+        $isHomePage = request()->routeIs('home') 
+            || $currentPath === '/' 
+            || ($currentPath === '' && request()->getHost() === ($site->domain ?? ''))
+            || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
     @endphp
     
     {{-- 헤더 배너 (최상단 헤더 상단) - sticky wrapper 밖에 배치하여 스크롤 시 자연스럽게 사라지도록 --}}
@@ -1380,24 +1385,26 @@
             background-color: transparent !important;
         }
         
+        /* :root CSS 변수 오버라이드 - 투명헤더일 때 */
+        .header-transparent-overlay {
+            --header-bg-color: transparent !important;
+        }
+        
         /* 투명헤더일 때 :root의 헤더 배경 변수 무시 */
         .header-transparent-overlay nav,
         .header-transparent-overlay .navbar,
         .header-transparent-overlay nav.navbar,
         .header-transparent-overlay .pc-header,
         .header-transparent-overlay nav.pc-header,
-        .header-transparent-overlay nav[style*="background-color"] {
+        .header-transparent-overlay nav[style*="background-color"],
+        .header-transparent-overlay .navbar[style*="background-color"] {
             background-color: transparent !important;
             background: none !important;
             background-image: none !important;
         }
         
-        /* :root CSS 변수 오버라이드 */
-        .header-transparent-overlay {
-            --header-bg-color: transparent !important;
-        }
-        
-        .header-transparent-overlay nav,
+        /* CSS 변수를 사용하는 경우에도 투명하게 */
+        .header-transparent-overlay nav.navbar,
         .header-transparent-overlay .navbar {
             background-color: transparent !important;
         }
@@ -1428,18 +1435,28 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const headerWrapper = document.querySelector('.header-transparent-overlay');
+            if (!headerWrapper) return;
+            
+            // 헤더 내부의 nav 요소들도 투명하게 설정
+            const navElements = headerWrapper.querySelectorAll('nav, .navbar');
+            navElements.forEach(nav => {
+                nav.style.setProperty('background-color', 'transparent', 'important');
+                nav.style.setProperty('background', 'none', 'important');
+                nav.style.setProperty('background-image', 'none', 'important');
+                // CSS 변수도 오버라이드
+                nav.style.setProperty('--header-bg-color', 'transparent', 'important');
+            });
+            
             const firstContainer = document.querySelector('.main-widget-container')?.closest('div[class*="container"], div[class*="container-fluid"]');
             
-            if (headerWrapper && firstContainer) {
+            if (firstContainer) {
                 // 헤더 높이 계산
                 const headerHeight = headerWrapper.offsetHeight;
                 
                 // 투명헤더일 때는 첫 번째 컨테이너의 상단 마진과 패딩 제거 (헤더가 오버레이되므로)
-                if (firstContainer) {
-                    firstContainer.style.setProperty('margin-top', '0', 'important');
-                    firstContainer.style.setProperty('padding-top', '0', 'important');
-                    firstContainer.classList.add('first-container-with-transparent-header');
-                }
+                firstContainer.style.setProperty('margin-top', '0', 'important');
+                firstContainer.style.setProperty('padding-top', '0', 'important');
+                firstContainer.classList.add('first-container-with-transparent-header');
                 
                 // row 요소도 확인하여 패딩 제거
                 const rowElement = document.querySelector('.main-widget-container');
@@ -1448,6 +1465,7 @@
                     rowElement.style.setProperty('padding-top', '0', 'important');
                     rowElement.classList.add('first-container-with-transparent-header');
                 }
+            }
                 
                 // sticky 헤더인 경우 스크롤 이벤트 처리
                 const stickyOverlay = document.querySelector('.header-transparent-sticky-overlay');

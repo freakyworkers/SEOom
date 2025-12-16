@@ -47,7 +47,23 @@
     }
     
     // 메인 페이지인지 확인 (라우트 이름 또는 경로로 확인)
-    $isHomePage = request()->routeIs('home') || request()->path() === '/' || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
+    // 커스텀 도메인 사용 시 request()->path() === '/' 도 체크
+    // 루트 경로이거나, routeIs('home')이거나, /site/{slug} 형태인 경우 메인 페이지로 간주
+    $currentPath = request()->path();
+    $isHomePage = request()->routeIs('home') 
+        || $currentPath === '/' 
+        || ($currentPath === '' && request()->getHost() === ($site->domain ?? ''))
+        || (request()->segment(1) === 'site' && request()->segment(2) !== null && request()->segment(3) === null);
+    
+    // 로고 링크 생성: 커스텀 도메인 사용 시 slug 없이 루트로 이동
+    $homeUrl = '/';
+    if ($site->domain && request()->getHost() === $site->domain) {
+        // 커스텀 도메인 사용 중이면 루트 경로
+        $homeUrl = '/';
+    } else {
+        // 서브도메인 또는 슬러그 기반 라우팅 사용
+        $homeUrl = route('home', ['site' => $site->slug ?? 'default']);
+    }
     
     // 헤더 스타일 생성
     $headerStyle = "color: {$headerTextColor};";
@@ -124,7 +140,7 @@
     {{-- 테마1: 로고 좌측 메뉴 우측 --}}
     <nav class="navbar navbar-expand-lg navbar-dark pc-header {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="{{ $containerClass }}" style="{{ $containerStyle }}">
-            <a class="navbar-brand" href="{{ route('home', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
+            <a class="navbar-brand" href="{{ $homeUrl }}" style="color: {{ $headerTextColor }} !important;">
                 @if($logoType === 'text' || empty($siteLogo))
                     {{ $siteName }}
                 @else
@@ -219,7 +235,7 @@
         {{-- 테마2: 로고 좌측 메뉴 중앙 검색창 우측 --}}
         <nav class="navbar navbar-expand-lg navbar-dark pc-header {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
         <div class="{{ $containerClass }}" style="{{ $containerStyle }}">
-            <a class="navbar-brand" href="{{ route('home', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
+            <a class="navbar-brand" href="{{ $homeUrl }}" style="color: {{ $headerTextColor }} !important;">
                 @if($logoType === 'text' || empty($siteLogo))
                     {{ $siteName }}
                 @else
@@ -528,7 +544,7 @@
         <div class="{{ $containerClass }}" style="{{ $containerStyle }}">
             <div class="w-100">
                 <div class="d-flex justify-content-center mb-3">
-                    <a class="navbar-brand" href="{{ route('home', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
+                    <a class="navbar-brand" href="{{ $homeUrl }}" style="color: {{ $headerTextColor }} !important;">
                         @if($logoType === 'text' || empty($siteLogo))
                             {{ $siteName }}
                         @else
