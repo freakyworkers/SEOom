@@ -343,8 +343,8 @@
         
         /* 투명헤더일 때 CSS 변수 오버라이드 (PHP에서 설정한 CSS 변수보다 나중에 적용) */
         /* 더 강력하게 :root와 html 모두에서 오버라이드 */
-        @if($headerTransparent && $isHomePage)
-            :root,
+        {{-- @if($headerTransparent && $isHomePage) --}}
+            {{-- :root,
             html,
             html body {
                 --header-bg-color: transparent !important;
@@ -369,8 +369,8 @@
                 background: none !important;
                 background-image: none !important;
                 --header-bg-color: transparent !important;
-            }
-        @endif
+            } --}}
+        {{-- @endif --}}
         
         /* 포인트 색상 적용 */
         .btn-primary, .bg-primary {
