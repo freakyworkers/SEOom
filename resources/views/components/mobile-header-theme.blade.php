@@ -746,13 +746,13 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: center; gap: 0.5rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
-                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown1" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
+                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown1" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
                                         {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown1">
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown1" style="width: 100%;">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-posts', ['site' => $site->slug ?? 'default']) }}">내 게시글</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-comments', ['site' => $site->slug ?? 'default']) }}">내 댓글</a></li>
@@ -767,12 +767,56 @@
                                     </ul>
                                 </div>
                             @else
-                                <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none;">
-                                    로그인
-                                </a>
-                                <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: {{ $headerTextColor }}; color: {{ $headerTextColor }};">
-                                    회원가입
-                                </a>
+                                <div class="d-flex gap-2" style="width: 100%;">
+                                    <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none; flex: 1; padding: 0.625rem 1rem;">
+                                        로그인
+                                    </a>
+                                    <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: #dee2e6; color: #495057; flex: 1; padding: 0.625rem 1rem;">
+                                        회원가입
+                                    </a>
+                                </div>
+                                @php
+                                    if ($site->isMasterSite()) {
+                                        $socialLoginEnabledRaw = $site->getSetting('social_login_enabled', $site->getSetting('registration_enable_social_login', false));
+                                        $googleClientId = $site->getSetting('social_login_google_client_id', $site->getSetting('google_client_id', ''));
+                                        $naverClientId = $site->getSetting('social_login_naver_client_id', $site->getSetting('naver_client_id', ''));
+                                        $kakaoClientId = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                                    } else {
+                                        $socialLoginEnabledRaw = $site->getSetting('registration_enable_social_login', false);
+                                        $googleClientId = $site->getSetting('google_client_id', '');
+                                        $naverClientId = $site->getSetting('naver_client_id', '');
+                                        $kakaoClientId = $site->getSetting('kakao_client_id', '');
+                                    }
+                                    $socialLoginEnabled = filter_var($socialLoginEnabledRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+                                @endphp
+                                @if($socialLoginEnabled && (!empty($googleClientId) || !empty($naverClientId) || !empty($kakaoClientId)))
+                                <div class="d-flex gap-2 justify-content-center" style="width: 100%;">
+                                    @if(!empty($googleClientId))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'google']) : route('social.login', ['site' => $site->slug, 'provider' => 'google']) }}" 
+                                       class="btn btn-sm btn-outline-danger" 
+                                       style="padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="구글로 로그인">
+                                        <i class="bi bi-google"></i>
+                                    </a>
+                                    @endif
+                                    @if(!empty($naverClientId))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'naver']) : route('social.login', ['site' => $site->slug, 'provider' => 'naver']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #03C75A; border-color: #03C75A; color: white; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="네이버로 로그인">
+                                        <span style="font-weight: bold;">N</span>
+                                    </a>
+                                    @endif
+                                    @if(!empty($kakaoClientId))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'kakao']) : route('social.login', ['site' => $site->slug, 'provider' => 'kakao']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #FEE500; border-color: #FEE500; color: #000; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="카카오로 로그인">
+                                        <i class="bi bi-chat-fill"></i>
+                                    </a>
+                                    @endif
+                                </div>
+                                @endif
                             @endauth
                         </div>
                     @endif
@@ -851,13 +895,13 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: center; gap: 0.5rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
-                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown2" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
+                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown2" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
                                         {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown2">
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown2" style="width: 100%;">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-posts', ['site' => $site->slug ?? 'default']) }}">내 게시글</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-comments', ['site' => $site->slug ?? 'default']) }}">내 댓글</a></li>
@@ -872,12 +916,56 @@
                                     </ul>
                                 </div>
                             @else
-                                <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none;">
-                                    로그인
-                                </a>
-                                <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: {{ $headerTextColor }}; color: {{ $headerTextColor }};">
-                                    회원가입
-                                </a>
+                                <div class="d-flex gap-2" style="width: 100%;">
+                                    <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none; flex: 1; padding: 0.625rem 1rem;">
+                                        로그인
+                                    </a>
+                                    <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: #dee2e6; color: #495057; flex: 1; padding: 0.625rem 1rem;">
+                                        회원가입
+                                    </a>
+                                </div>
+                                @php
+                                    if ($site->isMasterSite()) {
+                                        $socialLoginEnabledRaw2 = $site->getSetting('social_login_enabled', $site->getSetting('registration_enable_social_login', false));
+                                        $googleClientId2 = $site->getSetting('social_login_google_client_id', $site->getSetting('google_client_id', ''));
+                                        $naverClientId2 = $site->getSetting('social_login_naver_client_id', $site->getSetting('naver_client_id', ''));
+                                        $kakaoClientId2 = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                                    } else {
+                                        $socialLoginEnabledRaw2 = $site->getSetting('registration_enable_social_login', false);
+                                        $googleClientId2 = $site->getSetting('google_client_id', '');
+                                        $naverClientId2 = $site->getSetting('naver_client_id', '');
+                                        $kakaoClientId2 = $site->getSetting('kakao_client_id', '');
+                                    }
+                                    $socialLoginEnabled2 = filter_var($socialLoginEnabledRaw2, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+                                @endphp
+                                @if($socialLoginEnabled2 && (!empty($googleClientId2) || !empty($naverClientId2) || !empty($kakaoClientId2)))
+                                <div class="d-flex gap-2 justify-content-center" style="width: 100%;">
+                                    @if(!empty($googleClientId2))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'google']) : route('social.login', ['site' => $site->slug, 'provider' => 'google']) }}" 
+                                       class="btn btn-sm btn-outline-danger" 
+                                       style="padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="구글로 로그인">
+                                        <i class="bi bi-google"></i>
+                                    </a>
+                                    @endif
+                                    @if(!empty($naverClientId2))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'naver']) : route('social.login', ['site' => $site->slug, 'provider' => 'naver']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #03C75A; border-color: #03C75A; color: white; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="네이버로 로그인">
+                                        <span style="font-weight: bold;">N</span>
+                                    </a>
+                                    @endif
+                                    @if(!empty($kakaoClientId2))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'kakao']) : route('social.login', ['site' => $site->slug, 'provider' => 'kakao']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #FEE500; border-color: #FEE500; color: #000; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="카카오로 로그인">
+                                        <i class="bi bi-chat-fill"></i>
+                                    </a>
+                                    @endif
+                                </div>
+                                @endif
                             @endauth
                         </div>
                     @endif
@@ -956,13 +1044,13 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: center; gap: 0.5rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
-                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown3" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
+                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown3" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
                                         {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown3">
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown3" style="width: 100%;">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-posts', ['site' => $site->slug ?? 'default']) }}">내 게시글</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-comments', ['site' => $site->slug ?? 'default']) }}">내 댓글</a></li>
@@ -977,12 +1065,56 @@
                                     </ul>
                                 </div>
                             @else
-                                <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none;">
-                                    로그인
-                                </a>
-                                <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: {{ $headerTextColor }}; color: {{ $headerTextColor }};">
-                                    회원가입
-                                </a>
+                                <div class="d-flex gap-2" style="width: 100%;">
+                                    <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none; flex: 1; padding: 0.625rem 1rem;">
+                                        로그인
+                                    </a>
+                                    <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: #dee2e6; color: #495057; flex: 1; padding: 0.625rem 1rem;">
+                                        회원가입
+                                    </a>
+                                </div>
+                                @php
+                                    if ($site->isMasterSite()) {
+                                        $socialLoginEnabledRaw3 = $site->getSetting('social_login_enabled', $site->getSetting('registration_enable_social_login', false));
+                                        $googleClientId3 = $site->getSetting('social_login_google_client_id', $site->getSetting('google_client_id', ''));
+                                        $naverClientId3 = $site->getSetting('social_login_naver_client_id', $site->getSetting('naver_client_id', ''));
+                                        $kakaoClientId3 = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                                    } else {
+                                        $socialLoginEnabledRaw3 = $site->getSetting('registration_enable_social_login', false);
+                                        $googleClientId3 = $site->getSetting('google_client_id', '');
+                                        $naverClientId3 = $site->getSetting('naver_client_id', '');
+                                        $kakaoClientId3 = $site->getSetting('kakao_client_id', '');
+                                    }
+                                    $socialLoginEnabled3 = filter_var($socialLoginEnabledRaw3, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+                                @endphp
+                                @if($socialLoginEnabled3 && (!empty($googleClientId3) || !empty($naverClientId3) || !empty($kakaoClientId3)))
+                                <div class="d-flex gap-2 justify-content-center" style="width: 100%;">
+                                    @if(!empty($googleClientId3))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'google']) : route('social.login', ['site' => $site->slug, 'provider' => 'google']) }}" 
+                                       class="btn btn-sm btn-outline-danger" 
+                                       style="padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="구글로 로그인">
+                                        <i class="bi bi-google"></i>
+                                    </a>
+                                    @endif
+                                    @if(!empty($naverClientId3))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'naver']) : route('social.login', ['site' => $site->slug, 'provider' => 'naver']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #03C75A; border-color: #03C75A; color: white; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="네이버로 로그인">
+                                        <span style="font-weight: bold;">N</span>
+                                    </a>
+                                    @endif
+                                    @if(!empty($kakaoClientId3))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'kakao']) : route('social.login', ['site' => $site->slug, 'provider' => 'kakao']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #FEE500; border-color: #FEE500; color: #000; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="카카오로 로그인">
+                                        <i class="bi bi-chat-fill"></i>
+                                    </a>
+                                    @endif
+                                </div>
+                                @endif
                             @endauth
                         </div>
                     @endif
@@ -1061,13 +1193,13 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: center; gap: 0.5rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
-                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown4" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
+                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown4" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
                                         {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown4">
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown4" style="width: 100%;">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-posts', ['site' => $site->slug ?? 'default']) }}">내 게시글</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-comments', ['site' => $site->slug ?? 'default']) }}">내 댓글</a></li>
@@ -1082,12 +1214,56 @@
                                     </ul>
                                 </div>
                             @else
-                                <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none;">
-                                    로그인
-                                </a>
-                                <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: {{ $headerTextColor }}; color: {{ $headerTextColor }};">
-                                    회원가입
-                                </a>
+                                <div class="d-flex gap-2" style="width: 100%;">
+                                    <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none; flex: 1; padding: 0.625rem 1rem;">
+                                        로그인
+                                    </a>
+                                    <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: #dee2e6; color: #495057; flex: 1; padding: 0.625rem 1rem;">
+                                        회원가입
+                                    </a>
+                                </div>
+                                @php
+                                    if ($site->isMasterSite()) {
+                                        $socialLoginEnabledRaw4 = $site->getSetting('social_login_enabled', $site->getSetting('registration_enable_social_login', false));
+                                        $googleClientId4 = $site->getSetting('social_login_google_client_id', $site->getSetting('google_client_id', ''));
+                                        $naverClientId4 = $site->getSetting('social_login_naver_client_id', $site->getSetting('naver_client_id', ''));
+                                        $kakaoClientId4 = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                                    } else {
+                                        $socialLoginEnabledRaw4 = $site->getSetting('registration_enable_social_login', false);
+                                        $googleClientId4 = $site->getSetting('google_client_id', '');
+                                        $naverClientId4 = $site->getSetting('naver_client_id', '');
+                                        $kakaoClientId4 = $site->getSetting('kakao_client_id', '');
+                                    }
+                                    $socialLoginEnabled4 = filter_var($socialLoginEnabledRaw4, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+                                @endphp
+                                @if($socialLoginEnabled4 && (!empty($googleClientId4) || !empty($naverClientId4) || !empty($kakaoClientId4)))
+                                <div class="d-flex gap-2 justify-content-center" style="width: 100%;">
+                                    @if(!empty($googleClientId4))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'google']) : route('social.login', ['site' => $site->slug, 'provider' => 'google']) }}" 
+                                       class="btn btn-sm btn-outline-danger" 
+                                       style="padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="구글로 로그인">
+                                        <i class="bi bi-google"></i>
+                                    </a>
+                                    @endif
+                                    @if(!empty($naverClientId4))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'naver']) : route('social.login', ['site' => $site->slug, 'provider' => 'naver']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #03C75A; border-color: #03C75A; color: white; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="네이버로 로그인">
+                                        <span style="font-weight: bold;">N</span>
+                                    </a>
+                                    @endif
+                                    @if(!empty($kakaoClientId4))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'kakao']) : route('social.login', ['site' => $site->slug, 'provider' => 'kakao']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #FEE500; border-color: #FEE500; color: #000; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="카카오로 로그인">
+                                        <i class="bi bi-chat-fill"></i>
+                                    </a>
+                                    @endif
+                                </div>
+                                @endif
                             @endauth
                         </div>
                     @endif
@@ -1166,13 +1342,13 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: center; gap: 0.5rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
-                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown5" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
+                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown5" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
                                         {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown5">
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown5" style="width: 100%;">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-posts', ['site' => $site->slug ?? 'default']) }}">내 게시글</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-comments', ['site' => $site->slug ?? 'default']) }}">내 댓글</a></li>
@@ -1187,12 +1363,56 @@
                                     </ul>
                                 </div>
                             @else
-                                <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none;">
-                                    로그인
-                                </a>
-                                <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: {{ $headerTextColor }}; color: {{ $headerTextColor }};">
-                                    회원가입
-                                </a>
+                                <div class="d-flex gap-2" style="width: 100%;">
+                                    <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none; flex: 1; padding: 0.625rem 1rem;">
+                                        로그인
+                                    </a>
+                                    <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: #dee2e6; color: #495057; flex: 1; padding: 0.625rem 1rem;">
+                                        회원가입
+                                    </a>
+                                </div>
+                                @php
+                                    if ($site->isMasterSite()) {
+                                        $socialLoginEnabledRaw5 = $site->getSetting('social_login_enabled', $site->getSetting('registration_enable_social_login', false));
+                                        $googleClientId5 = $site->getSetting('social_login_google_client_id', $site->getSetting('google_client_id', ''));
+                                        $naverClientId5 = $site->getSetting('social_login_naver_client_id', $site->getSetting('naver_client_id', ''));
+                                        $kakaoClientId5 = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                                    } else {
+                                        $socialLoginEnabledRaw5 = $site->getSetting('registration_enable_social_login', false);
+                                        $googleClientId5 = $site->getSetting('google_client_id', '');
+                                        $naverClientId5 = $site->getSetting('naver_client_id', '');
+                                        $kakaoClientId5 = $site->getSetting('kakao_client_id', '');
+                                    }
+                                    $socialLoginEnabled5 = filter_var($socialLoginEnabledRaw5, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+                                @endphp
+                                @if($socialLoginEnabled5 && (!empty($googleClientId5) || !empty($naverClientId5) || !empty($kakaoClientId5)))
+                                <div class="d-flex gap-2 justify-content-center" style="width: 100%;">
+                                    @if(!empty($googleClientId5))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'google']) : route('social.login', ['site' => $site->slug, 'provider' => 'google']) }}" 
+                                       class="btn btn-sm btn-outline-danger" 
+                                       style="padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="구글로 로그인">
+                                        <i class="bi bi-google"></i>
+                                    </a>
+                                    @endif
+                                    @if(!empty($naverClientId5))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'naver']) : route('social.login', ['site' => $site->slug, 'provider' => 'naver']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #03C75A; border-color: #03C75A; color: white; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="네이버로 로그인">
+                                        <span style="font-weight: bold;">N</span>
+                                    </a>
+                                    @endif
+                                    @if(!empty($kakaoClientId5))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'kakao']) : route('social.login', ['site' => $site->slug, 'provider' => 'kakao']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #FEE500; border-color: #FEE500; color: #000; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="카카오로 로그인">
+                                        <i class="bi bi-chat-fill"></i>
+                                    </a>
+                                    @endif
+                                </div>
+                                @endif
                             @endauth
                         </div>
                     @endif
@@ -1275,13 +1495,13 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: center; gap: 0.5rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
-                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
+                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown6" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
                                         {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown">
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown6" style="width: 100%;">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-posts', ['site' => $site->slug ?? 'default']) }}">내 게시글</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-comments', ['site' => $site->slug ?? 'default']) }}">내 댓글</a></li>
@@ -1296,12 +1516,56 @@
                                     </ul>
                                 </div>
                             @else
-                                <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none;">
-                                    로그인
-                                </a>
-                                <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: {{ $headerTextColor }}; color: {{ $headerTextColor }};">
-                                    회원가입
-                                </a>
+                                <div class="d-flex gap-2" style="width: 100%;">
+                                    <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none; flex: 1; padding: 0.625rem 1rem;">
+                                        로그인
+                                    </a>
+                                    <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: #dee2e6; color: #495057; flex: 1; padding: 0.625rem 1rem;">
+                                        회원가입
+                                    </a>
+                                </div>
+                                @php
+                                    if ($site->isMasterSite()) {
+                                        $socialLoginEnabledRaw6 = $site->getSetting('social_login_enabled', $site->getSetting('registration_enable_social_login', false));
+                                        $googleClientId6 = $site->getSetting('social_login_google_client_id', $site->getSetting('google_client_id', ''));
+                                        $naverClientId6 = $site->getSetting('social_login_naver_client_id', $site->getSetting('naver_client_id', ''));
+                                        $kakaoClientId6 = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                                    } else {
+                                        $socialLoginEnabledRaw6 = $site->getSetting('registration_enable_social_login', false);
+                                        $googleClientId6 = $site->getSetting('google_client_id', '');
+                                        $naverClientId6 = $site->getSetting('naver_client_id', '');
+                                        $kakaoClientId6 = $site->getSetting('kakao_client_id', '');
+                                    }
+                                    $socialLoginEnabled6 = filter_var($socialLoginEnabledRaw6, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+                                @endphp
+                                @if($socialLoginEnabled6 && (!empty($googleClientId6) || !empty($naverClientId6) || !empty($kakaoClientId6)))
+                                <div class="d-flex gap-2 justify-content-center" style="width: 100%;">
+                                    @if(!empty($googleClientId6))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'google']) : route('social.login', ['site' => $site->slug, 'provider' => 'google']) }}" 
+                                       class="btn btn-sm btn-outline-danger" 
+                                       style="padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="구글로 로그인">
+                                        <i class="bi bi-google"></i>
+                                    </a>
+                                    @endif
+                                    @if(!empty($naverClientId6))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'naver']) : route('social.login', ['site' => $site->slug, 'provider' => 'naver']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #03C75A; border-color: #03C75A; color: white; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="네이버로 로그인">
+                                        <span style="font-weight: bold;">N</span>
+                                    </a>
+                                    @endif
+                                    @if(!empty($kakaoClientId6))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'kakao']) : route('social.login', ['site' => $site->slug, 'provider' => 'kakao']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #FEE500; border-color: #FEE500; color: #000; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="카카오로 로그인">
+                                        <i class="bi bi-chat-fill"></i>
+                                    </a>
+                                    @endif
+                                </div>
+                                @endif
                             @endauth
                         </div>
                     @endif
@@ -1384,13 +1648,13 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: center; gap: 0.5rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
-                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown7" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
+                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown7" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
                                         {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown7">
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown7" style="width: 100%;">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-posts', ['site' => $site->slug ?? 'default']) }}">내 게시글</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-comments', ['site' => $site->slug ?? 'default']) }}">내 댓글</a></li>
@@ -1405,12 +1669,56 @@
                                     </ul>
                                 </div>
                             @else
-                                <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none;">
-                                    로그인
-                                </a>
-                                <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: {{ $headerTextColor }}; color: {{ $headerTextColor }};">
-                                    회원가입
-                                </a>
+                                <div class="d-flex gap-2" style="width: 100%;">
+                                    <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none; flex: 1; padding: 0.625rem 1rem;">
+                                        로그인
+                                    </a>
+                                    <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: #dee2e6; color: #495057; flex: 1; padding: 0.625rem 1rem;">
+                                        회원가입
+                                    </a>
+                                </div>
+                                @php
+                                    if ($site->isMasterSite()) {
+                                        $socialLoginEnabledRaw7 = $site->getSetting('social_login_enabled', $site->getSetting('registration_enable_social_login', false));
+                                        $googleClientId7 = $site->getSetting('social_login_google_client_id', $site->getSetting('google_client_id', ''));
+                                        $naverClientId7 = $site->getSetting('social_login_naver_client_id', $site->getSetting('naver_client_id', ''));
+                                        $kakaoClientId7 = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                                    } else {
+                                        $socialLoginEnabledRaw7 = $site->getSetting('registration_enable_social_login', false);
+                                        $googleClientId7 = $site->getSetting('google_client_id', '');
+                                        $naverClientId7 = $site->getSetting('naver_client_id', '');
+                                        $kakaoClientId7 = $site->getSetting('kakao_client_id', '');
+                                    }
+                                    $socialLoginEnabled7 = filter_var($socialLoginEnabledRaw7, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+                                @endphp
+                                @if($socialLoginEnabled7 && (!empty($googleClientId7) || !empty($naverClientId7) || !empty($kakaoClientId7)))
+                                <div class="d-flex gap-2 justify-content-center" style="width: 100%;">
+                                    @if(!empty($googleClientId7))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'google']) : route('social.login', ['site' => $site->slug, 'provider' => 'google']) }}" 
+                                       class="btn btn-sm btn-outline-danger" 
+                                       style="padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="구글로 로그인">
+                                        <i class="bi bi-google"></i>
+                                    </a>
+                                    @endif
+                                    @if(!empty($naverClientId7))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'naver']) : route('social.login', ['site' => $site->slug, 'provider' => 'naver']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #03C75A; border-color: #03C75A; color: white; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="네이버로 로그인">
+                                        <span style="font-weight: bold;">N</span>
+                                    </a>
+                                    @endif
+                                    @if(!empty($kakaoClientId7))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'kakao']) : route('social.login', ['site' => $site->slug, 'provider' => 'kakao']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #FEE500; border-color: #FEE500; color: #000; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="카카오로 로그인">
+                                        <i class="bi bi-chat-fill"></i>
+                                    </a>
+                                    @endif
+                                </div>
+                                @endif
                             @endauth
                         </div>
                     @endif
@@ -1498,13 +1806,13 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: center; gap: 0.5rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
-                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown8" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%;">
+                                    <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown8" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
                                         {{ auth()->user()->nickname ?? auth()->user()->name }}
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown8">
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuUserDropdown8" style="width: 100%;">
                                         <li><a class="dropdown-item" href="{{ route('users.profile', ['site' => $site->slug ?? 'default']) }}">내정보</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-posts', ['site' => $site->slug ?? 'default']) }}">내 게시글</a></li>
                                         <li><a class="dropdown-item" href="{{ route('users.my-comments', ['site' => $site->slug ?? 'default']) }}">내 댓글</a></li>
@@ -1519,12 +1827,56 @@
                                     </ul>
                                 </div>
                             @else
-                                <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none;">
-                                    로그인
-                                </a>
-                                <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: {{ $headerTextColor }}; color: {{ $headerTextColor }};">
-                                    회원가입
-                                </a>
+                                <div class="d-flex gap-2" style="width: 100%;">
+                                    <a href="{{ route('login', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm" style="background-color: {{ $pointColor }}; color: white; border: none; flex: 1; padding: 0.625rem 1rem;">
+                                        로그인
+                                    </a>
+                                    <a href="{{ route('register', ['site' => $site->slug ?? 'default']) }}" class="btn btn-sm btn-outline-secondary" style="border-color: #dee2e6; color: #495057; flex: 1; padding: 0.625rem 1rem;">
+                                        회원가입
+                                    </a>
+                                </div>
+                                @php
+                                    if ($site->isMasterSite()) {
+                                        $socialLoginEnabledRaw8 = $site->getSetting('social_login_enabled', $site->getSetting('registration_enable_social_login', false));
+                                        $googleClientId8 = $site->getSetting('social_login_google_client_id', $site->getSetting('google_client_id', ''));
+                                        $naverClientId8 = $site->getSetting('social_login_naver_client_id', $site->getSetting('naver_client_id', ''));
+                                        $kakaoClientId8 = $site->getSetting('social_login_kakao_client_id', $site->getSetting('kakao_client_id', ''));
+                                    } else {
+                                        $socialLoginEnabledRaw8 = $site->getSetting('registration_enable_social_login', false);
+                                        $googleClientId8 = $site->getSetting('google_client_id', '');
+                                        $naverClientId8 = $site->getSetting('naver_client_id', '');
+                                        $kakaoClientId8 = $site->getSetting('kakao_client_id', '');
+                                    }
+                                    $socialLoginEnabled8 = filter_var($socialLoginEnabledRaw8, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+                                @endphp
+                                @if($socialLoginEnabled8 && (!empty($googleClientId8) || !empty($naverClientId8) || !empty($kakaoClientId8)))
+                                <div class="d-flex gap-2 justify-content-center" style="width: 100%;">
+                                    @if(!empty($googleClientId8))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'google']) : route('social.login', ['site' => $site->slug, 'provider' => 'google']) }}" 
+                                       class="btn btn-sm btn-outline-danger" 
+                                       style="padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="구글로 로그인">
+                                        <i class="bi bi-google"></i>
+                                    </a>
+                                    @endif
+                                    @if(!empty($naverClientId8))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'naver']) : route('social.login', ['site' => $site->slug, 'provider' => 'naver']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #03C75A; border-color: #03C75A; color: white; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="네이버로 로그인">
+                                        <span style="font-weight: bold;">N</span>
+                                    </a>
+                                    @endif
+                                    @if(!empty($kakaoClientId8))
+                                    <a href="{{ $site->isMasterSite() ? route('master.social.login', ['provider' => 'kakao']) : route('social.login', ['site' => $site->slug, 'provider' => 'kakao']) }}" 
+                                       class="btn btn-sm" 
+                                       style="background-color: #FEE500; border-color: #FEE500; color: #000; padding: 0.5rem 0.75rem; border-radius: 0.375rem; flex: 1;" 
+                                       title="카카오로 로그인">
+                                        <i class="bi bi-chat-fill"></i>
+                                    </a>
+                                    @endif
+                                </div>
+                                @endif
                             @endauth
                         </div>
                     @endif
