@@ -1747,12 +1747,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (logoHeight <= 0) return;
         
         // PC 버전처럼 단순하게: 로고 높이에 맞춰 헤더 높이 설정
-        // container-fluid에 패딩 추가 (로고 높이의 8-12%, 최소 0.4rem, 최대 2rem)
-        let padding = 0;
+        // container-fluid에 패딩 추가 (로고 높이의 8-12%, 최소 0.5rem, 최대 2rem)
+        let padding = 0.5; // 최소 패딩 0.5rem (8px)
         if (logoHeight <= 40) {
-            padding = 0;
+            padding = 0.5; // 작은 로고도 최소 패딩 적용
         } else if (logoHeight <= 80) {
-            padding = Math.max(logoHeight * 0.008, 0.4);
+            padding = Math.max(logoHeight * 0.008, 0.5);
         } else {
             padding = Math.min(Math.max(logoHeight * 0.012, 0.8), 2);
         }
