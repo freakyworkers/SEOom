@@ -66,7 +66,7 @@ Route::middleware('web')->group(function () {
         Route::middleware('guest')->group(function () use ($masterSite) {
             Route::get('/login', function () use ($masterSite) {
                 return app(\App\Http\Controllers\AuthController::class)->showLoginForm($masterSite);
-            })->name('master.login');
+            })->name('home.login');
             
             Route::post('/login', function (Request $request) use ($masterSite) {
                 return app(\App\Http\Controllers\AuthController::class)->login($request, $masterSite);
@@ -74,7 +74,7 @@ Route::middleware('web')->group(function () {
             
             Route::get('/register', function () use ($masterSite) {
                 return app(\App\Http\Controllers\AuthController::class)->showRegisterForm($masterSite);
-            })->name('master.register');
+            })->name('home.register');
             
             Route::post('/register', function (Request $request) use ($masterSite) {
                 return app(\App\Http\Controllers\AuthController::class)->register($request, $masterSite);
