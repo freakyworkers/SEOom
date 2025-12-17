@@ -359,13 +359,13 @@
         margin-right: 0;
     }
     
-    /* 모바일 헤더 높이를 로고 높이에 맞춰 자동 조정 - 상하 패딩 없음 */
+    /* 모바일 헤더 높이를 로고 높이에 맞춰 자동 조정 - 상하 여백 추가 */
     .navbar.navbar-expand-lg.d-xl-none {
         min-height: auto !important;
         height: auto !important;
         max-height: none !important;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
         overflow: visible !important;
         display: flex !important;
         flex-wrap: nowrap !important;
