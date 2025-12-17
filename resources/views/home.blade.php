@@ -2,6 +2,26 @@
 
 {{-- 타이틀을 설정하지 않으면 사이트 이름이 기본 타이틀로 표시됩니다 --}}
 
+{{-- 첫 번째 컨테이너가 세로 100%일 때 main 영역 상단 여백 제거 --}}
+@php
+    $firstContainerIsFullHeight = isset($mainWidgetContainers) && $mainWidgetContainers->isNotEmpty() && ($mainWidgetContainers->first()->full_height ?? false);
+@endphp
+
+@if($firstContainerIsFullHeight)
+@push('styles')
+<style>
+    main.container {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    main.container.my-4 {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+</style>
+@endpush
+@endif
+
 @section('content')
 {{-- 메인 위젯 표시 --}}
 @if(isset($mainWidgetContainers) && $mainWidgetContainers->isNotEmpty())
