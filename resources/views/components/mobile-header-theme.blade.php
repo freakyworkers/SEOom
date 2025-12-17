@@ -746,7 +746,7 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; width: 100%; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown1" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
@@ -895,7 +895,7 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; width: 100%; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown2" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
@@ -1044,7 +1044,7 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; width: 100%; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown3" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
@@ -1193,7 +1193,7 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; width: 100%; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown4" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
@@ -1342,7 +1342,7 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; width: 100%; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown5" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
@@ -1495,7 +1495,7 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; width: 100%; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown6" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
@@ -1648,7 +1648,7 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; width: 100%; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown7" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
@@ -1806,7 +1806,7 @@
                         </div>
                     @elseif(in_array($mobileMenuDirection, ['top-to-bottom', 'bottom-to-top']))
                         {{-- 위에서아래/아래에서위: 로그인 버튼 타입 --}}
-                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="mobile-menu-login-buttons" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding: 1rem 1rem; display: flex; width: 100%; flex-direction: column; gap: 0.75rem;">
                             @auth
                                 <div class="dropdown" style="width: 100%;">
                                     <button class="btn btn-sm dropdown-toggle" type="button" id="mobileMenuUserDropdown8" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: {{ $pointColor }}; color: white; border: none; width: 100%; padding: 0.625rem 1rem;">
