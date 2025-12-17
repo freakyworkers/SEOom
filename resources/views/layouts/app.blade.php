@@ -545,18 +545,38 @@
             .container-fluid.px-0 [class*="banner-item"],
             .container-fluid.px-0 .banner-link,
             .container-fluid.px-0 .banner-image,
-            .container-fluid.px-0 img {
+            .container-fluid.px-0 img,
+            .container-fluid.px-0 *,
+            .container-fluid.px-0 .card-header,
+            .container-fluid.px-0 .card-body,
+            .container-fluid.px-0 .card-footer {
                 border-radius: 0 !important;
+                -webkit-border-radius: 0 !important;
+                -moz-border-radius: 0 !important;
             }
             
-            /* 가로 100% 컨테이너 내 모든 요소 라운드 제거 */
+            /* 가로 100% 컨테이너 내 모든 요소 라운드 제거 - 강화 */
             .container-fluid.px-0 .rounded,
             .container-fluid.px-0 .rounded-top,
             .container-fluid.px-0 .rounded-bottom,
             .container-fluid.px-0 .rounded-start,
             .container-fluid.px-0 .rounded-end,
-            .container-fluid.px-0 [class*="rounded-"] {
+            .container-fluid.px-0 .rounded-0,
+            .container-fluid.px-0 .rounded-1,
+            .container-fluid.px-0 .rounded-2,
+            .container-fluid.px-0 .rounded-3,
+            .container-fluid.px-0 .rounded-4,
+            .container-fluid.px-0 .rounded-5,
+            .container-fluid.px-0 [class*="rounded-"],
+            .container-fluid.px-0 [style*="border-radius"] {
                 border-radius: 0 !important;
+                -webkit-border-radius: 0 !important;
+                -moz-border-radius: 0 !important;
+            }
+            
+            /* 사이드바 로그인 위젯 모바일에서 숨기기 */
+            .sidebar-user-widget {
+                display: none !important;
             }
         }
         
@@ -1501,6 +1521,17 @@
             left: 0;
             right: 0;
             z-index: 1030;
+        }
+        
+        /* 모바일에서 투명헤더 시 최상단 헤더 영역 없이 nav를 상단에 배치 */
+        /* 최상단 헤더는 d-xl-block으로 모바일에서 숨겨지므로 nav를 top: 0으로 설정 */
+        @media (max-width: 1199px) {
+            .header-transparent-overlay {
+                top: 0 !important;
+            }
+        }
+        
+        .header-transparent-overlay {
             width: 100%;
             background: none !important;
             background-color: transparent !important;
