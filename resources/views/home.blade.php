@@ -10,13 +10,20 @@
 @if($firstContainerIsFullHeight)
 @push('styles')
 <style>
-    main.container {
+    /* 첫 번째 컨테이너가 세로 100%일 때 main 영역 상단 여백 완전 제거 */
+    body main.container,
+    body main.container.my-4,
+    body > main.container,
+    body > main.container.my-4,
+    .d-flex main.container,
+    .d-flex main.container.my-4 {
         margin-top: 0 !important;
         padding-top: 0 !important;
     }
-    main.container.my-4 {
+    /* full-height-container의 상단 여백도 제거 */
+    .full-height-container:first-child {
         margin-top: 0 !important;
-        margin-bottom: 0 !important;
+        padding-top: 0 !important;
     }
 </style>
 @endpush
