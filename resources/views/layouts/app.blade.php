@@ -773,7 +773,14 @@
                 $unreadNotificationCount = \App\Models\Notification::getUnreadCount(auth()->id(), $site->id);
             }
         @endphp
-        <div class="top-header-bar d-none d-xl-block" style="background-color: {{ $topBarBg }}; color: {{ $topBarText }}; padding: 0.5rem 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
+        @php
+            // 투명헤더가 활성화되고 메인 페이지일 때 최상단 헤더도 투명하게
+            $topHeaderBg = ($headerTransparent && $isHomePage) ? 'transparent' : $topBarBg;
+            $topHeaderBorder = ($headerTransparent && $isHomePage) ? 'none' : '1px solid rgba(0,0,0,0.1)';
+            // 투명헤더일 때 최상단 헤더도 absolute로 설정
+            $topHeaderPosition = ($headerTransparent && $isHomePage) ? 'position: absolute; top: 0; left: 0; right: 0; width: 100%;' : 'position: relative;';
+        @endphp
+        <div class="top-header-bar d-none d-xl-block" style="background-color: {{ $topHeaderBg }}; color: {{ $topBarText }}; padding: 0.5rem 0; border-bottom: {{ $topHeaderBorder }}; {{ $topHeaderPosition }} z-index: 1051;">
             <div class="{{ $themeFullWidth ? 'container-fluid' : 'container' }}" style="{{ $themeFullWidth ? 'max-width: 100%; padding-left: 15px; padding-right: 15px;' : '' }}">
                 <div class="row align-items-center">
                     <div class="{{ $showTopHeaderLogin ? 'col-md-6 text-start' : 'col-md-6 text-start' }}">
@@ -873,7 +880,9 @@
         $headerWrapperClass = '';
         if ($headerTransparent && $isHomePage) {
             // 투명헤더: absolute position으로 첫 번째 컨테이너 위에 오버레이
-            $headerWrapperStyle = 'position: absolute; top: 0; left: 0; right: 0; z-index: 1030; width: 100%;';
+            // 최상단 헤더가 활성화되어 있으면 top을 최상단 헤더 높이만큼 조정 (약 40px)
+            $navTopPosition = $showTopHeader ? '40px' : '0';
+            $headerWrapperStyle = 'position: absolute; top: ' . $navTopPosition . '; left: 0; right: 0; z-index: 1030; width: 100%;';
             $headerWrapperClass = 'header-transparent-overlay';
             if ($isHeaderSticky) {
                 // sticky일 때는 스크롤 시 fixed로 변경되도록 클래스 추가
@@ -1606,11 +1615,19 @@
         
         /* 투명헤더 sticky 오버레이 - 스크롤 시 fixed로 변경 */
         .header-transparent-sticky-overlay {
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, top 0.3s ease;
         }
         
         .header-transparent-sticky-overlay.scrolled {
             position: fixed !important;
+            top: 0 !important; /* 스크롤 시 최상단으로 이동 */
+        }
+        
+        /* 투명헤더 + 최상단 헤더 + sticky일 때 스크롤 시 최상단 헤더 숨기기 */
+        .top-header-bar.transparent-header-scrolled {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
         }
         
         /* 투명헤더일 때 첫 번째 컨테이너의 패딩 제거 */
@@ -1779,6 +1796,7 @@
                 
                 // sticky 헤더인 경우 스크롤 이벤트 처리
                 const stickyOverlay = document.querySelector('.header-transparent-sticky-overlay');
+                const topHeaderBar = document.querySelector('.top-header-bar');
                 if (stickyOverlay) {
                     let lastScrollTop = 0;
                     window.addEventListener('scroll', function() {
@@ -1786,9 +1804,16 @@
                         
                         if (scrollTop > 50) {
                             stickyOverlay.classList.add('scrolled');
-                            // 스크롤 시 배경색 적용 (헤더 컴포넌트에서 처리)
+                            // 스크롤 시 최상단 헤더 숨기기
+                            if (topHeaderBar) {
+                                topHeaderBar.classList.add('transparent-header-scrolled');
+                            }
                         } else {
                             stickyOverlay.classList.remove('scrolled');
+                            // 최상단 헤더 다시 표시
+                            if (topHeaderBar) {
+                                topHeaderBar.classList.remove('transparent-header-scrolled');
+                            }
                         }
                         
                         lastScrollTop = scrollTop;
