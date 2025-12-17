@@ -60,8 +60,8 @@
             $containerClass = $isFullWidth ? 'container-fluid px-0' : '';
             $containerStyle = $isFullWidth ? 'width: 100vw; position: relative; left: 50%; transform: translateX(-50%); padding: 0;' : '';
             
-            // 투명헤더가 활성화된 경우 첫 번째 컨테이너의 상단 마진과 패딩 제거 (헤더가 오버레이되므로)
-            if ($shouldAddHeaderPadding && $index === 0) {
+            // 투명헤더가 활성화된 경우 또는 첫 번째 컨테이너가 세로 100%일 경우 상단 마진과 패딩 제거
+            if (($shouldAddHeaderPadding && $index === 0) || ($isFullHeight && $index === 0)) {
                 $containerStyle .= ($containerStyle ? ' ' : '') . 'margin-top: 0 !important; padding-top: 0 !important;';
             }
             

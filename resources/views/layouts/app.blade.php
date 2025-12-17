@@ -1591,6 +1591,13 @@
         }
         @endif
         
+        /* 첫 번째 컨테이너가 세로 100%일 때 main 영역의 상단 마진 제거 */
+        main.container:has(> .row:first-child > .col-md-9:first-child > .full-height-container:first-child),
+        main.container:has(> .full-height-container:first-child) {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+        
         /* 투명헤더 sticky 오버레이 - 스크롤 시 fixed로 변경 */
         .header-transparent-sticky-overlay {
             transition: background-color 0.3s ease;
@@ -1798,6 +1805,33 @@
         }
     </style>
     @endif
+    
+    {{-- 첫 번째 컨테이너가 세로 100%일 때 상단 여백 제거 --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 첫 번째 full-height-container 확인
+            const firstFullHeightContainer = document.querySelector('.full-height-container');
+            if (firstFullHeightContainer) {
+                // 첫 번째 컨테이너인지 확인 (이전에 다른 컨테이너가 없는지)
+                const allContainers = document.querySelectorAll('[class*="main-widget-container"], [class*="custom-page-widget-container"]');
+                if (allContainers.length > 0) {
+                    const firstContainer = allContainers[0].closest('.full-height-container, [class*="container"]');
+                    if (firstContainer && firstContainer.classList.contains('full-height-container')) {
+                        // main 요소 상단 여백 제거
+                        const mainElement = document.querySelector('main.container');
+                        if (mainElement) {
+                            mainElement.style.setProperty('margin-top', '0', 'important');
+                            mainElement.style.setProperty('padding-top', '0', 'important');
+                            mainElement.classList.remove('my-4');
+                        }
+                        // 첫 번째 컨테이너 상단 여백도 제거
+                        firstFullHeightContainer.style.setProperty('margin-top', '0', 'important');
+                        firstFullHeightContainer.style.setProperty('padding-top', '0', 'important');
+                    }
+                }
+            }
+        });
+    </script>
     
     @stack('scripts')
     
