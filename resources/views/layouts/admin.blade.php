@@ -268,7 +268,7 @@
                 @if($site->hasFeature('dashboard'))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.dashboard') || request()->routeIs('master.admin.dashboard') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.dashboard') : $site->getAdminDashboardUrl() }}">
+                       href="{{ $site->getAdminDashboardUrl() }}">
                         <i class="bi bi-speedometer2 me-2"></i>대시보드
                     </a>
                 </li>

@@ -259,6 +259,42 @@ class SiteSettingController extends Controller
             $requestData['theme_sidebar'] = 'none';
         }
         
+        // 테마 폼이 제출되었을 때, 체크박스 필드들이 요청에 없으면 '0'으로 설정
+        // (체크박스가 체크 해제되면 폼에 포함되지 않기 때문)
+        if ($request->has('theme_top') || $request->has('theme_bottom') || $request->has('theme_dark_mode')) {
+            $themeCheckboxFields = [
+                'theme_top_header_show',
+                'top_header_login_show',
+                'header_sticky',
+                'header_transparent',
+                'menu_login_show',
+                'header_shadow',
+                'header_border',
+                'theme_full_width'
+            ];
+            
+            foreach ($themeCheckboxFields as $field) {
+                if (!isset($requestData[$field])) {
+                    $requestData[$field] = '0';
+                }
+            }
+        }
+        
+        // 모바일 헤더 폼이 제출되었을 때
+        if ($request->has('mobile_header_theme') || $request->has('mobile_menu_icon')) {
+            $mobileCheckboxFields = [
+                'mobile_menu_icon_border',
+                'mobile_menu_login_widget',
+                'mobile_header_transparent'
+            ];
+            
+            foreach ($mobileCheckboxFields as $field) {
+                if (!isset($requestData[$field])) {
+                    $requestData[$field] = '0';
+                }
+            }
+        }
+        
         $newSettings = [];
         
         // 일반 필드: 빈 값 제외

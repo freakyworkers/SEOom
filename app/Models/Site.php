@@ -186,7 +186,11 @@ class Site extends Model
     public function getAdminDashboardUrl(): string
     {
         if ($this->isMasterSite()) {
-            return route('master.admin.dashboard');
+            // 마스터 사이트의 경우 라우트가 존재하면 사용, 아니면 직접 경로 사용
+            if (\Route::has('master.admin.dashboard')) {
+                return route('master.admin.dashboard');
+            }
+            return '/admin/dashboard';
         }
         
         if ($this->isUsingDirectDomain()) {

@@ -10,3 +10,4 @@ ADD COLUMN `qa_status` VARCHAR(255) NULL COMMENT '질의응답 게시판 상태'
 AFTER `event_is_ended`;
 
 
+

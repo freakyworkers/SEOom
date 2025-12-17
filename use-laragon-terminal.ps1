@@ -32,3 +32,4 @@ Write-Host "2. 현재 PowerShell에서 직접 실행" -ForegroundColor White
 
 
 
+

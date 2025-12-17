@@ -68,3 +68,4 @@ php artisan db:seed --class=MasterUserSeeder
 
 
 
+

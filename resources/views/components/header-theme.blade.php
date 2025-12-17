@@ -217,7 +217,7 @@
                                 @endphp
                                 @if($canShowAdminButton)
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{{ ($site->isMasterSite() ?? false) ? route('master.admin.dashboard') : $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
+                                    <li><a class="dropdown-item" href="{{ $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
                                     @if($isMasterUser && $isMasterSite)
                                         <li><a class="dropdown-item" href="#" onclick="openMasterConsole(event); return false;"><i class="bi bi-gear-fill me-2"></i>마스터 콘솔</a></li>
                                     @endif
@@ -323,7 +323,7 @@
                                     @endphp
                                     @if($canShowAdminButton)
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="{{ ($site->isMasterSite() ?? false) ? route('master.admin.dashboard') : $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
+                                        <li><a class="dropdown-item" href="{{ $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
                                     @endif
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
@@ -428,7 +428,7 @@
                                 @endphp
                                 @if($canShowAdminButton)
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{{ ($site->isMasterSite() ?? false) ? route('master.admin.dashboard') : $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
+                                    <li><a class="dropdown-item" href="{{ $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
                                     @if($isMasterUser && $isMasterSite)
                                         <li><a class="dropdown-item" href="#" onclick="openMasterConsole(event); return false;"><i class="bi bi-gear-fill me-2"></i>마스터 콘솔</a></li>
                                     @endif
@@ -500,7 +500,7 @@
                                         @endif
                                         @if(auth()->user()->canManage())
                                             <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item" href="{{ ($site->isMasterSite() ?? false) ? route('master.admin.dashboard') : $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
+                                            <li><a class="dropdown-item" href="{{ $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
                                         @endif
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
@@ -628,7 +628,7 @@
                                     @endphp
                                     @if($canShowAdminButton)
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="{{ ($site->isMasterSite() ?? false) ? route('master.admin.dashboard') : $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
+                                        <li><a class="dropdown-item" href="{{ $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
                                     @endif
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
@@ -699,7 +699,7 @@
                                 @endphp
                                 @if($canShowAdminButton)
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{{ ($site->isMasterSite() ?? false) ? route('master.admin.dashboard') : $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
+                                    <li><a class="dropdown-item" href="{{ $site->getAdminDashboardUrl() }}"><i class="bi bi-speedometer2 me-2"></i>관리자</a></li>
                                     @if($isMasterUser && $isMasterSite)
                                         <li><a class="dropdown-item" href="#" onclick="openMasterConsole(event); return false;"><i class="bi bi-gear-fill me-2"></i>마스터 콘솔</a></li>
                                     @endif
