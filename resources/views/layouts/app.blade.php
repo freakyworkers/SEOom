@@ -536,6 +536,30 @@
             }
         @endif
         
+        /* 모바일에서 가로 100% 컨테이너 라운드 제거 */
+        @media (max-width: 999px) {
+            .container-fluid.px-0 .card,
+            .container-fluid.px-0 .widget-card,
+            .container-fluid.px-0 .card.shadow-sm,
+            .container-fluid.px-0 .main-widget-container .card,
+            .container-fluid.px-0 [class*="banner-item"],
+            .container-fluid.px-0 .banner-link,
+            .container-fluid.px-0 .banner-image,
+            .container-fluid.px-0 img {
+                border-radius: 0 !important;
+            }
+            
+            /* 가로 100% 컨테이너 내 모든 요소 라운드 제거 */
+            .container-fluid.px-0 .rounded,
+            .container-fluid.px-0 .rounded-top,
+            .container-fluid.px-0 .rounded-bottom,
+            .container-fluid.px-0 .rounded-start,
+            .container-fluid.px-0 .rounded-end,
+            .container-fluid.px-0 [class*="rounded-"] {
+                border-radius: 0 !important;
+            }
+        }
+        
         .card {
             border: none;
         }

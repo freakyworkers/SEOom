@@ -1837,3 +1837,55 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+{{-- 모바일 투명헤더 스크롤 시 글래스모피즘 스타일 --}}
+@if($mobileHeaderTransparent && $isHomePage)
+<style>
+/* 모바일 투명헤더 스크롤 시 글래스모피즘 배경 */
+.mobile-header-transparent.scrolled {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
+    backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.15),
+        0 4px 16px 0 rgba(0, 0, 0, 0.08),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 1px 0 rgba(255, 255, 255, 0.1) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 다크 모드일 때 글래스모피즘 */
+@if($isDark)
+.mobile-header-transparent.scrolled {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2)) !important;
+    backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+@endif
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileHeader = document.querySelector('.mobile-header-transparent');
+    if (mobileHeader) {
+        function handleMobileScroll() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > 10) {
+                // 스크롤 시 글래스모피즘 배경 적용
+                mobileHeader.classList.add('scrolled');
+            } else {
+                // 상단일 때 투명 배경
+                mobileHeader.classList.remove('scrolled');
+            }
+        }
+        
+        // 초기 스크롤 위치 확인
+        handleMobileScroll();
+        
+        // 스크롤 이벤트 리스너
+        window.addEventListener('scroll', handleMobileScroll, { passive: true });
+    }
+});
+</script>
+@endif
+
