@@ -756,7 +756,8 @@ class PaymentController extends Controller
             abort(403, '이 사이트를 변경할 권한이 없습니다.');
         }
 
-        return view('payment.addon-checkout', compact('masterSite', 'userSite', 'addonProduct', 'orderId'));
+        $site = $masterSite; // 뷰에서 $site를 사용하므로 별칭 추가
+        return view('payment.addon-checkout', compact('site', 'userSite', 'addonProduct', 'orderId'));
     }
 
     /**
