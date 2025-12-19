@@ -152,9 +152,13 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                                         @if($userSites->isNotEmpty())
-                                            <button type="button" class="btn btn-primary" id="pluginSubmit{{ $plugin->id }}" onclick="purchasePlugin({{ $plugin->id }})" disabled>
-                                                <i class="bi bi-check-circle me-1"></i>구매하기
-                                            </button>
+                                            <form id="pluginPurchaseForm{{ $plugin->id }}" method="POST" action="{{ route('payment.process-addon', ['site' => $site->slug, 'userSite' => ':userSite', 'addonProduct' => $plugin->id]) }}" style="display: inline;">
+                                                @csrf
+                                                <input type="hidden" name="target_site_id" id="pluginTargetSiteId{{ $plugin->id }}" value="">
+                                                <button type="submit" class="btn btn-primary" id="pluginSubmit{{ $plugin->id }}" disabled>
+                                                    <i class="bi bi-check-circle me-1"></i>구매하기
+                                                </button>
+                                            </form>
                                         @endif
                                     </div>
                                 </div>
@@ -170,12 +174,15 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 플러그인 모달의 사이트 선택 처리
+    // 플러그인 모달의 사이트 선택 처리 및 폼 제출
     @foreach($plugins as $plugin)
         @if($userSites->isNotEmpty())
             const pluginSiteSelect{{ $plugin->id }} = document.getElementById('pluginSiteSelect{{ $plugin->id }}');
             const pluginSubmit{{ $plugin->id }} = document.getElementById('pluginSubmit{{ $plugin->id }}');
+            const pluginForm{{ $plugin->id }} = document.getElementById('pluginPurchaseForm{{ $plugin->id }}');
+            const pluginTargetSiteId{{ $plugin->id }} = document.getElementById('pluginTargetSiteId{{ $plugin->id }}');
             
+            // 사이트 선택 시 구매하기 버튼 활성화
             if (pluginSiteSelect{{ $plugin->id }}) {
                 pluginSiteSelect{{ $plugin->id }}.addEventListener('change', function() {
                     if (this.value) {
@@ -185,39 +192,47 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             }
+            
+            // 폼 제출 처리
+            if (pluginForm{{ $plugin->id }} && pluginSiteSelect{{ $plugin->id }}) {
+                pluginForm{{ $plugin->id }}.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const siteId = pluginSiteSelect{{ $plugin->id }}.value;
+                    if (!siteId) {
+                        alert('적용할 사이트를 선택해주세요.');
+                        return;
+                    }
+                    
+                    // 사이트 slug 찾기
+                    const siteSlugs = {
+                        @foreach($userSites as $userSite)
+                            {{ $userSite->id }}: '{{ $userSite->slug }}',
+                        @endforeach
+                    };
+                    
+                    const userSiteSlug = siteSlugs[siteId];
+                    if (!userSiteSlug) {
+                        alert('사이트를 찾을 수 없습니다.');
+                        return;
+                    }
+                    
+                    // 폼 action URL 업데이트
+                    const currentAction = pluginForm{{ $plugin->id }}.action;
+                    pluginForm{{ $plugin->id }}.action = currentAction.replace(':userSite', userSiteSlug);
+                    
+                    // target_site_id 설정
+                    if (pluginTargetSiteId{{ $plugin->id }}) {
+                        pluginTargetSiteId{{ $plugin->id }}.value = siteId;
+                    }
+                    
+                    // 폼 제출
+                    pluginForm{{ $plugin->id }}.submit();
+                });
+            }
         @endif
     @endforeach
 });
-
-function purchasePlugin(pluginId) {
-    const siteSelect = document.getElementById('pluginSiteSelect' + pluginId);
-    if (!siteSelect || !siteSelect.value) {
-        alert('적용할 사이트를 선택해주세요.');
-        return;
-    }
-    
-    const siteId = siteSelect.value;
-    
-    // 사이트 slug 찾기
-    const siteSlugs = {
-        @foreach($userSites as $userSite)
-            {{ $userSite->id }}: '{{ $userSite->slug }}',
-        @endforeach
-    };
-    
-    const userSiteSlug = siteSlugs[siteId];
-    if (userSiteSlug) {
-        @php
-            $masterSiteSlug = $site->slug ?? 'master';
-        @endphp
-        const masterSiteSlug = '{{ $masterSiteSlug }}';
-        // 플러그인 ID를 사용하여 전달
-        const addonsUrl = '/site/' + masterSiteSlug + '/my-sites/' + userSiteSlug + '/addons?addon_id=' + pluginId;
-        window.location.href = addonsUrl;
-    } else {
-        alert('사이트를 찾을 수 없습니다.');
-    }
-}
 </script>
 @endpush
 @endsection

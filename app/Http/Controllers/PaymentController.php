@@ -704,11 +704,11 @@ class PaymentController extends Controller
             'addon_purchase_option_id' => $optionId,
         ]);
 
-        // 결제 페이지로 리다이렉트
+        // 결제 페이지로 리다이렉트 (ID 사용)
         return redirect()->route('payment.addon-checkout', [
             'site' => $site->slug,
             'userSite' => $userSite->slug,
-            'addonProduct' => $addonProduct->slug,
+            'addonProduct' => $addonProduct->id,
             'order_id' => $orderId,
         ]);
     }
