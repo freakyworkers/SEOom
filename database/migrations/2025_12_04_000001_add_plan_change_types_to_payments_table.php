@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         // MySQL에서 ENUM 타입을 수정하기 위해 ALTER TABLE 사용
-        DB::statement("ALTER TABLE payments MODIFY COLUMN payment_type ENUM('trial', 'subscription', 'retry', 'plan_upgrade', 'plan_downgrade', 'plan_change') DEFAULT 'subscription'");
+        DB::statement("ALTER TABLE payments MODIFY COLUMN payment_type ENUM('trial', 'subscription', 'retry', 'plan_upgrade', 'plan_downgrade', 'plan_change', 'addon') DEFAULT 'subscription'");
     }
 
     /**
