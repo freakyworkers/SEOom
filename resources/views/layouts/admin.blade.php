@@ -277,8 +277,15 @@
                 {{-- 2. 사이트 설정 및 디자인 --}}
                 @if($site->hasFeature('settings'))
                 <li class="nav-item">
+                    @php
+                        $settingsUrl = $site->isMasterSite() && Route::has('master.admin.settings') 
+                            ? route('master.admin.settings') 
+                            : ($site->isMasterSite() 
+                                ? '/admin/settings' 
+                                : route('admin.settings', ['site' => $site->slug]));
+                    @endphp
                     <a class="nav-link {{ request()->routeIs('admin.settings') || request()->routeIs('master.admin.settings') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.settings') : route('admin.settings', ['site' => $site->slug]) }}">
+                       href="{{ $settingsUrl }}">
                         <i class="bi bi-gear me-2"></i>사이트 설정
                     </a>
                 </li>
