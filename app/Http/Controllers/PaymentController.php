@@ -74,7 +74,7 @@ class PaymentController extends Controller
 
         $user = auth()->user();
         if (!$user) {
-            return redirect()->route('login')
+            return redirect()->route('login', ['site' => $site->slug])
                 ->with('error', '로그인이 필요합니다.');
         }
 
@@ -207,7 +207,7 @@ class PaymentController extends Controller
 
         $user = auth()->user();
         if (!$user) {
-            return redirect()->route('login')
+            return redirect()->route('login', ['site' => $site->slug])
                 ->with('error', '로그인이 필요합니다.');
         }
 
@@ -252,7 +252,7 @@ class PaymentController extends Controller
 
         $user = auth()->user();
         if (!$user) {
-            return redirect()->route('login')
+            return redirect()->route('login', ['site' => $masterSite->slug])
                 ->with('error', '로그인이 필요합니다.');
         }
 
@@ -298,6 +298,12 @@ class PaymentController extends Controller
      */
     public function success(Request $request)
     {
+        // Get master site
+        $site = Site::getMasterSite();
+        if (!$site || !$site->isMasterSite()) {
+            abort(404, '마스터 사이트를 찾을 수 없습니다.');
+        }
+
         $paymentKey = $request->input('paymentKey');
         $orderId = $request->input('orderId');
         $amount = $request->input('amount');
@@ -309,7 +315,7 @@ class PaymentController extends Controller
 
         $user = auth()->user();
         if (!$user) {
-            return redirect()->route('login')
+            return redirect()->route('login', ['site' => $site->slug])
                 ->with('error', '로그인이 필요합니다.');
         }
 
@@ -649,7 +655,7 @@ class PaymentController extends Controller
 
         $user = Auth::user();
         if (!$user) {
-            return redirect()->route('login')
+            return redirect()->route('login', ['site' => $masterSite->slug])
                 ->with('error', '로그인이 필요합니다.');
         }
 
@@ -726,7 +732,7 @@ class PaymentController extends Controller
 
         $user = Auth::user();
         if (!$user) {
-            return redirect()->route('login')
+            return redirect()->route('login', ['site' => $masterSite->slug])
                 ->with('error', '로그인이 필요합니다.');
         }
 
@@ -882,7 +888,7 @@ class PaymentController extends Controller
 
         $user = auth()->user();
         if (!$user) {
-            return redirect()->route('login')
+            return redirect()->route('login', ['site' => $masterSite->slug])
                 ->with('error', '로그인이 필요합니다.');
         }
 
@@ -945,7 +951,7 @@ class PaymentController extends Controller
 
         $user = auth()->user();
         if (!$user) {
-            return redirect()->route('login')
+            return redirect()->route('login', ['site' => $masterSite->slug])
                 ->with('error', '로그인이 필요합니다.');
         }
 
