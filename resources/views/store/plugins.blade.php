@@ -207,7 +207,14 @@ function purchasePlugin(pluginId, pluginSlug) {
     
     const userSiteSlug = siteSlugs[siteId];
     if (userSiteSlug) {
-        window.location.href = '{{ route("user-sites.addons", ["site" => $site->slug, "userSite" => ":userSite"]) }}'.replace(':userSite', userSiteSlug) + '?addon=' + pluginSlug;
+        @php
+            $masterSiteSlug = $site->slug ?? 'master';
+        @endphp
+        const masterSiteSlug = '{{ $masterSiteSlug }}';
+        const addonsUrl = '/site/' + masterSiteSlug + '/my-sites/' + userSiteSlug + '/addons?addon=' + pluginSlug;
+        window.location.href = addonsUrl;
+    } else {
+        alert('사이트를 찾을 수 없습니다.');
     }
 }
 </script>
