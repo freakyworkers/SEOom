@@ -716,7 +716,7 @@ class PaymentController extends Controller
     /**
      * Show addon checkout page.
      */
-    public function addonCheckout(Request $request, Site $site, Site $userSite, AddonProduct $addonProduct)
+    public function addonCheckout(Request $request)
     {
         // Get master site
         $masterSite = Site::getMasterSite();
@@ -730,19 +730,33 @@ class PaymentController extends Controller
                 ->with('error', '로그인이 필요합니다.');
         }
 
+        // 쿼리 파라미터에서 값 가져오기
+        $userSiteSlug = $request->input('userSite');
+        $addonProductId = $request->input('addonProduct');
+        $orderId = $request->input('order_id');
+
+        if (!$userSiteSlug || !$addonProductId || !$orderId) {
+            return redirect()->route('store.plugins')
+                ->with('error', '결제 정보가 올바르지 않습니다.');
+        }
+
+        // 모델 찾기
+        $userSite = Site::where('slug', $userSiteSlug)->first();
+        if (!$userSite) {
+            abort(404, '사이트를 찾을 수 없습니다.');
+        }
+
+        $addonProduct = AddonProduct::find($addonProductId);
+        if (!$addonProduct) {
+            abort(404, '플러그인을 찾을 수 없습니다.');
+        }
+
         // 사용자가 소유한 사이트인지 확인
         if ($userSite->created_by !== $user->id) {
             abort(403, '이 사이트를 변경할 권한이 없습니다.');
         }
 
-        $orderId = $request->input('order_id');
-
-        if (!$orderId) {
-            return redirect()->route('user-sites.addons', ['site' => $site->slug, 'userSite' => $userSite->slug])
-                ->with('error', '결제 정보가 올바르지 않습니다.');
-        }
-
-        return view('payment.addon-checkout', compact('site', 'userSite', 'addonProduct', 'orderId'));
+        return view('payment.addon-checkout', compact('masterSite', 'userSite', 'addonProduct', 'orderId'));
     }
 
     /**
