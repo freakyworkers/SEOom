@@ -152,7 +152,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                                         @if($userSites->isNotEmpty())
-                                            <button type="button" class="btn btn-primary" id="pluginSubmit{{ $plugin->id }}" onclick="purchasePlugin({{ $plugin->id }}, '{{ $plugin->slug }}')" disabled>
+                                            <button type="button" class="btn btn-primary" id="pluginSubmit{{ $plugin->id }}" onclick="purchasePlugin({{ $plugin->id }})" disabled>
                                                 <i class="bi bi-check-circle me-1"></i>구매하기
                                             </button>
                                         @endif
@@ -189,14 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
     @endforeach
 });
 
-function purchasePlugin(pluginId, pluginSlug) {
-    // pluginSlug 유효성 검사
-    if (!pluginSlug || pluginSlug === '' || pluginSlug === 'null' || pluginSlug === 'undefined') {
-        console.error('플러그인 slug가 유효하지 않습니다:', pluginSlug);
-        alert('플러그인 정보를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
-        return;
-    }
-    
+function purchasePlugin(pluginId) {
     const siteSelect = document.getElementById('pluginSiteSelect' + pluginId);
     if (!siteSelect || !siteSelect.value) {
         alert('적용할 사이트를 선택해주세요.');
@@ -218,8 +211,8 @@ function purchasePlugin(pluginId, pluginSlug) {
             $masterSiteSlug = $site->slug ?? 'master';
         @endphp
         const masterSiteSlug = '{{ $masterSiteSlug }}';
-        // pluginSlug를 URL 인코딩하여 전달
-        const addonsUrl = '/site/' + masterSiteSlug + '/my-sites/' + userSiteSlug + '/addons?addon=' + encodeURIComponent(pluginSlug);
+        // 플러그인 ID를 사용하여 전달
+        const addonsUrl = '/site/' + masterSiteSlug + '/my-sites/' + userSiteSlug + '/addons?addon_id=' + pluginId;
         window.location.href = addonsUrl;
     } else {
         alert('사이트를 찾을 수 없습니다.');

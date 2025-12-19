@@ -95,6 +95,26 @@ class RouteServiceProvider extends ServiceProvider
             }
         });
 
+        // Route model binding for AddonProduct by ID or slug
+        Route::bind('addonProduct', function ($value, $route) {
+            // Check if it's a numeric ID
+            if (is_numeric($value)) {
+                return \App\Models\AddonProduct::findOrFail($value);
+            }
+            // Otherwise, treat as slug (if slug exists)
+            try {
+                $addonProduct = \App\Models\AddonProduct::where('slug', $value)->first();
+                if (!$addonProduct) {
+                    \Log::warning("AddonProduct not found for slug: {$value}");
+                    abort(404, "AddonProduct not found: {$value}");
+                }
+                return $addonProduct;
+            } catch (\Exception $e) {
+                \Log::error("Error binding addonProduct route: " . $e->getMessage());
+                abort(404, "AddonProduct not found: {$value}");
+            }
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

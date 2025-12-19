@@ -360,10 +360,13 @@ class UserMySitesController extends Controller
             ->with('addonProduct')
             ->get();
 
-        // 플러그인 페이지에서 선택한 addon이 있으면 가져오기
+        // 플러그인 페이지에서 선택한 addon이 있으면 가져오기 (ID 또는 slug로 찾기)
+        $selectedAddonId = request()->query('addon_id');
         $selectedAddonSlug = request()->query('addon');
         $selectedAddon = null;
-        if ($selectedAddonSlug) {
+        if ($selectedAddonId) {
+            $selectedAddon = AddonProduct::where('id', $selectedAddonId)->where('is_active', true)->first();
+        } elseif ($selectedAddonSlug) {
             $selectedAddon = AddonProduct::where('slug', $selectedAddonSlug)->where('is_active', true)->first();
         }
 
