@@ -95,12 +95,18 @@
                                         <p class="mb-0 text-muted small">({{ number_format($addonProduct->amount_gb, 2) }}GB)</p>
                                     </div>
                                     <div class="mt-auto">
-                                        <form action="{{ route('payment.process-addon', ['site' => $site->slug, 'userSite' => $userSite->slug, 'addonProduct' => $addonProduct->slug]) }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="btn btn-primary w-100">
-                                                <i class="bi bi-cart-plus me-1"></i>구매하기
+                                        @if($addonProduct->slug)
+                                            <form action="{{ route('payment.process-addon', ['site' => $site->slug, 'userSite' => $userSite->slug, 'addonProduct' => $addonProduct->slug]) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="bi bi-cart-plus me-1"></i>구매하기
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn btn-secondary w-100" disabled>
+                                                <i class="bi bi-exclamation-triangle me-1"></i>구매 불가
                                             </button>
-                                        </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

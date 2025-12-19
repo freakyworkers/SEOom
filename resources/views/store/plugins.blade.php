@@ -190,6 +190,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function purchasePlugin(pluginId, pluginSlug) {
+    // pluginSlug 유효성 검사
+    if (!pluginSlug || pluginSlug === '' || pluginSlug === 'null' || pluginSlug === 'undefined') {
+        console.error('플러그인 slug가 유효하지 않습니다:', pluginSlug);
+        alert('플러그인 정보를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+        return;
+    }
+    
     const siteSelect = document.getElementById('pluginSiteSelect' + pluginId);
     if (!siteSelect || !siteSelect.value) {
         alert('적용할 사이트를 선택해주세요.');
@@ -211,7 +218,8 @@ function purchasePlugin(pluginId, pluginSlug) {
             $masterSiteSlug = $site->slug ?? 'master';
         @endphp
         const masterSiteSlug = '{{ $masterSiteSlug }}';
-        const addonsUrl = '/site/' + masterSiteSlug + '/my-sites/' + userSiteSlug + '/addons?addon=' + pluginSlug;
+        // pluginSlug를 URL 인코딩하여 전달
+        const addonsUrl = '/site/' + masterSiteSlug + '/my-sites/' + userSiteSlug + '/addons?addon=' + encodeURIComponent(pluginSlug);
         window.location.href = addonsUrl;
     } else {
         alert('사이트를 찾을 수 없습니다.');
