@@ -292,8 +292,15 @@
                 @endif
                 @if($site->hasFeature('menus'))
                 <li class="nav-item">
+                    @php
+                        $menusUrl = $site->isMasterSite() && Route::has('master.admin.menus') 
+                            ? route('master.admin.menus') 
+                            : ($site->isMasterSite() 
+                                ? '/admin/menus' 
+                                : route('admin.menus', ['site' => $site->slug]));
+                    @endphp
                     <a class="nav-link {{ request()->routeIs('admin.menus.*') || request()->routeIs('master.admin.menus.*') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.menus') : route('admin.menus', ['site' => $site->slug]) }}">
+                       href="{{ $menusUrl }}">
                         <i class="bi bi-list-ul me-2"></i>메뉴 설정
                     </a>
                 </li>
@@ -342,8 +349,15 @@
                 {{-- 3. 사용자 관련 --}}
                 @if($site->hasFeature('users'))
                 <li class="nav-item">
+                    @php
+                        $usersUrl = $site->isMasterSite() && Route::has('master.admin.users') 
+                            ? route('master.admin.users') 
+                            : ($site->isMasterSite() 
+                                ? '/admin/users' 
+                                : route('admin.users', ['site' => $site->slug]));
+                    @endphp
                     <a class="nav-link {{ request()->routeIs('admin.users') || request()->routeIs('master.admin.users') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.users') : route('admin.users', ['site' => $site->slug]) }}">
+                       href="{{ $usersUrl }}">
                         <i class="bi bi-people me-2"></i>사용자 관리
                     </a>
                 </li>
