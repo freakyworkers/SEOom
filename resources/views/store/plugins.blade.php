@@ -152,7 +152,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                                         @if($userSites->isNotEmpty())
-                                            <form id="pluginPurchaseForm{{ $plugin->id }}" method="POST" action="{{ route('payment.process-addon', ['site' => $site->slug, 'userSite' => ':userSite', 'addonProduct' => $plugin->id]) }}" style="display: inline;">
+                                            <form id="pluginPurchaseForm{{ $plugin->id }}" method="POST" action="{{ route('payment.process-addon', ['userSite' => ':userSite', 'addonProduct' => $plugin->id]) }}" style="display: inline;">
                                                 @csrf
                                                 <input type="hidden" name="target_site_id" id="pluginTargetSiteId{{ $plugin->id }}" value="">
                                                 <button type="submit" class="btn btn-primary" id="pluginSubmit{{ $plugin->id }}" disabled>

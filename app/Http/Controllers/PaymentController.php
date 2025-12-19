@@ -639,7 +639,7 @@ class PaymentController extends Controller
     /**
      * Process addon purchase.
      */
-    public function processAddon(Request $request, Site $site, Site $userSite, AddonProduct $addonProduct)
+    public function processAddon(Request $request, Site $userSite, AddonProduct $addonProduct)
     {
         // Get master site
         $masterSite = Site::getMasterSite();
@@ -664,7 +664,7 @@ class PaymentController extends Controller
             ->first();
 
         if (!$subscription) {
-            return redirect()->route('user-sites.addons', ['site' => $site->slug, 'userSite' => $userSite->slug])
+            return redirect()->route('user-sites.addons', ['site' => $masterSite->slug, 'userSite' => $userSite->slug])
                 ->with('error', '구독 정보를 찾을 수 없습니다.');
         }
 
@@ -678,7 +678,7 @@ class PaymentController extends Controller
             if ($option && $option->addon_product_id === $addonProduct->id && $option->is_active) {
                 $amount = $option->price;
             } else {
-                return redirect()->route('user-sites.addons', ['site' => $site->slug, 'userSite' => $userSite->slug])
+                return redirect()->route('user-sites.addons', ['site' => $masterSite->slug, 'userSite' => $userSite->slug])
                     ->with('error', '선택한 옵션을 찾을 수 없습니다.');
             }
         }
@@ -706,7 +706,7 @@ class PaymentController extends Controller
 
         // 결제 페이지로 리다이렉트 (ID 사용)
         return redirect()->route('payment.addon-checkout', [
-            'site' => $site->slug,
+            'site' => $masterSite->slug,
             'userSite' => $userSite->slug,
             'addonProduct' => $addonProduct->id,
             'order_id' => $orderId,
