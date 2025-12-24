@@ -215,6 +215,32 @@
         </div>
     </div>
     <div class="mb-3">
+        <label for="widget_block_title_font_size" class="form-label">제목 폰트 사이즈</label>
+        <select class="form-select" id="widget_block_title_font_size" name="block_title_font_size">
+            <option value="1rem">기본 (1rem)</option>
+            <option value="0.75rem">작게 (0.75rem)</option>
+            <option value="0.875rem">작게 (0.875rem)</option>
+            <option value="1.125rem">조금 크게 (1.125rem)</option>
+            <option value="1.25rem">크게 (1.25rem)</option>
+            <option value="1.5rem">더 크게 (1.5rem)</option>
+            <option value="2rem">매우 크게 (2rem)</option>
+            <option value="2.5rem">특히 크게 (2.5rem)</option>
+            <option value="3rem">극히 크게 (3rem)</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="widget_block_content_font_size" class="form-label">내용 폰트 사이즈</label>
+        <select class="form-select" id="widget_block_content_font_size" name="block_content_font_size">
+            <option value="0.9rem" selected>기본 (0.9rem)</option>
+            <option value="0.75rem">작게 (0.75rem)</option>
+            <option value="0.875rem">조금 작게 (0.875rem)</option>
+            <option value="1rem">보통 (1rem)</option>
+            <option value="1.125rem">조금 크게 (1.125rem)</option>
+            <option value="1.25rem">크게 (1.25rem)</option>
+            <option value="1.5rem">더 크게 (1.5rem)</option>
+        </select>
+    </div>
+    <div class="mb-3">
         <label for="widget_block_background_type" class="form-label">배경</label>
         <select class="form-select" id="widget_block_background_type" name="block_background_type" onchange="handleBlockBackgroundTypeChange()">
             <option value="color">컬러</option>

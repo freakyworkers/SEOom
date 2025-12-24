@@ -332,6 +332,32 @@
                                                 </div>
                                             </div>
                                             <div class="mb-3">
+                                                <label for="widget_block_title_font_size" class="form-label">제목 폰트 사이즈</label>
+                                                <select class="form-select" id="widget_block_title_font_size" name="block_title_font_size">
+                                                    <option value="1rem">기본 (1rem)</option>
+                                                    <option value="0.75rem">작게 (0.75rem)</option>
+                                                    <option value="0.875rem">작게 (0.875rem)</option>
+                                                    <option value="1.125rem">조금 크게 (1.125rem)</option>
+                                                    <option value="1.25rem">크게 (1.25rem)</option>
+                                                    <option value="1.5rem">더 크게 (1.5rem)</option>
+                                                    <option value="2rem">매우 크게 (2rem)</option>
+                                                    <option value="2.5rem">특히 크게 (2.5rem)</option>
+                                                    <option value="3rem">극히 크게 (3rem)</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="widget_block_content_font_size" class="form-label">내용 폰트 사이즈</label>
+                                                <select class="form-select" id="widget_block_content_font_size" name="block_content_font_size">
+                                                    <option value="0.9rem" selected>기본 (0.9rem)</option>
+                                                    <option value="0.75rem">작게 (0.75rem)</option>
+                                                    <option value="0.875rem">조금 작게 (0.875rem)</option>
+                                                    <option value="1rem">보통 (1rem)</option>
+                                                    <option value="1.125rem">조금 크게 (1.125rem)</option>
+                                                    <option value="1.25rem">크게 (1.25rem)</option>
+                                                    <option value="1.5rem">더 크게 (1.5rem)</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
                                                 <label for="widget_block_background_type" class="form-label">배경</label>
                                                 <select class="form-select" id="widget_block_background_type" name="block_background_type" onchange="handleBlockBackgroundTypeChange()">
                                                     <option value="color">컬러</option>
@@ -804,6 +830,32 @@
                                     <i class="bi bi-text-right"></i> 우
                                 </label>
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_widget_block_title_font_size" class="form-label">제목 폰트 사이즈</label>
+                            <select class="form-select" id="edit_widget_block_title_font_size" name="block_title_font_size">
+                                <option value="1rem">기본 (1rem)</option>
+                                <option value="0.75rem">작게 (0.75rem)</option>
+                                <option value="0.875rem">작게 (0.875rem)</option>
+                                <option value="1.125rem">조금 크게 (1.125rem)</option>
+                                <option value="1.25rem">크게 (1.25rem)</option>
+                                <option value="1.5rem">더 크게 (1.5rem)</option>
+                                <option value="2rem">매우 크게 (2rem)</option>
+                                <option value="2.5rem">특히 크게 (2.5rem)</option>
+                                <option value="3rem">극히 크게 (3rem)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_widget_block_content_font_size" class="form-label">내용 폰트 사이즈</label>
+                            <select class="form-select" id="edit_widget_block_content_font_size" name="block_content_font_size">
+                                <option value="0.9rem" selected>기본 (0.9rem)</option>
+                                <option value="0.75rem">작게 (0.75rem)</option>
+                                <option value="0.875rem">조금 작게 (0.875rem)</option>
+                                <option value="1rem">보통 (1rem)</option>
+                                <option value="1.125rem">조금 크게 (1.125rem)</option>
+                                <option value="1.25rem">크게 (1.25rem)</option>
+                                <option value="1.5rem">더 크게 (1.5rem)</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="edit_widget_block_background_type" class="form-label">배경</label>
@@ -2743,6 +2795,8 @@ function addWidget() {
         const paddingLeft = formData.get('block_padding_left') || '20';
         const blockLink = formData.get('block_link');
         const openNewTab = document.getElementById('widget_block_open_new_tab').checked;
+        const titleFontSize = formData.get('block_title_font_size') || '1rem';
+        const contentFontSize = formData.get('block_content_font_size') || '0.9rem';
         
         if (blockTitle) {
             settings.block_title = blockTitle;
@@ -2752,6 +2806,8 @@ function addWidget() {
         }
         settings.text_align = textAlign;
         settings.background_type = backgroundType;
+        settings.title_font_size = titleFontSize;
+        settings.content_font_size = contentFontSize;
         
         if (backgroundType === 'color') {
             const backgroundColor = formData.get('block_background_color') || '#007bff';
@@ -3280,6 +3336,12 @@ function editWidget(widgetId) {
                         if (document.getElementById('edit_widget_block_font_color')) {
                             document.getElementById('edit_widget_block_font_color').value = settings.font_color || '#ffffff';
                         }
+                        if (document.getElementById('edit_widget_block_title_font_size')) {
+                            document.getElementById('edit_widget_block_title_font_size').value = settings.title_font_size || '1rem';
+                        }
+                        if (document.getElementById('edit_widget_block_content_font_size')) {
+                            document.getElementById('edit_widget_block_content_font_size').value = settings.content_font_size || '0.9rem';
+                        }
                         
                         const showButton = settings.show_button || false;
                         if (document.getElementById('edit_widget_block_show_button')) {
@@ -3564,6 +3626,8 @@ function saveWidgetSettings() {
                         const blockLink = document.getElementById('edit_widget_block_link').value;
                         const openNewTab = document.getElementById('edit_widget_block_open_new_tab').checked;
                         const fontColor = document.getElementById('edit_widget_block_font_color')?.value || '#ffffff';
+                        const titleFontSize = document.getElementById('edit_widget_block_title_font_size')?.value || '1rem';
+                        const contentFontSize = document.getElementById('edit_widget_block_content_font_size')?.value || '0.9rem';
                         const showButton = document.getElementById('edit_widget_block_show_button')?.checked || false;
                         const buttonText = document.getElementById('edit_widget_block_button_text')?.value || '';
                         const buttonColor = document.getElementById('edit_widget_block_button_color')?.value || '#007bff';
