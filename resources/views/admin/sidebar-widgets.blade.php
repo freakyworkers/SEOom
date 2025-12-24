@@ -332,30 +332,30 @@
                                                 </div>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="widget_block_title_font_size" class="form-label">제목 폰트 사이즈</label>
-                                                <select class="form-select" id="widget_block_title_font_size" name="block_title_font_size">
-                                                    <option value="1rem">기본 (1rem)</option>
-                                                    <option value="0.75rem">작게 (0.75rem)</option>
-                                                    <option value="0.875rem">작게 (0.875rem)</option>
-                                                    <option value="1.125rem">조금 크게 (1.125rem)</option>
-                                                    <option value="1.25rem">크게 (1.25rem)</option>
-                                                    <option value="1.5rem">더 크게 (1.5rem)</option>
-                                                    <option value="2rem">매우 크게 (2rem)</option>
-                                                    <option value="2.5rem">특히 크게 (2.5rem)</option>
-                                                    <option value="3rem">극히 크게 (3rem)</option>
-                                                </select>
+                                                <label for="widget_block_title_font_size" class="form-label">제목 폰트 사이즈 (px)</label>
+                                                <input type="number" 
+                                                       class="form-control" 
+                                                       id="widget_block_title_font_size" 
+                                                       name="block_title_font_size" 
+                                                       value="16"
+                                                       min="8"
+                                                       max="72"
+                                                       step="1"
+                                                       placeholder="16">
+                                                <small class="text-muted">기본값: 16px</small>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="widget_block_content_font_size" class="form-label">내용 폰트 사이즈</label>
-                                                <select class="form-select" id="widget_block_content_font_size" name="block_content_font_size">
-                                                    <option value="0.9rem" selected>기본 (0.9rem)</option>
-                                                    <option value="0.75rem">작게 (0.75rem)</option>
-                                                    <option value="0.875rem">조금 작게 (0.875rem)</option>
-                                                    <option value="1rem">보통 (1rem)</option>
-                                                    <option value="1.125rem">조금 크게 (1.125rem)</option>
-                                                    <option value="1.25rem">크게 (1.25rem)</option>
-                                                    <option value="1.5rem">더 크게 (1.5rem)</option>
-                                                </select>
+                                                <label for="widget_block_content_font_size" class="form-label">내용 폰트 사이즈 (px)</label>
+                                                <input type="number" 
+                                                       class="form-control" 
+                                                       id="widget_block_content_font_size" 
+                                                       name="block_content_font_size" 
+                                                       value="14"
+                                                       min="8"
+                                                       max="48"
+                                                       step="1"
+                                                       placeholder="14">
+                                                <small class="text-muted">기본값: 14px</small>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="widget_block_background_type" class="form-label">배경</label>
@@ -832,30 +832,30 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_widget_block_title_font_size" class="form-label">제목 폰트 사이즈</label>
-                            <select class="form-select" id="edit_widget_block_title_font_size" name="block_title_font_size">
-                                <option value="1rem">기본 (1rem)</option>
-                                <option value="0.75rem">작게 (0.75rem)</option>
-                                <option value="0.875rem">작게 (0.875rem)</option>
-                                <option value="1.125rem">조금 크게 (1.125rem)</option>
-                                <option value="1.25rem">크게 (1.25rem)</option>
-                                <option value="1.5rem">더 크게 (1.5rem)</option>
-                                <option value="2rem">매우 크게 (2rem)</option>
-                                <option value="2.5rem">특히 크게 (2.5rem)</option>
-                                <option value="3rem">극히 크게 (3rem)</option>
-                            </select>
+                            <label for="edit_widget_block_title_font_size" class="form-label">제목 폰트 사이즈 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_widget_block_title_font_size" 
+                                   name="block_title_font_size" 
+                                   value="16"
+                                   min="8"
+                                   max="72"
+                                   step="1"
+                                   placeholder="16">
+                            <small class="text-muted">기본값: 16px</small>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_widget_block_content_font_size" class="form-label">내용 폰트 사이즈</label>
-                            <select class="form-select" id="edit_widget_block_content_font_size" name="block_content_font_size">
-                                <option value="0.9rem" selected>기본 (0.9rem)</option>
-                                <option value="0.75rem">작게 (0.75rem)</option>
-                                <option value="0.875rem">조금 작게 (0.875rem)</option>
-                                <option value="1rem">보통 (1rem)</option>
-                                <option value="1.125rem">조금 크게 (1.125rem)</option>
-                                <option value="1.25rem">크게 (1.25rem)</option>
-                                <option value="1.5rem">더 크게 (1.5rem)</option>
-                            </select>
+                            <label for="edit_widget_block_content_font_size" class="form-label">내용 폰트 사이즈 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_widget_block_content_font_size" 
+                                   name="block_content_font_size" 
+                                   value="14"
+                                   min="8"
+                                   max="48"
+                                   step="1"
+                                   placeholder="14">
+                            <small class="text-muted">기본값: 14px</small>
                         </div>
                         <div class="mb-3">
                             <label for="edit_widget_block_background_type" class="form-label">배경</label>
@@ -1940,6 +1940,30 @@ function addBlockSlideItem() {
             </div>
         </div>
         <div class="mb-3">
+            <label class="form-label">제목 폰트 사이즈 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-title-font-size" 
+                   name="block_slide[${itemIndex}][title_font_size]" 
+                   value="16"
+                   min="8"
+                   max="72"
+                   step="1"
+                   placeholder="16">
+            <small class="text-muted">기본값: 16px</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">내용 폰트 사이즈 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-content-font-size" 
+                   name="block_slide[${itemIndex}][content_font_size]" 
+                   value="14"
+                   min="8"
+                   max="48"
+                   step="1"
+                   placeholder="14">
+            <small class="text-muted">기본값: 14px</small>
+        </div>
+        <div class="mb-3">
             <label class="form-label">배경</label>
             <select class="form-select block-slide-background-type" name="block_slide[${itemIndex}][background_type]" onchange="handleBlockSlideBackgroundTypeChange(${itemIndex})">
                 <option value="color">컬러</option>
@@ -2337,6 +2361,30 @@ function addEditBlockSlideItem(blockData = null) {
                     <i class="bi bi-text-right"></i> 우
                 </label>
             </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">제목 폰트 사이즈 (px)</label>
+            <input type="number" 
+                   class="form-control edit-block-slide-title-font-size" 
+                   name="edit_block_slide[${itemIndex}][title_font_size]" 
+                   value="${blockData ? (blockData.title_font_size || '16') : '16'}"
+                   min="8"
+                   max="72"
+                   step="1"
+                   placeholder="16">
+            <small class="text-muted">기본값: 16px</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">내용 폰트 사이즈 (px)</label>
+            <input type="number" 
+                   class="form-control edit-block-slide-content-font-size" 
+                   name="edit_block_slide[${itemIndex}][content_font_size]" 
+                   value="${blockData ? (blockData.content_font_size || '14') : '14'}"
+                   min="8"
+                   max="48"
+                   step="1"
+                   placeholder="14">
+            <small class="text-muted">기본값: 14px</small>
         </div>
         <div class="mb-3">
             <label class="form-label">배경</label>
@@ -2795,8 +2843,8 @@ function addWidget() {
         const paddingLeft = formData.get('block_padding_left') || '20';
         const blockLink = formData.get('block_link');
         const openNewTab = document.getElementById('widget_block_open_new_tab').checked;
-        const titleFontSize = formData.get('block_title_font_size') || '1rem';
-        const contentFontSize = formData.get('block_content_font_size') || '0.9rem';
+        const titleFontSize = formData.get('block_title_font_size') || '16';
+        const contentFontSize = formData.get('block_content_font_size') || '14';
         
         if (blockTitle) {
             settings.block_title = blockTitle;
@@ -2862,6 +2910,8 @@ function addWidget() {
             const link = item.querySelector('.block-slide-link')?.value || '';
             const openNewTab = item.querySelector('.block-slide-open-new-tab')?.checked || false;
             const fontColor = item.querySelector('.block-slide-font-color')?.value || '#ffffff';
+            const titleFontSize = item.querySelector('.block-slide-title-font-size')?.value || '16';
+            const contentFontSize = item.querySelector('.block-slide-content-font-size')?.value || '14';
             const showButton = item.querySelector('.block-slide-show-button')?.checked || false;
             const buttonText = item.querySelector('.block-slide-button-text')?.value || '';
             const buttonColor = item.querySelector('.block-slide-button-color')?.value || '#007bff';
@@ -2876,6 +2926,8 @@ function addWidget() {
                 link: link,
                 open_new_tab: openNewTab,
                 font_color: fontColor,
+                title_font_size: titleFontSize,
+                content_font_size: contentFontSize,
                 show_button: showButton
             };
             
@@ -3337,10 +3389,18 @@ function editWidget(widgetId) {
                             document.getElementById('edit_widget_block_font_color').value = settings.font_color || '#ffffff';
                         }
                         if (document.getElementById('edit_widget_block_title_font_size')) {
-                            document.getElementById('edit_widget_block_title_font_size').value = settings.title_font_size || '1rem';
+                            let titleSize = settings.title_font_size || '16';
+                            if (titleSize.includes('rem')) {
+                                titleSize = parseFloat(titleSize) * 16;
+                            }
+                            document.getElementById('edit_widget_block_title_font_size').value = titleSize;
                         }
                         if (document.getElementById('edit_widget_block_content_font_size')) {
-                            document.getElementById('edit_widget_block_content_font_size').value = settings.content_font_size || '0.9rem';
+                            let contentSize = settings.content_font_size || '14';
+                            if (contentSize.includes('rem')) {
+                                contentSize = parseFloat(contentSize) * 16;
+                            }
+                            document.getElementById('edit_widget_block_content_font_size').value = contentSize;
                         }
                         
                         const showButton = settings.show_button || false;
@@ -3626,8 +3686,8 @@ function saveWidgetSettings() {
                         const blockLink = document.getElementById('edit_widget_block_link').value;
                         const openNewTab = document.getElementById('edit_widget_block_open_new_tab').checked;
                         const fontColor = document.getElementById('edit_widget_block_font_color')?.value || '#ffffff';
-                        const titleFontSize = document.getElementById('edit_widget_block_title_font_size')?.value || '1rem';
-                        const contentFontSize = document.getElementById('edit_widget_block_content_font_size')?.value || '0.9rem';
+                        const titleFontSize = document.getElementById('edit_widget_block_title_font_size')?.value || '16';
+                        const contentFontSize = document.getElementById('edit_widget_block_content_font_size')?.value || '14';
                         const showButton = document.getElementById('edit_widget_block_show_button')?.checked || false;
                         const buttonText = document.getElementById('edit_widget_block_button_text')?.value || '';
                         const buttonColor = document.getElementById('edit_widget_block_button_color')?.value || '#007bff';
@@ -3641,6 +3701,8 @@ function saveWidgetSettings() {
                         settings.text_align = textAlign;
                         settings.background_type = backgroundType;
                         settings.font_color = fontColor;
+                        settings.title_font_size = titleFontSize;
+                        settings.content_font_size = contentFontSize;
                         
                         if (backgroundType === 'color') {
                             const backgroundColor = document.getElementById('edit_widget_block_background_color').value || '#007bff';
@@ -3688,11 +3750,15 @@ function saveWidgetSettings() {
                             const link = item.querySelector('.edit-block-slide-link')?.value || '';
                             const openNewTab = item.querySelector('.edit-block-slide-open-new-tab')?.checked || false;
                             const fontColor = item.querySelector('.edit-block-slide-font-color')?.value || '#ffffff';
+                            const titleFontSize = item.querySelector('.edit-block-slide-title-font-size')?.value || '16';
+                            const contentFontSize = item.querySelector('.edit-block-slide-content-font-size')?.value || '14';
                             
                             const blockItem = {
                                 title: title,
                                 content: content,
                                 text_align: textAlign,
+                                title_font_size: titleFontSize,
+                                content_font_size: contentFontSize,
                                 background_type: backgroundType,
                                 padding_top: parseInt(paddingTop),
                                 padding_left: parseInt(paddingLeft),

@@ -647,30 +647,30 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_main_widget_block_title_font_size" class="form-label">제목 폰트 사이즈</label>
-                            <select class="form-select" id="edit_main_widget_block_title_font_size" name="block_title_font_size">
-                                <option value="1rem">기본 (1rem)</option>
-                                <option value="0.75rem">작게 (0.75rem)</option>
-                                <option value="0.875rem">작게 (0.875rem)</option>
-                                <option value="1.125rem">조금 크게 (1.125rem)</option>
-                                <option value="1.25rem">크게 (1.25rem)</option>
-                                <option value="1.5rem">더 크게 (1.5rem)</option>
-                                <option value="2rem">매우 크게 (2rem)</option>
-                                <option value="2.5rem">특히 크게 (2.5rem)</option>
-                                <option value="3rem">극히 크게 (3rem)</option>
-                            </select>
+                            <label for="edit_main_widget_block_title_font_size" class="form-label">제목 폰트 사이즈 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_main_widget_block_title_font_size" 
+                                   name="block_title_font_size" 
+                                   value="16"
+                                   min="8"
+                                   max="72"
+                                   step="1"
+                                   placeholder="16">
+                            <small class="text-muted">기본값: 16px</small>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_main_widget_block_content_font_size" class="form-label">내용 폰트 사이즈</label>
-                            <select class="form-select" id="edit_main_widget_block_content_font_size" name="block_content_font_size">
-                                <option value="0.9rem" selected>기본 (0.9rem)</option>
-                                <option value="0.75rem">작게 (0.75rem)</option>
-                                <option value="0.875rem">조금 작게 (0.875rem)</option>
-                                <option value="1rem">보통 (1rem)</option>
-                                <option value="1.125rem">조금 크게 (1.125rem)</option>
-                                <option value="1.25rem">크게 (1.25rem)</option>
-                                <option value="1.5rem">더 크게 (1.5rem)</option>
-                            </select>
+                            <label for="edit_main_widget_block_content_font_size" class="form-label">내용 폰트 사이즈 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_main_widget_block_content_font_size" 
+                                   name="block_content_font_size" 
+                                   value="14"
+                                   min="8"
+                                   max="48"
+                                   step="1"
+                                   placeholder="14">
+                            <small class="text-muted">기본값: 14px</small>
                         </div>
                         <div class="mb-3">
                             <label for="edit_main_widget_block_background_type" class="form-label">배경</label>
@@ -1946,8 +1946,8 @@ function addMainWidget() {
         const blockLink = formData.get('block_link');
         const openNewTab = document.getElementById('widget_block_open_new_tab')?.checked || false;
         const fontColor = formData.get('block_font_color') || '#ffffff';
-        const titleFontSize = formData.get('block_title_font_size') || '1rem';
-        const contentFontSize = formData.get('block_content_font_size') || '0.9rem';
+        const titleFontSize = formData.get('block_title_font_size') || '16';
+        const contentFontSize = formData.get('block_content_font_size') || '14';
         const showButton = document.getElementById('widget_block_show_button')?.checked || false;
         const buttonText = formData.get('block_button_text') || '';
         const buttonColor = formData.get('block_button_color') || '#007bff';
@@ -2008,6 +2008,8 @@ function addMainWidget() {
             const link = item.querySelector('.block-slide-link')?.value || '';
             const openNewTab = item.querySelector('.block-slide-open-new-tab')?.checked || false;
             const fontColor = item.querySelector('.block-slide-font-color')?.value || '#ffffff';
+            const titleFontSize = item.querySelector('.block-slide-title-font-size')?.value || '16';
+            const contentFontSize = item.querySelector('.block-slide-content-font-size')?.value || '14';
             const showButton = item.querySelector('.block-slide-show-button')?.checked || false;
             const buttonText = item.querySelector('.block-slide-button-text')?.value || '';
             const buttonColor = item.querySelector('.block-slide-button-color')?.value || '#007bff';
@@ -2022,6 +2024,8 @@ function addMainWidget() {
                 link: link,
                 open_new_tab: openNewTab,
                 font_color: fontColor,
+                title_font_size: titleFontSize,
+                content_font_size: contentFontSize,
                 show_button: showButton
             };
             
@@ -2477,10 +2481,19 @@ function editMainWidget(widgetId) {
                     document.getElementById('edit_main_widget_block_font_color').value = settings.font_color || '#ffffff';
                 }
                 if (document.getElementById('edit_main_widget_block_title_font_size')) {
-                    document.getElementById('edit_main_widget_block_title_font_size').value = settings.title_font_size || '1rem';
+                    // rem을 px로 변환 (1rem = 16px 기본값)
+                    let titleSize = settings.title_font_size || '16';
+                    if (titleSize.includes('rem')) {
+                        titleSize = parseFloat(titleSize) * 16;
+                    }
+                    document.getElementById('edit_main_widget_block_title_font_size').value = titleSize;
                 }
                 if (document.getElementById('edit_main_widget_block_content_font_size')) {
-                    document.getElementById('edit_main_widget_block_content_font_size').value = settings.content_font_size || '0.9rem';
+                    let contentSize = settings.content_font_size || '14';
+                    if (contentSize.includes('rem')) {
+                        contentSize = parseFloat(contentSize) * 16;
+                    }
+                    document.getElementById('edit_main_widget_block_content_font_size').value = contentSize;
                 }
                 
                 if (document.getElementById('edit_main_widget_block_padding_top')) {
@@ -3208,6 +3221,30 @@ function addBlockSlideItem() {
                 <label class="btn btn-outline-primary" for="block_slide_${itemIndex}_align_right"><i class="bi bi-text-right"></i> 우</label>
             </div>
         </div>
+        <div class="mb-3">
+            <label class="form-label">제목 폰트 사이즈 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-title-font-size" 
+                   name="block_slide[${itemIndex}][title_font_size]" 
+                   value="16"
+                   min="8"
+                   max="72"
+                   step="1"
+                   placeholder="16">
+            <small class="text-muted">기본값: 16px</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">내용 폰트 사이즈 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-content-font-size" 
+                   name="block_slide[${itemIndex}][content_font_size]" 
+                   value="14"
+                   min="8"
+                   max="48"
+                   step="1"
+                   placeholder="14">
+            <small class="text-muted">기본값: 14px</small>
+        </div>
         <div class="mb-3"><label class="form-label">배경</label>
             <select class="form-select block-slide-background-type" name="block_slide[${itemIndex}][background_type]" onchange="handleBlockSlideBackgroundTypeChange(${itemIndex})">
                 <option value="color">컬러</option>
@@ -3660,8 +3697,8 @@ function saveMainWidgetSettings() {
         const blockLink = document.getElementById('edit_main_widget_block_link')?.value;
         const openNewTab = document.getElementById('edit_main_widget_block_open_new_tab')?.checked;
         const fontColor = document.getElementById('edit_main_widget_block_font_color')?.value || '#ffffff';
-        const titleFontSize = document.getElementById('edit_main_widget_block_title_font_size')?.value || '1rem';
-        const contentFontSize = document.getElementById('edit_main_widget_block_content_font_size')?.value || '0.9rem';
+        const titleFontSize = document.getElementById('edit_main_widget_block_title_font_size')?.value || '16';
+        const contentFontSize = document.getElementById('edit_main_widget_block_content_font_size')?.value || '14';
         const showButton = document.getElementById('edit_main_widget_block_show_button')?.checked || false;
         const buttonText = document.getElementById('edit_main_widget_block_button_text')?.value || '';
         const buttonColor = document.getElementById('edit_main_widget_block_button_color')?.value || '#007bff';
@@ -3722,6 +3759,8 @@ function saveMainWidgetSettings() {
             const linkInput = item.querySelector('.edit-main-block-slide-link');
             const openNewTabCheckbox = item.querySelector('.edit-main-block-slide-open-new-tab');
             const fontColorInput = item.querySelector('.edit-main-block-slide-font-color');
+            const titleFontSizeInput = item.querySelector('.edit-main-block-slide-title-font-size');
+            const contentFontSizeInput = item.querySelector('.edit-main-block-slide-content-font-size');
             const showButtonCheckbox = item.querySelector('.edit-main-block-slide-show-button');
             const buttonTextInput = item.querySelector('.edit-main-block-slide-button-text');
             const buttonColorInput = item.querySelector('.edit-main-block-slide-button-color');
@@ -3732,6 +3771,8 @@ function saveMainWidgetSettings() {
                 text_align: textAlignRadio ? textAlignRadio.value : 'left',
                 background_type: backgroundTypeSelect ? backgroundTypeSelect.value : 'color',
                 padding_top: paddingTopSelect ? parseInt(paddingTopSelect.value) : 20,
+                title_font_size: titleFontSizeInput ? titleFontSizeInput.value : '16',
+                content_font_size: contentFontSizeInput ? contentFontSizeInput.value : '14',
                 padding_left: paddingLeftSelect ? parseInt(paddingLeftSelect.value) : 20,
                 link: linkInput ? linkInput.value : '',
                 open_new_tab: openNewTabCheckbox ? openNewTabCheckbox.checked : false,
@@ -4211,6 +4252,30 @@ function addEditMainBlockSlideItem(blockData = null) {
                     <i class="bi bi-text-right"></i> 우
                 </label>
             </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">제목 폰트 사이즈 (px)</label>
+            <input type="number" 
+                   class="form-control edit-main-block-slide-title-font-size" 
+                   name="edit_main_block_slide[${itemIndex}][title_font_size]" 
+                   value="${blockData ? (blockData.title_font_size || '16') : '16'}"
+                   min="8"
+                   max="72"
+                   step="1"
+                   placeholder="16">
+            <small class="text-muted">기본값: 16px</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">내용 폰트 사이즈 (px)</label>
+            <input type="number" 
+                   class="form-control edit-main-block-slide-content-font-size" 
+                   name="edit_main_block_slide[${itemIndex}][content_font_size]" 
+                   value="${blockData ? (blockData.content_font_size || '14') : '14'}"
+                   min="8"
+                   max="48"
+                   step="1"
+                   placeholder="14">
+            <small class="text-muted">기본값: 14px</small>
         </div>
         <div class="mb-3">
             <label class="form-label">배경</label>

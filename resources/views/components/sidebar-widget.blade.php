@@ -32,8 +32,8 @@
         $link = $blockSettings['link'] ?? '';
         $openNewTab = $blockSettings['open_new_tab'] ?? false;
         $fontColor = $blockSettings['font_color'] ?? '#ffffff';
-        $titleFontSize = $blockSettings['title_font_size'] ?? '1rem';
-        $contentFontSize = $blockSettings['content_font_size'] ?? '0.9rem';
+        $titleFontSize = $blockSettings['title_font_size'] ?? '16';
+        $contentFontSize = $blockSettings['content_font_size'] ?? '14';
         $showButton = $blockSettings['show_button'] ?? false;
         $buttonText = $blockSettings['button_text'] ?? '';
         $buttonColor = $blockSettings['button_color'] ?? '#007bff';
@@ -54,10 +54,10 @@
                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
         @endif
         @if($blockTitle)
-            <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $titleFontSize }};">{{ $blockTitle }}</h4>
+            <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $titleFontSize }}px;">{{ $blockTitle }}</h4>
         @endif
         @if($blockContent)
-            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $contentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
+            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $contentFontSize }}px; white-space: pre-wrap;">{{ $blockContent }}</p>
         @endif
         @if($link && !$showButton)
             </a>
@@ -111,6 +111,8 @@
                         $link = $block['link'] ?? '';
                         $openNewTab = $block['open_new_tab'] ?? false;
                         $fontColor = $block['font_color'] ?? '#ffffff';
+                        $titleFontSize = $block['title_font_size'] ?? '16';
+                        $contentFontSize = $block['content_font_size'] ?? '14';
                         $showButton = $block['show_button'] ?? false;
                         $buttonText = $block['button_text'] ?? '';
                         $buttonColor = $block['button_color'] ?? '#007bff';
@@ -138,10 +140,10 @@
                                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
                         @endif
                         @if($blockTitle)
-                            <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold;">{{ $blockTitle }}</h4>
+                            <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $titleFontSize }}px;">{{ $blockTitle }}</h4>
                         @endif
                         @if($blockContent)
-                            <p class="mb-0" style="color: {{ $fontColor }}; font-size: 0.9rem; white-space: pre-wrap;">{{ $blockContent }}</p>
+                            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $contentFontSize }}px; white-space: pre-wrap;">{{ $blockContent }}</p>
                         @endif
                         @if($link && !$showButton)
                             </a>
@@ -185,6 +187,8 @@
                         $link = $block['link'] ?? '';
                         $openNewTab = $block['open_new_tab'] ?? false;
                         $fontColor = $block['font_color'] ?? '#ffffff';
+                        $titleFontSize = $block['title_font_size'] ?? '16';
+                        $contentFontSize = $block['content_font_size'] ?? '14';
                         $showButton = $block['show_button'] ?? false;
                         $buttonText = $block['button_text'] ?? '';
                         $buttonColor = $block['button_color'] ?? '#007bff';
@@ -212,10 +216,10 @@
                                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
                         @endif
                         @if($blockTitle)
-                            <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold;">{{ $blockTitle }}</h4>
+                            <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $titleFontSize }}px;">{{ $blockTitle }}</h4>
                         @endif
                         @if($blockContent)
-                            <p class="mb-0" style="color: {{ $fontColor }}; font-size: 0.9rem; white-space: pre-wrap;">{{ $blockContent }}</p>
+                            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $contentFontSize }}px; white-space: pre-wrap;">{{ $blockContent }}</p>
                         @endif
                         @if($link && !$showButton)
                             </a>
