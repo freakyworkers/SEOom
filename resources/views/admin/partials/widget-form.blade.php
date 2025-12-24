@@ -337,12 +337,20 @@
                    placeholder="버튼 텍스트를 입력하세요">
         </div>
         <div class="mb-3">
-            <label for="widget_block_button_color" class="form-label">버튼 컬러</label>
+            <label for="widget_block_button_background_color" class="form-label">버튼 배경 컬러</label>
             <input type="color" 
                    class="form-control form-control-color" 
-                   id="widget_block_button_color" 
-                   name="block_button_color" 
+                   id="widget_block_button_background_color" 
+                   name="block_button_background_color" 
                    value="#007bff">
+        </div>
+        <div class="mb-3">
+            <label for="widget_block_button_text_color" class="form-label">버튼 텍스트 컬러</label>
+            <input type="color" 
+                   class="form-control form-control-color" 
+                   id="widget_block_button_text_color" 
+                   name="block_button_text_color" 
+                   value="#ffffff">
         </div>
     </div>
     <div class="mb-3">

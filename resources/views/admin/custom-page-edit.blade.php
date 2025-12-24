@@ -735,12 +735,20 @@
                                        placeholder="버튼 텍스트를 입력하세요">
                             </div>
                             <div class="mb-3">
-                                <label for="edit_custom_page_widget_block_button_color" class="form-label">버튼 컬러</label>
+                                <label for="edit_custom_page_widget_block_button_background_color" class="form-label">버튼 배경 컬러</label>
                                 <input type="color" 
                                        class="form-control form-control-color" 
-                                       id="edit_custom_page_widget_block_button_color" 
-                                       name="block_button_color" 
+                                       id="edit_custom_page_widget_block_button_background_color" 
+                                       name="block_button_background_color" 
                                        value="#007bff">
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_custom_page_widget_block_button_text_color" class="form-label">버튼 텍스트 컬러</label>
+                                <input type="color" 
+                                       class="form-control form-control-color" 
+                                       id="edit_custom_page_widget_block_button_text_color" 
+                                       name="block_button_text_color" 
+                                       value="#ffffff">
                             </div>
                         </div>
                         <div class="mb-3">
@@ -1519,7 +1527,8 @@ function addCustomPageWidget() {
         const contentFontSize = formData.get('block_content_font_size') || '14';
         const showButton = document.getElementById('widget_block_show_button')?.checked || false;
         const buttonText = formData.get('block_button_text') || '';
-        const buttonColor = formData.get('block_button_color') || '#007bff';
+        const buttonBackgroundColor = formData.get('block_button_background_color') || '#007bff';
+        const buttonTextColor = formData.get('block_button_text_color') || '#ffffff';
         
         if (blockTitle) {
             settings.block_title = blockTitle;
@@ -1535,7 +1544,8 @@ function addCustomPageWidget() {
         settings.show_button = showButton;
         if (showButton) {
             settings.button_text = buttonText;
-            settings.button_color = buttonColor;
+            settings.button_background_color = buttonBackgroundColor;
+            settings.button_text_color = buttonTextColor;
         }
         
         if (backgroundType === 'color') {
@@ -2141,8 +2151,11 @@ function editCustomPageWidget(widgetId) {
                     if (document.getElementById('edit_custom_page_widget_block_button_text')) {
                         document.getElementById('edit_custom_page_widget_block_button_text').value = settings.button_text || '';
                     }
-                    if (document.getElementById('edit_custom_page_widget_block_button_color')) {
-                        document.getElementById('edit_custom_page_widget_block_button_color').value = settings.button_color || '#007bff';
+                    if (document.getElementById('edit_custom_page_widget_block_button_background_color')) {
+                        document.getElementById('edit_custom_page_widget_block_button_background_color').value = settings.button_background_color || '#007bff';
+                    }
+                    if (document.getElementById('edit_custom_page_widget_block_button_text_color')) {
+                        document.getElementById('edit_custom_page_widget_block_button_text_color').value = settings.button_text_color || '#ffffff';
                     }
                 }
             } else if (widgetType === 'block_slide') {
@@ -3021,7 +3034,8 @@ function saveCustomPageWidgetSettings() {
         const contentFontSize = document.getElementById('edit_custom_page_widget_block_content_font_size')?.value || '14';
         const showButton = document.getElementById('edit_custom_page_widget_block_show_button')?.checked || false;
         const buttonText = document.getElementById('edit_custom_page_widget_block_button_text')?.value || '';
-        const buttonColor = document.getElementById('edit_custom_page_widget_block_button_color')?.value || '#007bff';
+        const buttonBackgroundColor = document.getElementById('edit_custom_page_widget_block_button_background_color')?.value || '#007bff';
+        const buttonTextColor = document.getElementById('edit_custom_page_widget_block_button_text_color')?.value || '#ffffff';
         
         if (blockTitle) {
             settings.block_title = blockTitle;
@@ -3035,7 +3049,8 @@ function saveCustomPageWidgetSettings() {
         settings.show_button = showButton;
         if (showButton) {
             settings.button_text = buttonText;
-            settings.button_color = buttonColor;
+            settings.button_background_color = buttonBackgroundColor;
+            settings.button_text_color = buttonTextColor;
         }
         
         if (backgroundType === 'color') {

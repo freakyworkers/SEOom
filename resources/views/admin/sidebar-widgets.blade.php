@@ -438,12 +438,20 @@
                                                            placeholder="버튼 텍스트를 입력하세요">
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label for="widget_block_button_color" class="form-label">버튼 컬러</label>
+                                                    <label for="widget_block_button_background_color" class="form-label">버튼 배경 컬러</label>
                                                     <input type="color" 
                                                            class="form-control form-control-color" 
-                                                           id="widget_block_button_color" 
-                                                           name="block_button_color" 
+                                                           id="widget_block_button_background_color" 
+                                                           name="block_button_background_color" 
                                                            value="#007bff">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="widget_block_button_text_color" class="form-label">버튼 텍스트 컬러</label>
+                                                    <input type="color" 
+                                                           class="form-control form-control-color" 
+                                                           id="widget_block_button_text_color" 
+                                                           name="block_button_text_color" 
+                                                           value="#ffffff">
                                                 </div>
                                             </div>
                                             <div class="mb-3">
@@ -946,12 +954,20 @@
                                        placeholder="버튼 텍스트를 입력하세요">
                             </div>
                             <div class="mb-3">
-                                <label for="edit_widget_block_button_color" class="form-label">버튼 컬러</label>
+                                <label for="edit_widget_block_button_background_color" class="form-label">버튼 배경 컬러</label>
                                 <input type="color" 
                                        class="form-control form-control-color" 
-                                       id="edit_widget_block_button_color" 
-                                       name="block_button_color" 
+                                       id="edit_widget_block_button_background_color" 
+                                       name="block_button_background_color" 
                                        value="#007bff">
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_widget_block_button_text_color" class="form-label">버튼 텍스트 컬러</label>
+                                <input type="color" 
+                                       class="form-control form-control-color" 
+                                       id="edit_widget_block_button_text_color" 
+                                       name="block_button_text_color" 
+                                       value="#ffffff">
                             </div>
                         </div>
                         <div class="mb-3">
@@ -2877,13 +2893,15 @@ function addWidget() {
         const fontColor = document.getElementById('widget_block_font_color')?.value || '#ffffff';
         const showButton = document.getElementById('widget_block_show_button')?.checked || false;
         const buttonText = document.getElementById('widget_block_button_text')?.value || '';
-        const buttonColor = document.getElementById('widget_block_button_color')?.value || '#007bff';
+        const buttonBackgroundColor = document.getElementById('widget_block_button_background_color')?.value || '#007bff';
+        const buttonTextColor = document.getElementById('widget_block_button_text_color')?.value || '#ffffff';
         
         settings.font_color = fontColor;
         settings.show_button = showButton;
         if (showButton) {
             settings.button_text = buttonText;
-            settings.button_color = buttonColor;
+            settings.button_background_color = buttonBackgroundColor;
+            settings.button_text_color = buttonTextColor;
         }
         
         if (blockLink) {
@@ -2914,7 +2932,8 @@ function addWidget() {
             const contentFontSize = item.querySelector('.block-slide-content-font-size')?.value || '14';
             const showButton = item.querySelector('.block-slide-show-button')?.checked || false;
             const buttonText = item.querySelector('.block-slide-button-text')?.value || '';
-            const buttonColor = item.querySelector('.block-slide-button-color')?.value || '#007bff';
+            const buttonBackgroundColor = item.querySelector('.block-slide-button-background-color')?.value || '#007bff';
+            const buttonTextColor = item.querySelector('.block-slide-button-text-color')?.value || '#ffffff';
             
             const blockItem = {
                 title: title,
@@ -2933,7 +2952,8 @@ function addWidget() {
             
             if (showButton) {
                 blockItem.button_text = buttonText;
-                blockItem.button_color = buttonColor;
+                blockItem.button_background_color = buttonBackgroundColor;
+                blockItem.button_text_color = buttonTextColor;
             }
             
             if (backgroundType === 'color') {
@@ -3412,8 +3432,11 @@ function editWidget(widgetId) {
                             if (document.getElementById('edit_widget_block_button_text')) {
                                 document.getElementById('edit_widget_block_button_text').value = settings.button_text || '';
                             }
-                            if (document.getElementById('edit_widget_block_button_color')) {
-                                document.getElementById('edit_widget_block_button_color').value = settings.button_color || '#007bff';
+                            if (document.getElementById('edit_widget_block_button_background_color')) {
+                                document.getElementById('edit_widget_block_button_background_color').value = settings.button_background_color || '#007bff';
+                            }
+                            if (document.getElementById('edit_widget_block_button_text_color')) {
+                                document.getElementById('edit_widget_block_button_text_color').value = settings.button_text_color || '#ffffff';
                             }
                         }
                         
@@ -3690,7 +3713,8 @@ function saveWidgetSettings() {
                         const contentFontSize = document.getElementById('edit_widget_block_content_font_size')?.value || '14';
                         const showButton = document.getElementById('edit_widget_block_show_button')?.checked || false;
                         const buttonText = document.getElementById('edit_widget_block_button_text')?.value || '';
-                        const buttonColor = document.getElementById('edit_widget_block_button_color')?.value || '#007bff';
+                        const buttonBackgroundColor = document.getElementById('edit_widget_block_button_background_color')?.value || '#007bff';
+                        const buttonTextColor = document.getElementById('edit_widget_block_button_text_color')?.value || '#ffffff';
                         
                         if (blockTitle) {
                             settings.block_title = blockTitle;
@@ -3728,7 +3752,8 @@ function saveWidgetSettings() {
                         settings.show_button = showButton;
                         if (showButton) {
                             settings.button_text = buttonText;
-                            settings.button_color = buttonColor;
+                            settings.button_background_color = buttonBackgroundColor;
+                            settings.button_text_color = buttonTextColor;
                         }
                     } else if (widgetType === 'block_slide') {
                         // 블록 슬라이드 위젯 설정 수집

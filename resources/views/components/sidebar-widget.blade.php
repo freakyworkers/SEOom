@@ -36,7 +36,8 @@
         $contentFontSize = $blockSettings['content_font_size'] ?? '14';
         $showButton = $blockSettings['show_button'] ?? false;
         $buttonText = $blockSettings['button_text'] ?? '';
-        $buttonColor = $blockSettings['button_color'] ?? '#007bff';
+        $buttonBackgroundColor = $blockSettings['button_background_color'] ?? '#007bff';
+        $buttonTextColor = $blockSettings['button_text_color'] ?? '#ffffff';
         
         // 스타일 생성
         $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingTop}px; padding-left: {$paddingLeft}px; padding-right: {$paddingLeft}px; text-align: {$textAlign}; color: {$fontColor};";
@@ -69,17 +70,17 @@
                        @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
                        style="text-decoration: none; display: inline-block;">
                         <button class="block-widget-button" 
-                                style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
-                                onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
+                                style="border: 2px solid {{ $buttonBackgroundColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                onmouseover="this.style.opacity='0.9';"
+                                onmouseout="this.style.opacity='1';">
                             {{ $buttonText }}
                         </button>
                     </a>
                 @else
                     <button class="block-widget-button" 
-                            style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                            onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
-                            onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
+                            style="border: 2px solid {{ $buttonBackgroundColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                            onmouseover="this.style.opacity='0.9';"
+                            onmouseout="this.style.opacity='1';">
                         {{ $buttonText }}
                     </button>
                 @endif
@@ -115,7 +116,8 @@
                         $contentFontSize = $block['content_font_size'] ?? '14';
                         $showButton = $block['show_button'] ?? false;
                         $buttonText = $block['button_text'] ?? '';
-                        $buttonColor = $block['button_color'] ?? '#007bff';
+                        $buttonBackgroundColor = $block['button_background_color'] ?? '#007bff';
+                        $buttonTextColor = $block['button_text_color'] ?? '#ffffff';
                         
                         // 스타일 생성
                         $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingTop}px; padding-left: {$paddingLeft}px; padding-right: {$paddingLeft}px; text-align: {$textAlign}; color: {$fontColor};";
@@ -191,7 +193,8 @@
                         $contentFontSize = $block['content_font_size'] ?? '14';
                         $showButton = $block['show_button'] ?? false;
                         $buttonText = $block['button_text'] ?? '';
-                        $buttonColor = $block['button_color'] ?? '#007bff';
+                        $buttonBackgroundColor = $block['button_background_color'] ?? '#007bff';
+                        $buttonTextColor = $block['button_text_color'] ?? '#ffffff';
                         
                         // 스타일 생성
                         $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingTop}px; padding-left: {$paddingLeft}px; padding-right: {$paddingLeft}px; text-align: {$textAlign}; color: {$fontColor};";

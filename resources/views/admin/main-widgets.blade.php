@@ -769,12 +769,20 @@
                                        placeholder="버튼 텍스트를 입력하세요">
                             </div>
                             <div class="mb-3">
-                                <label for="edit_main_widget_block_button_color" class="form-label">버튼 컬러</label>
+                                <label for="edit_main_widget_block_button_background_color" class="form-label">버튼 배경 컬러</label>
                                 <input type="color" 
                                        class="form-control form-control-color" 
-                                       id="edit_main_widget_block_button_color" 
-                                       name="block_button_color" 
+                                       id="edit_main_widget_block_button_background_color" 
+                                       name="block_button_background_color" 
                                        value="#007bff">
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_main_widget_block_button_text_color" class="form-label">버튼 텍스트 컬러</label>
+                                <input type="color" 
+                                       class="form-control form-control-color" 
+                                       id="edit_main_widget_block_button_text_color" 
+                                       name="block_button_text_color" 
+                                       value="#ffffff">
                             </div>
                         </div>
                         <div class="mb-3">
@@ -1950,7 +1958,8 @@ function addMainWidget() {
         const contentFontSize = formData.get('block_content_font_size') || '14';
         const showButton = document.getElementById('widget_block_show_button')?.checked || false;
         const buttonText = formData.get('block_button_text') || '';
-        const buttonColor = formData.get('block_button_color') || '#007bff';
+        const buttonBackgroundColor = formData.get('block_button_background_color') || '#007bff';
+        const buttonTextColor = formData.get('block_button_text_color') || '#ffffff';
         
         if (blockTitle) {
             settings.block_title = blockTitle;
@@ -1966,7 +1975,8 @@ function addMainWidget() {
         settings.show_button = showButton;
         if (showButton) {
             settings.button_text = buttonText;
-            settings.button_color = buttonColor;
+            settings.button_background_color = buttonBackgroundColor;
+            settings.button_text_color = buttonTextColor;
         }
         
         if (backgroundType === 'color') {
@@ -2012,7 +2022,8 @@ function addMainWidget() {
             const contentFontSize = item.querySelector('.block-slide-content-font-size')?.value || '14';
             const showButton = item.querySelector('.block-slide-show-button')?.checked || false;
             const buttonText = item.querySelector('.block-slide-button-text')?.value || '';
-            const buttonColor = item.querySelector('.block-slide-button-color')?.value || '#007bff';
+            const buttonBackgroundColor = item.querySelector('.block-slide-button-background-color')?.value || '#007bff';
+            const buttonTextColor = item.querySelector('.block-slide-button-text-color')?.value || '#ffffff';
             
             const blockItem = {
                 title: title,
@@ -2031,7 +2042,8 @@ function addMainWidget() {
             
             if (showButton) {
                 blockItem.button_text = buttonText;
-                blockItem.button_color = buttonColor;
+                blockItem.button_background_color = buttonBackgroundColor;
+                blockItem.button_text_color = buttonTextColor;
             }
             
             if (backgroundType === 'color') {
@@ -2518,8 +2530,11 @@ function editMainWidget(widgetId) {
                     if (document.getElementById('edit_main_widget_block_button_text')) {
                         document.getElementById('edit_main_widget_block_button_text').value = settings.button_text || '';
                     }
-                    if (document.getElementById('edit_main_widget_block_button_color')) {
-                        document.getElementById('edit_main_widget_block_button_color').value = settings.button_color || '#007bff';
+                    if (document.getElementById('edit_main_widget_block_button_background_color')) {
+                        document.getElementById('edit_main_widget_block_button_background_color').value = settings.button_background_color || '#007bff';
+                    }
+                    if (document.getElementById('edit_main_widget_block_button_text_color')) {
+                        document.getElementById('edit_main_widget_block_button_text_color').value = settings.button_text_color || '#ffffff';
                     }
                 }
             } else if (widgetType === 'block_slide') {
@@ -3295,8 +3310,13 @@ function addBlockSlideItem() {
             <div class="mb-3"><label class="form-label">버튼 텍스트</label>
                 <input type="text" class="form-control block-slide-button-text" name="block_slide[${itemIndex}][button_text]" placeholder="버튼 텍스트를 입력하세요">
             </div>
-            <div class="mb-3"><label class="form-label">버튼 컬러</label>
-                <input type="color" class="form-control form-control-color block-slide-button-color" name="block_slide[${itemIndex}][button_color]" value="#007bff">
+            <div class="mb-3">
+                <label class="form-label">버튼 배경 컬러</label>
+                <input type="color" class="form-control form-control-color block-slide-button-background-color" name="block_slide[${itemIndex}][button_background_color]" value="#007bff">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 텍스트 컬러</label>
+                <input type="color" class="form-control form-control-color block-slide-button-text-color" name="block_slide[${itemIndex}][button_text_color]" value="#ffffff">
             </div>
         </div>
         <div class="mb-3"><label class="form-label">
@@ -3717,7 +3737,8 @@ function saveMainWidgetSettings() {
         settings.show_button = showButton;
         if (showButton) {
             settings.button_text = buttonText;
-            settings.button_color = buttonColor;
+            settings.button_background_color = buttonBackgroundColor;
+            settings.button_text_color = buttonTextColor;
         }
         
         if (backgroundType === 'color') {
@@ -3782,7 +3803,8 @@ function saveMainWidgetSettings() {
             
             if (blockItem.show_button) {
                 blockItem.button_text = buttonTextInput ? buttonTextInput.value : '';
-                blockItem.button_color = buttonColorInput ? buttonColorInput.value : '#007bff';
+                blockItem.button_background_color = buttonBackgroundColorInput ? buttonBackgroundColorInput.value : '#007bff';
+                blockItem.button_text_color = buttonTextColorInput ? buttonTextColorInput.value : '#ffffff';
             }
             
             if (blockItem.background_type === 'color') {
@@ -4372,11 +4394,18 @@ function addEditMainBlockSlideItem(blockData = null) {
                        value="${blockData ? (blockData.button_text || '') : ''}">
             </div>
             <div class="mb-3">
-                <label class="form-label">버튼 컬러</label>
+                <label class="form-label">버튼 배경 컬러</label>
                 <input type="color" 
-                       class="form-control form-control-color edit-main-block-slide-button-color" 
-                       name="edit_main_block_slide[${itemIndex}][button_color]" 
-                       value="${blockData ? (blockData.button_color || '#007bff') : '#007bff'}">
+                       class="form-control form-control-color edit-main-block-slide-button-background-color" 
+                       name="edit_main_block_slide[${itemIndex}][button_background_color]" 
+                       value="${blockData ? (blockData.button_background_color || '#007bff') : '#007bff'}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 텍스트 컬러</label>
+                <input type="color" 
+                       class="form-control form-control-color edit-main-block-slide-button-text-color" 
+                       name="edit_main_block_slide[${itemIndex}][button_text_color]" 
+                       value="${blockData ? (blockData.button_text_color || '#ffffff') : '#ffffff'}">
             </div>
         </div>
         <div class="mb-3">
