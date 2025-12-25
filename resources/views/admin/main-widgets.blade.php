@@ -3721,7 +3721,8 @@ function saveMainWidgetSettings() {
         const contentFontSize = document.getElementById('edit_main_widget_block_content_font_size')?.value || '14';
         const showButton = document.getElementById('edit_main_widget_block_show_button')?.checked || false;
         const buttonText = document.getElementById('edit_main_widget_block_button_text')?.value || '';
-        const buttonColor = document.getElementById('edit_main_widget_block_button_color')?.value || '#007bff';
+        const buttonBackgroundColor = document.getElementById('edit_main_widget_block_button_background_color')?.value || '#007bff';
+        const buttonTextColor = document.getElementById('edit_main_widget_block_button_text_color')?.value || '#ffffff';
         
         if (blockTitle) {
             settings.block_title = blockTitle;
