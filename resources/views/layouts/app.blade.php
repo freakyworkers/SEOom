@@ -439,11 +439,21 @@
             /* 테이블 */
             .table {
                 color: #ffffff !important;
+                background-color: rgb(43, 43, 43) !important;
             }
             
             .table td,
             .table th {
                 border-color: rgba(255, 255, 255, 0.1) !important;
+                background-color: rgb(43, 43, 43) !important;
+            }
+            
+            /* 테이블 bg-light 클래스 다크 모드 스타일 */
+            .table .bg-light,
+            .table td.bg-light,
+            .table th.bg-light {
+                background-color: rgb(53, 53, 53) !important;
+                color: #ffffff !important;
             }
             
             /* 드롭다운 메뉴 */

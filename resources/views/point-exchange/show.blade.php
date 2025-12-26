@@ -125,7 +125,7 @@
         <div class="card shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">신청 내역</h5>
-                <button type="button" class="btn btn-sm btn-outline-primary" id="filterMyApplications">
+                <button type="button" class="btn btn-sm btn-outline-primary" id="filterMyApplications" style="border-color: {{ $pointColor }}; color: {{ $pointColor }};">
                     <i class="bi bi-person me-1"></i>내 신청
                 </button>
             </div>

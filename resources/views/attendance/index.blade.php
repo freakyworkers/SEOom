@@ -30,7 +30,7 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h3 class="mb-0"><i class="bi bi-calendar-check me-2"></i>출석체크</h3>
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#pointsInfoModal">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#pointsInfoModal" style="border-color: {{ $pointColor }}; color: {{ $pointColor }};">
                     <i class="bi bi-info-circle me-1"></i>출첵 포인트 안내
                 </button>
             </div>

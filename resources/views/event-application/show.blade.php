@@ -101,7 +101,7 @@
         <div class="card shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">신청 내역</h5>
-                <button type="button" class="btn btn-sm btn-outline-primary" id="filterMyApplications">
+                <button type="button" class="btn btn-sm btn-outline-primary" id="filterMyApplications" style="border-color: {{ $pointColor }}; color: {{ $pointColor }};">
                     <i class="bi bi-person me-1"></i>내 신청
                 </button>
             </div>
@@ -261,14 +261,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             // 버튼 텍스트 변경
+            const pointColor = '{{ $pointColor }}';
             if (showingMyApplications) {
                 filterButton.innerHTML = '<i class="bi bi-list me-1"></i>전체 보기';
                 filterButton.classList.remove('btn-outline-primary');
                 filterButton.classList.add('btn-primary');
+                filterButton.style.backgroundColor = pointColor;
+                filterButton.style.borderColor = pointColor;
+                filterButton.style.color = '#ffffff';
             } else {
                 filterButton.innerHTML = '<i class="bi bi-person me-1"></i>내 신청';
                 filterButton.classList.remove('btn-primary');
                 filterButton.classList.add('btn-outline-primary');
+                filterButton.style.backgroundColor = 'transparent';
+                filterButton.style.borderColor = pointColor;
+                filterButton.style.color = pointColor;
             }
         });
     }
