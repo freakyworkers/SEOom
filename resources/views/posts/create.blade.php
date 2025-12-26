@@ -3,18 +3,6 @@
 @section('title', '게시글 작성')
 
 @section('content')
-<nav aria-label="breadcrumb" class="mb-3">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-            <a href="{{ route('boards.index', ['site' => $site->slug]) }}">게시판</a>
-        </li>
-        <li class="breadcrumb-item">
-            <a href="{{ route('posts.index', ['site' => $site->slug, 'boardSlug' => $board->slug]) }}">{{ $board->name }}</a>
-        </li>
-        <li class="breadcrumb-item active">글쓰기</li>
-    </ol>
-</nav>
-
 <div class="card shadow">
     <div class="card-header bg-primary text-white">
         <h4 class="mb-0"><i class="bi bi-pencil-square"></i> 게시글 작성</h4>

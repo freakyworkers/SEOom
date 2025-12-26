@@ -324,6 +324,143 @@
             .navbar-brand, .navbar-nav .nav-link {
                 color: var(--header-text-color) !important;
             }
+            
+            /* 다크 모드 게시판 스타일 */
+            .card.bg-white,
+            .card-header.bg-white,
+            .bg-white,
+            .card.shadow,
+            .card.shadow-sm {
+                background-color: rgb(43, 43, 43) !important;
+                color: #ffffff !important;
+                border-color: rgba(255, 255, 255, 0.1) !important;
+            }
+            
+            /* 게시판 리스트 요소 배경 */
+            .list-group-item,
+            .list-group-item-action {
+                background-color: rgb(43, 43, 43) !important;
+                color: #ffffff !important;
+                border-color: rgba(255, 255, 255, 0.1) !important;
+            }
+            
+            .list-group-item:hover,
+            .list-group-item-action:hover {
+                background-color: rgb(53, 53, 53) !important;
+                color: #ffffff !important;
+            }
+            
+            /* 게시판 제목 영역 */
+            .card-header,
+            .card-body {
+                background-color: rgb(43, 43, 43) !important;
+                color: #ffffff !important;
+            }
+            
+            /* 텍스트 색상 반전 */
+            .text-dark,
+            .text-muted {
+                color: rgba(255, 255, 255, 0.7) !important;
+            }
+            
+            h1, h2, h3, h4, h5, h6,
+            .h1, .h2, .h3, .h4, .h5, .h6 {
+                color: #ffffff !important;
+            }
+            
+            /* 입력 필드 */
+            .form-control,
+            .form-select {
+                background-color: rgb(43, 43, 43) !important;
+                color: #ffffff !important;
+                border-color: rgba(255, 255, 255, 0.2) !important;
+            }
+            
+            .form-control:focus,
+            .form-select:focus {
+                background-color: rgb(43, 43, 43) !important;
+                color: #ffffff !important;
+                border-color: var(--point-main-color) !important;
+            }
+            
+            /* 포인트 컬러가 화이트일 때 버튼 텍스트 색상 자동 조정 */
+            @php
+                $pointColorRgb = $colorDarkPointMain ?? '#ffffff';
+                // #ffffff 또는 white인 경우 검은색 텍스트 사용
+                $isWhitePoint = (strtolower($pointColorRgb) === '#ffffff' || strtolower($pointColorRgb) === 'white' || strtolower($pointColorRgb) === '#fff');
+            @endphp
+            
+            @if($isWhitePoint)
+                .btn-primary,
+                .btn[style*="background-color: {{ $colorDarkPointMain }}"],
+                .btn[style*="background-color: var(--point-main-color)"],
+                button[style*="background-color: {{ $colorDarkPointMain }}"],
+                a[style*="background-color: {{ $colorDarkPointMain }}"] {
+                    color: #000000 !important;
+                }
+                
+                .btn-primary:hover,
+                .btn-primary:focus,
+                .btn[style*="background-color: {{ $colorDarkPointMain }}"]:hover,
+                .btn[style*="background-color: var(--point-main-color)"]:hover,
+                button[style*="background-color: {{ $colorDarkPointMain }}"]:hover,
+                a[style*="background-color: {{ $colorDarkPointMain }}"]:hover {
+                    color: #000000 !important;
+                }
+            @endif
+            
+            /* 알림 메시지 */
+            .alert {
+                background-color: rgb(43, 43, 43) !important;
+                color: #ffffff !important;
+                border-color: rgba(255, 255, 255, 0.1) !important;
+            }
+            
+            .alert-info {
+                background-color: rgba(13, 202, 240, 0.2) !important;
+                color: #0dcaf0 !important;
+            }
+            
+            .alert-success {
+                background-color: rgba(25, 135, 84, 0.2) !important;
+                color: #198754 !important;
+            }
+            
+            .alert-warning {
+                background-color: rgba(255, 193, 7, 0.2) !important;
+                color: #ffc107 !important;
+            }
+            
+            .alert-danger {
+                background-color: rgba(220, 53, 69, 0.2) !important;
+                color: #dc3545 !important;
+            }
+            
+            /* 테이블 */
+            .table {
+                color: #ffffff !important;
+            }
+            
+            .table td,
+            .table th {
+                border-color: rgba(255, 255, 255, 0.1) !important;
+            }
+            
+            /* 드롭다운 메뉴 */
+            .dropdown-menu {
+                background-color: rgb(43, 43, 43) !important;
+                border-color: rgba(255, 255, 255, 0.1) !important;
+            }
+            
+            .dropdown-item {
+                color: #ffffff !important;
+            }
+            
+            .dropdown-item:hover,
+            .dropdown-item:focus {
+                background-color: rgb(53, 53, 53) !important;
+                color: #ffffff !important;
+            }
         @endif
         @if($themeDarkMode !== 'dark')
             :root {
@@ -1912,6 +2049,62 @@
                 }
             }, 100);
         })();
+        
+        // 다크 모드일 때 포인트 컬러가 화이트인 경우 버튼 텍스트 색상 자동 조정
+        @if($themeDarkMode === 'dark')
+            @php
+                $pointColorRgb = $colorDarkPointMain ?? '#ffffff';
+                $isWhitePoint = (strtolower($pointColorRgb) === '#ffffff' || strtolower($pointColorRgb) === 'white' || strtolower($pointColorRgb) === '#fff');
+            @endphp
+            @if($isWhitePoint)
+                (function() {
+                    function adjustButtonTextColor() {
+                        const pointColor = '{{ $colorDarkPointMain }}';
+                        const buttons = document.querySelectorAll('.btn, button, a.btn');
+                        
+                        buttons.forEach(function(btn) {
+                            const style = window.getComputedStyle(btn);
+                            const bgColor = style.backgroundColor;
+                            
+                            // 포인트 컬러와 같은 배경색을 가진 버튼인지 확인
+                            if (bgColor && (
+                                bgColor === 'rgb(255, 255, 255)' || 
+                                bgColor === '#ffffff' || 
+                                bgColor === 'white' ||
+                                btn.style.backgroundColor === pointColor ||
+                                btn.getAttribute('style')?.includes(pointColor)
+                            )) {
+                                btn.style.color = '#000000';
+                            }
+                        });
+                    }
+                    
+                    // 즉시 실행
+                    adjustButtonTextColor();
+                    
+                    // DOMContentLoaded 후 실행
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', adjustButtonTextColor);
+                    } else {
+                        adjustButtonTextColor();
+                    }
+                    
+                    // MutationObserver로 동적으로 추가되는 버튼도 감지
+                    const observer = new MutationObserver(function(mutations) {
+                        adjustButtonTextColor();
+                    });
+                    
+                    if (document.body) {
+                        observer.observe(document.body, {
+                            childList: true,
+                            subtree: true,
+                            attributes: true,
+                            attributeFilter: ['style', 'class']
+                        });
+                    }
+                })();
+            @endif
+        @endif
         
         document.addEventListener('DOMContentLoaded', function() {
             const headerWrapper = document.querySelector('.header-transparent-overlay');

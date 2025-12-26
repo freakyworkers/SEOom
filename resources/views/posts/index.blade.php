@@ -20,14 +20,6 @@
         $newPostHours = (int) $site->getSetting('new_post_hours', 24);
     @endphp
     <div class="mb-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('boards.index', ['site' => $site->slug]) }}">게시판</a>
-                </li>
-                <li class="breadcrumb-item active">{{ $board->name }}</li>
-            </ol>
-        </nav>
         @if($board->header_image_path)
             <div class="mb-3">
                 <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: auto;">
