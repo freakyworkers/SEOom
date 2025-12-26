@@ -341,53 +341,82 @@
     @php
         $imageSlideSettings = $widgetSettings;
         $slideDirection = $imageSlideSettings['slide_direction'] ?? 'left';
+        $slideMode = $imageSlideSettings['slide_mode'] ?? 'single';
+        $visibleCount = $imageSlideSettings['visible_count'] ?? 3;
         $images = $imageSlideSettings['images'] ?? [];
     @endphp
     @if(count($images) > 0)
         <div class="mb-3 image-slide-wrapper shadow-sm {{ $isRoundTheme ? '' : 'rounded-0' }}" 
              data-direction="{{ $slideDirection }}" 
+             data-mode="{{ $slideMode }}"
+             data-visible-count="{{ $visibleCount }}"
              data-widget-id="{{ $widget->id }}"
-             style="position: relative; overflow: hidden; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }}">
-            <div class="image-slide-container" style="display: flex; transition: transform 0.5s ease-in-out; {{ in_array($slideDirection, ['up', 'down']) ? 'flex-direction: column; height: 100%;' : '' }}">
-                @foreach($images as $index => $image)
-                    @php
-                        $imageUrl = $image['image_url'] ?? '';
-                        $link = $image['link'] ?? '';
-                        $openNewTab = $image['open_new_tab'] ?? false;
-                    @endphp
-                    @if($imageUrl)
-                        <div class="image-slide-item" style="width: 100%; flex-shrink: 0; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 100%;' : '' }}">
-                            @if($link)
-                                <a href="{{ $link }}" 
-                                   @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
+             style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }}">
+            <div class="image-slide-container" style="display: flex; {{ $slideMode === 'infinite' ? 'flex-direction: row;' : '' }} transition: transform 0.5s ease-in-out; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'flex-direction: column; height: 100%;' : '' }}">
+                @if($slideMode === 'single')
+                    @foreach($images as $index => $image)
+                        @php
+                            $imageUrl = $image['image_url'] ?? '';
+                            $link = $image['link'] ?? '';
+                            $openNewTab = $image['open_new_tab'] ?? false;
+                        @endphp
+                        @if($imageUrl)
+                            <div class="image-slide-item" style="width: 100%; flex-shrink: 0; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 100%;' : '' }}">
+                                @if($link)
+                                    <a href="{{ $link }}" 
+                                       @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
+                                @endif
+                                <img src="{{ $imageUrl }}" alt="이미지 {{ $index + 1 }}" style="width: 100%; height: auto; display: block;">
+                                @if($link)
+                                    </a>
+                                @endif
+                            </div>
+                        @endif
+                    @endforeach
+                    {{-- 무한 슬라이드를 위한 이미지 복제 --}}
+                    @foreach($images as $index => $image)
+                        @php
+                            $imageUrl = $image['image_url'] ?? '';
+                            $link = $image['link'] ?? '';
+                            $openNewTab = $image['open_new_tab'] ?? false;
+                        @endphp
+                        @if($imageUrl)
+                            <div class="image-slide-item image-slide-item-clone" style="width: 100%; flex-shrink: 0; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 100%;' : '' }}">
+                                @if($link)
+                                    <a href="{{ $link }}" 
+                                       @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
+                                @endif
+                                <img src="{{ $imageUrl }}" alt="이미지 {{ $index + 1 }}" style="width: 100%; height: auto; display: block;">
+                                @if($link)
+                                    </a>
+                                @endif
+                            </div>
+                        @endif
+                    @endforeach
+                @else
+                    {{-- 무한루프 슬라이드: 이미지를 여러 번 복제하여 무한 루프 효과 --}}
+                    @for($repeat = 0; $repeat < 3; $repeat++)
+                        @foreach($images as $index => $image)
+                            @php
+                                $imageUrl = $image['image_url'] ?? '';
+                                $link = $image['link'] ?? '';
+                                $openNewTab = $image['open_new_tab'] ?? false;
+                            @endphp
+                            @if($imageUrl)
+                                <div class="image-slide-item" style="width: calc(100% / {{ $visibleCount }}); flex-shrink: 0;">
+                                    @if($link)
+                                        <a href="{{ $link }}" 
+                                           @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
+                                    @endif
+                                    <img src="{{ $imageUrl }}" alt="이미지 {{ $index + 1 }}" style="width: 100%; height: auto; display: block;">
+                                    @if($link)
+                                        </a>
+                                    @endif
+                                </div>
                             @endif
-                            <img src="{{ $imageUrl }}" alt="이미지 {{ $index + 1 }}" style="width: 100%; height: auto; display: block;">
-                            @if($link)
-                                </a>
-                            @endif
-                        </div>
-                    @endif
-                @endforeach
-                {{-- 무한 슬라이드를 위한 이미지 복제 --}}
-                @foreach($images as $index => $image)
-                    @php
-                        $imageUrl = $image['image_url'] ?? '';
-                        $link = $image['link'] ?? '';
-                        $openNewTab = $image['open_new_tab'] ?? false;
-                    @endphp
-                    @if($imageUrl)
-                        <div class="image-slide-item image-slide-item-clone" style="width: 100%; flex-shrink: 0; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 100%;' : '' }}">
-                            @if($link)
-                                <a href="{{ $link }}" 
-                                   @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
-                            @endif
-                            <img src="{{ $imageUrl }}" alt="이미지 {{ $index + 1 }}" style="width: 100%; height: auto; display: block;">
-                            @if($link)
-                                </a>
-                            @endif
-                        </div>
-                    @endif
-                @endforeach
+                        @endforeach
+                    @endfor
+                @endif
             </div>
         </div>
         <script>
@@ -396,60 +425,100 @@
             if (!wrapper) return;
             
             const container = wrapper.querySelector('.image-slide-container');
-            const items = wrapper.querySelectorAll('.image-slide-item:not(.image-slide-item-clone)');
             const direction = wrapper.dataset.direction;
-            const totalItems = items.length;
+            const mode = wrapper.dataset.mode || 'single';
+            const visibleCount = parseInt(wrapper.dataset.visibleCount) || 3;
             
-            if (totalItems <= 1) return;
-            
-            let currentIndex = 0;
-            let isTransitioning = false;
-            
-            // 초기 위치 설정
-            function updatePosition(withoutTransition = false) {
-                if (withoutTransition) {
-                    container.style.transition = 'none';
-                } else {
-                    container.style.transition = 'transform 0.5s ease-in-out';
+            if (mode === 'single') {
+                // 1단 슬라이드 모드
+                const items = wrapper.querySelectorAll('.image-slide-item:not(.image-slide-item-clone)');
+                const totalItems = items.length;
+                
+                if (totalItems <= 1) return;
+                
+                let currentIndex = 0;
+                let isTransitioning = false;
+                
+                // 초기 위치 설정
+                function updatePosition(withoutTransition = false) {
+                    if (withoutTransition) {
+                        container.style.transition = 'none';
+                    } else {
+                        container.style.transition = 'transform 0.5s ease-in-out';
+                    }
+                    
+                    if (direction === 'left' || direction === 'right') {
+                        container.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    } else if (direction === 'up' || direction === 'down') {
+                        container.style.flexDirection = direction === 'up' ? 'column-reverse' : 'column';
+                        container.style.transform = `translateY(-${currentIndex * 100}%)`;
+                    }
                 }
                 
-                if (direction === 'left' || direction === 'right') {
-                    container.style.transform = `translateX(-${currentIndex * 100}%)`;
-                } else if (direction === 'up' || direction === 'down') {
-                    container.style.flexDirection = direction === 'up' ? 'column-reverse' : 'column';
-                    container.style.transform = `translateY(-${currentIndex * 100}%)`;
-                }
-            }
-            
-            // 슬라이드 전환
-            function nextSlide() {
-                if (isTransitioning) return;
-                
-                isTransitioning = true;
-                currentIndex++;
-                updatePosition();
-                
-                // 마지막 원본 이미지에 도달하면 (복제된 첫 번째 이미지 위치)
-                if (currentIndex >= totalItems) {
-                    setTimeout(() => {
-                        currentIndex = 0;
-                        updatePosition(true);
+                // 슬라이드 전환
+                function nextSlide() {
+                    if (isTransitioning) return;
+                    
+                    isTransitioning = true;
+                    currentIndex++;
+                    updatePosition();
+                    
+                    // 마지막 원본 이미지에 도달하면 (복제된 첫 번째 이미지 위치)
+                    if (currentIndex >= totalItems) {
+                        setTimeout(() => {
+                            currentIndex = 0;
+                            updatePosition(true);
+                            setTimeout(() => {
+                                isTransitioning = false;
+                            }, 50);
+                        }, 500);
+                    } else {
                         setTimeout(() => {
                             isTransitioning = false;
-                        }, 50);
-                    }, 500); // transition 시간과 동일
-                } else {
-                    setTimeout(() => {
-                        isTransitioning = false;
-                    }, 500);
+                        }, 500);
+                    }
                 }
+                
+                // 초기 위치 설정
+                updatePosition();
+                
+                // 3초마다 슬라이드 전환
+                setInterval(nextSlide, 3000);
+            } else {
+                // 무한루프 슬라이드 모드
+                const items = wrapper.querySelectorAll('.image-slide-item');
+                const totalItems = items.length;
+                
+                if (totalItems <= visibleCount) return;
+                
+                // 각 이미지의 너비 계산
+                const itemWidthPercent = 100 / visibleCount;
+                const singleSetWidth = (totalItems / 3) * itemWidthPercent;
+                
+                let position = 0;
+                const speed = 0.3; // 이동 속도 (% 단위)
+                
+                function animate() {
+                    if (direction === 'left') {
+                        position -= speed;
+                        // 첫 번째 세트가 완전히 사라지면 위치 리셋
+                        if (Math.abs(position) >= singleSetWidth) {
+                            position = 0;
+                        }
+                        container.style.transform = `translateX(${position}%)`;
+                    } else if (direction === 'right') {
+                        position += speed;
+                        // 첫 번째 세트가 완전히 사라지면 위치 리셋
+                        if (position >= singleSetWidth) {
+                            position = 0;
+                        }
+                        container.style.transform = `translateX(${position}%)`;
+                    }
+                    requestAnimationFrame(animate);
+                }
+                
+                animate();
             }
-            
-            // 초기 위치 설정
-            updatePosition();
-            
-            // 3초마다 슬라이드 전환
-            setInterval(nextSlide, 3000);
         })();
         </script>
     @endif

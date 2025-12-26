@@ -454,7 +454,7 @@
 <div class="mb-3" id="widget_image_slide_container" style="display: none;">
     <div class="mb-3">
         <label class="form-label">슬라이드 방향</label>
-        <div class="btn-group w-100" role="group">
+        <div class="btn-group w-100" role="group" id="image_slide_direction_group">
             <input type="radio" class="btn-check" name="image_slide_direction" id="image_slide_direction_left" value="left" checked>
             <label class="btn btn-outline-primary" for="image_slide_direction_left">
                 <i class="bi bi-arrow-left"></i> 좌
@@ -475,6 +475,51 @@
                 <i class="bi bi-arrow-down"></i> 하
             </label>
         </div>
+    </div>
+    <div class="mb-3">
+        <div class="form-check">
+            <input class="form-check-input" 
+                   type="checkbox" 
+                   id="widget_image_slide_single" 
+                   name="image_slide_single"
+                   checked
+                   onchange="handleImageSlideModeChange()">
+            <label class="form-check-label" for="widget_image_slide_single">
+                1단 슬라이드
+            </label>
+            <i class="bi bi-question-circle text-muted ms-2" 
+               data-bs-toggle="tooltip" 
+               data-bs-placement="top" 
+               title="3초마다 이미지가 1개씩 슬라이드됩니다." 
+               style="cursor: help; font-size: 0.9rem;"></i>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" 
+                   type="checkbox" 
+                   id="widget_image_slide_infinite" 
+                   name="image_slide_infinite"
+                   onchange="handleImageSlideModeChange()">
+            <label class="form-check-label" for="widget_image_slide_infinite">
+                무한루프 슬라이드
+            </label>
+            <i class="bi bi-question-circle text-muted ms-2" 
+               data-bs-toggle="tooltip" 
+               data-bs-placement="top" 
+               title="이미지가 좌우 방향으로 무한히 흘러가는 슬라이드입니다. 한번에 표시할 이미지 수를 지정할 수 있습니다." 
+               style="cursor: help; font-size: 0.9rem;"></i>
+        </div>
+    </div>
+    <div class="mb-3" id="widget_image_slide_visible_count_container" style="display: none;">
+        <label for="widget_image_slide_visible_count" class="form-label">표시할 이미지 수</label>
+        <input type="number" 
+               class="form-control" 
+               id="widget_image_slide_visible_count" 
+               name="image_slide_visible_count" 
+               min="1" 
+               max="10" 
+               value="3"
+               placeholder="3">
+        <small class="text-muted">한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
     </div>
     <div id="widget_image_slide_items">
         <!-- 이미지 아이템들이 여기에 동적으로 추가됨 -->
