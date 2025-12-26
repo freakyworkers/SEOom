@@ -748,7 +748,14 @@ class SiteSettingController extends Controller
                 $footerBg = $request->get('color_light_footer_bg', $settings['color_light_footer_bg'] ?? '#f8f9fa');
             }
             
-            $html = view('admin.partials.footer-preview', compact('theme', 'site', 'settings', 'footerText', 'footerBg'))->render();
+            $html = view('admin.partials.footer-preview', [
+                'theme' => $theme,
+                'site' => $site,
+                'settings' => $settings,
+                'footerText' => $footerText,
+                'footerBg' => $footerBg,
+                'themeDarkMode' => $themeDarkMode
+            ])->render();
         }
         
         return response()->json(['html' => $html]);
