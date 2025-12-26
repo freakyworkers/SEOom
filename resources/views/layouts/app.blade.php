@@ -541,6 +541,72 @@
             }
         @endif
         
+        /* 위젯 애니메이션 스타일 */
+        .widget-animate {
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+        
+        .widget-animate-left {
+            animation: slideInLeft 0.6s ease-out;
+        }
+        
+        .widget-animate-right {
+            animation: slideInRight 0.6s ease-out;
+        }
+        
+        .widget-animate-up {
+            animation: slideInUp 0.6s ease-out;
+        }
+        
+        .widget-animate-down {
+            animation: slideInDown 0.6s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         @if($themeMain === 'round')
         @elseif($themeMain === 'square')
             /* 스퀘어 스타일 - 모든 요소에 직각 적용 */
@@ -2073,6 +2139,38 @@
     });
     </script>
     @endauth
+    
+    {{-- 위젯 애니메이션 트리거 JavaScript --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Intersection Observer를 사용하여 위젯이 화면에 나타날 때 애니메이션 트리거
+        const animatedWidgets = document.querySelectorAll('.widget-animate');
+        
+        if (animatedWidgets.length > 0) {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1 // 위젯이 10% 보이면 트리거
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        // 위젯이 화면에 나타나면 애니메이션 클래스 추가
+                        entry.target.style.opacity = '1';
+                        observer.unobserve(entry.target); // 한 번만 실행
+                    }
+                });
+            }, observerOptions);
+            
+            // 초기 상태: 모든 애니메이션 위젯을 투명하게 설정
+            animatedWidgets.forEach(function(widget) {
+                widget.style.opacity = '0';
+                observer.observe(widget);
+            });
+        }
+    });
+    </script>
     
     {{-- 마스터 콘솔 SSO JavaScript --}}
     @php

@@ -22,6 +22,16 @@
     
     // 그림자 클래스 결정: 그림자 설정이 OFF이면 그림자 제거
     $shadowClass = !$widgetShadow ? '' : 'shadow-sm';
+    
+    // 애니메이션 설정 가져오기
+    $animationDirection = $widgetSettings['animation_direction'] ?? 'none';
+    $animationDelay = $widgetSettings['animation_delay'] ?? 0;
+    $animationClass = '';
+    $animationStyle = '';
+    if ($animationDirection !== 'none') {
+        $animationClass = 'widget-animate widget-animate-' . $animationDirection;
+        $animationStyle = 'animation-delay: ' . $animationDelay . 's;';
+    }
 @endphp
 
     @if($widget->type === 'block')
@@ -588,7 +598,7 @@
         </script>
     @endif
 @else
-<div class="card {{ $shadowClass }} mb-3 {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $widgetTopBorderStyle }}{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '' }}">
+<div class="card {{ $shadowClass }} {{ $animationClass }} mb-3 {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $widgetTopBorderStyle }}{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '' }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
     @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu')
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))

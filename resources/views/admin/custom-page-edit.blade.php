@@ -296,7 +296,8 @@
                                                                                  data-widget-id="{{ $widget->id }}" 
                                                                                  data-widget-title="{{ $widget->title }}"
                                                                                  data-widget-type="{{ $widget->type }}"
-                                                                                 data-widget-active="{{ $widget->is_active ? '1' : '0' }}">
+                                                                                 data-widget-active="{{ $widget->is_active ? '1' : '0' }}"
+                                                                                 data-widget-settings="{{ json_encode($widget->settings ?? []) }}">
                                                                                 {{-- 데스크탑 버전 (기존 가로 배치) --}}
                                                                                 <div class="card-body p-2 d-none d-md-block">
                                                                                     <div class="d-flex justify-content-between align-items-center">
@@ -323,6 +324,13 @@
                                                                                                     style="width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center;"
                                                                                                     title="아래로 이동">
                                                                                                 <i class="bi bi-arrow-down" style="font-size: 12px;"></i>
+                                                                                            </button>
+                                                                                            <button type="button" 
+                                                                                                    class="btn btn-sm btn-outline-info p-1" 
+                                                                                                    onclick="openCustomPageWidgetAnimationModal({{ $widget->id }})"
+                                                                                                    style="width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                                                                                                    title="애니메이션 설정">
+                                                                                                <i class="bi bi-magic" style="font-size: 12px;"></i>
                                                                                             </button>
                                                                                             <button type="button" 
                                                                                                     class="btn btn-sm btn-outline-primary p-1 edit-custom-page-widget-btn" 
@@ -367,6 +375,13 @@
                                                                                                 title="아래로 이동"
                                                                                                 style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
                                                                                             <i class="bi bi-arrow-down"></i>
+                                                                                        </button>
+                                                                                        <button type="button" 
+                                                                                                class="btn btn-sm btn-outline-info" 
+                                                                                                onclick="openCustomPageWidgetAnimationModal({{ $widget->id }})"
+                                                                                                title="애니메이션 설정"
+                                                                                                style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                                                            <i class="bi bi-magic"></i>
                                                                                         </button>
                                                                                         <button type="button" 
                                                                                                 class="btn btn-sm btn-outline-primary edit-custom-page-widget-btn" 
@@ -3995,6 +4010,172 @@ function removeCountdownNumberItem(itemIndex) {
     if (item) {
         item.remove();
     }
+}
+
+// 커스텀 페이지 위젯 애니메이션 모달 열기
+function openCustomPageWidgetAnimationModal(widgetId) {
+    document.getElementById('custom_page_widget_animation_id').value = widgetId;
+    
+    // 기존 애니메이션 설정 불러오기
+    const widgetItem = document.querySelector(`[data-widget-id="${widgetId}"]`);
+    if (widgetItem) {
+        const settings = widgetItem.dataset.widgetSettings ? JSON.parse(widgetItem.dataset.widgetSettings) : {};
+        const animationDirection = settings.animation_direction || 'none';
+        const animationDelay = settings.animation_delay || 0;
+        
+        // 방향 버튼 선택 상태 초기화
+        document.querySelectorAll('#customPageWidgetAnimationModal .animation-direction-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // 선택된 방향 버튼 활성화
+        const selectedBtn = document.querySelector(`#customPageWidgetAnimationModal .animation-direction-btn[data-direction="${animationDirection}"]`);
+        if (selectedBtn) {
+            selectedBtn.classList.add('active');
+        }
+        
+        document.getElementById('custom_page_widget_animation_direction').value = animationDirection;
+        document.getElementById('custom_page_widget_animation_delay').value = animationDelay;
+    } else {
+        // 기본값 설정
+        document.querySelectorAll('#customPageWidgetAnimationModal .animation-direction-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector('#customPageWidgetAnimationModal .animation-direction-btn[data-direction="none"]').classList.add('active');
+        document.getElementById('custom_page_widget_animation_direction').value = 'none';
+        document.getElementById('custom_page_widget_animation_delay').value = 0;
+    }
+    
+    // 툴팁 초기화
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('#customPageWidgetAnimationModal [data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    const modal = new bootstrap.Modal(document.getElementById('customPageWidgetAnimationModal'));
+    modal.show();
+}
+
+// 커스텀 페이지 애니메이션 방향 선택
+function selectCustomPageAnimationDirection(direction, button) {
+    // 모든 버튼에서 active 클래스 제거
+    document.querySelectorAll('#customPageWidgetAnimationModal .animation-direction-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // 선택된 버튼에 active 클래스 추가
+    button.classList.add('active');
+    
+    // hidden input에 값 설정
+    document.getElementById('custom_page_widget_animation_direction').value = direction;
+}
+
+// 커스텀 페이지 위젯 애니메이션 설정 저장
+function saveCustomPageWidgetAnimation() {
+    const widgetId = document.getElementById('custom_page_widget_animation_id').value;
+    const animationDirection = document.getElementById('custom_page_widget_animation_direction').value;
+    const animationDelay = parseFloat(document.getElementById('custom_page_widget_animation_delay').value) || 0;
+    
+    if (!widgetId) {
+        alert('위젯 ID를 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 위젯 정보 가져오기
+    const widgetItem = document.querySelector(`[data-widget-id="${widgetId}"]`);
+    if (!widgetItem) {
+        alert('위젯을 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 기존 설정 가져오기
+    let existingSettings = {};
+    try {
+        const settingsStr = widgetItem.dataset.widgetSettings;
+        if (settingsStr) {
+            existingSettings = JSON.parse(settingsStr);
+        }
+    } catch (e) {
+        console.error('Error parsing widget settings:', e);
+    }
+    
+    // 애니메이션 설정 추가
+    existingSettings.animation_direction = animationDirection;
+    existingSettings.animation_delay = animationDelay;
+    
+    // 위젯 설정 업데이트 API 호출
+    const modal = document.getElementById('customPageWidgetSettingsModal');
+    const fetchRoute = modal ? modal.getAttribute('data-fetch-route') : '';
+    const updateRoute = modal ? modal.getAttribute('data-update-route') : '';
+    
+    if (!updateRoute) {
+        alert('위젯 정보를 가져올 수 없습니다.');
+        return;
+    }
+    
+    const actualRoute = updateRoute.replace(':id', widgetId);
+    
+    const formData = new FormData();
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    formData.append('_method', 'PUT');
+    
+    // 위젯 기본 정보도 포함
+    formData.append('title', widgetItem.dataset.widgetTitle || '');
+    formData.append('is_active', widgetItem.dataset.widgetActive || '1');
+    
+    // 기존 설정 유지하면서 애니메이션 설정만 추가
+    const settings = existingSettings;
+    formData.append('settings', JSON.stringify(settings));
+    
+    // 저장 버튼 비활성화
+    const saveBtn = document.querySelector('#customPageWidgetAnimationModal .btn-primary');
+    const originalBtnText = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>저장 중...';
+    
+    fetch(actualRoute, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalBtnText;
+        
+        if (data.success) {
+            // 모달 닫기
+            const modal = bootstrap.Modal.getInstance(document.getElementById('customPageWidgetAnimationModal'));
+            modal.hide();
+            
+            // 성공 메시지 표시
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                <i class="bi bi-check-circle me-2"></i>애니메이션 설정이 저장되었습니다.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.page-header').after(alertDiv);
+            
+            // 3초 후 자동으로 알림 제거
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+            
+            // 위젯 아이템의 data 속성 업데이트
+            widgetItem.setAttribute('data-widget-settings', JSON.stringify(settings));
+        } else {
+            alert('저장 중 오류가 발생했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalBtnText;
+        alert('저장 중 오류가 발생했습니다.');
+    });
 }
 </script>
 @endpush

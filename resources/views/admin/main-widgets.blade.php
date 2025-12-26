@@ -332,7 +332,8 @@
                                                                                  data-widget-id="{{ $widget->id }}" 
                                                                                  data-widget-title="{{ $widget->title }}"
                                                                                  data-widget-type="{{ $widget->type }}"
-                                                                                 data-widget-active="{{ $widget->is_active ? '1' : '0' }}">
+                                                                                 data-widget-active="{{ $widget->is_active ? '1' : '0' }}"
+                                                                                 data-widget-settings="{{ json_encode($widget->settings ?? []) }}">
                                                                                 {{-- 데스크탑 버전 (기존 가로 배치) --}}
                                                                                 <div class="card-body p-2 d-none d-md-block">
                                                                                     <div class="d-flex justify-content-between align-items-center">
@@ -359,6 +360,13 @@
                                                                                                     style="width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center;"
                                                                                                     title="아래로 이동">
                                                                                                 <i class="bi bi-arrow-down" style="font-size: 12px;"></i>
+                                                                                            </button>
+                                                                                            <button type="button" 
+                                                                                                    class="btn btn-sm btn-outline-info p-1" 
+                                                                                                    onclick="openMainWidgetAnimationModal({{ $widget->id }})"
+                                                                                                    style="width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                                                                                                    title="애니메이션 설정">
+                                                                                                <i class="bi bi-magic" style="font-size: 12px;"></i>
                                                                                             </button>
                                                                                             <button type="button" 
                                                                                                     class="btn btn-sm btn-outline-primary p-1" 
@@ -403,6 +411,13 @@
                                                                                                 title="아래로 이동"
                                                                                                 style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
                                                                                             <i class="bi bi-arrow-down"></i>
+                                                                                        </button>
+                                                                                        <button type="button" 
+                                                                                                class="btn btn-sm btn-outline-info" 
+                                                                                                onclick="openMainWidgetAnimationModal({{ $widget->id }})"
+                                                                                                title="애니메이션 설정"
+                                                                                                style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                                                            <i class="bi bi-magic"></i>
                                                                                         </button>
                                                                                         <button type="button" 
                                                                                                 class="btn btn-sm btn-outline-primary" 
@@ -461,6 +476,87 @@
             </div>
             <div class="modal-footer border-0 pt-0">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 위젯 애니메이션 설정 모달 -->
+<div class="modal fade" id="mainWidgetAnimationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">위젯 애니메이션 설정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="mainWidgetAnimationForm">
+                    <input type="hidden" id="main_widget_animation_id" name="widget_id">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            애니메이션 방향
+                            <i class="bi bi-question-circle text-muted ms-1" 
+                               data-bs-toggle="tooltip" 
+                               data-bs-placement="top" 
+                               title="위젯이 화면에 나타날 때의 애니메이션 방향을 선택합니다. 스크롤하거나 페이지를 새로고침할 때 적용됩니다."></i>
+                        </label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="left"
+                                    onclick="selectAnimationDirection('left', this)">
+                                <i class="bi bi-arrow-left"></i> 좌
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="right"
+                                    onclick="selectAnimationDirection('right', this)">
+                                <i class="bi bi-arrow-right"></i> 우
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="up"
+                                    onclick="selectAnimationDirection('up', this)">
+                                <i class="bi bi-arrow-up"></i> 상
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="down"
+                                    onclick="selectAnimationDirection('down', this)">
+                                <i class="bi bi-arrow-down"></i> 하
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-secondary animation-direction-btn" 
+                                    data-direction="none"
+                                    onclick="selectAnimationDirection('none', this)">
+                                없음
+                            </button>
+                        </div>
+                        <input type="hidden" id="main_widget_animation_direction" name="animation_direction" value="none">
+                    </div>
+                    <div class="mb-3">
+                        <label for="main_widget_animation_delay" class="form-label">
+                            애니메이션 지연 시간 (초)
+                            <i class="bi bi-question-circle text-muted ms-1" 
+                               data-bs-toggle="tooltip" 
+                               data-bs-placement="top" 
+                               title="애니메이션이 시작되기 전 대기 시간을 초 단위로 설정합니다. 예: 0.5초, 1초, 1.5초 등"></i>
+                        </label>
+                        <input type="number" 
+                               class="form-control" 
+                               id="main_widget_animation_delay" 
+                               name="animation_delay" 
+                               value="0" 
+                               min="0" 
+                               step="0.1"
+                               placeholder="0">
+                        <small class="text-muted">0 이상의 숫자를 입력하세요 (예: 0, 0.5, 1, 1.5)</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="saveMainWidgetAnimation()">저장</button>
             </div>
         </div>
     </div>
@@ -3671,6 +3767,164 @@ let editMainTabMenuIndex = 0;
 let editMainBlockSlideItemIndex = 0;
 let editMainImageSlideItemIndex = 0;
 
+// 메인 위젯 애니메이션 모달 열기
+function openMainWidgetAnimationModal(widgetId) {
+    document.getElementById('main_widget_animation_id').value = widgetId;
+    
+    // 기존 애니메이션 설정 불러오기
+    const widgetItem = document.querySelector(`[data-widget-id="${widgetId}"]`);
+    if (widgetItem) {
+        const settings = widgetItem.dataset.widgetSettings ? JSON.parse(widgetItem.dataset.widgetSettings) : {};
+        const animationDirection = settings.animation_direction || 'none';
+        const animationDelay = settings.animation_delay || 0;
+        
+        // 방향 버튼 선택 상태 초기화
+        document.querySelectorAll('.animation-direction-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // 선택된 방향 버튼 활성화
+        const selectedBtn = document.querySelector(`.animation-direction-btn[data-direction="${animationDirection}"]`);
+        if (selectedBtn) {
+            selectedBtn.classList.add('active');
+        }
+        
+        document.getElementById('main_widget_animation_direction').value = animationDirection;
+        document.getElementById('main_widget_animation_delay').value = animationDelay;
+    } else {
+        // 기본값 설정
+        document.querySelectorAll('.animation-direction-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector('.animation-direction-btn[data-direction="none"]').classList.add('active');
+        document.getElementById('main_widget_animation_direction').value = 'none';
+        document.getElementById('main_widget_animation_delay').value = 0;
+    }
+    
+    // 툴팁 초기화
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('#mainWidgetAnimationModal [data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    const modal = new bootstrap.Modal(document.getElementById('mainWidgetAnimationModal'));
+    modal.show();
+}
+
+// 애니메이션 방향 선택
+function selectAnimationDirection(direction, button) {
+    // 모든 버튼에서 active 클래스 제거
+    document.querySelectorAll('.animation-direction-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // 선택된 버튼에 active 클래스 추가
+    button.classList.add('active');
+    
+    // hidden input에 값 설정
+    document.getElementById('main_widget_animation_direction').value = direction;
+}
+
+// 메인 위젯 애니메이션 설정 저장
+function saveMainWidgetAnimation() {
+    const widgetId = document.getElementById('main_widget_animation_id').value;
+    const animationDirection = document.getElementById('main_widget_animation_direction').value;
+    const animationDelay = parseFloat(document.getElementById('main_widget_animation_delay').value) || 0;
+    
+    if (!widgetId) {
+        alert('위젯 ID를 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 위젯 정보 가져오기
+    const widgetItem = document.querySelector(`[data-widget-id="${widgetId}"]`);
+    if (!widgetItem) {
+        alert('위젯을 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 기존 설정 가져오기
+    let existingSettings = {};
+    try {
+        const settingsStr = widgetItem.dataset.widgetSettings;
+        if (settingsStr) {
+            existingSettings = JSON.parse(settingsStr);
+        }
+    } catch (e) {
+        console.error('Error parsing widget settings:', e);
+    }
+    
+    // 애니메이션 설정 추가
+    existingSettings.animation_direction = animationDirection;
+    existingSettings.animation_delay = animationDelay;
+    
+    // 위젯 설정 업데이트 API 호출
+    const updateRoute = document.getElementById('mainWidgetSettingsModal').getAttribute('data-update-route');
+    const actualRoute = updateRoute.replace(':id', widgetId);
+    
+    const formData = new FormData();
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    formData.append('_method', 'PUT');
+    
+    // 위젯 기본 정보도 포함
+    formData.append('title', widgetItem.dataset.widgetTitle || '');
+    formData.append('is_active', widgetItem.dataset.widgetActive || '1');
+    
+    // 기존 설정 유지하면서 애니메이션 설정만 추가
+    const settings = existingSettings;
+    formData.append('settings', JSON.stringify(settings));
+    
+    // 저장 버튼 비활성화
+    const saveBtn = document.querySelector('#mainWidgetAnimationModal .btn-primary');
+    const originalBtnText = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>저장 중...';
+    
+    fetch(actualRoute, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalBtnText;
+        
+        if (data.success) {
+            // 모달 닫기
+            const modal = bootstrap.Modal.getInstance(document.getElementById('mainWidgetAnimationModal'));
+            modal.hide();
+            
+            // 성공 메시지 표시
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                <i class="bi bi-check-circle me-2"></i>애니메이션 설정이 저장되었습니다.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.page-header').after(alertDiv);
+            
+            // 3초 후 자동으로 알림 제거
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+            
+            // 위젯 아이템의 data 속성 업데이트
+            widgetItem.setAttribute('data-widget-settings', JSON.stringify(settings));
+        } else {
+            alert('저장 중 오류가 발생했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalBtnText;
+        alert('저장 중 오류가 발생했습니다.');
+    });
+}
+
 function saveMainWidgetSettings() {
     const form = document.getElementById('editMainWidgetForm');
     if (!form) {
@@ -3730,6 +3984,17 @@ function saveMainWidgetSettings() {
             const widgetData = JSON.parse(widgetDataStr);
             if (widgetData && widgetData.settings) {
                 existingSettings = widgetData.settings;
+            }
+        }
+        // 위젯 아이템에서 직접 설정 가져오기 (애니메이션 설정 포함)
+        if (widgetItem && widgetItem.dataset.widgetSettings) {
+            const itemSettings = JSON.parse(widgetItem.dataset.widgetSettings);
+            // 애니메이션 설정이 있으면 유지
+            if (itemSettings.animation_direction !== undefined) {
+                existingSettings.animation_direction = itemSettings.animation_direction;
+            }
+            if (itemSettings.animation_delay !== undefined) {
+                existingSettings.animation_delay = itemSettings.animation_delay;
             }
         }
     } catch (e) {

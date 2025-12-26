@@ -62,6 +62,7 @@
                                              data-widget-title="{{ $widget->title }}"
                                              data-widget-type="{{ $widget->type }}"
                                              data-widget-active="{{ $widget->is_active ? '1' : '0' }}"
+                                             data-widget-settings="{{ json_encode($widget->settings ?? []) }}"
                                              draggable="true">
                                             <div class="card-body">
                                                 <div class="d-flex justify-content-between align-items-center">
@@ -94,6 +95,12 @@
                                                         </div>
                                                     </div>
                                                     <div class="d-flex gap-2">
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-outline-info" 
+                                                                onclick="openSidebarWidgetAnimationModal({{ $widget->id }})"
+                                                                title="애니메이션 설정">
+                                                            <i class="bi bi-magic"></i>
+                                                        </button>
                                                         <button type="button" 
                                                                 class="btn btn-sm btn-outline-primary" 
                                                                 onclick="editWidget({{ $widget->id }})">
@@ -703,6 +710,87 @@
                 <button type="button" class="btn btn-primary" onclick="saveSidebarWidgetSettings()">
                     <i class="bi bi-save me-2"></i>저장
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 사이드 위젯 애니메이션 설정 모달 -->
+<div class="modal fade" id="sidebarWidgetAnimationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">위젯 애니메이션 설정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="sidebarWidgetAnimationForm">
+                    <input type="hidden" id="sidebar_widget_animation_id" name="widget_id">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            애니메이션 방향
+                            <i class="bi bi-question-circle text-muted ms-1" 
+                               data-bs-toggle="tooltip" 
+                               data-bs-placement="top" 
+                               title="위젯이 화면에 나타날 때의 애니메이션 방향을 선택합니다. 스크롤하거나 페이지를 새로고침할 때 적용됩니다."></i>
+                        </label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="left"
+                                    onclick="selectSidebarAnimationDirection('left', this)">
+                                <i class="bi bi-arrow-left"></i> 좌
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="right"
+                                    onclick="selectSidebarAnimationDirection('right', this)">
+                                <i class="bi bi-arrow-right"></i> 우
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="up"
+                                    onclick="selectSidebarAnimationDirection('up', this)">
+                                <i class="bi bi-arrow-up"></i> 상
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="down"
+                                    onclick="selectSidebarAnimationDirection('down', this)">
+                                <i class="bi bi-arrow-down"></i> 하
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-secondary animation-direction-btn" 
+                                    data-direction="none"
+                                    onclick="selectSidebarAnimationDirection('none', this)">
+                                없음
+                            </button>
+                        </div>
+                        <input type="hidden" id="sidebar_widget_animation_direction" name="animation_direction" value="none">
+                    </div>
+                    <div class="mb-3">
+                        <label for="sidebar_widget_animation_delay" class="form-label">
+                            애니메이션 지연 시간 (초)
+                            <i class="bi bi-question-circle text-muted ms-1" 
+                               data-bs-toggle="tooltip" 
+                               data-bs-placement="top" 
+                               title="애니메이션이 시작되기 전 대기 시간을 초 단위로 설정합니다. 예: 0.5초, 1초, 1.5초 등"></i>
+                        </label>
+                        <input type="number" 
+                               class="form-control" 
+                               id="sidebar_widget_animation_delay" 
+                               name="animation_delay" 
+                               value="0" 
+                               min="0" 
+                               step="0.1"
+                               placeholder="0">
+                        <small class="text-muted">0 이상의 숫자를 입력하세요 (예: 0, 0.5, 1, 1.5)</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="saveSidebarWidgetAnimation()">저장</button>
             </div>
         </div>
     </div>
@@ -4305,6 +4393,163 @@ function saveWidgetOrder() {
     min-height: 200px;
 }
 </style>
+// 사이드 위젯 애니메이션 모달 열기
+function openSidebarWidgetAnimationModal(widgetId) {
+    document.getElementById('sidebar_widget_animation_id').value = widgetId;
+    
+    // 기존 애니메이션 설정 불러오기
+    const widgetItem = document.querySelector(`[data-widget-id="${widgetId}"]`);
+    if (widgetItem) {
+        const settings = widgetItem.dataset.widgetSettings ? JSON.parse(widgetItem.dataset.widgetSettings) : {};
+        const animationDirection = settings.animation_direction || 'none';
+        const animationDelay = settings.animation_delay || 0;
+        
+        // 방향 버튼 선택 상태 초기화
+        document.querySelectorAll('#sidebarWidgetAnimationModal .animation-direction-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // 선택된 방향 버튼 활성화
+        const selectedBtn = document.querySelector(`#sidebarWidgetAnimationModal .animation-direction-btn[data-direction="${animationDirection}"]`);
+        if (selectedBtn) {
+            selectedBtn.classList.add('active');
+        }
+        
+        document.getElementById('sidebar_widget_animation_direction').value = animationDirection;
+        document.getElementById('sidebar_widget_animation_delay').value = animationDelay;
+    } else {
+        // 기본값 설정
+        document.querySelectorAll('#sidebarWidgetAnimationModal .animation-direction-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector('#sidebarWidgetAnimationModal .animation-direction-btn[data-direction="none"]').classList.add('active');
+        document.getElementById('sidebar_widget_animation_direction').value = 'none';
+        document.getElementById('sidebar_widget_animation_delay').value = 0;
+    }
+    
+    // 툴팁 초기화
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('#sidebarWidgetAnimationModal [data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    const modal = new bootstrap.Modal(document.getElementById('sidebarWidgetAnimationModal'));
+    modal.show();
+}
+
+// 사이드 위젯 애니메이션 방향 선택
+function selectSidebarAnimationDirection(direction, button) {
+    // 모든 버튼에서 active 클래스 제거
+    document.querySelectorAll('#sidebarWidgetAnimationModal .animation-direction-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // 선택된 버튼에 active 클래스 추가
+    button.classList.add('active');
+    
+    // hidden input에 값 설정
+    document.getElementById('sidebar_widget_animation_direction').value = direction;
+}
+
+// 사이드 위젯 애니메이션 설정 저장
+function saveSidebarWidgetAnimation() {
+    const widgetId = document.getElementById('sidebar_widget_animation_id').value;
+    const animationDirection = document.getElementById('sidebar_widget_animation_direction').value;
+    const animationDelay = parseFloat(document.getElementById('sidebar_widget_animation_delay').value) || 0;
+    
+    if (!widgetId) {
+        alert('위젯 ID를 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 위젯 정보 가져오기
+    const widgetItem = document.querySelector(`[data-widget-id="${widgetId}"]`);
+    if (!widgetItem) {
+        alert('위젯을 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 기존 설정 가져오기
+    let existingSettings = {};
+    try {
+        const settingsStr = widgetItem.dataset.widgetSettings;
+        if (settingsStr) {
+            existingSettings = JSON.parse(settingsStr);
+        }
+    } catch (e) {
+        console.error('Error parsing widget settings:', e);
+    }
+    
+    // 애니메이션 설정 추가
+    existingSettings.animation_direction = animationDirection;
+    existingSettings.animation_delay = animationDelay;
+    
+    // 위젯 설정 업데이트 API 호출
+    const updateRoute = '{{ $site->isMasterSite() ? route("master.admin.sidebar-widgets.update", ["widget" => ":id"]) : route("admin.sidebar-widgets.update", ["site" => $site->slug, "widget" => ":id"]) }}';
+    const actualRoute = updateRoute.replace(':id', widgetId);
+    
+    const formData = new FormData();
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    formData.append('_method', 'PUT');
+    
+    // 위젯 기본 정보도 포함
+    formData.append('title', widgetItem.dataset.widgetTitle || '');
+    formData.append('is_active', widgetItem.dataset.widgetActive || '1');
+    
+    // 기존 설정 유지하면서 애니메이션 설정만 추가
+    const settings = existingSettings;
+    formData.append('settings', JSON.stringify(settings));
+    
+    // 저장 버튼 비활성화
+    const saveBtn = document.querySelector('#sidebarWidgetAnimationModal .btn-primary');
+    const originalBtnText = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>저장 중...';
+    
+    fetch(actualRoute, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalBtnText;
+        
+        if (data.success) {
+            // 모달 닫기
+            const modal = bootstrap.Modal.getInstance(document.getElementById('sidebarWidgetAnimationModal'));
+            modal.hide();
+            
+            // 성공 메시지 표시
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                <i class="bi bi-check-circle me-2"></i>애니메이션 설정이 저장되었습니다.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.page-header').after(alertDiv);
+            
+            // 3초 후 자동으로 알림 제거
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+            
+            // 위젯 아이템의 data 속성 업데이트
+            widgetItem.setAttribute('data-widget-settings', JSON.stringify(settings));
+        } else {
+            alert('저장 중 오류가 발생했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalBtnText;
+        alert('저장 중 오류가 발생했습니다.');
+    });
+}
 @endpush
 @endsection
 

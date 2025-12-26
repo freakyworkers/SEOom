@@ -28,6 +28,16 @@
     
     // 그림자 클래스 결정: full width/full height이거나 그림자 설정이 OFF이면 그림자 제거
     $shadowClass = ($isFullWidth || $isFullHeight || !$widgetShadow) ? '' : 'shadow-sm';
+    
+    // 애니메이션 설정 가져오기
+    $animationDirection = $widgetSettings['animation_direction'] ?? 'none';
+    $animationDelay = $widgetSettings['animation_delay'] ?? 0;
+    $animationClass = '';
+    $animationStyle = '';
+    if ($animationDirection !== 'none') {
+        $animationClass = 'widget-animate widget-animate-' . $animationDirection;
+        $animationStyle = 'animation-delay: ' . $animationDelay . 's;';
+    }
 @endphp
 
     @if($widget->type === 'block')
@@ -67,7 +77,7 @@
         
         $blockMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
     @endphp
-    <div class="{{ $blockMarginBottom }} {{ $shadowClass }}" style="{{ $blockStyle }}">
+    <div class="{{ $blockMarginBottom }} {{ $shadowClass }} {{ $animationClass }}" style="{{ $blockStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
         @if($link && !$showButton)
             <a href="{{ $link }}" 
                style="color: {{ $fontColor }}; text-decoration: none; display: block;"
@@ -113,7 +123,8 @@
         $blocks = $slideSettings['blocks'] ?? [];
     @endphp
     @if(count($blocks) > 0)
-        <div class="mb-3 block-slide-wrapper {{ $shadowClass }}" 
+        <div class="mb-3 block-slide-wrapper {{ $shadowClass }} {{ $animationClass }}" 
+             style="{{ $animationStyle }}"
              data-direction="{{ $slideDirection }}" 
              data-widget-id="{{ $widget->id }}"
              style="position: relative; overflow: hidden; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 200px;' : '' }}">
@@ -346,7 +357,7 @@
         $openNewTab = $imageSettings['open_new_tab'] ?? false;
     @endphp
     @if($imageUrl)
-        <div class="mb-3 {{ $shadowClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }}">
+        <div class="mb-3 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
             @if($link)
                 <a href="{{ $link }}" 
                    @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
@@ -368,13 +379,13 @@
         $images = $imageSlideSettings['images'] ?? [];
     @endphp
     @if(count($images) > 0)
-        <div class="mb-3 image-slide-wrapper {{ $shadowClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" 
+        <div class="mb-3 image-slide-wrapper {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" 
              data-direction="{{ $slideDirection }}" 
              data-mode="{{ $slideMode }}"
              data-visible-count="{{ $visibleCount }}"
              data-image-gap="{{ $imageGap }}"
              data-widget-id="{{ $widget->id }}"
-             style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }}">
+             style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }} {{ $animationStyle }}">
             <div class="image-slide-container" style="display: flex; {{ $slideMode === 'infinite' ? 'flex-direction: row;' : '' }} {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'flex-direction: column; height: 100%;' : '' }}{{ $slideMode === 'single' ? ' transition: transform 0.5s ease-in-out;' : '' }}">
                 @if($slideMode === 'single')
                     @foreach($images as $index => $image)
@@ -613,7 +624,7 @@
     }
     $cardMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
 @endphp
-<div class="card {{ $shadowClass }} {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }}">
+<div class="card {{ $shadowClass }} {{ $animationClass }} {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
     @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat' && $widget->type !== 'chat_widget' && $widget->type !== 'create_site' && $widget->type !== 'countdown')
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
