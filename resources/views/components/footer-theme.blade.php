@@ -15,8 +15,8 @@
     $todayVisitors = \App\Models\Visitor::getTodayCount($site->id);
     $totalVisitors = \App\Models\Visitor::getTotalCount($site->id);
     
-    // 사이트 로고 정보
-    $siteLogo = $site->getSetting('site_logo', '');
+    // 사이트 로고 정보: 다크 모드일 때 다크 모드 로고 사용
+    $siteLogo = $isDark ? ($site->getSetting('site_logo_dark', '') ?: $site->getSetting('site_logo', '')) : $site->getSetting('site_logo', '');
     $logoType = $site->getSetting('logo_type', 'image');
     $siteName = $site->getSetting('site_name', $site->name ?? 'SEOom Builder');
     $logoDesktopSize = $site->getSetting('logo_desktop_size', '300');

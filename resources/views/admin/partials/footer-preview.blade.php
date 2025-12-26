@@ -13,8 +13,10 @@
     $todayVisitors = 123;
     $totalVisitors = 4567;
     
-    // 사이트 로고 정보
-    $siteLogo = $settings['site_logo'] ?? '';
+    // 사이트 로고 정보: 다크 모드일 때 다크 모드 로고 사용
+    $themeDarkMode = $settings['theme_dark_mode'] ?? 'light';
+    $isDark = $themeDarkMode === 'dark';
+    $siteLogo = $isDark ? ($settings['site_logo_dark'] ?? $settings['site_logo'] ?? '') : ($settings['site_logo'] ?? '');
     $logoType = $settings['logo_type'] ?? 'image';
     $siteName = $settings['site_name'] ?? ($site->name ?? 'SEOom Builder');
     $logoDesktopSize = $settings['logo_desktop_size'] ?? '300';

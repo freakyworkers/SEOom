@@ -98,6 +98,8 @@ class SiteSettingController extends Controller
         $footerTheme = $settings['theme_bottom'] ?? 'theme03';
         $footerText = $isDark ? ($settings['color_dark_footer_text'] ?? '#ffffff') : ($settings['color_light_footer_text'] ?? '#000000');
         $footerBg = $isDark ? ($settings['color_dark_footer_bg'] ?? '#000000') : ($settings['color_light_footer_bg'] ?? '#f8f9fa');
+        // 푸터 로고: 다크 모드일 때 다크 모드 로고 사용
+        $footerSiteLogo = $isDark ? ($settings['site_logo_dark'] ?? $settings['site_logo'] ?? '') : ($settings['site_logo'] ?? '');
         
         try {
             $footerPreviewHtml = view('admin.partials.footer-preview', [
@@ -105,7 +107,8 @@ class SiteSettingController extends Controller
                 'site' => $site,
                 'settings' => $settings,
                 'footerText' => $footerText,
-                'footerBg' => $footerBg
+                'footerBg' => $footerBg,
+                'themeDarkMode' => $themeDarkMode
             ])->render();
             
             // 디버깅: 빈 HTML인지 확인
