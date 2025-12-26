@@ -323,9 +323,17 @@
                                                             $isHidden = in_array($i, $hiddenColumns);
                                                             $mergeSpan = $columnMerges[$i] ?? 1;
                                                             $colWidth = $mergeSpan * (12 / $container->columns);
+                                                            // 병합되지 않은 칸에서 다음 칸 병합 가능 여부
                                                             $canMerge = ($i < $container->columns - 1) && !$isHidden && !isset($columnMerges[$i]);
-                                                            $columnLabel = '칸 ' . ($i + 1);
+                                                            // 병합된 칸에서도 다음 칸 병합 가능 여부 (병합 범위 끝이 전체 칸 수보다 작으면)
+                                                            $canMergeNext = false;
                                                             if (isset($columnMerges[$i]) && $mergeSpan > 1) {
+                                                                $mergeEnd = $i + $mergeSpan - 1; // 병합 범위의 마지막 칸 인덱스
+                                                                $canMergeNext = ($mergeEnd < $container->columns - 1) && !$isHidden;
+                                                            }
+                                                            $isMerged = isset($columnMerges[$i]) && $mergeSpan > 1;
+                                                            $columnLabel = '칸 ' . ($i + 1);
+                                                            if ($isMerged) {
                                                                 if ($mergeSpan == 2) {
                                                                     $columnLabel = '칸 ' . ($i + 1) . '/' . ($i + 2);
                                                                 } else {
@@ -346,12 +354,21 @@
                                                                                         title="다음 칸과 병합">
                                                                                     <i class="bi bi-arrow-right-circle"></i> 다음칸병합
                                                                                 </button>
-                                                                            @elseif(isset($columnMerges[$i]) && $mergeSpan > 1)
+                                                                            @endif
+                                                                            @if($isMerged)
                                                                                 <button type="button" 
                                                                                         class="btn btn-sm btn-outline-warning" 
                                                                                         onclick="unmergeColumn({{ $container->id }}, {{ $i }})"
                                                                                         title="병합 해제">
                                                                                     <i class="bi bi-x-circle"></i> 병합해제
+                                                                                </button>
+                                                                            @endif
+                                                                            @if($canMergeNext)
+                                                                                <button type="button" 
+                                                                                        class="btn btn-sm btn-outline-secondary" 
+                                                                                        onclick="mergeNextColumn({{ $container->id }}, {{ $i }})"
+                                                                                        title="다음 칸과 병합">
+                                                                                    <i class="bi bi-arrow-right-circle"></i> 다음칸병합
                                                                                 </button>
                                                                             @endif
                                                                             <button type="button" 
@@ -1538,22 +1555,28 @@ function mergeNextColumn(containerId, columnIndex) {
     const columnCells = containerItem.querySelectorAll('.column-cell');
     const totalColumns = parseInt(containerItem.querySelector('select[onchange*="updateContainerColumns"]')?.value || '1');
     
-    if (columnIndex >= totalColumns - 1) {
-        alert('마지막 칸은 병합할 수 없습니다.');
-        return;
-    }
-    
     // 현재 병합 정보 가져오기
     const currentMerges = JSON.parse(containerItem.getAttribute('data-column-merges') || '{}');
     
-    // 병합 정보 업데이트
+    // 현재 칸의 병합 범위 계산
     const currentSpan = currentMerges[columnIndex] || 1;
-    currentMerges[columnIndex] = currentSpan + 1;
+    const mergeEnd = columnIndex + currentSpan - 1; // 병합 범위의 마지막 칸 인덱스
     
-    // 다음 칸이 병합의 시작점이었다면 제거
-    if (currentMerges[columnIndex + 1]) {
-        delete currentMerges[columnIndex + 1];
+    // 병합 범위 끝이 마지막 칸이면 병합 불가
+    if (mergeEnd >= totalColumns - 1) {
+        alert('더 이상 병합할 수 있는 칸이 없습니다.');
+        return;
     }
+    
+    // 다음 병합할 칸이 이미 다른 병합에 포함되어 있는지 확인
+    const nextColumnIndex = mergeEnd + 1;
+    if (currentMerges[nextColumnIndex]) {
+        // 다음 칸이 병합의 시작점이었다면 제거하고 현재 병합에 포함
+        delete currentMerges[nextColumnIndex];
+    }
+    
+    // 병합 정보 업데이트
+    currentMerges[columnIndex] = currentSpan + 1;
     
     // 서버에 저장
     const formData = new FormData();
