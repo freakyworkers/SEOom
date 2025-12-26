@@ -16,6 +16,12 @@
     // 테마 설정 가져오기
     $themeMain = $site->getSetting('theme_main', 'round');
     $isRoundTheme = $themeMain === 'round';
+    
+    // 위젯 그림자 설정 확인 (기본값: ON)
+    $widgetShadow = $site->getSetting('widget_shadow', '1') == '1';
+    
+    // 그림자 클래스 결정: 그림자 설정이 OFF이면 그림자 제거
+    $shadowClass = !$widgetShadow ? '' : 'shadow-sm';
 @endphp
 
     @if($widget->type === 'block')
@@ -48,7 +54,7 @@
             $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
         }
     @endphp
-    <div class="mb-3 shadow-sm" style="{{ $blockStyle }}">
+    <div class="mb-3 {{ $shadowClass }}" style="{{ $blockStyle }}">
         @if($link && !$showButton)
             <a href="{{ $link }}" 
                style="color: {{ $fontColor }}; text-decoration: none; display: block;"
@@ -94,7 +100,7 @@
         $blocks = $slideSettings['blocks'] ?? [];
     @endphp
     @if(count($blocks) > 0)
-        <div class="mb-3 block-slide-wrapper shadow-sm" 
+        <div class="mb-3 block-slide-wrapper {{ $shadowClass }}" 
              data-direction="{{ $slideDirection }}" 
              data-widget-id="{{ $widget->id }}"
              style="position: relative; overflow: hidden; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 200px;' : '' }}">
@@ -325,7 +331,7 @@
         $openNewTab = $imageSettings['open_new_tab'] ?? false;
     @endphp
     @if($imageUrl)
-        <div class="mb-3 shadow-sm {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }}">
+        <div class="mb-3 {{ $shadowClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }}">
             @if($link)
                 <a href="{{ $link }}" 
                    @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
@@ -347,7 +353,7 @@
         $images = $imageSlideSettings['images'] ?? [];
     @endphp
     @if(count($images) > 0)
-        <div class="mb-3 image-slide-wrapper shadow-sm {{ $isRoundTheme ? '' : 'rounded-0' }}" 
+        <div class="mb-3 image-slide-wrapper {{ $shadowClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" 
              data-direction="{{ $slideDirection }}" 
              data-mode="{{ $slideMode }}"
              data-visible-count="{{ $visibleCount }}"
@@ -582,7 +588,7 @@
         </script>
     @endif
 @else
-<div class="card shadow-sm mb-3 {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $widgetTopBorderStyle }}{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '' }}">
+<div class="card {{ $shadowClass }} mb-3 {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $widgetTopBorderStyle }}{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '' }}">
     @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu')
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))

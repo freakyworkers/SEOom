@@ -19,6 +19,15 @@
     
     // 세로 100% 설정 확인
     $isFullHeight = $isFullHeight ?? false;
+    
+    // 가로 100% 설정 확인
+    $isFullWidth = $isFullWidth ?? false;
+    
+    // 위젯 그림자 설정 확인 (기본값: ON)
+    $widgetShadow = $site->getSetting('widget_shadow', '1') == '1';
+    
+    // 그림자 클래스 결정: full width/full height이거나 그림자 설정이 OFF이면 그림자 제거
+    $shadowClass = ($isFullWidth || $isFullHeight || !$widgetShadow) ? '' : 'shadow-sm';
 @endphp
 
     @if($widget->type === 'block')
@@ -58,7 +67,7 @@
         
         $blockMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
     @endphp
-    <div class="{{ $blockMarginBottom }} shadow-sm" style="{{ $blockStyle }}">
+    <div class="{{ $blockMarginBottom }} {{ $shadowClass }}" style="{{ $blockStyle }}">
         @if($link && !$showButton)
             <a href="{{ $link }}" 
                style="color: {{ $fontColor }}; text-decoration: none; display: block;"
@@ -104,7 +113,7 @@
         $blocks = $slideSettings['blocks'] ?? [];
     @endphp
     @if(count($blocks) > 0)
-        <div class="mb-3 block-slide-wrapper shadow-sm" 
+        <div class="mb-3 block-slide-wrapper {{ $shadowClass }}" 
              data-direction="{{ $slideDirection }}" 
              data-widget-id="{{ $widget->id }}"
              style="position: relative; overflow: hidden; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 200px;' : '' }}">
@@ -337,7 +346,7 @@
         $openNewTab = $imageSettings['open_new_tab'] ?? false;
     @endphp
     @if($imageUrl)
-        <div class="mb-3 shadow-sm {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }}">
+        <div class="mb-3 {{ $shadowClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }}">
             @if($link)
                 <a href="{{ $link }}" 
                    @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
@@ -359,7 +368,7 @@
         $images = $imageSlideSettings['images'] ?? [];
     @endphp
     @if(count($images) > 0)
-        <div class="mb-3 image-slide-wrapper shadow-sm {{ $isRoundTheme ? '' : 'rounded-0' }}" 
+        <div class="mb-3 image-slide-wrapper {{ $shadowClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" 
              data-direction="{{ $slideDirection }}" 
              data-mode="{{ $slideMode }}"
              data-visible-count="{{ $visibleCount }}"
@@ -604,7 +613,7 @@
     }
     $cardMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
 @endphp
-<div class="card shadow-sm {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }}">
+<div class="card {{ $shadowClass }} {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }}">
     @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat' && $widget->type !== 'chat_widget' && $widget->type !== 'create_site' && $widget->type !== 'countdown')
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
@@ -2774,7 +2783,7 @@
                                         <div class="row g-3">
                                             @foreach($freePlans as $plan)
                                         <div class="col-md-{{ 12 / $columns }} col-sm-6">
-                                            <div class="card h-100 shadow-sm" style="{{ $isRoundTheme ? 'border-radius: 0.5rem;' : '' }}">
+                                            <div class="card h-100 {{ $shadowClass }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem;' : '' }}">
                                                 <div class="card-body d-flex flex-column">
                                                     <h5 class="card-title">{{ $plan->name }}</h5>
                                                     <p class="card-text text-muted small mb-3">{{ $plan->description }}</p>
@@ -2899,7 +2908,7 @@
                                         <div class="row g-3">
                                             @foreach($paidPlans as $plan)
                                                 <div class="col-md-{{ 12 / $columns }} col-sm-6">
-                                                    <div class="card h-100 shadow-sm" style="{{ $isRoundTheme ? 'border-radius: 0.5rem;' : '' }}">
+                                                    <div class="card h-100 {{ $shadowClass }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem;' : '' }}">
                                                         <div class="card-body d-flex flex-column">
                                                             <h5 class="card-title">{{ $plan->name }}</h5>
                                                             <p class="card-text text-muted small mb-3">{{ $plan->description }}</p>
@@ -3042,7 +3051,7 @@
                                         <div class="row g-3">
                                             @foreach($serverPlans as $plan)
                                                 <div class="col-md-{{ 12 / $columns }} col-sm-6">
-                                                    <div class="card h-100 shadow-sm" style="{{ $isRoundTheme ? 'border-radius: 0.5rem;' : '' }}">
+                                                    <div class="card h-100 {{ $shadowClass }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem;' : '' }}">
                                                         <div class="card-body d-flex flex-column">
                                                             <h5 class="card-title">{{ $plan->name }}</h5>
                                                             <p class="card-text text-muted small mb-3">{{ $plan->description }}</p>

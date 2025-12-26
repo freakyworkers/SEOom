@@ -16,6 +16,12 @@
         $widgetTopBorderStyle = "border-top: none;";
     }
     
+    // 위젯 그림자 설정 확인 (기본값: ON)
+    $widgetShadow = $site->getSetting('widget_shadow', '1') == '1';
+    
+    // 그림자 클래스 결정: 그림자 설정이 OFF이면 그림자 제거
+    $shadowClass = !$widgetShadow ? '' : 'shadow-sm';
+    
     // 사용자 정보
     $user = auth()->user();
     
@@ -96,7 +102,7 @@
     }
 @endphp
 
-<div class="card shadow-sm mb-3 sidebar-user-widget" style="{{ $widgetTopBorderStyle }}">
+<div class="card {{ $shadowClass }} mb-3 sidebar-user-widget" style="{{ $widgetTopBorderStyle }}">
     @auth
         {{-- 로그인 후 위젯 --}}
         <div class="card-body p-3">

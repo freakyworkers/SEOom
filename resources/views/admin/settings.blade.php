@@ -747,10 +747,23 @@
                 </div>
                 <div class="col-md-4">
                     <label for="theme_main" class="form-label">메인</label>
-                    <select class="form-select" name="theme_main" id="theme_main">
-                        <option value="round" {{ ($settings['theme_main'] ?? 'round') === 'round' ? 'selected' : '' }}>라운드</option>
-                        <option value="square" {{ ($settings['theme_main'] ?? 'round') === 'square' ? 'selected' : '' }}>스퀘어</option>
-                    </select>
+                    <div class="d-flex align-items-center gap-2">
+                        <select class="form-select" name="theme_main" id="theme_main">
+                            <option value="round" {{ ($settings['theme_main'] ?? 'round') === 'round' ? 'selected' : '' }}>라운드</option>
+                            <option value="square" {{ ($settings['theme_main'] ?? 'round') === 'square' ? 'selected' : '' }}>스퀘어</option>
+                        </select>
+                        <div class="form-check form-switch" style="min-width: 60px;">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   name="widget_shadow" 
+                                   id="widget_shadow" 
+                                   value="1"
+                                   {{ ($settings['widget_shadow'] ?? '1') == '1' ? 'checked' : '' }}>
+                            <label class="form-check-label" for="widget_shadow" style="font-size: 0.875rem;">
+                                그림자
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-4">
                     <label for="theme_sidebar" class="form-label">사이드바</label>

@@ -59,7 +59,7 @@
                                 $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
                             @endphp
                             <div style="{{ $widgetWrapperStyle }}">
-                                <x-main-widget :widget="$widgetData" :site="$site" :isFullHeight="$isFullHeight" />
+                                <x-main-widget :widget="$widgetData" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" />
                             </div>
                         @endforeach
                     </div>

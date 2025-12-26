@@ -135,7 +135,7 @@
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
                             @endphp
                             <div class="{{ !$isLastWidget && !$isFullHeight ? $widgetSpacingClass : '' }}" style="{{ $widgetWrapperStyle }}">
-                                <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" />
+                                <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" />
                             </div>
                         @endforeach
                     </div>

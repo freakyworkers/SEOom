@@ -261,7 +261,7 @@ class SiteSettingController extends Controller
         
         // 테마 폼이 제출되었을 때, 체크박스 필드들이 요청에 없으면 '0'으로 설정
         // (체크박스가 체크 해제되면 폼에 포함되지 않기 때문)
-        if ($request->has('theme_top') || $request->has('theme_bottom') || $request->has('theme_dark_mode')) {
+        if ($request->has('theme_top') || $request->has('theme_bottom') || $request->has('theme_dark_mode') || $request->has('theme_main')) {
             $themeCheckboxFields = [
                 'theme_top_header_show',
                 'top_header_login_show',
@@ -270,7 +270,8 @@ class SiteSettingController extends Controller
                 'menu_login_show',
                 'header_shadow',
                 'header_border',
-                'theme_full_width'
+                'theme_full_width',
+                'widget_shadow'
             ];
             
             foreach ($themeCheckboxFields as $field) {
