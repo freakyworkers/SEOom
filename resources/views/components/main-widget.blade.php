@@ -147,7 +147,10 @@
                         $backgroundColor = $block['background_color'] ?? '#007bff';
                         $backgroundImageUrl = $block['background_image_url'] ?? '';
                         $paddingTop = $block['padding_top'] ?? 20;
+                        $paddingBottom = $block['padding_bottom'] ?? ($block['padding_top'] ?? 20);
                         $paddingLeft = $block['padding_left'] ?? 20;
+                        $paddingRight = $block['padding_right'] ?? ($block['padding_left'] ?? 20);
+                        $titleContentGap = $block['title_content_gap'] ?? 8;
                         $link = $block['link'] ?? '';
                         $openNewTab = $block['open_new_tab'] ?? false;
                         $fontColor = $block['font_color'] ?? '#ffffff';
@@ -157,9 +160,10 @@
                         $buttonText = $block['button_text'] ?? '';
                         $buttonBackgroundColor = $block['button_background_color'] ?? '#007bff';
                         $buttonTextColor = $block['button_text_color'] ?? '#ffffff';
+                        $buttonTopMargin = $block['button_top_margin'] ?? 12;
                         
                         // 스타일 생성
-                        $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingTop}px; padding-left: {$paddingLeft}px; padding-right: {$paddingLeft}px; text-align: {$textAlign}; color: {$fontColor};";
+                        $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
                         
                         if ($backgroundType === 'color') {
                             $blockStyle .= " background-color: {$backgroundColor};";
