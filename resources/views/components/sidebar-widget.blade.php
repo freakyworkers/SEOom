@@ -5,7 +5,12 @@
     // 헤더 테두리 설정 가져오기
     $headerBorder = $site->getSetting('header_border', '0') == '1';
     $headerBorderWidth = $site->getSetting('header_border_width', '1');
-    $headerBorderColor = $site->getSetting('header_border_color', '#dee2e6');
+    
+    // 포인트 컬러 가져오기 (헤더 테두리 컬러로 사용)
+    $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
+    $isDark = $themeDarkMode === 'dark';
+    $pointColor = $isDark ? $site->getSetting('color_dark_point_main', '#ffffff') : $site->getSetting('color_light_point_main', '#0d6efd');
+    $headerBorderColor = $pointColor;
     
     // 위젯 상단 테두리 스타일
     $widgetTopBorderStyle = '';

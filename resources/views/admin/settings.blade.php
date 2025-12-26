@@ -904,7 +904,7 @@
                             </label>
                         </div>
                         <div id="header_border_settings" class="mt-2 ms-4" style="display: {{ (isset($settings['header_border']) && $settings['header_border'] == '1') ? 'block' : 'none' }};">
-                            <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="d-flex align-items-center gap-2">
                                 <label for="header_border_width" class="form-label mb-0">두께:</label>
                                 <select class="form-select form-select-sm" name="header_border_width" id="header_border_width" style="width: auto;">
                                     @for($i = 1; $i <= 5; $i++)
@@ -912,10 +912,7 @@
                                     @endfor
                                 </select>
                             </div>
-                            <div class="d-flex align-items-center gap-2">
-                                <label for="header_border_color" class="form-label mb-0">컬러:</label>
-                                <input type="color" class="form-control form-control-color form-control-sm" name="header_border_color" id="header_border_color" value="{{ $settings['header_border_color'] ?? '#dee2e6' }}" title="헤더 테두리 색상" style="width: 50px; height: 38px;">
-                            </div>
+                            <small class="text-muted d-block mt-1">테두리 색상은 색상 설정의 포인트 컬러가 적용됩니다.</small>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -2640,14 +2637,11 @@ function updateThemePreview(type, theme) {
         const headerBorder = headerBorderCheckbox && headerBorderCheckbox.checked ? '1' : '0';
         params.append('header_border', headerBorder);
         
-        // 헤더 테두리 두께 및 컬러 값 추가
+        // 헤더 테두리 두께 값 추가 (컬러는 포인트 컬러 사용)
         if (headerBorder === '1') {
             var headerBorderWidthEl = document.getElementById('header_border_width');
-            var headerBorderColorEl = document.getElementById('header_border_color');
             const headerBorderWidth = (headerBorderWidthEl && headerBorderWidthEl.value) ? headerBorderWidthEl.value : '1';
-            const headerBorderColor = (headerBorderColorEl && headerBorderColorEl.value) ? headerBorderColorEl.value : '#dee2e6';
             params.append('header_border_width', headerBorderWidth);
-            params.append('header_border_color', headerBorderColor);
         }
         
         // 메뉴 폰트 설정 값 추가
@@ -2899,7 +2893,7 @@ $(document).ready(function() {
     });
     
     // 헤더 테두리 두께/컬러 변경 시 미리보기 업데이트
-    $('#header_border_width, #header_border_color').on('change', function() {
+    $('#header_border_width').on('change', function() {
         const headerSelect = document.getElementById('theme_top');
         if (headerSelect && headerSelect.value) {
             updateThemePreview('header', headerSelect.value);

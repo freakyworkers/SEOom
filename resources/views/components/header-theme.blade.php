@@ -21,7 +21,8 @@
     $headerShadow = $site->getSetting('header_shadow', '0') == '1';
     $headerBorder = $site->getSetting('header_border', '0') == '1';
     $headerBorderWidth = $site->getSetting('header_border_width', '1');
-    $headerBorderColor = $site->getSetting('header_border_color', '#dee2e6');
+    // 헤더 테두리 컬러는 포인트 컬러 사용
+    $headerBorderColor = $pointColor;
     
     // 메뉴 폰트 설정
     $menuFontSize = $site->getSetting('menu_font_size', '1.25rem');

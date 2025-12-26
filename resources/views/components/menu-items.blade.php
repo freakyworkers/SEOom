@@ -2,7 +2,8 @@
     $pointColor = $pointColor ?? ($headerTextColor ?? '#0d6efd');
     $headerBorder = $headerBorder ?? false;
     $headerBorderWidth = $headerBorderWidth ?? '1';
-    $headerBorderColor = $headerBorderColor ?? '#dee2e6';
+    // 헤더 테두리 컬러는 포인트 컬러 사용 (전달되지 않은 경우 포인트 컬러 사용)
+    $headerBorderColor = $headerBorderColor ?? $pointColor;
     
     // 메뉴 폰트 설정
     $menuFontSize = $menuFontSize ?? '1.25rem';

@@ -37,7 +37,8 @@
     $headerShadow = isset($headerShadow) ? ($headerShadow == '1' || $headerShadow === '1') : false;
     $headerBorder = isset($headerBorder) ? ($headerBorder == '1' || $headerBorder === '1') : false;
     $headerBorderWidth = isset($headerBorderWidth) ? $headerBorderWidth : '1';
-    $headerBorderColor = isset($headerBorderColor) ? $headerBorderColor : '#dee2e6';
+    // 헤더 테두리 컬러는 포인트 컬러 사용
+    $headerBorderColor = isset($headerBorderColor) ? $headerBorderColor : $pointColor;
     
     // 메뉴 폰트 설정 (rem 단위 보장)
     $menuFontSize = isset($menuFontSize) ? $menuFontSize : ($settings['menu_font_size'] ?? '1.25rem');

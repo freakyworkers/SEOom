@@ -15,7 +15,9 @@
     $headerShadow = $site->getSetting('header_shadow', '0') == '1';
     $headerBorder = $site->getSetting('header_border', '0') == '1';
     $headerBorderWidth = $site->getSetting('header_border_width', '1');
-    $headerBorderColor = $site->getSetting('header_border_color', '#dee2e6');
+    // 헤더 테두리 컬러는 포인트 컬러 사용
+    $pointColor = $isDark ? $site->getSetting('color_dark_point_main', '#ffffff') : $site->getSetting('color_light_point_main', '#0d6efd');
+    $headerBorderColor = $pointColor;
     
     // 모바일 메뉴 아이콘 및 방향 설정
     $mobileMenuIcon = $site->getSetting('mobile_menu_icon', 'bi-list');

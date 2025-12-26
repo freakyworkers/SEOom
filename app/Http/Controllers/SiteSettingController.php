@@ -73,7 +73,7 @@ class SiteSettingController extends Controller
                 'headerShadow' => $settings['header_shadow'] ?? '0',
                 'headerBorder' => $settings['header_border'] ?? '0',
                 'headerBorderWidth' => $settings['header_border_width'] ?? '1',
-                'headerBorderColor' => $settings['header_border_color'] ?? '#dee2e6',
+                'headerBorderColor' => $pointColor, // 포인트 컬러 사용
                 'menuFontSize' => $settings['menu_font_size'] ?? '1.25rem',
                 'menuFontPadding' => $settings['menu_font_padding'] ?? '0.5rem',
                 'menuFontWeight' => $settings['menu_font_weight'] ?? '700'
@@ -624,7 +624,7 @@ class SiteSettingController extends Controller
             $headerShadow = $request->get('header_shadow', $settings['header_shadow'] ?? '0');
             $headerBorder = $request->get('header_border', $settings['header_border'] ?? '0');
             $headerBorderWidth = $request->get('header_border_width', $settings['header_border_width'] ?? '1');
-            $headerBorderColor = $request->get('header_border_color', $settings['header_border_color'] ?? '#dee2e6');
+            // 헤더 테두리 컬러는 포인트 컬러 사용 (저장하지 않음)
             
             // 메뉴 폰트 설정
             $menuFontSize = $request->get('menu_font_size', $settings['menu_font_size'] ?? '1.25rem');
@@ -677,7 +677,7 @@ class SiteSettingController extends Controller
                     'headerShadow' => $headerShadow,
                     'headerBorder' => $headerBorder,
                     'headerBorderWidth' => $headerBorderWidth,
-                    'headerBorderColor' => $headerBorderColor,
+                    'headerBorderColor' => $pointColor, // 포인트 컬러 사용
                     'menuFontSize' => $menuFontSize,
                     'menuFontPadding' => $menuFontPadding,
                     'menuFontWeight' => $menuFontWeight,
@@ -722,7 +722,7 @@ class SiteSettingController extends Controller
                         'headerShadow' => $headerShadow ?? false,
                         'headerBorder' => $headerBorder ?? false,
                         'headerBorderWidth' => $headerBorderWidth ?? '1',
-                        'headerBorderColor' => $headerBorderColor ?? '#dee2e6',
+                        'headerBorderColor' => $pointColor ?? ($isDark ? '#ffffff' : '#0d6efd'), // 포인트 컬러 사용
                         'menuFontSize' => '1.25rem',
                         'menuFontPadding' => '0.5rem',
                         'menuFontWeight' => '700',
@@ -874,7 +874,8 @@ class SiteSettingController extends Controller
         // 헤더 테두리 설정
         $headerBorder = ($settings['header_border'] ?? '0') == '1';
         $headerBorderWidth = $settings['header_border_width'] ?? '1';
-        $headerBorderColor = $settings['header_border_color'] ?? '#dee2e6';
+        // 헤더 테두리 컬러는 포인트 컬러 사용
+        $headerBorderColor = $pointColor;
         
         // 메뉴 아이콘 테두리 설정 (요청에서 가져오거나 설정에서 가져오기)
         if (!isset($menuIconBorder)) {
