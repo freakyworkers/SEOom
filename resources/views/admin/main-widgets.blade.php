@@ -814,34 +814,69 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_main_widget_block_padding_top" class="form-label">상하 여백</label>
-                            <select class="form-select" id="edit_main_widget_block_padding_top" name="block_padding_top">
-                                <option value="0">0px</option>
-                                <option value="10">10px</option>
-                                <option value="20" selected>20px</option>
-                                <option value="30">30px</option>
-                                <option value="40">40px</option>
-                                <option value="50">50px</option>
-                                <option value="60">60px</option>
-                                <option value="70">70px</option>
-                                <option value="80">80px</option>
-                                <option value="90">90px</option>
-                                <option value="100">100px</option>
-                                <option value="120">120px</option>
-                                <option value="150">150px</option>
-                                <option value="200">200px</option>
-                            </select>
+                            <label for="edit_main_widget_block_padding_top" class="form-label">상단 여백 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_main_widget_block_padding_top" 
+                                   name="block_padding_top" 
+                                   value="20"
+                                   min="0"
+                                   max="200"
+                                   step="1"
+                                   placeholder="20">
+                            <small class="text-muted">블록 상단 여백을 입력하세요 (0~200).</small>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_main_widget_block_padding_left" class="form-label">좌우 여백</label>
-                            <select class="form-select" id="edit_main_widget_block_padding_left" name="block_padding_left">
-                                <option value="0">0px</option>
-                                <option value="10">10px</option>
-                                <option value="20" selected>20px</option>
-                                <option value="30">30px</option>
-                                <option value="40">40px</option>
-                                <option value="50">50px</option>
-                            </select>
+                            <label for="edit_main_widget_block_padding_bottom" class="form-label">하단 여백 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_main_widget_block_padding_bottom" 
+                                   name="block_padding_bottom" 
+                                   value="20"
+                                   min="0"
+                                   max="200"
+                                   step="1"
+                                   placeholder="20">
+                            <small class="text-muted">블록 하단 여백을 입력하세요 (0~200).</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_block_padding_left" class="form-label">좌측 여백 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_main_widget_block_padding_left" 
+                                   name="block_padding_left" 
+                                   value="20"
+                                   min="0"
+                                   max="200"
+                                   step="1"
+                                   placeholder="20">
+                            <small class="text-muted">블록 좌측 여백을 입력하세요 (0~200).</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_block_padding_right" class="form-label">우측 여백 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_main_widget_block_padding_right" 
+                                   name="block_padding_right" 
+                                   value="20"
+                                   min="0"
+                                   max="200"
+                                   step="1"
+                                   placeholder="20">
+                            <small class="text-muted">블록 우측 여백을 입력하세요 (0~200).</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_block_title_content_gap" class="form-label">제목-내용 여백 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_main_widget_block_title_content_gap" 
+                                   name="block_title_content_gap" 
+                                   value="8"
+                                   min="0"
+                                   max="100"
+                                   step="1"
+                                   placeholder="8">
+                            <small class="text-muted">제목과 내용 사이의 여백을 입력하세요 (0~100).</small>
                         </div>
                         <div class="mb-3">
                             <div class="form-check">
@@ -863,6 +898,19 @@
                                        id="edit_main_widget_block_button_text" 
                                        name="block_button_text" 
                                        placeholder="버튼 텍스트를 입력하세요">
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_main_widget_block_button_top_margin" class="form-label">버튼 상단 여백 (px)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="edit_main_widget_block_button_top_margin" 
+                                       name="block_button_top_margin" 
+                                       value="12"
+                                       min="0"
+                                       max="100"
+                                       step="1"
+                                       placeholder="12">
+                                <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
                             </div>
                             <div class="mb-3">
                                 <label for="edit_main_widget_block_button_background_color" class="form-label">버튼 배경 컬러</label>
@@ -2185,7 +2233,10 @@ function addMainWidget() {
             const textAlign = textAlignRadio ? textAlignRadio.value : 'left';
             const backgroundType = item.querySelector('.block-slide-background-type')?.value || 'color';
             const paddingTop = item.querySelector('.block-slide-padding-top')?.value || '20';
+            const paddingBottom = item.querySelector('.block-slide-padding-bottom')?.value || '20';
             const paddingLeft = item.querySelector('.block-slide-padding-left')?.value || '20';
+            const paddingRight = item.querySelector('.block-slide-padding-right')?.value || '20';
+            const titleContentGap = item.querySelector('.block-slide-title-content-gap')?.value || '8';
             const link = item.querySelector('.block-slide-link')?.value || '';
             const openNewTab = item.querySelector('.block-slide-open-new-tab')?.checked || false;
             const fontColor = item.querySelector('.block-slide-font-color')?.value || '#ffffff';
@@ -2202,7 +2253,10 @@ function addMainWidget() {
                 text_align: textAlign,
                 background_type: backgroundType,
                 padding_top: parseInt(paddingTop),
+                padding_bottom: parseInt(paddingBottom),
                 padding_left: parseInt(paddingLeft),
+                padding_right: parseInt(paddingRight),
+                title_content_gap: parseInt(titleContentGap),
                 link: link,
                 open_new_tab: openNewTab,
                 font_color: fontColor,
@@ -2212,9 +2266,11 @@ function addMainWidget() {
             };
             
             if (showButton) {
+                const buttonTopMargin = item.querySelector('.block-slide-button-top-margin')?.value || '12';
                 blockItem.button_text = buttonText;
                 blockItem.button_background_color = buttonBackgroundColor;
                 blockItem.button_text_color = buttonTextColor;
+                blockItem.button_top_margin = parseInt(buttonTopMargin);
             }
             
             if (backgroundType === 'color') {
@@ -2711,6 +2767,9 @@ function editMainWidget(widgetId) {
                 if (showButton) {
                     if (document.getElementById('edit_main_widget_block_button_text')) {
                         document.getElementById('edit_main_widget_block_button_text').value = settings.button_text || '';
+                    }
+                    if (document.getElementById('edit_main_widget_block_button_top_margin')) {
+                        document.getElementById('edit_main_widget_block_button_top_margin').value = settings.button_top_margin || 12;
                     }
                     if (document.getElementById('edit_main_widget_block_button_background_color')) {
                         document.getElementById('edit_main_widget_block_button_background_color').value = settings.button_background_color || '#007bff';
@@ -3507,20 +3566,65 @@ function addBlockSlideItem() {
                 </div>
             </div>
         </div>
-        <div class="mb-3"><label class="form-label">상하 여백</label>
-            <select class="form-select block-slide-padding-top" name="block_slide[${itemIndex}][padding_top]">
-                <option value="0">0px</option><option value="10">10px</option><option value="20" selected>20px</option>
-                <option value="30">30px</option><option value="40">40px</option><option value="50">50px</option>
-                <option value="60">60px</option><option value="70">70px</option><option value="80">80px</option>
-                <option value="90">90px</option><option value="100">100px</option><option value="120">120px</option>
-                <option value="150">150px</option><option value="200">200px</option>
-            </select>
+        <div class="mb-3">
+            <label class="form-label">상단 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-padding-top" 
+                   name="block_slide[${itemIndex}][padding_top]" 
+                   value="20"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 상단 여백을 입력하세요 (0~200).</small>
         </div>
-        <div class="mb-3"><label class="form-label">좌우 여백</label>
-            <select class="form-select block-slide-padding-left" name="block_slide[${itemIndex}][padding_left]">
-                <option value="0">0px</option><option value="10">10px</option><option value="20" selected>20px</option>
-                <option value="30">30px</option><option value="40">40px</option><option value="50">50px</option>
-            </select>
+        <div class="mb-3">
+            <label class="form-label">하단 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-padding-bottom" 
+                   name="block_slide[${itemIndex}][padding_bottom]" 
+                   value="20"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 하단 여백을 입력하세요 (0~200).</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">좌측 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-padding-left" 
+                   name="block_slide[${itemIndex}][padding_left]" 
+                   value="20"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 좌측 여백을 입력하세요 (0~200).</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">우측 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-padding-right" 
+                   name="block_slide[${itemIndex}][padding_right]" 
+                   value="20"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 우측 여백을 입력하세요 (0~200).</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">제목-내용 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-title-content-gap" 
+                   name="block_slide[${itemIndex}][title_content_gap]" 
+                   value="8"
+                   min="0"
+                   max="100"
+                   step="1"
+                   placeholder="8">
+            <small class="text-muted">제목과 내용 사이의 여백을 입력하세요 (0~100).</small>
         </div>
         <div class="mb-3">
             <div class="form-check">
@@ -3531,6 +3635,18 @@ function addBlockSlideItem() {
         <div class="mb-3 block-slide-button-container" id="block_slide_${itemIndex}_button_container" style="display: none;">
             <div class="mb-3"><label class="form-label">버튼 텍스트</label>
                 <input type="text" class="form-control block-slide-button-text" name="block_slide[${itemIndex}][button_text]" placeholder="버튼 텍스트를 입력하세요">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 상단 여백 (px)</label>
+                <input type="number" 
+                       class="form-control block-slide-button-top-margin" 
+                       name="block_slide[${itemIndex}][button_top_margin]" 
+                       value="12"
+                       min="0"
+                       max="100"
+                       step="1"
+                       placeholder="12">
+                <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
             </div>
             <div class="mb-3">
                 <label class="form-label">버튼 배경 컬러</label>
@@ -4183,7 +4299,10 @@ function saveMainWidgetSettings() {
         const textAlign = textAlignRadio ? textAlignRadio.value : 'left';
         const backgroundType = document.getElementById('edit_main_widget_block_background_type')?.value || 'color';
         const paddingTop = document.getElementById('edit_main_widget_block_padding_top')?.value || '20';
+        const paddingBottom = document.getElementById('edit_main_widget_block_padding_bottom')?.value || '20';
         const paddingLeft = document.getElementById('edit_main_widget_block_padding_left')?.value || '20';
+        const paddingRight = document.getElementById('edit_main_widget_block_padding_right')?.value || '20';
+        const titleContentGap = document.getElementById('edit_main_widget_block_title_content_gap')?.value || '8';
         const blockLink = document.getElementById('edit_main_widget_block_link')?.value;
         const openNewTab = document.getElementById('edit_main_widget_block_open_new_tab')?.checked;
         const fontColor = document.getElementById('edit_main_widget_block_font_color')?.value || '#ffffff';
@@ -4207,9 +4326,11 @@ function saveMainWidgetSettings() {
         settings.content_font_size = contentFontSize;
         settings.show_button = showButton;
         if (showButton) {
+            const buttonTopMargin = document.getElementById('edit_main_widget_block_button_top_margin')?.value || '12';
             settings.button_text = buttonText;
             settings.button_background_color = buttonBackgroundColor;
             settings.button_text_color = buttonTextColor;
+            settings.button_top_margin = parseInt(buttonTopMargin);
         }
         
         if (backgroundType === 'color') {
@@ -4227,7 +4348,10 @@ function saveMainWidgetSettings() {
         }
         
         settings.padding_top = parseInt(paddingTop);
+        settings.padding_bottom = parseInt(paddingBottom);
         settings.padding_left = parseInt(paddingLeft);
+        settings.padding_right = parseInt(paddingRight);
+        settings.title_content_gap = parseInt(titleContentGap);
         
         if (blockLink) {
             settings.link = blockLink;
@@ -4246,8 +4370,11 @@ function saveMainWidgetSettings() {
             const contentInput = item.querySelector('.edit-main-block-slide-content');
             const textAlignRadio = item.querySelector(`input[name="edit_main_block_slide[${itemIndex}][text_align]"]:checked`);
             const backgroundTypeSelect = item.querySelector('.edit-main-block-slide-background-type');
-            const paddingTopSelect = item.querySelector('.edit-main-block-slide-padding-top');
-            const paddingLeftSelect = item.querySelector('.edit-main-block-slide-padding-left');
+            const paddingTopInput = item.querySelector('.edit-main-block-slide-padding-top');
+            const paddingBottomInput = item.querySelector('.edit-main-block-slide-padding-bottom');
+            const paddingLeftInput = item.querySelector('.edit-main-block-slide-padding-left');
+            const paddingRightInput = item.querySelector('.edit-main-block-slide-padding-right');
+            const titleContentGapInput = item.querySelector('.edit-main-block-slide-title-content-gap');
             const linkInput = item.querySelector('.edit-main-block-slide-link');
             const openNewTabCheckbox = item.querySelector('.edit-main-block-slide-open-new-tab');
             const fontColorInput = item.querySelector('.edit-main-block-slide-font-color');
@@ -4255,6 +4382,7 @@ function saveMainWidgetSettings() {
             const contentFontSizeInput = item.querySelector('.edit-main-block-slide-content-font-size');
             const showButtonCheckbox = item.querySelector('.edit-main-block-slide-show-button');
             const buttonTextInput = item.querySelector('.edit-main-block-slide-button-text');
+            const buttonTopMarginInput = item.querySelector('.edit-main-block-slide-button-top-margin');
             const buttonColorInput = item.querySelector('.edit-main-block-slide-button-color');
             
             const blockItem = {
@@ -4262,10 +4390,13 @@ function saveMainWidgetSettings() {
                 content: contentInput ? contentInput.value : '',
                 text_align: textAlignRadio ? textAlignRadio.value : 'left',
                 background_type: backgroundTypeSelect ? backgroundTypeSelect.value : 'color',
-                padding_top: paddingTopSelect ? parseInt(paddingTopSelect.value) : 20,
+                padding_top: paddingTopInput ? parseInt(paddingTopInput.value) : 20,
+                padding_bottom: paddingBottomInput ? parseInt(paddingBottomInput.value) : 20,
+                padding_left: paddingLeftInput ? parseInt(paddingLeftInput.value) : 20,
+                padding_right: paddingRightInput ? parseInt(paddingRightInput.value) : 20,
+                title_content_gap: titleContentGapInput ? parseInt(titleContentGapInput.value) : 8,
                 title_font_size: titleFontSizeInput ? titleFontSizeInput.value : '16',
                 content_font_size: contentFontSizeInput ? contentFontSizeInput.value : '14',
-                padding_left: paddingLeftSelect ? parseInt(paddingLeftSelect.value) : 20,
                 link: linkInput ? linkInput.value : '',
                 open_new_tab: openNewTabCheckbox ? openNewTabCheckbox.checked : false,
                 font_color: fontColorInput ? fontColorInput.value : '#ffffff',
@@ -4274,6 +4405,7 @@ function saveMainWidgetSettings() {
             
             if (blockItem.show_button) {
                 blockItem.button_text = buttonTextInput ? buttonTextInput.value : '';
+                blockItem.button_top_margin = buttonTopMarginInput ? parseInt(buttonTopMarginInput.value) : 12;
                 blockItem.button_background_color = buttonBackgroundColorInput ? buttonBackgroundColorInput.value : '#007bff';
                 blockItem.button_text_color = buttonTextColorInput ? buttonTextColorInput.value : '#ffffff';
             }
@@ -4830,34 +4962,64 @@ function addEditMainBlockSlideItem(blockData = null) {
             </div>
         </div>
         <div class="mb-3">
-            <label class="form-label">상하 여백</label>
-            <select class="form-select edit-main-block-slide-padding-top" name="edit_main_block_slide[${itemIndex}][padding_top]">
-                <option value="0" ${blockData && blockData.padding_top === 0 ? 'selected' : ''}>0px</option>
-                <option value="10" ${blockData && blockData.padding_top === 10 ? 'selected' : ''}>10px</option>
-                <option value="20" ${!blockData || blockData.padding_top === 20 ? 'selected' : ''}>20px</option>
-                <option value="30" ${blockData && blockData.padding_top === 30 ? 'selected' : ''}>30px</option>
-                <option value="40" ${blockData && blockData.padding_top === 40 ? 'selected' : ''}>40px</option>
-                <option value="50" ${blockData && blockData.padding_top === 50 ? 'selected' : ''}>50px</option>
-                <option value="60" ${blockData && blockData.padding_top === 60 ? 'selected' : ''}>60px</option>
-                <option value="70" ${blockData && blockData.padding_top === 70 ? 'selected' : ''}>70px</option>
-                <option value="80" ${blockData && blockData.padding_top === 80 ? 'selected' : ''}>80px</option>
-                <option value="90" ${blockData && blockData.padding_top === 90 ? 'selected' : ''}>90px</option>
-                <option value="100" ${blockData && blockData.padding_top === 100 ? 'selected' : ''}>100px</option>
-                <option value="120" ${blockData && blockData.padding_top === 120 ? 'selected' : ''}>120px</option>
-                <option value="150" ${blockData && blockData.padding_top === 150 ? 'selected' : ''}>150px</option>
-                <option value="200" ${blockData && blockData.padding_top === 200 ? 'selected' : ''}>200px</option>
-            </select>
+            <label class="form-label">상단 여백 (px)</label>
+            <input type="number" 
+                   class="form-control edit-main-block-slide-padding-top" 
+                   name="edit_main_block_slide[${itemIndex}][padding_top]" 
+                   value="${blockData ? (blockData.padding_top || '20') : '20'}"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 상단 여백을 입력하세요 (0~200).</small>
         </div>
         <div class="mb-3">
-            <label class="form-label">좌우 여백</label>
-            <select class="form-select edit-main-block-slide-padding-left" name="edit_main_block_slide[${itemIndex}][padding_left]">
-                <option value="0" ${blockData && blockData.padding_left === 0 ? 'selected' : ''}>0px</option>
-                <option value="10" ${blockData && blockData.padding_left === 10 ? 'selected' : ''}>10px</option>
-                <option value="20" ${!blockData || blockData.padding_left === 20 ? 'selected' : ''}>20px</option>
-                <option value="30" ${blockData && blockData.padding_left === 30 ? 'selected' : ''}>30px</option>
-                <option value="40" ${blockData && blockData.padding_left === 40 ? 'selected' : ''}>40px</option>
-                <option value="50" ${blockData && blockData.padding_left === 50 ? 'selected' : ''}>50px</option>
-            </select>
+            <label class="form-label">하단 여백 (px)</label>
+            <input type="number" 
+                   class="form-control edit-main-block-slide-padding-bottom" 
+                   name="edit_main_block_slide[${itemIndex}][padding_bottom]" 
+                   value="${blockData ? (blockData.padding_bottom || blockData.padding_top || '20') : '20'}"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 하단 여백을 입력하세요 (0~200).</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">좌측 여백 (px)</label>
+            <input type="number" 
+                   class="form-control edit-main-block-slide-padding-left" 
+                   name="edit_main_block_slide[${itemIndex}][padding_left]" 
+                   value="${blockData ? (blockData.padding_left || '20') : '20'}"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 좌측 여백을 입력하세요 (0~200).</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">우측 여백 (px)</label>
+            <input type="number" 
+                   class="form-control edit-main-block-slide-padding-right" 
+                   name="edit_main_block_slide[${itemIndex}][padding_right]" 
+                   value="${blockData ? (blockData.padding_right || blockData.padding_left || '20') : '20'}"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 우측 여백을 입력하세요 (0~200).</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">제목-내용 여백 (px)</label>
+            <input type="number" 
+                   class="form-control edit-main-block-slide-title-content-gap" 
+                   name="edit_main_block_slide[${itemIndex}][title_content_gap]" 
+                   value="${blockData ? (blockData.title_content_gap || '8') : '8'}"
+                   min="0"
+                   max="100"
+                   step="1"
+                   placeholder="8">
+            <small class="text-muted">제목과 내용 사이의 여백을 입력하세요 (0~100).</small>
         </div>
         <div class="mb-3">
             <div class="form-check">

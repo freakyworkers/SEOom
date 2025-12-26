@@ -286,34 +286,69 @@
         </div>
     </div>
     <div class="mb-3">
-        <label for="widget_block_padding_top" class="form-label">상하 여백</label>
-        <select class="form-select" id="widget_block_padding_top" name="block_padding_top">
-            <option value="0">0px</option>
-            <option value="10">10px</option>
-            <option value="20" selected>20px</option>
-            <option value="30">30px</option>
-            <option value="40">40px</option>
-            <option value="50">50px</option>
-            <option value="60">60px</option>
-            <option value="70">70px</option>
-            <option value="80">80px</option>
-            <option value="90">90px</option>
-            <option value="100">100px</option>
-            <option value="120">120px</option>
-            <option value="150">150px</option>
-            <option value="200">200px</option>
-        </select>
+        <label for="widget_block_padding_top" class="form-label">상단 여백 (px)</label>
+        <input type="number" 
+               class="form-control" 
+               id="widget_block_padding_top" 
+               name="block_padding_top" 
+               value="20"
+               min="0"
+               max="200"
+               step="1"
+               placeholder="20">
+        <small class="text-muted">블록 상단 여백을 입력하세요 (0~200).</small>
     </div>
     <div class="mb-3">
-        <label for="widget_block_padding_left" class="form-label">좌우 여백</label>
-        <select class="form-select" id="widget_block_padding_left" name="block_padding_left">
-            <option value="0">0px</option>
-            <option value="10">10px</option>
-            <option value="20" selected>20px</option>
-            <option value="30">30px</option>
-            <option value="40">40px</option>
-            <option value="50">50px</option>
-        </select>
+        <label for="widget_block_padding_bottom" class="form-label">하단 여백 (px)</label>
+        <input type="number" 
+               class="form-control" 
+               id="widget_block_padding_bottom" 
+               name="block_padding_bottom" 
+               value="20"
+               min="0"
+               max="200"
+               step="1"
+               placeholder="20">
+        <small class="text-muted">블록 하단 여백을 입력하세요 (0~200).</small>
+    </div>
+    <div class="mb-3">
+        <label for="widget_block_padding_left" class="form-label">좌측 여백 (px)</label>
+        <input type="number" 
+               class="form-control" 
+               id="widget_block_padding_left" 
+               name="block_padding_left" 
+               value="20"
+               min="0"
+               max="200"
+               step="1"
+               placeholder="20">
+        <small class="text-muted">블록 좌측 여백을 입력하세요 (0~200).</small>
+    </div>
+    <div class="mb-3">
+        <label for="widget_block_padding_right" class="form-label">우측 여백 (px)</label>
+        <input type="number" 
+               class="form-control" 
+               id="widget_block_padding_right" 
+               name="block_padding_right" 
+               value="20"
+               min="0"
+               max="200"
+               step="1"
+               placeholder="20">
+        <small class="text-muted">블록 우측 여백을 입력하세요 (0~200).</small>
+    </div>
+    <div class="mb-3">
+        <label for="widget_block_title_content_gap" class="form-label">제목-내용 여백 (px)</label>
+        <input type="number" 
+               class="form-control" 
+               id="widget_block_title_content_gap" 
+               name="block_title_content_gap" 
+               value="8"
+               min="0"
+               max="100"
+               step="1"
+               placeholder="8">
+        <small class="text-muted">제목과 내용 사이의 여백을 입력하세요 (0~100).</small>
     </div>
     <div class="mb-3">
         <div class="form-check">

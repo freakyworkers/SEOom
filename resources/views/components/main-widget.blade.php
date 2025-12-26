@@ -55,7 +55,10 @@
         $backgroundColor = $blockSettings['background_color'] ?? '#007bff';
         $backgroundImageUrl = $blockSettings['background_image_url'] ?? '';
         $paddingTop = $blockSettings['padding_top'] ?? 20;
+        $paddingBottom = $blockSettings['padding_bottom'] ?? ($blockSettings['padding_top'] ?? 20);
         $paddingLeft = $blockSettings['padding_left'] ?? 20;
+        $paddingRight = $blockSettings['padding_right'] ?? ($blockSettings['padding_left'] ?? 20);
+        $titleContentGap = $blockSettings['title_content_gap'] ?? 8;
         $link = $blockSettings['link'] ?? '';
         $openNewTab = $blockSettings['open_new_tab'] ?? false;
         $fontColor = $blockSettings['font_color'] ?? '#ffffff';
@@ -65,9 +68,10 @@
         $buttonText = $blockSettings['button_text'] ?? '';
         $buttonBackgroundColor = $blockSettings['button_background_color'] ?? '#007bff';
         $buttonTextColor = $blockSettings['button_text_color'] ?? '#ffffff';
+        $buttonTopMargin = $blockSettings['button_top_margin'] ?? 12;
         
         // 스타일 생성
-        $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingTop}px; padding-left: {$paddingLeft}px; padding-right: {$paddingLeft}px; text-align: {$textAlign}; color: {$fontColor};";
+        $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
         
         if ($backgroundType === 'color') {
             $blockStyle .= " background-color: {$backgroundColor};";
@@ -89,7 +93,7 @@
                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
         @endif
         @if($blockTitle)
-            <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $titleFontSize }}px;">{{ $blockTitle }}</h4>
+            <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $titleFontSize }}px; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
         @endif
         @if($blockContent)
             <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $contentFontSize }}px; white-space: pre-wrap;">{{ $blockContent }}</p>
@@ -98,7 +102,7 @@
             </a>
         @endif
         @if($showButton && $buttonText)
-            <div class="mt-3" style="text-align: {{ $textAlign }};">
+            <div style="margin-top: {{ $buttonTopMargin }}px; text-align: {{ $textAlign }};">
                 @if($link)
                     <a href="{{ $link }}" 
                        @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
@@ -177,7 +181,7 @@
                                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
                         @endif
                         @if($blockTitle)
-                            <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold;">{{ $blockTitle }}</h4>
+                            <h4 style="color: {{ $fontColor }}; font-weight: bold; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
                         @endif
                         @if($blockContent)
                             <p class="mb-0" style="color: {{ $fontColor }}; font-size: 0.9rem; white-space: pre-wrap;">{{ $blockContent }}</p>
@@ -186,7 +190,7 @@
                             </a>
                         @endif
                         @if($showButton && $buttonText)
-                            <div class="mt-3" style="text-align: {{ $textAlign }};">
+                            <div style="margin-top: {{ $buttonTopMargin }}px; text-align: {{ $textAlign }};">
                                 @if($link)
                                     <a href="{{ $link }}" 
                                        @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
