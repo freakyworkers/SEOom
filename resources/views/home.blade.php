@@ -114,8 +114,20 @@
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
             <div class="row main-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
+                @php
+                    $columnMerges = $container->column_merges ?? [];
+                    $hiddenColumns = [];
+                    foreach ($columnMerges as $startCol => $span) {
+                        for ($j = 1; $j < $span; $j++) {
+                            $hiddenColumns[] = $startCol + $j;
+                        }
+                    }
+                @endphp
                 @for($i = 0; $i < $container->columns; $i++)
                     @php
+                        $isHidden = in_array($i, $hiddenColumns);
+                        $mergeSpan = $columnMerges[$i] ?? 1;
+                        $colWidth = $mergeSpan * (12 / $container->columns);
                         $columnWidgets = $container->widgets->where('column_index', $i)->sortBy('order');
                         $colStyle = $isFullWidth ? 'padding-left: 0; padding-right: 0;' : '';
                         if ($isFullHeight) {
@@ -127,7 +139,8 @@
                         $widgetSpacing = $container->widget_spacing ?? 3;
                         $widgetSpacingClass = $isFullHeight ? 'mb-0' : 'mb-' . min(max($widgetSpacing, 0), 5);
                     @endphp
-                    <div class="col-md-{{ 12 / $container->columns }} {{ $colMarginBottom }}" style="{{ $colStyle }}">
+                    @if(!$isHidden)
+                        <div class="col-md-{{ $colWidth }} {{ $colMarginBottom }}" style="{{ $colStyle }}">
                         @foreach($columnWidgets as $index => $widget)
                             @php
                                 $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
@@ -138,7 +151,8 @@
                                 <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" />
                             </div>
                         @endforeach
-                    </div>
+                        </div>
+                    @endif
                 @endfor
             </div>
         </div>

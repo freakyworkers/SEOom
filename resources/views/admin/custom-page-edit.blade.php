@@ -126,7 +126,9 @@
                                     </div>
                                 @else
                                     @foreach($containers as $container)
-                                        <div class="card mb-3 container-item" data-container-id="{{ $container->id }}">
+                                        <div class="card mb-3 container-item" 
+                                             data-container-id="{{ $container->id }}"
+                                             data-column-merges="{{ json_encode($container->column_merges ?? []) }}">
                                             {{-- 데스크탑 버전 (기존 가로 배치) --}}
                                             <div class="card-header bg-light d-none d-md-flex justify-content-between align-items-center">
                                                 <div class="d-flex align-items-center gap-2">
@@ -271,17 +273,58 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="row g-3">
+                                                    @php
+                                                        $columnMerges = $container->column_merges ?? [];
+                                                        $hiddenColumns = [];
+                                                        foreach ($columnMerges as $startCol => $span) {
+                                                            for ($j = 1; $j < $span; $j++) {
+                                                                $hiddenColumns[] = $startCol + $j;
+                                                            }
+                                                        }
+                                                    @endphp
                                                     @for($i = 0; $i < $container->columns; $i++)
-                                                        <div class="col-md-{{ 12 / $container->columns }} column-cell" data-column-index="{{ $i }}">
-                                                            <div class="border rounded p-3" style="min-height: 200px; background-color: #f8f9fa;">
-                                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                                    <small class="text-muted">칸 {{ $i + 1 }}</small>
-                                                                    <button type="button" 
-                                                                            class="btn btn-sm btn-outline-primary" 
-                                                                            onclick="showAddWidgetForm({{ $container->id }}, {{ $i }})">
-                                                                        <i class="bi bi-plus-circle"></i> 위젯 추가
-                                                                    </button>
-                                                                </div>
+                                                        @php
+                                                            $isHidden = in_array($i, $hiddenColumns);
+                                                            $mergeSpan = $columnMerges[$i] ?? 1;
+                                                            $colWidth = $mergeSpan * (12 / $container->columns);
+                                                            $canMerge = ($i < $container->columns - 1) && !$isHidden && !isset($columnMerges[$i]);
+                                                            $columnLabel = '칸 ' . ($i + 1);
+                                                            if (isset($columnMerges[$i]) && $mergeSpan > 1) {
+                                                                if ($mergeSpan == 2) {
+                                                                    $columnLabel = '칸 ' . ($i + 1) . '/' . ($i + 2);
+                                                                } else {
+                                                                    $columnLabel = '칸 ' . ($i + 1) . '-' . ($i + $mergeSpan);
+                                                                }
+                                                            }
+                                                        @endphp
+                                                        @if(!$isHidden)
+                                                            <div class="col-md-{{ $colWidth }} column-cell" data-column-index="{{ $i }}" data-merge-span="{{ $mergeSpan }}">
+                                                                <div class="border rounded p-3" style="min-height: 200px; background-color: #f8f9fa;">
+                                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                        <small class="text-muted">{{ $columnLabel }}</small>
+                                                                        <div class="d-flex gap-1">
+                                                                            @if($canMerge)
+                                                                                <button type="button" 
+                                                                                        class="btn btn-sm btn-outline-secondary" 
+                                                                                        onclick="mergeNextColumn({{ $container->id }}, {{ $i }})"
+                                                                                        title="다음 칸과 병합">
+                                                                                    <i class="bi bi-arrow-right-circle"></i> 다음칸병합
+                                                                                </button>
+                                                                            @elseif(isset($columnMerges[$i]) && $mergeSpan > 1)
+                                                                                <button type="button" 
+                                                                                        class="btn btn-sm btn-outline-warning" 
+                                                                                        onclick="unmergeColumn({{ $container->id }}, {{ $i }})"
+                                                                                        title="병합 해제">
+                                                                                    <i class="bi bi-x-circle"></i> 병합해제
+                                                                                </button>
+                                                                            @endif
+                                                                            <button type="button" 
+                                                                                    class="btn btn-sm btn-outline-primary" 
+                                                                                    onclick="showAddWidgetForm({{ $container->id }}, {{ $i }})">
+                                                                                <i class="bi bi-plus-circle"></i> 위젯 추가
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
                                                                 <div class="widget-list-in-column" data-container-id="{{ $container->id }}" data-column-index="{{ $i }}">
                                                                     @php
                                                                         $columnWidgets = $container->widgets->where('column_index', $i)->sortBy('order');
@@ -405,6 +448,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                    @endif
                                                     @endfor
                                                 </div>
                                             </div>
@@ -1266,6 +1310,107 @@ function updateContainerFullHeight(containerId, fullHeight) {
     .catch(error => {
         console.error('Error:', error);
         alert('세로 100% 설정 업데이트 중 오류가 발생했습니다.');
+    });
+}
+
+// 다음 칸과 병합
+function mergeNextColumn(containerId, columnIndex) {
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (!containerItem) return;
+    
+    const columnCells = containerItem.querySelectorAll('.column-cell');
+    const totalColumns = parseInt(containerItem.querySelector('select[onchange*="updateContainerColumns"]')?.value || '1');
+    
+    if (columnIndex >= totalColumns - 1) {
+        alert('마지막 칸은 병합할 수 없습니다.');
+        return;
+    }
+    
+    // 현재 병합 정보 가져오기
+    const currentMerges = JSON.parse(containerItem.getAttribute('data-column-merges') || '{}');
+    
+    // 병합 정보 업데이트
+    const currentSpan = currentMerges[columnIndex] || 1;
+    currentMerges[columnIndex] = currentSpan + 1;
+    
+    // 다음 칸이 병합의 시작점이었다면 제거
+    if (currentMerges[columnIndex + 1]) {
+        delete currentMerges[columnIndex + 1];
+    }
+    
+    // 서버에 저장
+    const formData = new FormData();
+    formData.append('column_merges', JSON.stringify(currentMerges));
+    formData.append('_method', 'PUT');
+    
+    fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('병합에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('병합 중 오류가 발생했습니다.');
+    });
+}
+
+// 병합 해제
+function unmergeColumn(containerId, columnIndex) {
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (!containerItem) return;
+    
+    // 현재 병합 정보 가져오기
+    const currentMerges = JSON.parse(containerItem.getAttribute('data-column-merges') || '{}');
+    
+    if (!currentMerges[columnIndex] || currentMerges[columnIndex] <= 1) {
+        return;
+    }
+    
+    // 병합 정보 업데이트
+    const currentSpan = currentMerges[columnIndex];
+    if (currentSpan > 2) {
+        // 3칸 이상 병합된 경우 1칸 줄임
+        currentMerges[columnIndex] = currentSpan - 1;
+    } else {
+        // 2칸 병합된 경우 완전히 해제
+        delete currentMerges[columnIndex];
+    }
+    
+    // 서버에 저장
+    const formData = new FormData();
+    formData.append('column_merges', JSON.stringify(currentMerges));
+    formData.append('_method', 'PUT');
+    
+    fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('병합 해제에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('병합 해제 중 오류가 발생했습니다.');
     });
 }
 

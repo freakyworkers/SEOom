@@ -35,8 +35,20 @@
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
             <div class="row custom-page-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
+                @php
+                    $columnMerges = $container->column_merges ?? [];
+                    $hiddenColumns = [];
+                    foreach ($columnMerges as $startCol => $span) {
+                        for ($j = 1; $j < $span; $j++) {
+                            $hiddenColumns[] = $startCol + $j;
+                        }
+                    }
+                @endphp
                 @for($i = 0; $i < $container->columns; $i++)
                     @php
+                        $isHidden = in_array($i, $hiddenColumns);
+                        $mergeSpan = $columnMerges[$i] ?? 1;
+                        $colWidth = $mergeSpan * (12 / $container->columns);
                         $columnWidgets = $container->widgets->where('column_index', $i)->sortBy('order');
                         $colStyle = $isFullWidth ? 'padding-left: 0; padding-right: 0;' : '';
                         if ($isFullHeight) {
@@ -44,7 +56,8 @@
                         }
                         $colMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
                     @endphp
-                    <div class="col-md-{{ 12 / $container->columns }} {{ $colMarginBottom }}" style="{{ $colStyle }}">
+                    @if(!$isHidden)
+                        <div class="col-md-{{ $colWidth }} {{ $colMarginBottom }}" style="{{ $colStyle }}">
                         @foreach($columnWidgets as $widget)
                             @php
                                 // CustomPageWidget을 MainWidget과 호환되도록 변환
@@ -62,7 +75,8 @@
                                 <x-main-widget :widget="$widgetData" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" />
                             </div>
                         @endforeach
-                    </div>
+                        </div>
+                    @endif
                 @endfor
             </div>
         </div>

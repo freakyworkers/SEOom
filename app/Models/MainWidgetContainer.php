@@ -12,6 +12,7 @@ class MainWidgetContainer extends Model
     protected $fillable = [
         'site_id',
         'columns',
+        'column_merges',
         'vertical_align',
         'full_width',
         'full_height',
@@ -21,6 +22,7 @@ class MainWidgetContainer extends Model
 
     protected $casts = [
         'columns' => 'integer',
+        'column_merges' => 'array',
         'order' => 'integer',
         'full_width' => 'boolean',
         'full_height' => 'boolean',

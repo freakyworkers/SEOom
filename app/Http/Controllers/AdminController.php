@@ -3440,7 +3440,8 @@ class AdminController extends Controller
         }
 
         $request->validate([
-            'columns' => 'required|integer|in:1,2,3,4',
+            'columns' => 'sometimes|required|integer|in:1,2,3,4',
+            'column_merges' => 'nullable|string',
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
@@ -3448,7 +3449,7 @@ class AdminController extends Controller
         ]);
 
         $oldColumns = $container->columns;
-        $newColumns = $request->columns;
+        $newColumns = $request->has('columns') ? $request->columns : $container->columns;
 
         // 컬럼 수가 줄어들면, 삭제되는 컬럼의 위젯들을 처리
         if ($newColumns < $oldColumns) {
@@ -3491,6 +3492,23 @@ class AdminController extends Controller
         // widget_spacing 처리
         if ($request->has('widget_spacing')) {
             $container->widget_spacing = $request->widget_spacing;
+        }
+        
+        // column_merges 처리
+        if ($request->has('column_merges')) {
+            $columnMerges = json_decode($request->column_merges, true);
+            if (is_array($columnMerges)) {
+                // 유효성 검사: 병합 정보가 컬럼 수를 초과하지 않도록
+                $validMerges = [];
+                foreach ($columnMerges as $colIndex => $span) {
+                    if (is_numeric($colIndex) && is_numeric($span) && $colIndex >= 0 && $colIndex < $newColumns && $span > 0) {
+                        $validMerges[(int)$colIndex] = (int)$span;
+                    }
+                }
+                $container->column_merges = $validMerges;
+            } else {
+                $container->column_merges = null;
+            }
         }
         
         $container->save();
@@ -4043,14 +4061,15 @@ class AdminController extends Controller
         }
 
         $request->validate([
-            'columns' => 'required|integer|in:1,2,3,4',
+            'columns' => 'sometimes|required|integer|in:1,2,3,4',
+            'column_merges' => 'nullable|string',
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
         ]);
 
         $oldColumns = $container->columns;
-        $newColumns = $request->columns;
+        $newColumns = $request->has('columns') ? $request->columns : $container->columns;
 
         // 컬럼 수가 줄어들면, 삭제되는 컬럼의 위젯들을 처리
         if ($newColumns < $oldColumns) {
@@ -4080,6 +4099,23 @@ class AdminController extends Controller
         } else {
             // full_height 값이 전송되지 않았으면 false로 설정
             $container->full_height = false;
+        }
+        
+        // column_merges 처리
+        if ($request->has('column_merges')) {
+            $columnMerges = json_decode($request->column_merges, true);
+            if (is_array($columnMerges)) {
+                // 유효성 검사: 병합 정보가 컬럼 수를 초과하지 않도록
+                $validMerges = [];
+                foreach ($columnMerges as $colIndex => $span) {
+                    if (is_numeric($colIndex) && is_numeric($span) && $colIndex >= 0 && $colIndex < $newColumns && $span > 0) {
+                        $validMerges[(int)$colIndex] = (int)$span;
+                    }
+                }
+                $container->column_merges = $validMerges;
+            } else {
+                $container->column_merges = null;
+            }
         }
         
         $container->save();
