@@ -523,9 +523,10 @@
         @endif
         
         /* 위젯 그림자 통일 및 opacity 조정 */
-        /* 이미지 슬라이드 무한루프보다 조금 더 옅은 그림자 적용 (opacity: 0.05) */
+        /* 모든 위젯에 동일한 그림자 적용 - 시각적 통일성 확보 */
         @if(isset($widgetShadow) && $widgetShadow)
             /* 모든 shadow-sm 클래스를 가진 요소에 그림자 적용 */
+            /* 그림자 값을 약간 더 진하게 조정하여 배경색 차이를 보완 */
             .shadow-sm,
             .card.shadow-sm,
             .mb-3.shadow-sm,
@@ -536,7 +537,7 @@
             .block-slide-wrapper.shadow-sm,
             div[class*="mb-3"][class*="shadow-sm"],
             div[class*="shadow-sm"][class*="mb-3"] {
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
             }
         @endif
         
