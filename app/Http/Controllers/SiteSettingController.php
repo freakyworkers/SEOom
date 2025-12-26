@@ -42,7 +42,8 @@ class SiteSettingController extends Controller
         // 헤더 미리보기 HTML 생성
         $headerTheme = $settings['theme_top'] ?? 'design1';
         $headerSiteName = $settings['site_name'] ?? $site->name ?? 'SEOom Builder';
-        $headerSiteLogo = $settings['site_logo'] ?? '';
+        // 다크 모드일 때 다크 모드 로고 사용
+        $headerSiteLogo = $isDark ? ($settings['site_logo_dark'] ?? $settings['site_logo'] ?? '') : ($settings['site_logo'] ?? '');
         $headerLogoType = $settings['logo_type'] ?? 'image';
         $headerLogoDesktopSize = $settings['logo_desktop_size'] ?? '300';
         $headerLogoMobileSize = $settings['logo_mobile_size'] ?? '200';
@@ -591,7 +592,6 @@ class SiteSettingController extends Controller
         $settings = $this->settingService->getSettingsBySite($site->id);
         
         $siteName = $settings['site_name'] ?? $site->name ?? 'SEOom Builder';
-        $siteLogo = $settings['site_logo'] ?? '';
         $logoType = $settings['logo_type'] ?? 'image';
         $logoDesktopSize = $settings['logo_desktop_size'] ?? '300';
         $logoMobileSize = $settings['logo_mobile_size'] ?? '200';
@@ -599,6 +599,9 @@ class SiteSettingController extends Controller
         // 색상 설정 가져오기 (요청에서 전달된 값 우선, 없으면 저장된 설정값 사용)
         $themeDarkMode = $request->get('theme_dark_mode', $settings['theme_dark_mode'] ?? 'light');
         $isDark = $themeDarkMode === 'dark';
+        
+        // 다크 모드일 때 다크 모드 로고 사용
+        $siteLogo = $isDark ? ($settings['site_logo_dark'] ?? $settings['site_logo'] ?? '') : ($settings['site_logo'] ?? '');
         
         if ($type === 'header') {
             // 헤더 색상 설정 (요청에서 전달된 값 우선)
@@ -827,7 +830,9 @@ class SiteSettingController extends Controller
         $settings = $this->settingService->getSettingsBySite($site->id);
         
         $siteName = $settings['site_name'] ?? $site->name ?? 'SEOom Builder';
-        $siteLogo = $settings['site_logo'] ?? '';
+        // 다크 모드일 때 다크 모드 로고 사용
+        $isDark = ($settings['theme_dark_mode'] ?? 'light') === 'dark';
+        $siteLogo = $isDark ? ($settings['site_logo_dark'] ?? $settings['site_logo'] ?? '') : ($settings['site_logo'] ?? '');
         $logoType = $settings['logo_type'] ?? 'text';
         $logoMobileSize = $settings['logo_mobile_size'] ?? '200';
         

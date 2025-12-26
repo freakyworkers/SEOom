@@ -62,15 +62,17 @@
                 $siteName = $site->getSetting('site_name', $site->name ?? 'SEOom Builder');
                 $siteDescription = $site->getSetting('site_description', '');
                 $siteKeywords = $site->getSetting('site_keywords', '');
-                $siteLogo = $site->getSetting('site_logo', '');
+                // 테마 설정
+                $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
+                $isDark = $themeDarkMode === 'dark';
+                
+                // 로고 설정: 다크 모드일 때 다크 모드 로고 사용
+                $siteLogo = $isDark ? ($site->getSetting('site_logo_dark', '') ?: $site->getSetting('site_logo', '')) : $site->getSetting('site_logo', '');
                 $siteFavicon = $site->getSetting('site_favicon', '');
                 $ogImage = $site->getSetting('og_image', $siteLogo);
                 $logoType = $site->getSetting('logo_type', 'image');
                 $logoDesktopSize = $site->getSetting('logo_desktop_size', '300');
                 $logoMobileSize = $site->getSetting('logo_mobile_size', '200');
-                
-                // 테마 설정
-                $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
                 $themeTop = $site->getSetting('theme_top', 'design1');
                 $themeTopHeaderShow = $site->getSetting('theme_top_header_show', '0');
                 $headerSticky = $site->getSetting('header_sticky', '0');

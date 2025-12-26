@@ -6,7 +6,6 @@
     // 기본값 설정
     $theme = $theme ?? 'design1';
     $siteName = $siteName ?? 'SEOom Builder';
-    $siteLogo = $siteLogo ?? '';
     $logoType = $logoType ?? 'image';
     $logoDesktopSize = $logoDesktopSize ?? '300';
     $logoMobileSize = $logoMobileSize ?? '200';
@@ -15,6 +14,17 @@
     $menuLoginShow = isset($menuLoginShow) ? $menuLoginShow : '0';
     $headerSticky = isset($headerSticky) ? $headerSticky : '0';
     $themeDarkMode = isset($themeDarkMode) ? $themeDarkMode : 'light';
+    $isDark = $themeDarkMode === 'dark';
+    
+    // 로고 설정: 다크 모드일 때 다크 모드 로고 사용
+    if (!isset($siteLogo) || empty($siteLogo)) {
+        $siteLogo = $isDark ? ($settings['site_logo_dark'] ?? $settings['site_logo'] ?? '') : ($settings['site_logo'] ?? '');
+    } else {
+        // 전달된 siteLogo가 있지만 다크 모드이고 다크 모드 로고가 있으면 다크 모드 로고 사용
+        if ($isDark && !empty($settings['site_logo_dark'] ?? '')) {
+            $siteLogo = $settings['site_logo_dark'];
+        }
+    }
     
     // 최상단 헤더 바 색상
     $topBarBg = $themeDarkMode === 'dark' ? ($settings['color_dark_header_bg'] ?? '#000000') : ($settings['color_light_header_bg'] ?? '#ffffff');

@@ -89,9 +89,9 @@
     // 헤더 클래스 추가
     $headerClass = $mobileHeaderTransparent ? 'mobile-header-transparent' : '';
     
-    // 로고 설정
+    // 로고 설정: 다크 모드일 때 다크 모드 로고 사용
     $siteName = $site->getSetting('site_name', $site->name ?? 'SEOom Builder');
-    $siteLogo = $site->getSetting('site_logo', '');
+    $siteLogo = $isDark ? ($site->getSetting('site_logo_dark', '') ?: $site->getSetting('site_logo', '')) : $site->getSetting('site_logo', '');
     $logoType = $site->getSetting('logo_type', 'text');
     $logoMobileSize = $site->getSetting('logo_mobile_size', '200');
     
