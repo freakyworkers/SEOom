@@ -3796,6 +3796,22 @@ function handleImageSlideModeChange() {
     });
 }
 
+function handleImageSlideBackgroundTypeChange() {
+    const backgroundType = document.getElementById('widget_image_slide_background_type')?.value || 'none';
+    const colorContainer = document.getElementById('widget_image_slide_background_color_container');
+    if (colorContainer) {
+        colorContainer.style.display = backgroundType === 'color' ? 'block' : 'none';
+    }
+}
+
+function handleEditMainImageSlideBackgroundTypeChange() {
+    const backgroundType = document.getElementById('edit_main_widget_image_slide_background_type')?.value || 'none';
+    const colorContainer = document.getElementById('edit_main_widget_image_slide_background_color_container');
+    if (colorContainer) {
+        colorContainer.style.display = backgroundType === 'color' ? 'block' : 'none';
+    }
+}
+
 // 메인 위젯 수정 관련 함수들
 let editMainTabMenuIndex = 0;
 let editMainBlockSlideItemIndex = 0;
