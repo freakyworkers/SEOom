@@ -38,6 +38,7 @@
                 $themeMain = 'round';
                 $themeFullWidth = false;
                 $themeSidebar = 'left';
+                $widgetShadow = true;
                 $colorLightHeaderText = '#000000';
                 $colorLightHeaderBg = '#ffffff';
                 $colorLightFooterText = '#000000';
@@ -76,6 +77,7 @@
                 $themeBottom = $site->getSetting('theme_bottom', 'theme03');
                 $themeMain = $site->getSetting('theme_main', 'round');
                 $themeFullWidth = $site->getSetting('theme_full_width', '0') == '1';
+                $widgetShadow = $site->getSetting('widget_shadow', '1') == '1';
                 
                 // 사이드 위젯 기능이 없는 플랜의 경우 사이드바를 'none'으로 강제 설정
                 try {
@@ -409,11 +411,16 @@
         /* 테마 스타일 적용 */
         @if($themeMain === 'round')
             /* 라운드 스타일 - 위젯, 배너, 게시판의 최상위 컨테이너에만 라운드 적용 */
-            /* 위젯 최상위 컨테이너 */
+            /* 위젯 최상위 컨테이너 - 그림자 클래스와 독립적으로 라운드 적용 */
+            .card.mb-3,
             .card.shadow-sm.mb-3,
             .widget-card,
             .main-widget-container,
-            .sidebar-widget-container {
+            .sidebar-widget-container,
+            .mb-3.shadow-sm,
+            .mb-3:not(.rounded-0),
+            .image-slide-wrapper:not(.rounded-0),
+            .block-slide-wrapper:not(.rounded-0) {
                 border-radius: 0.5rem !important;
             }
             
@@ -513,6 +520,21 @@
                 border-top-left-radius: 0.5rem !important;
                 border-top-right-radius: 0.5rem !important;
             }
+        @endif
+        
+        /* 위젯 그림자 통일 및 opacity 조정 */
+        /* 이미지 슬라이드 무한루프보다 조금 더 옅은 그림자 적용 (opacity: 0.05) */
+        @if(isset($widgetShadow) && $widgetShadow)
+            .shadow-sm,
+            .card.shadow-sm,
+            .mb-3.shadow-sm,
+            .image-slide-wrapper.shadow-sm,
+            .block-slide-wrapper.shadow-sm {
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+            }
+        @endif
+        
+        @if($themeMain === 'round')
         @elseif($themeMain === 'square')
             /* 스퀘어 스타일 - 모든 요소에 직각 적용 */
             .btn, .card, .form-control, .form-select, 
