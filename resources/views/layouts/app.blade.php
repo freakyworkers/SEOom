@@ -446,6 +446,7 @@
             .table th {
                 border-color: rgba(255, 255, 255, 0.1) !important;
                 background-color: rgb(43, 43, 43) !important;
+                color: #ffffff !important;
             }
             
             /* 테이블 bg-light 클래스 다크 모드 스타일 */
@@ -454,6 +455,20 @@
             .table th.bg-light {
                 background-color: rgb(53, 53, 53) !important;
                 color: #ffffff !important;
+            }
+            
+            /* 테이블 내부 모든 텍스트 색상 강제 적용 */
+            .table *,
+            .table a,
+            .table span,
+            .table div,
+            .table p {
+                color: #ffffff !important;
+            }
+            
+            /* 테이블 링크 호버 색상 */
+            .table a:hover {
+                color: rgba(255, 255, 255, 0.8) !important;
             }
             
             /* 드롭다운 메뉴 */

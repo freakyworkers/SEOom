@@ -12,14 +12,6 @@
 @endphp
 <div class="row">
     <div class="col-12">
-        <nav aria-label="breadcrumb" class="mb-3">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('home', ['site' => $site->slug]) }}">홈</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('event-application.index', ['site' => $site->slug]) }}">{{ $setting->page_title }}</a></li>
-                <li class="breadcrumb-item active">{{ $product->item_content }}</li>
-            </ol>
-        </nav>
-
         <div class="mb-4">
             <div class="bg-white p-3 rounded shadow-sm">
                 <h2 class="mb-1">{{ $setting->page_title }} - {{ $product->item_content }}</h2>
