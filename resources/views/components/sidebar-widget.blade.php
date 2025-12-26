@@ -343,6 +343,7 @@
         $slideDirection = $imageSlideSettings['slide_direction'] ?? 'left';
         $slideMode = $imageSlideSettings['slide_mode'] ?? 'single';
         $visibleCount = $imageSlideSettings['visible_count'] ?? 3;
+        $imageGap = $imageSlideSettings['image_gap'] ?? 0;
         $images = $imageSlideSettings['images'] ?? [];
     @endphp
     @if(count($images) > 0)
@@ -350,9 +351,10 @@
              data-direction="{{ $slideDirection }}" 
              data-mode="{{ $slideMode }}"
              data-visible-count="{{ $visibleCount }}"
+             data-image-gap="{{ $imageGap }}"
              data-widget-id="{{ $widget->id }}"
              style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }}">
-            <div class="image-slide-container" style="display: flex; {{ $slideMode === 'infinite' ? 'flex-direction: row;' : '' }} transition: transform 0.5s ease-in-out; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'flex-direction: column; height: 100%;' : '' }}">
+            <div class="image-slide-container" style="display: flex; {{ $slideMode === 'infinite' ? 'flex-direction: row;' : '' }} {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'flex-direction: column; height: 100%;' : '' }}{{ $slideMode === 'single' ? ' transition: transform 0.5s ease-in-out;' : '' }}">
                 @if($slideMode === 'single')
                     @foreach($images as $index => $image)
                         @php
@@ -403,7 +405,7 @@
                                 $openNewTab = $image['open_new_tab'] ?? false;
                             @endphp
                             @if($imageUrl)
-                                <div class="image-slide-item" style="width: calc(100% / {{ $visibleCount }}); flex-shrink: 0;">
+                                <div class="image-slide-item" style="width: calc((100% - {{ $imageGap * ($visibleCount - 1) }}px) / {{ $visibleCount }}); flex-shrink: 0;{{ $imageGap > 0 ? ' margin-right: ' . $imageGap . 'px;' : '' }}">
                                     @if($link)
                                         <a href="{{ $link }}" 
                                            @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
@@ -488,36 +490,93 @@
                 // 무한루프 슬라이드 모드
                 const items = wrapper.querySelectorAll('.image-slide-item');
                 const totalItems = items.length;
+                const imageGap = parseInt(wrapper.dataset.imageGap) || 0;
                 
                 if (totalItems <= visibleCount) return;
                 
-                // 각 이미지의 너비 계산
-                const itemWidthPercent = 100 / visibleCount;
-                const singleSetWidth = (totalItems / 3) * itemWidthPercent;
+                // transition 제거 (부드러운 애니메이션을 위해)
+                container.style.transition = 'none';
                 
-                let position = 0;
-                const speed = 0.3; // 이동 속도 (% 단위)
-                
-                function animate() {
-                    if (direction === 'left') {
-                        position -= speed;
-                        // 첫 번째 세트가 완전히 사라지면 위치 리셋
-                        if (Math.abs(position) >= singleSetWidth) {
-                            position = 0;
-                        }
-                        container.style.transform = `translateX(${position}%)`;
-                    } else if (direction === 'right') {
-                        position += speed;
-                        // 첫 번째 세트가 완전히 사라지면 위치 리셋
-                        if (position >= singleSetWidth) {
-                            position = 0;
-                        }
-                        container.style.transform = `translateX(${position}%)`;
+                // 이미지 로드 대기 후 애니메이션 시작
+                function startAnimation() {
+                    // 첫 번째 아이템의 실제 너비 계산
+                    const firstItem = items[0];
+                    if (!firstItem) return;
+                    
+                    const itemWidth = firstItem.offsetWidth;
+                    if (itemWidth === 0) {
+                        // 이미지가 아직 로드되지 않았으면 다시 시도
+                        setTimeout(startAnimation, 100);
+                        return;
                     }
+                    
+                    const itemWithGap = itemWidth + imageGap;
+                    const singleSetWidth = (totalItems / 3) * itemWithGap;
+                    
+                    let position = 0;
+                    const speed = 0.5; // 픽셀 단위 이동 속도
+                    let lastTime = performance.now();
+                    
+                    function animate(currentTime) {
+                        const deltaTime = currentTime - lastTime;
+                        lastTime = currentTime;
+                        
+                        // 프레임 레이트에 관계없이 일정한 속도 유지
+                        const frameSpeed = speed * (deltaTime / 16.67); // 60fps 기준
+                        
+                        if (direction === 'left') {
+                            position -= frameSpeed;
+                            // 첫 번째 세트가 완전히 사라지면 위치 리셋 (부드럽게)
+                            if (Math.abs(position) >= singleSetWidth) {
+                                position = position + singleSetWidth;
+                            }
+                            container.style.transform = `translateX(${position}px)`;
+                        } else if (direction === 'right') {
+                            position += frameSpeed;
+                            // 첫 번째 세트가 완전히 사라지면 위치 리셋 (부드럽게)
+                            if (position >= singleSetWidth) {
+                                position = position - singleSetWidth;
+                            }
+                            container.style.transform = `translateX(${position}px)`;
+                        }
+                        requestAnimationFrame(animate);
+                    }
+                    
+                    // 초기 위치 설정
                     requestAnimationFrame(animate);
                 }
                 
-                animate();
+                // 이미지 로드 확인
+                const images = wrapper.querySelectorAll('img');
+                let loadedCount = 0;
+                const totalImages = images.length;
+                
+                if (totalImages === 0) {
+                    startAnimation();
+                } else {
+                    images.forEach(img => {
+                        if (img.complete) {
+                            loadedCount++;
+                            if (loadedCount === totalImages) {
+                                startAnimation();
+                            }
+                        } else {
+                            img.addEventListener('load', () => {
+                                loadedCount++;
+                                if (loadedCount === totalImages) {
+                                    startAnimation();
+                                }
+                            });
+                        }
+                    });
+                    
+                    // 타임아웃 설정 (이미지 로드 실패 시에도 애니메이션 시작)
+                    setTimeout(() => {
+                        if (loadedCount < totalImages) {
+                            startAnimation();
+                        }
+                    }, 2000);
+                }
             }
         })();
         </script>

@@ -622,6 +622,18 @@
                                                        placeholder="3">
                                                 <small class="text-muted">한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
                                             </div>
+                                            <div class="mb-3" id="widget_image_slide_gap_container" style="display: none;">
+                                                <label for="widget_image_slide_gap" class="form-label">이미지 간격 (px)</label>
+                                                <input type="number" 
+                                                       class="form-control" 
+                                                       id="widget_image_slide_gap" 
+                                                       name="image_slide_gap" 
+                                                       min="0" 
+                                                       max="50" 
+                                                       value="0"
+                                                       placeholder="0">
+                                                <small class="text-muted">이미지 사이 간격을 픽셀 단위로 입력하세요 (0~50).</small>
+                                            </div>
                                             <div id="widget_image_slide_items">
                                                 <!-- 이미지 아이템들이 여기에 동적으로 추가됨 -->
                                             </div>
@@ -1182,6 +1194,18 @@
                                    value="3"
                                    placeholder="3">
                             <small class="text-muted">한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
+                        </div>
+                        <div class="mb-3" id="edit_widget_image_slide_gap_container" style="display: none;">
+                            <label for="edit_widget_image_slide_gap" class="form-label">이미지 간격 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_widget_image_slide_gap" 
+                                   name="edit_image_slide_gap" 
+                                   min="0" 
+                                   max="50" 
+                                   value="0"
+                                   placeholder="0">
+                            <small class="text-muted">이미지 사이 간격을 픽셀 단위로 입력하세요 (0~50).</small>
                         </div>
                         <div id="edit_widget_image_slide_items">
                             <!-- 이미지 아이템들이 여기에 동적으로 추가됨 -->
@@ -2455,6 +2479,7 @@ function handleEditImageSlideModeChange() {
     const singleCheckbox = document.getElementById('edit_widget_image_slide_single');
     const infiniteCheckbox = document.getElementById('edit_widget_image_slide_infinite');
     const visibleCountContainer = document.getElementById('edit_widget_image_slide_visible_count_container');
+    const gapContainer = document.getElementById('edit_widget_image_slide_gap_container');
     const directionGroup = document.getElementById('edit_image_slide_direction_group');
     const upRadio = document.getElementById('edit_image_slide_direction_up');
     const downRadio = document.getElementById('edit_image_slide_direction_down');
@@ -2464,6 +2489,7 @@ function handleEditImageSlideModeChange() {
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (singleCheckbox) singleCheckbox.checked = false;
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
+        if (gapContainer) gapContainer.style.display = 'block';
         if (upRadio) {
             upRadio.disabled = true;
             if (upLabel) upLabel.classList.add('disabled');
@@ -3205,10 +3231,12 @@ function addWidget() {
         const singleSlide = document.getElementById('widget_image_slide_single')?.checked || false;
         const infiniteSlide = document.getElementById('widget_image_slide_infinite')?.checked || false;
         const visibleCount = document.getElementById('widget_image_slide_visible_count')?.value || '3';
+        const imageGap = document.getElementById('widget_image_slide_gap')?.value || '0';
         
         settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
         if (infiniteSlide) {
             settings.visible_count = parseInt(visibleCount) || 3;
+            settings.image_gap = parseInt(imageGap) || 0;
         }
         
         // 이미지 아이템들 수집

@@ -947,6 +947,18 @@
                                    placeholder="3">
                             <small class="text-muted">한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
                         </div>
+                        <div class="mb-3" id="edit_main_widget_image_slide_gap_container" style="display: none;">
+                            <label for="edit_main_widget_image_slide_gap" class="form-label">이미지 간격 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_main_widget_image_slide_gap" 
+                                   name="edit_main_image_slide_gap" 
+                                   min="0" 
+                                   max="50" 
+                                   value="0"
+                                   placeholder="0">
+                            <small class="text-muted">이미지 사이 간격을 픽셀 단위로 입력하세요 (0~50).</small>
+                        </div>
                         <div id="edit_main_widget_image_slide_items">
                             <!-- 이미지 아이템들이 여기에 동적으로 추가됨 -->
                         </div>
@@ -2130,10 +2142,12 @@ function addMainWidget() {
         const singleSlide = document.getElementById('widget_image_slide_single')?.checked || false;
         const infiniteSlide = document.getElementById('widget_image_slide_infinite')?.checked || false;
         const visibleCount = document.getElementById('widget_image_slide_visible_count')?.value || '3';
+        const imageGap = document.getElementById('widget_image_slide_gap')?.value || '0';
         
         settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
         if (infiniteSlide) {
             settings.visible_count = parseInt(visibleCount) || 3;
+            settings.image_gap = parseInt(imageGap) || 0;
         }
         
         const imageItems = [];
@@ -2635,6 +2649,7 @@ function editMainWidget(widgetId) {
                 const singleCheckbox = document.getElementById('edit_main_widget_image_slide_single');
                 const infiniteCheckbox = document.getElementById('edit_main_widget_image_slide_infinite');
                 const visibleCountInput = document.getElementById('edit_main_widget_image_slide_visible_count');
+                const gapInput = document.getElementById('edit_main_widget_image_slide_gap');
                 
                 if (slideMode === 'infinite') {
                     if (singleCheckbox) singleCheckbox.checked = false;
@@ -2642,6 +2657,10 @@ function editMainWidget(widgetId) {
                     if (visibleCountInput) {
                         visibleCountInput.value = settings.visible_count || 3;
                         document.getElementById('edit_main_widget_image_slide_visible_count_container').style.display = 'block';
+                    }
+                    if (gapInput) {
+                        gapInput.value = settings.image_gap || 0;
+                        document.getElementById('edit_main_widget_image_slide_gap_container').style.display = 'block';
                     }
                 } else {
                     if (singleCheckbox) singleCheckbox.checked = true;
@@ -3590,6 +3609,7 @@ function handleImageSlideModeChange() {
     const singleCheckbox = document.getElementById('widget_image_slide_single');
     const infiniteCheckbox = document.getElementById('widget_image_slide_infinite');
     const visibleCountContainer = document.getElementById('widget_image_slide_visible_count_container');
+    const gapContainer = document.getElementById('widget_image_slide_gap_container');
     const directionGroup = document.getElementById('image_slide_direction_group');
     const upRadio = document.getElementById('image_slide_direction_up');
     const downRadio = document.getElementById('image_slide_direction_down');
@@ -3600,6 +3620,7 @@ function handleImageSlideModeChange() {
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (singleCheckbox) singleCheckbox.checked = false;
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
+        if (gapContainer) gapContainer.style.display = 'block';
         
         // 무한루프 슬라이드일 때 상하 방향 비활성화
         if (upRadio) {
@@ -3982,10 +4003,12 @@ function saveMainWidgetSettings() {
         const singleSlide = document.getElementById('edit_main_widget_image_slide_single')?.checked || false;
         const infiniteSlide = document.getElementById('edit_main_widget_image_slide_infinite')?.checked || false;
         const visibleCount = document.getElementById('edit_main_widget_image_slide_visible_count')?.value || '3';
+        const imageGap = document.getElementById('edit_main_widget_image_slide_gap')?.value || '0';
         
         settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
         if (infiniteSlide) {
             settings.visible_count = parseInt(visibleCount) || 3;
+            settings.image_gap = parseInt(imageGap) || 0;
         }
         
         // 이미지 아이템들 수집
@@ -4788,6 +4811,7 @@ function handleEditMainImageSlideModeChange() {
     const singleCheckbox = document.getElementById('edit_main_widget_image_slide_single');
     const infiniteCheckbox = document.getElementById('edit_main_widget_image_slide_infinite');
     const visibleCountContainer = document.getElementById('edit_main_widget_image_slide_visible_count_container');
+    const gapContainer = document.getElementById('edit_main_widget_image_slide_gap_container');
     const directionGroup = document.getElementById('edit_main_image_slide_direction_group');
     const upRadio = document.getElementById('edit_main_image_slide_direction_up');
     const downRadio = document.getElementById('edit_main_image_slide_direction_down');
@@ -4798,6 +4822,7 @@ function handleEditMainImageSlideModeChange() {
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (singleCheckbox) singleCheckbox.checked = false;
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
+        if (gapContainer) gapContainer.style.display = 'block';
         
         // 무한루프 슬라이드일 때 상하 방향 비활성화
         if (upRadio) {

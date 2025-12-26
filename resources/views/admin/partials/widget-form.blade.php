@@ -521,6 +521,18 @@
                placeholder="3">
         <small class="text-muted">한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
     </div>
+    <div class="mb-3" id="widget_image_slide_gap_container" style="display: none;">
+        <label for="widget_image_slide_gap" class="form-label">이미지 간격 (px)</label>
+        <input type="number" 
+               class="form-control" 
+               id="widget_image_slide_gap" 
+               name="image_slide_gap" 
+               min="0" 
+               max="50" 
+               value="0"
+               placeholder="0">
+        <small class="text-muted">이미지 사이 간격을 픽셀 단위로 입력하세요 (0~50).</small>
+    </div>
     <div id="widget_image_slide_items">
         <!-- 이미지 아이템들이 여기에 동적으로 추가됨 -->
     </div>
