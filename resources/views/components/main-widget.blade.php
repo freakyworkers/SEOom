@@ -636,7 +636,9 @@
     @endif
 @else
 @php
-    $cardStyle = $widgetTopBorderStyle;
+    // 제목이 있을 때만 상단 테두리 적용
+    $hasTitle = $widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat' && $widget->type !== 'chat_widget' && $widget->type !== 'create_site' && $widget->type !== 'countdown' && empty($widget->title) === false;
+    $cardStyle = $hasTitle ? $widgetTopBorderStyle : '';
     if (!$isRoundTheme) {
         $cardStyle .= ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;';
     }
@@ -646,7 +648,7 @@
     $cardMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
 @endphp
 <div class="card {{ $shadowClass }} {{ $animationClass }} {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
-    @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat' && $widget->type !== 'chat_widget' && $widget->type !== 'create_site' && $widget->type !== 'countdown' && empty($widget->title) === false)
+    @if($hasTitle)
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
             <div class="card-header" style="background-color: white;{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' }} border: none !important; border-bottom: 1px solid #dee2e6 !important;">

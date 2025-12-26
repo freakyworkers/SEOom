@@ -619,7 +619,13 @@
         </script>
     @endif
 @else
-<div class="card {{ $shadowClass }} {{ $animationClass }} mb-3 {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $widgetTopBorderStyle }}{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '' }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
+@php
+    // 제목이 있을 때만 상단 테두리 적용
+    $hasTitle = $widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && !empty($widget->title);
+    $cardStyle = $hasTitle ? $widgetTopBorderStyle : '';
+    $cardStyle .= !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '';
+@endphp
+<div class="card {{ $shadowClass }} {{ $animationClass }} mb-3 {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $cardStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
     @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu')
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
