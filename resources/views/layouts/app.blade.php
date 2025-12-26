@@ -608,13 +608,18 @@
             .board-container,
             .bg-white.p-3.rounded.shadow-sm,
             .post-list-container,
-            .card.bg-white.shadow-sm {
+            .card.bg-white.shadow-sm,
+            .card.shadow-sm,
+            .card.shadow,
+            .card.mb-4 {
                 border-radius: 0.5rem !important;
             }
             
             /* 게시판 카드 라운드 적용 (더 구체적인 선택자) */
             .card.bg-white.shadow-sm[style*="border-radius"],
-            .card.bg-white.shadow-sm:not(.rounded-0) {
+            .card.bg-white.shadow-sm:not(.rounded-0),
+            .card.shadow-sm:not(.rounded-0),
+            .card.shadow:not(.rounded-0) {
                 border-radius: 0.5rem !important;
             }
             
@@ -627,8 +632,20 @@
             .input-group .form-control, .input-group-text,
             .bookmark-thumbnail-container, .bookmark-thumbnail-container-mobile,
             .bookmark-item-name-mobile, .bookmark-item-value-mobile,
-            .post-card, .menu-item {
+            .post-card, .menu-item,
+            .card-header, .card-body {
                 border-radius: 0.5rem !important;
+            }
+            
+            /* 카드 헤더와 바디의 라운드 조정 */
+            .card:not(.rounded-0) .card-header:first-child {
+                border-top-left-radius: 0.5rem !important;
+                border-top-right-radius: 0.5rem !important;
+            }
+            
+            .card:not(.rounded-0) .card-body:last-child {
+                border-bottom-left-radius: 0.5rem !important;
+                border-bottom-right-radius: 0.5rem !important;
             }
             
             /* rounded 클래스 오버라이드 */
