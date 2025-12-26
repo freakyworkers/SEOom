@@ -1055,6 +1055,24 @@
                                    placeholder="0">
                             <small class="text-muted">이미지 사이 간격을 픽셀 단위로 입력하세요 (0~50).</small>
                         </div>
+                        <div class="mb-3" id="edit_main_widget_image_slide_background_container" style="display: none;">
+                            <label for="edit_main_widget_image_slide_background_type" class="form-label">배경 설정</label>
+                            <div class="mb-2">
+                                <select class="form-select" id="edit_main_widget_image_slide_background_type" name="edit_main_image_slide_background_type" onchange="handleEditMainImageSlideBackgroundTypeChange()">
+                                    <option value="none">배경 없음</option>
+                                    <option value="color">배경색 지정</option>
+                                </select>
+                            </div>
+                            <div id="edit_main_widget_image_slide_background_color_container" style="display: none;">
+                                <input type="color" 
+                                       class="form-control form-control-color" 
+                                       id="edit_main_widget_image_slide_background_color" 
+                                       name="edit_main_image_slide_background_color" 
+                                       value="#ffffff"
+                                       title="배경색 선택">
+                                <small class="text-muted">무한루프 슬라이드의 배경색을 선택하세요.</small>
+                            </div>
+                        </div>
                         <div id="edit_main_widget_image_slide_items">
                             <!-- 이미지 아이템들이 여기에 동적으로 추가됨 -->
                         </div>
@@ -2758,6 +2776,20 @@ function editMainWidget(widgetId) {
                         gapInput.value = settings.image_gap || 0;
                         document.getElementById('edit_main_widget_image_slide_gap_container').style.display = 'block';
                     }
+                    // 배경색 설정 로드
+                    const backgroundTypeSelect = document.getElementById('edit_main_widget_image_slide_background_type');
+                    const backgroundColorInput = document.getElementById('edit_main_widget_image_slide_background_color');
+                    const backgroundContainer = document.getElementById('edit_main_widget_image_slide_background_container');
+                    if (backgroundContainer) {
+                        backgroundContainer.style.display = 'block';
+                    }
+                    if (backgroundTypeSelect) {
+                        backgroundTypeSelect.value = settings.background_type || 'none';
+                        handleEditMainImageSlideBackgroundTypeChange();
+                    }
+                    if (backgroundColorInput && settings.background_color) {
+                        backgroundColorInput.value = settings.background_color;
+                    }
                 } else {
                     if (singleCheckbox) singleCheckbox.checked = true;
                     if (infiniteCheckbox) infiniteCheckbox.checked = false;
@@ -3706,6 +3738,7 @@ function handleImageSlideModeChange() {
     const infiniteCheckbox = document.getElementById('widget_image_slide_infinite');
     const visibleCountContainer = document.getElementById('widget_image_slide_visible_count_container');
     const gapContainer = document.getElementById('widget_image_slide_gap_container');
+    const backgroundContainer = document.getElementById('widget_image_slide_background_container');
     const directionGroup = document.getElementById('image_slide_direction_group');
     const upRadio = document.getElementById('image_slide_direction_up');
     const downRadio = document.getElementById('image_slide_direction_down');
@@ -3717,6 +3750,7 @@ function handleImageSlideModeChange() {
         if (singleCheckbox) singleCheckbox.checked = false;
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
         if (gapContainer) gapContainer.style.display = 'block';
+        if (backgroundContainer) backgroundContainer.style.display = 'block';
         
         // 무한루프 슬라이드일 때 상하 방향 비활성화
         if (upRadio) {
@@ -4269,11 +4303,17 @@ function saveMainWidgetSettings() {
         const infiniteSlide = document.getElementById('edit_main_widget_image_slide_infinite')?.checked || false;
         const visibleCount = document.getElementById('edit_main_widget_image_slide_visible_count')?.value || '3';
         const imageGap = document.getElementById('edit_main_widget_image_slide_gap')?.value || '0';
+        const backgroundType = document.getElementById('edit_main_widget_image_slide_background_type')?.value || 'none';
+        const backgroundColor = document.getElementById('edit_main_widget_image_slide_background_color')?.value || '#ffffff';
         
         settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
         if (infiniteSlide) {
             settings.visible_count = parseInt(visibleCount) || 3;
             settings.image_gap = parseInt(imageGap) || 0;
+            settings.background_type = backgroundType;
+            if (backgroundType === 'color') {
+                settings.background_color = backgroundColor;
+            }
         }
         
         // 이미지 아이템들 수집
@@ -5077,6 +5117,7 @@ function handleEditMainImageSlideModeChange() {
     const infiniteCheckbox = document.getElementById('edit_main_widget_image_slide_infinite');
     const visibleCountContainer = document.getElementById('edit_main_widget_image_slide_visible_count_container');
     const gapContainer = document.getElementById('edit_main_widget_image_slide_gap_container');
+    const backgroundContainer = document.getElementById('edit_main_widget_image_slide_background_container');
     const directionGroup = document.getElementById('edit_main_image_slide_direction_group');
     const upRadio = document.getElementById('edit_main_image_slide_direction_up');
     const downRadio = document.getElementById('edit_main_image_slide_direction_down');
@@ -5088,6 +5129,7 @@ function handleEditMainImageSlideModeChange() {
         if (singleCheckbox) singleCheckbox.checked = false;
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
         if (gapContainer) gapContainer.style.display = 'block';
+        if (backgroundContainer) backgroundContainer.style.display = 'block';
         
         // 무한루프 슬라이드일 때 상하 방향 비활성화
         if (upRadio) {

@@ -533,6 +533,24 @@
                placeholder="0">
         <small class="text-muted">이미지 사이 간격을 픽셀 단위로 입력하세요 (0~50).</small>
     </div>
+    <div class="mb-3" id="widget_image_slide_background_container" style="display: none;">
+        <label for="widget_image_slide_background_type" class="form-label">배경 설정</label>
+        <div class="mb-2">
+            <select class="form-select" id="widget_image_slide_background_type" name="image_slide_background_type" onchange="handleImageSlideBackgroundTypeChange()">
+                <option value="none">배경 없음</option>
+                <option value="color">배경색 지정</option>
+            </select>
+        </div>
+        <div id="widget_image_slide_background_color_container" style="display: none;">
+            <input type="color" 
+                   class="form-control form-control-color" 
+                   id="widget_image_slide_background_color" 
+                   name="image_slide_background_color" 
+                   value="#ffffff"
+                   title="배경색 선택">
+            <small class="text-muted">무한루프 슬라이드의 배경색을 선택하세요.</small>
+        </div>
+    </div>
     <div id="widget_image_slide_items">
         <!-- 이미지 아이템들이 여기에 동적으로 추가됨 -->
     </div>

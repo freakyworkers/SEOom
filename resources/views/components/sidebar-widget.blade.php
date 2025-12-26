@@ -365,7 +365,15 @@
         $slideMode = $imageSlideSettings['slide_mode'] ?? 'single';
         $visibleCount = $imageSlideSettings['visible_count'] ?? 3;
         $imageGap = $imageSlideSettings['image_gap'] ?? 0;
+        $backgroundType = $imageSlideSettings['background_type'] ?? 'none';
+        $backgroundColor = $imageSlideSettings['background_color'] ?? '#ffffff';
         $images = $imageSlideSettings['images'] ?? [];
+        
+        // 배경색 스타일 생성
+        $backgroundStyle = '';
+        if ($slideMode === 'infinite' && $backgroundType === 'color') {
+            $backgroundStyle = 'background-color: ' . $backgroundColor . ';';
+        }
     @endphp
     @if(count($images) > 0)
         <div class="mb-3 image-slide-wrapper {{ $shadowClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" 
@@ -374,7 +382,7 @@
              data-visible-count="{{ $visibleCount }}"
              data-image-gap="{{ $imageGap }}"
              data-widget-id="{{ $widget->id }}"
-             style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }}">
+             style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }} {{ $backgroundStyle }}">
             <div class="image-slide-container" style="display: flex; {{ $slideMode === 'infinite' ? 'flex-direction: row;' : '' }} {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'flex-direction: column; height: 100%;' : '' }}{{ $slideMode === 'single' ? ' transition: transform 0.5s ease-in-out;' : '' }}">
                 @if($slideMode === 'single')
                     @foreach($images as $index => $image)
