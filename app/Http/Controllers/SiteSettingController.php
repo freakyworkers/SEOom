@@ -830,15 +830,15 @@ class SiteSettingController extends Controller
         $settings = $this->settingService->getSettingsBySite($site->id);
         
         $siteName = $settings['site_name'] ?? $site->name ?? 'SEOom Builder';
-        // 다크 모드일 때 다크 모드 로고 사용
-        $isDark = ($settings['theme_dark_mode'] ?? 'light') === 'dark';
-        $siteLogo = $isDark ? ($settings['site_logo_dark'] ?? $settings['site_logo'] ?? '') : ($settings['site_logo'] ?? '');
         $logoType = $settings['logo_type'] ?? 'text';
         $logoMobileSize = $settings['logo_mobile_size'] ?? '200';
         
         // 색상 설정
         $themeDarkMode = $settings['theme_dark_mode'] ?? 'light';
         $isDark = $themeDarkMode === 'dark';
+        
+        // 다크 모드일 때 다크 모드 로고 사용
+        $siteLogo = $isDark ? ($settings['site_logo_dark'] ?? $settings['site_logo'] ?? '') : ($settings['site_logo'] ?? '');
         
         $headerTextColor = $isDark ? ($settings['color_dark_header_text'] ?? '#ffffff') : ($settings['color_light_header_text'] ?? '#000000');
         $headerBgColor = $isDark ? ($settings['color_dark_header_bg'] ?? '#000000') : ($settings['color_light_header_bg'] ?? '#ffffff');
