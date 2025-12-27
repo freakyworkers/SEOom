@@ -131,6 +131,11 @@
                         $buttonOpenNewTab = $button['open_new_tab'] ?? false;
                         $buttonBackgroundColor = $button['background_color'] ?? '#007bff';
                         $buttonTextColor = $button['text_color'] ?? '#ffffff';
+                        $buttonBorderColor = $button['border_color'] ?? $buttonBackgroundColor;
+                        $buttonBorderWidth = $button['border_width'] ?? '2';
+                        $buttonHoverBackgroundColor = $button['hover_background_color'] ?? '#0056b3';
+                        $buttonHoverTextColor = $button['hover_text_color'] ?? '#ffffff';
+                        $buttonHoverBorderColor = $button['hover_border_color'] ?? '#0056b3';
                     @endphp
                     @if($buttonText)
                         @if($buttonLink)
@@ -138,17 +143,17 @@
                                @if($buttonOpenNewTab) target="_blank" rel="noopener noreferrer" @endif
                                style="text-decoration: none; display: inline-block;">
                                 <button class="block-widget-button" 
-                                        style="border: 2px solid {{ $buttonBackgroundColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                        onmouseover="this.style.opacity='0.9';"
-                                        onmouseout="this.style.opacity='1';">
+                                        style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                        onmouseover="this.style.backgroundColor='{{ $buttonHoverBackgroundColor }}'; this.style.color='{{ $buttonHoverTextColor }}'; this.style.borderColor='{{ $buttonHoverBorderColor }}';"
+                                        onmouseout="this.style.backgroundColor='{{ $buttonBackgroundColor }}'; this.style.color='{{ $buttonTextColor }}'; this.style.borderColor='{{ $buttonBorderColor }}';">
                                     {{ $buttonText }}
                                 </button>
                             </a>
                         @else
                             <button class="block-widget-button" 
-                                    style="border: 2px solid {{ $buttonBackgroundColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                    onmouseover="this.style.opacity='0.9';"
-                                    onmouseout="this.style.opacity='1';">
+                                    style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                    onmouseover="this.style.backgroundColor='{{ $buttonHoverBackgroundColor }}'; this.style.color='{{ $buttonHoverTextColor }}'; this.style.borderColor='{{ $buttonHoverBorderColor }}';"
+                                    onmouseout="this.style.backgroundColor='{{ $buttonBackgroundColor }}'; this.style.color='{{ $buttonTextColor }}'; this.style.borderColor='{{ $buttonBorderColor }}';">
                                 {{ $buttonText }}
                             </button>
                         @endif
@@ -255,6 +260,11 @@
                                         $buttonOpenNewTab = $button['open_new_tab'] ?? false;
                                         $buttonBackgroundColor = $button['background_color'] ?? '#007bff';
                                         $buttonTextColor = $button['text_color'] ?? '#ffffff';
+                                        $buttonBorderColor = $button['border_color'] ?? $buttonBackgroundColor;
+                                        $buttonBorderWidth = $button['border_width'] ?? '2';
+                                        $buttonHoverBackgroundColor = $button['hover_background_color'] ?? '#0056b3';
+                                        $buttonHoverTextColor = $button['hover_text_color'] ?? '#ffffff';
+                                        $buttonHoverBorderColor = $button['hover_border_color'] ?? '#0056b3';
                                         $buttonColor = $buttonBackgroundColor;
                                     @endphp
                                     @if($buttonText)
@@ -263,17 +273,17 @@
                                                @if($buttonOpenNewTab) target="_blank" rel="noopener noreferrer" @endif
                                                style="text-decoration: none; display: inline-block;">
                                                 <button class="block-widget-button" 
-                                                        style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                                        onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
-                                                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
+                                                        style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                                        onmouseover="this.style.backgroundColor='{{ $buttonHoverBackgroundColor }}'; this.style.color='{{ $buttonHoverTextColor }}'; this.style.borderColor='{{ $buttonHoverBorderColor }}';"
+                                                        onmouseout="this.style.backgroundColor='{{ $buttonBackgroundColor }}'; this.style.color='{{ $buttonTextColor }}'; this.style.borderColor='{{ $buttonBorderColor }}';">
                                                     {{ $buttonText }}
                                                 </button>
                                             </a>
                                         @else
                                             <button class="block-widget-button" 
-                                                    style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                                    onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
-                                                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
+                                                    style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                                    onmouseover="this.style.backgroundColor='{{ $buttonHoverBackgroundColor }}'; this.style.color='{{ $buttonHoverTextColor }}'; this.style.borderColor='{{ $buttonHoverBorderColor }}';"
+                                                    onmouseout="this.style.backgroundColor='{{ $buttonBackgroundColor }}'; this.style.color='{{ $buttonTextColor }}'; this.style.borderColor='{{ $buttonBorderColor }}';">
                                                 {{ $buttonText }}
                                             </button>
                                         @endif

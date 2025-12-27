@@ -947,20 +947,20 @@
                             <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addEditMainBlockButton()">
                                 <i class="bi bi-plus-circle me-1"></i>버튼 추가
                             </button>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_main_widget_block_button_top_margin" class="form-label">버튼 상단 여백 (px)</label>
-                            <input type="number" 
-                                   class="form-control" 
-                                   id="edit_main_widget_block_button_top_margin" 
-                                   name="block_button_top_margin" 
-                                   value="12"
-                                   min="0"
-                                   max="100"
-                                   step="1"
-                                   placeholder="12">
-                            <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
-                        </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_main_widget_block_button_top_margin" class="form-label">버튼 상단 여백 (px)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="edit_main_widget_block_button_top_margin" 
+                                       name="block_button_top_margin" 
+                                       value="12"
+                                       min="0"
+                                       max="100"
+                                       step="1"
+                                       placeholder="12">
+                                <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
+                            </div>
                         <div class="mb-3" id="edit_main_widget_block_link_container">
                             <label for="edit_main_widget_block_link" class="form-label">
                                 연결 링크 <small class="text-muted">(선택사항)</small>
@@ -2972,6 +2972,21 @@ function editMainWidget(widgetId) {
                                 buttonCard.querySelector('.edit-main-block-button-open-new-tab').checked = button.open_new_tab || false;
                                 buttonCard.querySelector('.edit-main-block-button-background-color').value = button.background_color || '#007bff';
                                 buttonCard.querySelector('.edit-main-block-button-text-color').value = button.text_color || '#ffffff';
+                                if (buttonCard.querySelector('.edit-main-block-button-border-color')) {
+                                    buttonCard.querySelector('.edit-main-block-button-border-color').value = button.border_color || button.background_color || '#007bff';
+                                }
+                                if (buttonCard.querySelector('.edit-main-block-button-border-width')) {
+                                    buttonCard.querySelector('.edit-main-block-button-border-width').value = button.border_width || '2';
+                                }
+                                if (buttonCard.querySelector('.edit-main-block-button-hover-background-color')) {
+                                    buttonCard.querySelector('.edit-main-block-button-hover-background-color').value = button.hover_background_color || '#0056b3';
+                                }
+                                if (buttonCard.querySelector('.edit-main-block-button-hover-text-color')) {
+                                    buttonCard.querySelector('.edit-main-block-button-hover-text-color').value = button.hover_text_color || '#ffffff';
+                                }
+                                if (buttonCard.querySelector('.edit-main-block-button-hover-border-color')) {
+                                    buttonCard.querySelector('.edit-main-block-button-hover-border-color').value = button.hover_border_color || '#0056b3';
+                                }
                             }
                         }
                     });
@@ -3847,19 +3862,19 @@ function addBlockSlideItem() {
             <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addBlockSlideButton(${itemIndex})">
                 <i class="bi bi-plus-circle me-1"></i>버튼 추가
             </button>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">버튼 상단 여백 (px)</label>
-            <input type="number" 
-                   class="form-control block-slide-button-top-margin" 
-                   name="block_slide[${itemIndex}][button_top_margin]" 
-                   value="12"
-                   min="0"
-                   max="100"
-                   step="1"
-                   placeholder="12">
-            <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
-        </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 상단 여백 (px)</label>
+                <input type="number" 
+                       class="form-control block-slide-button-top-margin" 
+                       name="block_slide[${itemIndex}][button_top_margin]" 
+                       value="12"
+                       min="0"
+                       max="100"
+                       step="1"
+                       placeholder="12">
+                <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
+            </div>
         <div class="mb-3" id="block_slide_${itemIndex}_link_container"><label class="form-label">
             연결 링크 <small class="text-muted">(선택사항)</small>
             <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="버튼이 있는 경우 버튼에 링크가 연결되고, 버튼이 없는 경우 블록 전체에 링크가 연결됩니다."></i>
@@ -3956,6 +3971,48 @@ function addBlockSlideButton(itemIndex) {
                                class="form-control form-control-color block-slide-button-text-color" 
                                name="block_slide[${itemIndex}][buttons][${buttonIndex}][text_color]" 
                                value="#ffffff">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-border-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][border_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 두께 (px)</label>
+                        <input type="number" 
+                               class="form-control block-slide-button-border-width" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][border_width]" 
+                               value="2" 
+                               min="0" 
+                               max="10" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-hover-background-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_color]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-hover-text-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_text_color]" 
+                               value="#ffffff">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-hover-border-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_border_color]" 
+                               value="#0056b3">
                     </div>
                 </div>
             </div>
@@ -4614,13 +4671,23 @@ function saveMainWidgetSettings() {
                 const buttonOpenNewTab = buttonCard.querySelector('.edit-main-block-button-open-new-tab')?.checked || false;
                 const buttonBackgroundColor = buttonCard.querySelector('.edit-main-block-button-background-color')?.value || '#007bff';
                 const buttonTextColor = buttonCard.querySelector('.edit-main-block-button-text-color')?.value || '#ffffff';
+                const buttonBorderColor = buttonCard.querySelector('.edit-main-block-button-border-color')?.value || buttonBackgroundColor;
+                const buttonBorderWidth = buttonCard.querySelector('.edit-main-block-button-border-width')?.value || '2';
+                const buttonHoverBackgroundColor = buttonCard.querySelector('.edit-main-block-button-hover-background-color')?.value || '#0056b3';
+                const buttonHoverTextColor = buttonCard.querySelector('.edit-main-block-button-hover-text-color')?.value || '#ffffff';
+                const buttonHoverBorderColor = buttonCard.querySelector('.edit-main-block-button-hover-border-color')?.value || '#0056b3';
                 
                 buttons.push({
                     text: buttonText,
                     link: buttonLink,
                     open_new_tab: buttonOpenNewTab,
                     background_color: buttonBackgroundColor,
-                    text_color: buttonTextColor
+                    text_color: buttonTextColor,
+                    border_color: buttonBorderColor,
+                    border_width: buttonBorderWidth,
+                    hover_background_color: buttonHoverBackgroundColor,
+                    hover_text_color: buttonHoverTextColor,
+                    hover_border_color: buttonHoverBorderColor
                 });
             }
         });
@@ -4638,7 +4705,7 @@ function saveMainWidgetSettings() {
         settings.content_font_size = contentFontSize;
         settings.buttons = buttons;
         
-        const buttonTopMargin = document.getElementById('edit_main_widget_block_button_top_margin')?.value || '12';
+            const buttonTopMargin = document.getElementById('edit_main_widget_block_button_top_margin')?.value || '12';
         if (buttonTopMargin) {
             settings.button_top_margin = parseInt(buttonTopMargin);
             settings.button_top_margin = parseInt(buttonTopMargin);
@@ -5359,7 +5426,7 @@ function addEditMainBlockSlideItem(blockData = null) {
                 <i class="bi bi-plus-circle me-1"></i>버튼 추가
             </button>
         </div>
-        <div class="mb-3">
+            <div class="mb-3">
             <label class="form-label">버튼 상단 여백 (px)</label>
             <input type="number" 
                    class="form-control edit-main-block-slide-button-top-margin" 
@@ -5370,7 +5437,7 @@ function addEditMainBlockSlideItem(blockData = null) {
                    step="1"
                    placeholder="12">
             <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
-        </div>
+            </div>
         <div class="mb-3" id="edit_main_block_slide_${itemIndex}_link_container">
             <label class="form-label">
                 연결 링크 <small class="text-muted">(선택사항)</small>
@@ -5536,6 +5603,48 @@ function addEditMainBlockSlideButton(itemIndex) {
                                class="form-control form-control-color edit-main-block-slide-button-text-color" 
                                name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][text_color]" 
                                value="#ffffff">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-slide-button-border-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][border_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 두께 (px)</label>
+                        <input type="number" 
+                               class="form-control edit-main-block-slide-button-border-width" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][border_width]" 
+                               value="2" 
+                               min="0" 
+                               max="10" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-slide-button-hover-background-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_color]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-slide-button-hover-text-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_text_color]" 
+                               value="#ffffff">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-slide-button-hover-border-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_border_color]" 
+                               value="#0056b3">
                     </div>
                 </div>
             </div>
@@ -5883,6 +5992,48 @@ function addBlockButton() {
                                value="#ffffff">
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-border-color" 
+                               name="block_buttons[${blockButtonIndex}][border_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 두께 (px)</label>
+                        <input type="number" 
+                               class="form-control block-button-border-width" 
+                               name="block_buttons[${blockButtonIndex}][border_width]" 
+                               value="2" 
+                               min="0" 
+                               max="10" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-hover-background-color" 
+                               name="block_buttons[${blockButtonIndex}][hover_background_color]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-hover-text-color" 
+                               name="block_buttons[${blockButtonIndex}][hover_text_color]" 
+                               value="#ffffff">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-hover-border-color" 
+                               name="block_buttons[${blockButtonIndex}][hover_border_color]" 
+                               value="#0056b3">
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -5967,6 +6118,48 @@ function addEditMainBlockButton() {
                                class="form-control form-control-color edit-main-block-button-text-color" 
                                name="edit_main_block_buttons[${editMainBlockButtonIndex}][text_color]" 
                                value="#ffffff">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-button-border-color" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][border_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 두께 (px)</label>
+                        <input type="number" 
+                               class="form-control edit-main-block-button-border-width" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][border_width]" 
+                               value="2" 
+                               min="0" 
+                               max="10" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-button-hover-background-color" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_background_color]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-button-hover-text-color" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_text_color]" 
+                               value="#ffffff">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-button-hover-border-color" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_border_color]" 
+                               value="#0056b3">
                     </div>
                 </div>
             </div>
