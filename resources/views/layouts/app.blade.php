@@ -1242,8 +1242,10 @@
     @php
         // 첫 번째 컨테이너가 세로 100%인지 확인
         $firstContainerFullHeight = isset($mainWidgetContainers) && $mainWidgetContainers->isNotEmpty() && ($mainWidgetContainers->first()->full_height ?? false);
-        // 투명헤더이거나 첫 번째 컨테이너가 세로 100%일 때 상단 여백 제거
-        $removeTopMargin = ($headerTransparent && $isHomePage) || $firstContainerFullHeight;
+        // 첫 번째 컨테이너가 가로 100%인지 확인 (사이드바가 없을 때만 적용)
+        $firstContainerFullWidth = isset($mainWidgetContainers) && $mainWidgetContainers->isNotEmpty() && ($mainWidgetContainers->first()->full_width ?? false) && ($themeSidebar === 'none');
+        // 투명헤더이거나 첫 번째 컨테이너가 세로 100% 또는 가로 100%일 때 상단 여백 제거
+        $removeTopMargin = ($headerTransparent && $isHomePage) || $firstContainerFullHeight || $firstContainerFullWidth;
     @endphp
     <main class="container {{ $removeTopMargin ? '' : 'my-4' }} flex-grow-1">
         @if(session('error'))

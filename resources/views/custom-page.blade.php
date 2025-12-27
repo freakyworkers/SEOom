@@ -23,6 +23,12 @@
             $isFullHeight = ($container->full_height ?? false);
             $containerClass = $isFullWidth ? 'container-fluid px-0' : '';
             $containerStyle = $isFullWidth ? 'width: 100vw; position: relative; left: 50%; transform: translateX(-50%); padding: 0;' : '';
+            
+            // 가로 100% 컨테이너의 경우 상단 여백 제거
+            if ($isFullWidth) {
+                $containerStyle .= ($containerStyle ? ' ' : '') . 'margin-top: 0 !important; padding-top: 0 !important;';
+            }
+            
             if ($isFullHeight) {
                 $containerStyle .= ($containerStyle ? ' ' : '') . 'height: 100vh; overflow: hidden;';
                 $containerClass .= ' full-height-container';
