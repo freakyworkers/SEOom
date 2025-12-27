@@ -159,7 +159,19 @@
                         $widgetSpacingClass = $isFullHeight ? 'mb-0' : 'mb-' . min(max($widgetSpacing, 0), 5);
                     @endphp
                     @if(!$isHidden)
-                        <div class="col-md-{{ $colWidth }} {{ $colMarginBottom }}" style="{{ $colStyle }}">
+                        @php
+                            // 세로 정렬을 위해 컬럼을 flex 컨테이너로 만들기
+                            $colFlexStyle = $colStyle;
+                            if ($verticalAlign === 'center' || $verticalAlign === 'bottom') {
+                                $colFlexStyle .= ($colFlexStyle ? ' ' : '') . 'display: flex; flex-direction: column;';
+                                if ($verticalAlign === 'center') {
+                                    $colFlexStyle .= ' justify-content: center;';
+                                } elseif ($verticalAlign === 'bottom') {
+                                    $colFlexStyle .= ' justify-content: flex-end;';
+                                }
+                            }
+                        @endphp
+                        <div class="col-md-{{ $colWidth }} {{ $colMarginBottom }}" style="{{ $colFlexStyle }}">
                         @foreach($columnWidgets as $index => $widget)
                             @php
                                 $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';

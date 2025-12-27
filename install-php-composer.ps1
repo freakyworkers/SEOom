@@ -83,3 +83,4 @@ Write-Host "3. php artisan key:generate" -ForegroundColor White
 
 
 
+

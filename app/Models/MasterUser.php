@@ -80,3 +80,4 @@ class MasterUser extends Authenticatable
 
 
 
+

@@ -8079,34 +8079,51 @@ function openGradientModal(containerId, type) {
     const startParsed = rgbaToHexAndAlpha(startColorValue);
     const endParsed = rgbaToHexAndAlpha(endColorValue);
     
-    // 모달에 값 설정
-    document.getElementById('gradient_modal_start_color').value = startParsed.hex;
-    document.getElementById('gradient_modal_start_alpha').value = Math.round(startParsed.alpha * 100);
-    document.getElementById('gradient_modal_end_color').value = endParsed.hex;
-    document.getElementById('gradient_modal_end_alpha').value = Math.round(endParsed.alpha * 100);
-    document.getElementById('gradient_modal_angle').value = angle;
-    document.getElementById('gradient_modal_angle_slider').value = angle;
+    // 모달에 값 설정 (null 체크 추가)
+    const startColorInput = document.getElementById('gradient_modal_start_color');
+    const startAlphaInput = document.getElementById('gradient_modal_start_alpha');
+    const endColorInput = document.getElementById('gradient_modal_end_color');
+    const endAlphaInput = document.getElementById('gradient_modal_end_alpha');
+    const angleInput = document.getElementById('gradient_modal_angle');
+    const angleSliderInput = document.getElementById('gradient_modal_angle_slider');
+    
+    if (startColorInput) startColorInput.value = startParsed.hex;
+    if (startAlphaInput) startAlphaInput.value = Math.round(startParsed.alpha * 100);
+    if (endColorInput) endColorInput.value = endParsed.hex;
+    if (endAlphaInput) endAlphaInput.value = Math.round(endParsed.alpha * 100);
+    if (angleInput) angleInput.value = angle;
+    if (angleSliderInput) angleSliderInput.value = angle;
     
     // 색상 컨트롤 업데이트
-    updateGradientColorControl('start');
-    updateGradientColorControl('end');
+    if (typeof updateGradientColorControl === 'function') {
+        updateGradientColorControl('start');
+        updateGradientColorControl('end');
+    }
     
     // 시작/끝 컨트롤에 드래그 기능 추가
     const startControl = document.getElementById('gradient_start_control');
     const endControl = document.getElementById('gradient_end_control');
     if (startControl) {
-        makeGradientControlDraggable(startControl);
+        if (typeof makeGradientControlDraggable === 'function') {
+            makeGradientControlDraggable(startControl);
+        }
         startControl.addEventListener('click', function(e) {
             if (e.target.type !== 'color') {
-                selectGradientControl(startControl, 'start');
+                if (typeof selectGradientControl === 'function') {
+                    selectGradientControl(startControl, 'start');
+                }
             }
         });
     }
     if (endControl) {
-        makeGradientControlDraggable(endControl);
+        if (typeof makeGradientControlDraggable === 'function') {
+            makeGradientControlDraggable(endControl);
+        }
         endControl.addEventListener('click', function(e) {
             if (e.target.type !== 'color') {
-                selectGradientControl(endControl, 'end');
+                if (typeof selectGradientControl === 'function') {
+                    selectGradientControl(endControl, 'end');
+                }
             }
         });
     }
@@ -8116,29 +8133,41 @@ function openGradientModal(containerId, type) {
     if (preview) {
         preview.addEventListener('click', function(e) {
             if (e.target === preview || e.target.closest('#gradient_color_controls') === null) {
-                const rect = preview.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
-                addGradientMiddleColor(percent);
+                if (typeof addGradientMiddleColor === 'function') {
+                    const rect = preview.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                    addGradientMiddleColor(percent);
+                }
             }
         });
     }
     
     // 중간 색상 초기화
     const middleControlsContainer = document.getElementById('gradient_middle_controls');
-    middleControlsContainer.innerHTML = '';
+    if (middleControlsContainer) {
+        middleControlsContainer.innerHTML = '';
+    }
     
     // 미리보기 업데이트
-    updateGradientPreview();
+    if (typeof updateGradientPreview === 'function') {
+        updateGradientPreview();
+    }
     
     // 설정 패널 숨기기
-    document.getElementById('gradient_selected_control_settings').style.display = 'none';
+    const settingsPanel = document.getElementById('gradient_selected_control_settings');
+    if (settingsPanel) {
+        settingsPanel.style.display = 'none';
+    }
     selectedGradientControl = null;
     selectedGradientControlType = null;
     
     // 모달 표시
-    const modal = new bootstrap.Modal(document.getElementById('gradientModal'));
-    modal.show();
+    const modalElement = document.getElementById('gradientModal');
+    if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
 }
 
 // Hex를 RGBA로 변환
@@ -8465,13 +8494,21 @@ function saveGradient() {
         return;
     }
     
-    if (!currentGradientContainerId) return;
+    if (!currentGradientContainerId && !currentBlockGradientId) return;
     
-    const startColor = document.getElementById('gradient_modal_start_color').value;
-    const startAlpha = document.getElementById('gradient_modal_start_alpha').value / 100;
-    const endColor = document.getElementById('gradient_modal_end_color').value;
-    const endAlpha = document.getElementById('gradient_modal_end_alpha').value / 100;
-    const angle = document.getElementById('gradient_modal_angle').value || 90;
+    const startColorInput = document.getElementById('gradient_modal_start_color');
+    const startAlphaInput = document.getElementById('gradient_modal_start_alpha');
+    const endColorInput = document.getElementById('gradient_modal_end_color');
+    const endAlphaInput = document.getElementById('gradient_modal_end_alpha');
+    const angleInput = document.getElementById('gradient_modal_angle');
+    
+    if (!startColorInput || !startAlphaInput || !endColorInput || !endAlphaInput || !angleInput) return;
+    
+    const startColor = startColorInput.value;
+    const startAlpha = startAlphaInput.value / 100;
+    const endColor = endColorInput.value;
+    const endAlpha = endAlphaInput.value / 100;
+    const angle = angleInput.value || 90;
     
     // 투명도가 100%면 hex, 아니면 rgba로 저장
     const startColorValue = startAlpha === 1 ? startColor : hexToRgba(startColor, startAlpha);
@@ -8552,34 +8589,51 @@ function openBlockGradientModal(blockId) {
     const startParsed = rgbaToHexAndAlpha(startColorValue);
     const endParsed = rgbaToHexAndAlpha(endColorValue);
     
-    // 모달에 값 설정
-    document.getElementById('gradient_modal_start_color').value = startParsed.hex;
-    document.getElementById('gradient_modal_start_alpha').value = Math.round(startParsed.alpha * 100);
-    document.getElementById('gradient_modal_end_color').value = endParsed.hex;
-    document.getElementById('gradient_modal_end_alpha').value = Math.round(endParsed.alpha * 100);
-    document.getElementById('gradient_modal_angle').value = angle;
-    document.getElementById('gradient_modal_angle_slider').value = angle;
+    // 모달에 값 설정 (null 체크 추가)
+    const startColorInput = document.getElementById('gradient_modal_start_color');
+    const startAlphaInput = document.getElementById('gradient_modal_start_alpha');
+    const endColorInput = document.getElementById('gradient_modal_end_color');
+    const endAlphaInput = document.getElementById('gradient_modal_end_alpha');
+    const angleInput = document.getElementById('gradient_modal_angle');
+    const angleSliderInput = document.getElementById('gradient_modal_angle_slider');
+    
+    if (startColorInput) startColorInput.value = startParsed.hex;
+    if (startAlphaInput) startAlphaInput.value = Math.round(startParsed.alpha * 100);
+    if (endColorInput) endColorInput.value = endParsed.hex;
+    if (endAlphaInput) endAlphaInput.value = Math.round(endParsed.alpha * 100);
+    if (angleInput) angleInput.value = angle;
+    if (angleSliderInput) angleSliderInput.value = angle;
     
     // 색상 컨트롤 업데이트
-    updateGradientColorControl('start');
-    updateGradientColorControl('end');
+    if (typeof updateGradientColorControl === 'function') {
+        updateGradientColorControl('start');
+        updateGradientColorControl('end');
+    }
     
     // 시작/끝 컨트롤에 드래그 기능 추가
     const startControl = document.getElementById('gradient_start_control');
     const endControl = document.getElementById('gradient_end_control');
     if (startControl) {
-        makeGradientControlDraggable(startControl);
+        if (typeof makeGradientControlDraggable === 'function') {
+            makeGradientControlDraggable(startControl);
+        }
         startControl.addEventListener('click', function(e) {
             if (e.target.type !== 'color') {
-                selectGradientControl(startControl, 'start');
+                if (typeof selectGradientControl === 'function') {
+                    selectGradientControl(startControl, 'start');
+                }
             }
         });
     }
     if (endControl) {
-        makeGradientControlDraggable(endControl);
+        if (typeof makeGradientControlDraggable === 'function') {
+            makeGradientControlDraggable(endControl);
+        }
         endControl.addEventListener('click', function(e) {
             if (e.target.type !== 'color') {
-                selectGradientControl(endControl, 'end');
+                if (typeof selectGradientControl === 'function') {
+                    selectGradientControl(endControl, 'end');
+                }
             }
         });
     }
@@ -8589,10 +8643,12 @@ function openBlockGradientModal(blockId) {
     if (preview) {
         preview.addEventListener('click', function(e) {
             if (e.target === preview || e.target.closest('#gradient_color_controls') === null) {
-                const rect = preview.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
-                addGradientMiddleColor(percent);
+                if (typeof addGradientMiddleColor === 'function') {
+                    const rect = preview.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                    addGradientMiddleColor(percent);
+                }
             }
         });
     }
@@ -8604,7 +8660,9 @@ function openBlockGradientModal(blockId) {
     }
     
     // 미리보기 업데이트
-    updateGradientPreview();
+    if (typeof updateGradientPreview === 'function') {
+        updateGradientPreview();
+    }
     
     // 설정 패널 숨기기
     const settingsPanel = document.getElementById('gradient_selected_control_settings');
@@ -8615,8 +8673,11 @@ function openBlockGradientModal(blockId) {
     selectedGradientControlType = null;
     
     // 모달 표시
-    const modal = new bootstrap.Modal(document.getElementById('gradientModal'));
-    modal.show();
+    const modalElement = document.getElementById('gradientModal');
+    if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
 }
 
 // 블록 그라데이션 저장 함수 수정
