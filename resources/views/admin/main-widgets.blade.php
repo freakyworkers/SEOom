@@ -237,7 +237,7 @@
                                                                    min="0" 
                                                                    max="100" 
                                                                    value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}"
-                                                                   style="width: 80px; background: #6c757d;"
+                                                                   style="width: 80px;"
                                                                    onchange="updateContainerBackgroundColor({{ $container->id }})"
                                                                    title="투명도">
                                                             <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_color_alpha_value_{{ $container->id }}">{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}%</small>
@@ -303,7 +303,7 @@
                                                                    min="0" 
                                                                    max="100" 
                                                                    value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}"
-                                                                   style="width: 80px; background: #6c757d;"
+                                                                   style="width: 80px;"
                                                                    onchange="updateContainerBackgroundImage({{ $container->id }})"
                                                                    title="투명도">
                                                             <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_image_alpha_value_{{ $container->id }}">{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}%</small>
@@ -437,7 +437,6 @@
                                                                min="0" 
                                                                max="100" 
                                                                value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}"
-                                                               style="background: #6c757d;"
                                                                onchange="updateContainerBackgroundColorMobile({{ $container->id }})">
                                                         <div class="d-flex justify-content-between">
                                                             <small class="text-muted" style="font-size: 0.7rem;">0%</small>
@@ -508,7 +507,6 @@
                                                                min="0" 
                                                                max="100" 
                                                                value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}"
-                                                               style="background: #6c757d;"
                                                                onchange="updateContainerBackgroundImageMobile({{ $container->id }})">
                                                         <div class="d-flex justify-content-between">
                                                             <small class="text-muted" style="font-size: 0.7rem;">0%</small>
@@ -1791,6 +1789,58 @@
 }
 .widget-list-in-column {
     touch-action: pan-y; /* 세로 스크롤만 허용 */
+}
+
+/* 투명도 슬라이더 바 스타일 통일 */
+.form-range {
+    background: #6c757d;
+    height: 6px;
+}
+
+.form-range::-webkit-slider-thumb {
+    background: #0d6efd;
+    border: 2px solid #fff;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.form-range::-moz-range-thumb {
+    background: #0d6efd;
+    border: 2px solid #fff;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.form-range::-webkit-slider-runnable-track {
+    background: #6c757d;
+    height: 6px;
+    border-radius: 3px;
+}
+
+.form-range::-moz-range-track {
+    background: #6c757d;
+    height: 6px;
+    border-radius: 3px;
+}
+
+.form-range:focus {
+    outline: none;
+}
+
+.form-range:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.form-range:focus::-moz-range-thumb {
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
 }
 </style>
 @endpush
@@ -5144,7 +5194,6 @@ function addBlockSlideButton(itemIndex) {
                            min="0" 
                            max="100" 
                            step="1"
-                           style="background: #6c757d;"
                            onchange="document.getElementById('block_slide_${itemIndex}_button_${buttonIndex}_opacity_value').textContent = this.value + '%'">
                     <div class="d-flex justify-content-between">
                         <small class="text-muted" style="font-size: 0.7rem;">0%</small>
@@ -5238,7 +5287,6 @@ function addBlockSlideButton(itemIndex) {
                            min="0" 
                            max="100" 
                            step="1"
-                           style="background: #6c757d;"
                            onchange="document.getElementById('block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value').textContent = this.value + '%'">
                     <div class="d-flex justify-content-between">
                         <small class="text-muted" style="font-size: 0.7rem;">0%</small>
@@ -7379,7 +7427,6 @@ function addBlockButton() {
                            min="0" 
                            max="100" 
                            step="1"
-                           style="background: #6c757d;"
                            onchange="document.getElementById('block_button_${blockButtonIndex}_opacity_value').textContent = this.value + '%'">
                     <div class="d-flex justify-content-between">
                         <small class="text-muted" style="font-size: 0.7rem;">0%</small>
@@ -7473,7 +7520,6 @@ function addBlockButton() {
                            min="0" 
                            max="100" 
                            step="1"
-                           style="background: #6c757d;"
                            onchange="document.getElementById('block_button_${blockButtonIndex}_hover_opacity_value').textContent = this.value + '%'">
                     <div class="d-flex justify-content-between">
                         <small class="text-muted" style="font-size: 0.7rem;">0%</small>
@@ -7611,7 +7657,6 @@ function addEditMainBlockButton() {
                            min="0" 
                            max="100" 
                            step="1"
-                           style="background: #6c757d;"
                            onchange="document.getElementById('edit_main_block_button_${editMainBlockButtonIndex}_opacity_value').textContent = this.value + '%'">
                     <div class="d-flex justify-content-between">
                         <small class="text-muted" style="font-size: 0.7rem;">0%</small>
@@ -7705,7 +7750,6 @@ function addEditMainBlockButton() {
                            min="0" 
                            max="100" 
                            step="1"
-                           style="background: #6c757d;"
                            onchange="document.getElementById('edit_main_block_button_${editMainBlockButtonIndex}_hover_opacity_value').textContent = this.value + '%'">
                     <div class="d-flex justify-content-between">
                         <small class="text-muted" style="font-size: 0.7rem;">0%</small>
@@ -8018,6 +8062,8 @@ function rgbaToHexAndAlpha(rgbaString) {
 
 // 그라데이션 모달 열기
 function openGradientModal(containerId, type) {
+    // 블록 그라데이션 ID 초기화
+    currentBlockGradientId = null;
     currentGradientContainerId = containerId;
     currentGradientType = type;
     
@@ -8489,6 +8535,9 @@ function saveGradient() {
 let currentBlockGradientId = null;
 
 function openBlockGradientModal(blockId) {
+    // 컨테이너 그라데이션 ID 초기화
+    currentGradientContainerId = null;
+    currentGradientType = null;
     currentBlockGradientId = blockId;
     
     // 현재 값 가져오기
@@ -8628,15 +8677,7 @@ function saveBlockGradient() {
     if (modal) modal.hide();
 }
 
-// 기존 saveGradient 함수를 수정하여 블록 그라데이션도 처리하도록
-const originalSaveGradient = window.saveGradient;
-window.saveGradient = function() {
-    if (currentBlockGradientId) {
-        saveBlockGradient();
-    } else if (currentGradientContainerId) {
-        originalSaveGradient();
-    }
-};
+// saveGradient 함수는 이미 블록 그라데이션을 처리하도록 수정되어 있음
 
 // hex를 RGB로 변환
 function hexToRgb(hex) {
