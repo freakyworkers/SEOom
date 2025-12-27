@@ -961,7 +961,7 @@
                                    placeholder="12">
                             <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3" id="edit_main_widget_block_link_container">
                             <label for="edit_main_widget_block_link" class="form-label">
                                 연결 링크 <small class="text-muted">(선택사항)</small>
                                 <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="버튼이 있는 경우 버튼에 링크가 연결되고, 버튼이 없는 경우 블록 전체에 링크가 연결됩니다."></i>
@@ -2975,6 +2975,12 @@ function editMainWidget(widgetId) {
                             }
                         }
                     });
+                    
+                    // 버튼이 있으면 연결 링크 필드 숨기기
+                    const linkContainer = document.getElementById('edit_main_widget_block_link_container');
+                    if (linkContainer && buttons.length > 0) {
+                        linkContainer.style.display = 'none';
+                    }
                 }
                 
                 if (document.getElementById('edit_main_widget_block_button_top_margin')) {
@@ -3854,7 +3860,7 @@ function addBlockSlideItem() {
                    placeholder="12">
             <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
         </div>
-        <div class="mb-3"><label class="form-label">
+        <div class="mb-3" id="block_slide_${itemIndex}_link_container"><label class="form-label">
             연결 링크 <small class="text-muted">(선택사항)</small>
             <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="버튼이 있는 경우 버튼에 링크가 연결되고, 버튼이 없는 경우 블록 전체에 링크가 연결됩니다."></i>
         </label>
@@ -3958,11 +3964,27 @@ function addBlockSlideButton(itemIndex) {
     
     container.insertAdjacentHTML('beforeend', buttonHtml);
     blockSlideButtonIndices[itemIndex]++;
+    
+    // 버튼이 추가되면 연결 링크 필드 숨기기
+    const linkContainer = document.getElementById(`block_slide_${itemIndex}_link_container`);
+    if (linkContainer) {
+        linkContainer.style.display = 'none';
+    }
 }
 
 function removeBlockSlideButton(buttonId, itemIndex) {
     const button = document.getElementById(buttonId);
     if (button) button.remove();
+    
+    // 버튼이 없으면 연결 링크 필드 보이기
+    const container = document.getElementById(`block_slide_${itemIndex}_buttons_list`);
+    const linkContainer = document.getElementById(`block_slide_${itemIndex}_link_container`);
+    if (linkContainer && container) {
+        const buttons = container.querySelectorAll('.card');
+        if (buttons.length === 0) {
+            linkContainer.style.display = 'block';
+        }
+    }
 }
 
 function removeBlockSlideItem(itemIndex) {
@@ -4127,12 +4149,7 @@ function handleImageSlideModeChange() {
     const upLabel = upRadio ? upRadio.nextElementSibling : null;
     const downLabel = downRadio ? downRadio.nextElementSibling : null;
     
-    // 체크박스 상호 배타적 처리 - 1단 슬라이드가 체크되면 무한루프 해제
-    if (singleCheckbox && singleCheckbox.checked) {
-        if (infiniteCheckbox) infiniteCheckbox.checked = false;
-    }
-    
-    // 무한루프 슬라이드 처리
+    // 체크박스 상호 배타적 처리 - 무한루프 체크를 먼저 확인
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (singleCheckbox) singleCheckbox.checked = false;
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
@@ -4171,6 +4188,11 @@ function handleImageSlideModeChange() {
             downRadio.disabled = false;
             if (downLabel) downLabel.classList.remove('disabled');
         }
+    }
+    
+    // 체크박스 상호 배타적 처리 - 1단 슬라이드가 체크되면 무한루프 해제
+    if (singleCheckbox && singleCheckbox.checked) {
+        if (infiniteCheckbox) infiniteCheckbox.checked = false;
     }
     
     // 툴팁 초기화
@@ -5344,7 +5366,7 @@ function addEditMainBlockSlideItem(blockData = null) {
                    placeholder="12">
             <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
         </div>
-        <div class="mb-3">
+        <div class="mb-3" id="edit_main_block_slide_${itemIndex}_link_container">
             <label class="form-label">
                 연결 링크 <small class="text-muted">(선택사항)</small>
                 <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="버튼이 있는 경우 버튼에 링크가 연결되고, 버튼이 없는 경우 블록 전체에 링크가 연결됩니다."></i>
@@ -5410,6 +5432,12 @@ function addEditMainBlockSlideItem(blockData = null) {
                     }
                 }
             });
+            
+            // 버튼이 있으면 연결 링크 필드 숨기기
+            const linkContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_link_container`);
+            if (linkContainer && buttons.length > 0) {
+                linkContainer.style.display = 'none';
+            }
         }
     }
 }
@@ -5511,11 +5539,27 @@ function addEditMainBlockSlideButton(itemIndex) {
     
     container.insertAdjacentHTML('beforeend', buttonHtml);
     editMainBlockSlideButtonIndices[itemIndex]++;
+    
+    // 버튼이 추가되면 연결 링크 필드 숨기기
+    const linkContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_link_container`);
+    if (linkContainer) {
+        linkContainer.style.display = 'none';
+    }
 }
 
 function removeEditMainBlockSlideButton(buttonId, itemIndex) {
     const button = document.getElementById(buttonId);
     if (button) button.remove();
+    
+    // 버튼이 없으면 연결 링크 필드 보이기
+    const container = document.getElementById(`edit_main_block_slide_${itemIndex}_buttons_list`);
+    const linkContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_link_container`);
+    if (linkContainer && container) {
+        const buttons = container.querySelectorAll('.card');
+        if (buttons.length === 0) {
+            linkContainer.style.display = 'block';
+        }
+    }
 }
 
 function handleEditMainBlockSlideImageChange(itemIndex, input) {
@@ -5694,12 +5738,7 @@ function handleEditMainImageSlideModeChange() {
     const upLabel = upRadio ? upRadio.nextElementSibling : null;
     const downLabel = downRadio ? downRadio.nextElementSibling : null;
     
-    // 체크박스 상호 배타적 처리 - 1단 슬라이드가 체크되면 무한루프 해제
-    if (singleCheckbox && singleCheckbox.checked) {
-        if (infiniteCheckbox) infiniteCheckbox.checked = false;
-    }
-    
-    // 무한루프 슬라이드 처리
+    // 체크박스 상호 배타적 처리 - 무한루프 체크를 먼저 확인
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (singleCheckbox) singleCheckbox.checked = false;
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
@@ -5738,6 +5777,11 @@ function handleEditMainImageSlideModeChange() {
             downRadio.disabled = false;
             if (downLabel) downLabel.classList.remove('disabled');
         }
+    }
+    
+    // 체크박스 상호 배타적 처리 - 1단 슬라이드가 체크되면 무한루프 해제
+    if (singleCheckbox && singleCheckbox.checked) {
+        if (infiniteCheckbox) infiniteCheckbox.checked = false;
     }
     
     // 툴팁 초기화
@@ -5835,12 +5879,28 @@ function addBlockButton() {
     
     container.insertAdjacentHTML('beforeend', buttonHtml);
     blockButtonIndex++;
+    
+    // 버튼이 추가되면 연결 링크 필드 숨기기
+    const linkContainer = document.getElementById('widget_block_link_container');
+    if (linkContainer) {
+        linkContainer.style.display = 'none';
+    }
 }
 
 // 새 위젯 추가용 블록 버튼 삭제
 function removeBlockButton(buttonId) {
     const button = document.getElementById(buttonId);
     if (button) button.remove();
+    
+    // 버튼이 없으면 연결 링크 필드 보이기
+    const container = document.getElementById('widget_block_buttons_list');
+    const linkContainer = document.getElementById('widget_block_link_container');
+    if (linkContainer && container) {
+        const buttons = container.querySelectorAll('.card');
+        if (buttons.length === 0) {
+            linkContainer.style.display = 'block';
+        }
+    }
 }
 
 // 수정 모달용 블록 버튼 추가
@@ -5905,12 +5965,28 @@ function addEditMainBlockButton() {
     
     container.insertAdjacentHTML('beforeend', buttonHtml);
     editMainBlockButtonIndex++;
+    
+    // 버튼이 추가되면 연결 링크 필드 숨기기
+    const linkContainer = document.getElementById('edit_main_widget_block_link_container');
+    if (linkContainer) {
+        linkContainer.style.display = 'none';
+    }
 }
 
 // 수정 모달용 블록 버튼 삭제
 function removeEditMainBlockButton(buttonId) {
     const button = document.getElementById(buttonId);
     if (button) button.remove();
+    
+    // 버튼이 없으면 연결 링크 필드 보이기
+    const container = document.getElementById('edit_main_widget_block_buttons_list');
+    const linkContainer = document.getElementById('edit_main_widget_block_link_container');
+    if (linkContainer && container) {
+        const buttons = container.querySelectorAll('.card');
+        if (buttons.length === 0) {
+            linkContainer.style.display = 'block';
+        }
+    }
 }
 
 function handleEditMainBlockImageChange(input) {

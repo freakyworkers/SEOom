@@ -372,7 +372,7 @@
                placeholder="12">
         <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
     </div>
-    <div class="mb-3">
+    <div class="mb-3" id="widget_block_link_container">
         <label for="widget_block_link" class="form-label">
             연결 링크 <small class="text-muted">(선택사항)</small>
             <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="버튼이 있는 경우 버튼에 링크가 연결되고, 버튼이 없는 경우 블록 전체에 링크가 연결됩니다."></i>
