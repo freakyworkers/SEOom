@@ -141,8 +141,10 @@
                                              data-container-id="{{ $container->id }}"
                                              data-column-merges="{{ json_encode($container->column_merges ?? []) }}">
                                             {{-- 데스크탑 버전 (기존 가로 배치) --}}
-                                            <div class="card-header bg-light d-none d-md-flex justify-content-between align-items-center">
-                                                <div class="d-flex align-items-center gap-2">
+                                            {{-- 데스크탑 버전 (2줄 배치) --}}
+                                            <div class="card-header bg-light d-none d-md-block">
+                                                {{-- 첫 번째 줄: 컨테이너가로, 세로정렬, 가로100%, 세로 100% --}}
+                                                <div class="d-flex align-items-center gap-2 mb-2">
                                                     <label class="mb-0 small">컨테이너 가로:</label>
                                                     <select class="form-select form-select-sm" 
                                                             style="width: auto; min-width: 80px;" 
@@ -153,7 +155,7 @@
                                                         <option value="3" {{ $container->columns == 3 ? 'selected' : '' }}>3</option>
                                                         <option value="4" {{ $container->columns == 4 ? 'selected' : '' }}>4</option>
                                                     </select>
-                                                    <label class="mb-0 small ms-3">정렬:</label>
+                                                    <label class="mb-0 small ms-3">세로정렬:</label>
                                                     <select class="form-select form-select-sm" 
                                                             style="width: auto; min-width: 100px;" 
                                                             onchange="updateContainerVerticalAlign({{ $container->id }}, this.value)"
@@ -194,106 +196,111 @@
                                                            title="활성화 시 해당 컨테이너가 브라우저 세로 100% 영역을 사용합니다." 
                                                            style="cursor: help; font-size: 0.85rem;"></i>
                                                     </div>
-                                                    <label class="mb-0 small ms-3">위젯 간격:</label>
-                                                    <select class="form-select form-select-sm" 
-                                                            style="width: auto; min-width: 100px;" 
-                                                            onchange="updateContainerWidgetSpacing({{ $container->id }}, this.value)"
-                                                            data-container-id="{{ $container->id }}">
-                                                        <option value="0" {{ ($container->widget_spacing ?? 3) == 0 ? 'selected' : '' }}>없음</option>
-                                                        <option value="1" {{ ($container->widget_spacing ?? 3) == 1 ? 'selected' : '' }}>매우 좁음</option>
-                                                        <option value="2" {{ ($container->widget_spacing ?? 3) == 2 ? 'selected' : '' }}>좁음</option>
-                                                        <option value="3" {{ ($container->widget_spacing ?? 3) == 3 ? 'selected' : '' }}>보통</option>
-                                                        <option value="4" {{ ($container->widget_spacing ?? 3) == 4 ? 'selected' : '' }}>넓음</option>
-                                                        <option value="5" {{ ($container->widget_spacing ?? 3) == 5 ? 'selected' : '' }}>매우 넓음</option>
-                                                    </select>
-                                                    <label class="mb-0 small ms-3">배경:</label>
-                                                    <select class="form-select form-select-sm" 
-                                                            style="width: auto; min-width: 100px;" 
-                                                            id="container_background_type_{{ $container->id }}"
-                                                            onchange="handleContainerBackgroundTypeChange({{ $container->id }}, this.value, 'desktop')"
-                                                            data-container-id="{{ $container->id }}">
-                                                        <option value="none" {{ ($container->background_type ?? 'none') == 'none' ? 'selected' : '' }}>없음</option>
-                                                        <option value="color" {{ ($container->background_type ?? 'none') == 'color' ? 'selected' : '' }}>단색</option>
-                                                        <option value="gradient" {{ ($container->background_type ?? 'none') == 'gradient' ? 'selected' : '' }}>그라데이션</option>
-                                                        <option value="image" {{ ($container->background_type ?? 'none') == 'image' ? 'selected' : '' }}>이미지</option>
-                                                    </select>
-                                                    <div id="container_background_color_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'color' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px;">
-                                                        <input type="color" 
-                                                               class="form-control form-control-color" 
-                                                               id="container_background_color_input_{{ $container->id }}"
-                                                               value="{{ $container->background_color ?? '#ffffff' }}"
-                                                               style="width: 40px; height: 38px;"
-                                                               onchange="updateContainerBackgroundColor({{ $container->id }})"
-                                                               title="배경 색상">
-                                                        <input type="range" 
-                                                               class="form-range" 
-                                                               id="container_background_color_alpha_{{ $container->id }}"
-                                                               min="0" 
-                                                               max="100" 
-                                                               value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}"
-                                                               style="width: 80px;"
-                                                               onchange="updateContainerBackgroundColor({{ $container->id }})"
-                                                               title="투명도">
-                                                        <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_color_alpha_value_{{ $container->id }}">{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}%</small>
-                                                        <input type="hidden" 
-                                                               id="container_background_color_alpha_hidden_{{ $container->id }}"
-                                                               value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}">
-                                                    </div>
-                                                    <div id="container_background_gradient_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'gradient' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px;">
-                                                        <div id="container_gradient_preview_{{ $container->id }}" 
-                                                             style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient({{ $container->background_gradient_angle ?? 90 }}deg, {{ $container->background_gradient_start ?? '#ffffff' }}, {{ $container->background_gradient_end ?? '#000000' }});"
-                                                             onclick="openGradientModal({{ $container->id }}, 'main')"
-                                                             title="그라데이션 설정">
-                                                        </div>
-                                                        <input type="hidden" 
-                                                               id="container_background_gradient_start_{{ $container->id }}"
-                                                               value="{{ $container->background_gradient_start ?? '#ffffff' }}">
-                                                        <input type="hidden" 
-                                                               id="container_background_gradient_end_{{ $container->id }}"
-                                                               value="{{ $container->background_gradient_end ?? '#000000' }}">
-                                                        <input type="hidden" 
-                                                               id="container_background_gradient_angle_{{ $container->id }}"
-                                                               value="{{ $container->background_gradient_angle ?? 90 }}">
-                                                    </div>
-                                                    <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px; flex-wrap: wrap;">
-                                                        <input type="text" 
-                                                               class="form-control form-control-sm" 
-                                                               id="container_background_image_url_{{ $container->id }}"
-                                                               value="{{ $container->background_image_url ?? '' }}"
-                                                               placeholder="이미지 URL"
-                                                               style="width: 200px;"
-                                                               onchange="updateContainerBackgroundImage({{ $container->id }})">
-                                                        <input type="range" 
-                                                               class="form-range" 
-                                                               id="container_background_image_alpha_{{ $container->id }}"
-                                                               min="0" 
-                                                               max="100" 
-                                                               value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}"
-                                                               style="width: 80px;"
-                                                               onchange="updateContainerBackgroundImage({{ $container->id }})"
-                                                               title="투명도">
-                                                        <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_image_alpha_value_{{ $container->id }}">{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}%</small>
-                                                        <input type="hidden" 
-                                                               id="container_background_image_alpha_hidden_{{ $container->id }}"
-                                                               value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}">
-                                                    </div>
                                                 </div>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <button type="button" 
-                                                            class="btn btn-sm btn-outline-secondary" 
-                                                            onclick="moveContainerUp({{ $container->id }})"
-                                                            title="위로 이동">
-                                                        <i class="bi bi-arrow-up"></i>
-                                                    </button>
-                                                    <button type="button" 
-                                                            class="btn btn-sm btn-outline-secondary" 
-                                                            onclick="moveContainerDown({{ $container->id }})"
-                                                            title="아래로 이동">
-                                                        <i class="bi bi-arrow-down"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteContainer({{ $container->id }})">
-                                                        <i class="bi bi-trash"></i> 삭제
-                                                    </button>
+                                                {{-- 두 번째 줄: 위젯간격, 배경, 위로이동, 아래로이동, 삭제 아이콘 --}}
+                                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <label class="mb-0 small">위젯 간격:</label>
+                                                        <select class="form-select form-select-sm" 
+                                                                style="width: auto; min-width: 100px;" 
+                                                                onchange="updateContainerWidgetSpacing({{ $container->id }}, this.value)"
+                                                                data-container-id="{{ $container->id }}">
+                                                            <option value="0" {{ ($container->widget_spacing ?? 3) == 0 ? 'selected' : '' }}>없음</option>
+                                                            <option value="1" {{ ($container->widget_spacing ?? 3) == 1 ? 'selected' : '' }}>매우 좁음</option>
+                                                            <option value="2" {{ ($container->widget_spacing ?? 3) == 2 ? 'selected' : '' }}>좁음</option>
+                                                            <option value="3" {{ ($container->widget_spacing ?? 3) == 3 ? 'selected' : '' }}>보통</option>
+                                                            <option value="4" {{ ($container->widget_spacing ?? 3) == 4 ? 'selected' : '' }}>넓음</option>
+                                                            <option value="5" {{ ($container->widget_spacing ?? 3) == 5 ? 'selected' : '' }}>매우 넓음</option>
+                                                        </select>
+                                                        <label class="mb-0 small ms-3">배경:</label>
+                                                        <select class="form-select form-select-sm" 
+                                                                style="width: auto; min-width: 100px;" 
+                                                                id="container_background_type_{{ $container->id }}"
+                                                                onchange="handleContainerBackgroundTypeChange({{ $container->id }}, this.value, 'desktop')"
+                                                                data-container-id="{{ $container->id }}">
+                                                            <option value="none" {{ ($container->background_type ?? 'none') == 'none' ? 'selected' : '' }}>없음</option>
+                                                            <option value="color" {{ ($container->background_type ?? 'none') == 'color' ? 'selected' : '' }}>단색</option>
+                                                            <option value="gradient" {{ ($container->background_type ?? 'none') == 'gradient' ? 'selected' : '' }}>그라데이션</option>
+                                                            <option value="image" {{ ($container->background_type ?? 'none') == 'image' ? 'selected' : '' }}>이미지</option>
+                                                        </select>
+                                                        <div id="container_background_color_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'color' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px;">
+                                                            <input type="color" 
+                                                                   class="form-control form-control-color" 
+                                                                   id="container_background_color_input_{{ $container->id }}"
+                                                                   value="{{ $container->background_color ?? '#ffffff' }}"
+                                                                   style="width: 40px; height: 38px;"
+                                                                   onchange="updateContainerBackgroundColor({{ $container->id }})"
+                                                                   title="배경 색상">
+                                                            <input type="range" 
+                                                                   class="form-range" 
+                                                                   id="container_background_color_alpha_{{ $container->id }}"
+                                                                   min="0" 
+                                                                   max="100" 
+                                                                   value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}"
+                                                                   style="width: 80px;"
+                                                                   onchange="updateContainerBackgroundColor({{ $container->id }})"
+                                                                   title="투명도">
+                                                            <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_color_alpha_value_{{ $container->id }}">{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}%</small>
+                                                            <input type="hidden" 
+                                                                   id="container_background_color_alpha_hidden_{{ $container->id }}"
+                                                                   value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}">
+                                                        </div>
+                                                        <div id="container_background_gradient_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'gradient' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px;">
+                                                            <div id="container_gradient_preview_{{ $container->id }}" 
+                                                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient({{ $container->background_gradient_angle ?? 90 }}deg, {{ $container->background_gradient_start ?? '#ffffff' }}, {{ $container->background_gradient_end ?? '#000000' }});"
+                                                                 onclick="openGradientModal({{ $container->id }}, 'main')"
+                                                                 title="그라데이션 설정">
+                                                            </div>
+                                                            <input type="hidden" 
+                                                                   id="container_background_gradient_start_{{ $container->id }}"
+                                                                   value="{{ $container->background_gradient_start ?? '#ffffff' }}">
+                                                            <input type="hidden" 
+                                                                   id="container_background_gradient_end_{{ $container->id }}"
+                                                                   value="{{ $container->background_gradient_end ?? '#000000' }}">
+                                                            <input type="hidden" 
+                                                                   id="container_background_gradient_angle_{{ $container->id }}"
+                                                                   value="{{ $container->background_gradient_angle ?? 90 }}">
+                                                        </div>
+                                                        <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px; flex-wrap: wrap;">
+                                                            <input type="text" 
+                                                                   class="form-control form-control-sm" 
+                                                                   id="container_background_image_url_{{ $container->id }}"
+                                                                   value="{{ $container->background_image_url ?? '' }}"
+                                                                   placeholder="이미지 URL"
+                                                                   style="width: 200px;"
+                                                                   onchange="updateContainerBackgroundImage({{ $container->id }})">
+                                                            <input type="range" 
+                                                                   class="form-range" 
+                                                                   id="container_background_image_alpha_{{ $container->id }}"
+                                                                   min="0" 
+                                                                   max="100" 
+                                                                   value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}"
+                                                                   style="width: 80px;"
+                                                                   onchange="updateContainerBackgroundImage({{ $container->id }})"
+                                                                   title="투명도">
+                                                            <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_image_alpha_value_{{ $container->id }}">{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}%</small>
+                                                            <input type="hidden" 
+                                                                   id="container_background_image_alpha_hidden_{{ $container->id }}"
+                                                                   value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-outline-secondary" 
+                                                                onclick="moveContainerUp({{ $container->id }})"
+                                                                title="위로 이동">
+                                                            <i class="bi bi-arrow-up"></i>
+                                                        </button>
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-outline-secondary" 
+                                                                onclick="moveContainerDown({{ $container->id }})"
+                                                                title="아래로 이동">
+                                                            <i class="bi bi-arrow-down"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteContainer({{ $container->id }})">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -545,18 +552,16 @@
                                                                                  data-widget-type="{{ $widget->type }}"
                                                                                  data-widget-active="{{ $widget->is_active ? '1' : '0' }}"
                                                                                  data-widget-settings="{{ json_encode($widget->settings ?? []) }}">
-                                                                                {{-- 데스크탑 버전 (기존 가로 배치) --}}
+                                                                                {{-- 데스크탑 버전 (이름 아래 아이콘 버튼) --}}
                                                                                 <div class="card-body p-2 d-none d-md-block">
-                                                                                    <div class="d-flex justify-content-between align-items-center">
-                                                                                        <div>
-                                                                                            <h6 class="mb-0 small">
-                                                                                                {{ $widget->title }}
-                                                                                                @if(!$widget->is_active)
-                                                                                                    <span class="badge bg-secondary ms-1">비활성</span>
-                                                                                                @endif
-                                                                                            </h6>
-                                                                                            <small class="text-muted">{{ $availableTypes[$widget->type] ?? $widget->type }}</small>
-                                                                                        </div>
+                                                                                    <div>
+                                                                                        <h6 class="mb-0 small">
+                                                                                            {{ $widget->title }}
+                                                                                            @if(!$widget->is_active)
+                                                                                                <span class="badge bg-secondary ms-1">비활성</span>
+                                                                                            @endif
+                                                                                        </h6>
+                                                                                        <small class="text-muted d-block mb-2">{{ $availableTypes[$widget->type] ?? $widget->type }}</small>
                                                                                         <div class="d-flex gap-1">
                                                                                             <span class="bi-grip-vertical btn btn-sm btn-outline-secondary p-1" 
                                                                                                   style="width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: move;"
@@ -2925,13 +2930,47 @@ function addMainWidget() {
                 const buttonOpenNewTab = buttonCard.querySelector('.block-button-open-new-tab')?.checked || false;
                 const buttonBackgroundColor = buttonCard.querySelector('.block-button-background-color')?.value || '#007bff';
                 const buttonTextColor = buttonCard.querySelector('.block-button-text-color')?.value || '#ffffff';
+                const buttonBorderColor = buttonCard.querySelector('.block-button-border-color')?.value || buttonBackgroundColor;
+                const buttonBorderWidth = buttonCard.querySelector('.block-button-border-width')?.value || '2';
+                const buttonHoverBackgroundColor = buttonCard.querySelector('.block-button-hover-background-color')?.value || '#0056b3';
+                const buttonHoverTextColor = buttonCard.querySelector('.block-button-hover-text-color')?.value || '#ffffff';
+                const buttonHoverBorderColor = buttonCard.querySelector('.block-button-hover-border-color')?.value || '#0056b3';
+                
+                // 배경 타입 및 그라데이션 설정
+                const buttonBackgroundType = buttonCard.querySelector('.block-button-background-type')?.value || 'color';
+                const buttonGradientStart = buttonCard.querySelector('.block-button-gradient-start')?.value || buttonBackgroundColor;
+                const buttonGradientEnd = buttonCard.querySelector('.block-button-gradient-end')?.value || buttonHoverBackgroundColor;
+                const buttonGradientAngle = buttonCard.querySelector('.block-button-gradient-angle')?.value || '90';
+                const buttonOpacity = buttonCard.querySelector('.block-button-opacity')?.value || '1.0';
+                
+                // 호버 배경 타입 및 그라데이션 설정
+                const buttonHoverBackgroundType = buttonCard.querySelector('.block-button-hover-background-type')?.value || 'color';
+                const buttonHoverGradientStart = buttonCard.querySelector('.block-button-hover-gradient-start')?.value || buttonHoverBackgroundColor;
+                const buttonHoverGradientEnd = buttonCard.querySelector('.block-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
+                const buttonHoverGradientAngle = buttonCard.querySelector('.block-button-hover-gradient-angle')?.value || '90';
+                const buttonHoverOpacity = buttonCard.querySelector('.block-button-hover-opacity')?.value || '1.0';
                 
                 buttons.push({
                     text: buttonText,
                     link: buttonLink,
                     open_new_tab: buttonOpenNewTab,
                     background_color: buttonBackgroundColor,
-                    text_color: buttonTextColor
+                    text_color: buttonTextColor,
+                    border_color: buttonBorderColor,
+                    border_width: buttonBorderWidth,
+                    hover_background_color: buttonHoverBackgroundColor,
+                    hover_text_color: buttonHoverTextColor,
+                    hover_border_color: buttonHoverBorderColor,
+                    background_type: buttonBackgroundType,
+                    background_gradient_start: buttonGradientStart,
+                    background_gradient_end: buttonGradientEnd,
+                    background_gradient_angle: parseInt(buttonGradientAngle) || 90,
+                    opacity: parseFloat(buttonOpacity) || 1.0,
+                    hover_background_type: buttonHoverBackgroundType,
+                    hover_background_gradient_start: buttonHoverGradientStart,
+                    hover_background_gradient_end: buttonHoverGradientEnd,
+                    hover_background_gradient_angle: parseInt(buttonHoverGradientAngle) || 90,
+                    hover_opacity: parseFloat(buttonHoverOpacity) || 1.0
                 });
             }
         });
@@ -3013,13 +3052,47 @@ function addMainWidget() {
                     const buttonOpenNewTab = buttonCard.querySelector('.block-slide-button-open-new-tab')?.checked || false;
                     const buttonBackgroundColor = buttonCard.querySelector('.block-slide-button-background-color')?.value || '#007bff';
                     const buttonTextColor = buttonCard.querySelector('.block-slide-button-text-color')?.value || '#ffffff';
+                    const buttonBorderColor = buttonCard.querySelector('.block-slide-button-border-color')?.value || buttonBackgroundColor;
+                    const buttonBorderWidth = buttonCard.querySelector('.block-slide-button-border-width')?.value || '2';
+                    const buttonHoverBackgroundColor = buttonCard.querySelector('.block-slide-button-hover-background-color')?.value || '#0056b3';
+                    const buttonHoverTextColor = buttonCard.querySelector('.block-slide-button-hover-text-color')?.value || '#ffffff';
+                    const buttonHoverBorderColor = buttonCard.querySelector('.block-slide-button-hover-border-color')?.value || '#0056b3';
+                    
+                    // 배경 타입 및 그라데이션 설정
+                    const buttonBackgroundType = buttonCard.querySelector('.block-slide-button-background-type')?.value || 'color';
+                    const buttonGradientStart = buttonCard.querySelector('.block-slide-button-gradient-start')?.value || buttonBackgroundColor;
+                    const buttonGradientEnd = buttonCard.querySelector('.block-slide-button-gradient-end')?.value || buttonHoverBackgroundColor;
+                    const buttonGradientAngle = buttonCard.querySelector('.block-slide-button-gradient-angle')?.value || '90';
+                    const buttonOpacity = buttonCard.querySelector('.block-slide-button-opacity')?.value || '1.0';
+                    
+                    // 호버 배경 타입 및 그라데이션 설정
+                    const buttonHoverBackgroundType = buttonCard.querySelector('.block-slide-button-hover-background-type')?.value || 'color';
+                    const buttonHoverGradientStart = buttonCard.querySelector('.block-slide-button-hover-gradient-start')?.value || buttonHoverBackgroundColor;
+                    const buttonHoverGradientEnd = buttonCard.querySelector('.block-slide-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
+                    const buttonHoverGradientAngle = buttonCard.querySelector('.block-slide-button-hover-gradient-angle')?.value || '90';
+                    const buttonHoverOpacity = buttonCard.querySelector('.block-slide-button-hover-opacity')?.value || '1.0';
                     
                     buttons.push({
                         text: buttonText,
                         link: buttonLink,
                         open_new_tab: buttonOpenNewTab,
                         background_color: buttonBackgroundColor,
-                        text_color: buttonTextColor
+                        text_color: buttonTextColor,
+                        border_color: buttonBorderColor,
+                        border_width: buttonBorderWidth,
+                        hover_background_color: buttonHoverBackgroundColor,
+                        hover_text_color: buttonHoverTextColor,
+                        hover_border_color: buttonHoverBorderColor,
+                        background_type: buttonBackgroundType,
+                        background_gradient_start: buttonGradientStart,
+                        background_gradient_end: buttonGradientEnd,
+                        background_gradient_angle: parseInt(buttonGradientAngle) || 90,
+                        opacity: parseFloat(buttonOpacity) || 1.0,
+                        hover_background_type: buttonHoverBackgroundType,
+                        hover_background_gradient_start: buttonHoverGradientStart,
+                        hover_background_gradient_end: buttonHoverGradientEnd,
+                        hover_background_gradient_angle: parseInt(buttonHoverGradientAngle) || 90,
+                        hover_opacity: parseFloat(buttonHoverOpacity) || 1.0
                     });
                 }
             });
@@ -3612,6 +3685,49 @@ function editMainWidget(widgetId) {
                                 }
                                 if (buttonCard.querySelector('.edit-main-block-button-hover-border-color')) {
                                     buttonCard.querySelector('.edit-main-block-button-hover-border-color').value = button.hover_border_color || '#0056b3';
+                                }
+                                
+                                // 그라데이션 및 투명도 설정 불러오기
+                                if (buttonCard.querySelector('.edit-main-block-button-background-type')) {
+                                    const backgroundType = button.background_type || 'color';
+                                    buttonCard.querySelector('.edit-main-block-button-background-type').value = backgroundType;
+                                    handleButtonBackgroundTypeChange(buttonCard.querySelector('.edit-main-block-button-background-type'));
+                                    
+                                    if (backgroundType === 'gradient') {
+                                        if (buttonCard.querySelector('.edit-main-block-button-gradient-start')) {
+                                            buttonCard.querySelector('.edit-main-block-button-gradient-start').value = button.background_gradient_start || button.background_color || '#007bff';
+                                        }
+                                        if (buttonCard.querySelector('.edit-main-block-button-gradient-end')) {
+                                            buttonCard.querySelector('.edit-main-block-button-gradient-end').value = button.background_gradient_end || button.hover_background_color || '#0056b3';
+                                        }
+                                        if (buttonCard.querySelector('.edit-main-block-button-gradient-angle')) {
+                                            buttonCard.querySelector('.edit-main-block-button-gradient-angle').value = button.background_gradient_angle || '90';
+                                        }
+                                    }
+                                }
+                                if (buttonCard.querySelector('.edit-main-block-button-opacity')) {
+                                    buttonCard.querySelector('.edit-main-block-button-opacity').value = button.opacity !== undefined ? button.opacity : '1.0';
+                                }
+                                
+                                if (buttonCard.querySelector('.edit-main-block-button-hover-background-type')) {
+                                    const hoverBackgroundType = button.hover_background_type || 'color';
+                                    buttonCard.querySelector('.edit-main-block-button-hover-background-type').value = hoverBackgroundType;
+                                    handleButtonHoverBackgroundTypeChange(buttonCard.querySelector('.edit-main-block-button-hover-background-type'));
+                                    
+                                    if (hoverBackgroundType === 'gradient') {
+                                        if (buttonCard.querySelector('.edit-main-block-button-hover-gradient-start')) {
+                                            buttonCard.querySelector('.edit-main-block-button-hover-gradient-start').value = button.hover_background_gradient_start || button.hover_background_color || '#0056b3';
+                                        }
+                                        if (buttonCard.querySelector('.edit-main-block-button-hover-gradient-end')) {
+                                            buttonCard.querySelector('.edit-main-block-button-hover-gradient-end').value = button.hover_background_gradient_end || button.hover_background_color || '#0056b3';
+                                        }
+                                        if (buttonCard.querySelector('.edit-main-block-button-hover-gradient-angle')) {
+                                            buttonCard.querySelector('.edit-main-block-button-hover-gradient-angle').value = button.hover_background_gradient_angle || '90';
+                                        }
+                                    }
+                                }
+                                if (buttonCard.querySelector('.edit-main-block-button-hover-opacity')) {
+                                    buttonCard.querySelector('.edit-main-block-button-hover-opacity').value = button.hover_opacity !== undefined ? button.hover_opacity : '1.0';
                                 }
                             }
                         }
@@ -4362,6 +4478,40 @@ function handleBlockBackgroundTypeChange() {
     }
 }
 
+function handleButtonBackgroundTypeChange(selectElement) {
+    const buttonCard = selectElement.closest('.card');
+    if (!buttonCard) return;
+    
+    const backgroundType = selectElement.value;
+    const colorContainer = buttonCard.querySelector('.block-button-color-container, .block-slide-button-color-container, .edit-main-block-button-color-container');
+    const gradientContainer = buttonCard.querySelector('.block-button-gradient-container, .block-slide-button-gradient-container, .edit-main-block-button-gradient-container');
+    
+    if (backgroundType === 'color') {
+        if (colorContainer) colorContainer.style.display = 'flex';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'flex';
+    }
+}
+
+function handleButtonHoverBackgroundTypeChange(selectElement) {
+    const buttonCard = selectElement.closest('.card');
+    if (!buttonCard) return;
+    
+    const backgroundType = selectElement.value;
+    const colorContainer = buttonCard.querySelector('.block-button-hover-color-container, .block-slide-button-hover-color-container, .edit-main-block-button-hover-color-container');
+    const gradientContainer = buttonCard.querySelector('.block-button-hover-gradient-container, .block-slide-button-hover-gradient-container, .edit-main-block-button-hover-gradient-container');
+    
+    if (backgroundType === 'color') {
+        if (colorContainer) colorContainer.style.display = 'flex';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'flex';
+    }
+}
+
 function handleBlockImageChange(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -4717,7 +4867,16 @@ function addBlockSlideButton(itemIndex) {
                         </label>
                     </div>
                 </div>
-                <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">버튼 배경 타입</label>
+                    <select class="form-select block-slide-button-background-type" 
+                            name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_type]"
+                            onchange="handleButtonBackgroundTypeChange(this)">
+                        <option value="color">컬러</option>
+                        <option value="gradient">그라데이션</option>
+                    </select>
+                </div>
+                <div class="row block-slide-button-color-container">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">버튼 배경 컬러</label>
                         <input type="color" 
@@ -4732,6 +4891,43 @@ function addBlockSlideButton(itemIndex) {
                                name="block_slide[${itemIndex}][buttons][${buttonIndex}][text_color]" 
                                value="#ffffff">
                     </div>
+                </div>
+                <div class="row block-slide-button-gradient-container" style="display: none;">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">그라데이션 시작 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-gradient-start" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_start]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">그라데이션 끝 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-gradient-end" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_end]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">그라데이션 각도</label>
+                        <input type="number" 
+                               class="form-control block-slide-button-gradient-angle" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_angle]" 
+                               value="90" 
+                               min="0" 
+                               max="360" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">투명도 (0.0 ~ 1.0)</label>
+                    <input type="number" 
+                           class="form-control block-slide-button-opacity" 
+                           name="block_slide[${itemIndex}][buttons][${buttonIndex}][opacity]" 
+                           value="1.0" 
+                           min="0" 
+                           max="1" 
+                           step="0.1">
+                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -4752,7 +4948,16 @@ function addBlockSlideButton(itemIndex) {
                                step="1">
                     </div>
                 </div>
-                <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">호버 배경 타입</label>
+                    <select class="form-select block-slide-button-hover-background-type" 
+                            name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_type]"
+                            onchange="handleButtonHoverBackgroundTypeChange(this)">
+                        <option value="color">컬러</option>
+                        <option value="gradient">그라데이션</option>
+                    </select>
+                </div>
+                <div class="row block-slide-button-hover-color-container">
                     <div class="col-md-4 mb-3">
                         <label class="form-label">호버 배경 컬러</label>
                         <input type="color" 
@@ -4774,6 +4979,43 @@ function addBlockSlideButton(itemIndex) {
                                name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_border_color]" 
                                value="#0056b3">
                     </div>
+                </div>
+                <div class="row block-slide-button-hover-gradient-container" style="display: none;">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 그라데이션 시작 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-hover-gradient-start" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_start]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 그라데이션 끝 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-hover-gradient-end" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_end]" 
+                               value="#004085">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 그라데이션 각도</label>
+                        <input type="number" 
+                               class="form-control block-slide-button-hover-gradient-angle" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_angle]" 
+                               value="90" 
+                               min="0" 
+                               max="360" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">호버 투명도 (0.0 ~ 1.0)</label>
+                    <input type="number" 
+                           class="form-control block-slide-button-hover-opacity" 
+                           name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_opacity]" 
+                           value="1.0" 
+                           min="0" 
+                           max="1" 
+                           step="0.1">
+                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
                 </div>
             </div>
         </div>
@@ -5446,6 +5688,20 @@ function saveMainWidgetSettings() {
                 const buttonHoverTextColor = buttonCard.querySelector('.edit-main-block-button-hover-text-color')?.value || '#ffffff';
                 const buttonHoverBorderColor = buttonCard.querySelector('.edit-main-block-button-hover-border-color')?.value || '#0056b3';
                 
+                // 배경 타입 및 그라데이션 설정
+                const buttonBackgroundType = buttonCard.querySelector('.edit-main-block-button-background-type')?.value || 'color';
+                const buttonGradientStart = buttonCard.querySelector('.edit-main-block-button-gradient-start')?.value || buttonBackgroundColor;
+                const buttonGradientEnd = buttonCard.querySelector('.edit-main-block-button-gradient-end')?.value || buttonHoverBackgroundColor;
+                const buttonGradientAngle = buttonCard.querySelector('.edit-main-block-button-gradient-angle')?.value || '90';
+                const buttonOpacity = buttonCard.querySelector('.edit-main-block-button-opacity')?.value || '1.0';
+                
+                // 호버 배경 타입 및 그라데이션 설정
+                const buttonHoverBackgroundType = buttonCard.querySelector('.edit-main-block-button-hover-background-type')?.value || 'color';
+                const buttonHoverGradientStart = buttonCard.querySelector('.edit-main-block-button-hover-gradient-start')?.value || buttonHoverBackgroundColor;
+                const buttonHoverGradientEnd = buttonCard.querySelector('.edit-main-block-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
+                const buttonHoverGradientAngle = buttonCard.querySelector('.edit-main-block-button-hover-gradient-angle')?.value || '90';
+                const buttonHoverOpacity = buttonCard.querySelector('.edit-main-block-button-hover-opacity')?.value || '1.0';
+                
                 buttons.push({
                     text: buttonText,
                     link: buttonLink,
@@ -5456,7 +5712,17 @@ function saveMainWidgetSettings() {
                     border_width: buttonBorderWidth,
                     hover_background_color: buttonHoverBackgroundColor,
                     hover_text_color: buttonHoverTextColor,
-                    hover_border_color: buttonHoverBorderColor
+                    hover_border_color: buttonHoverBorderColor,
+                    background_type: buttonBackgroundType,
+                    background_gradient_start: buttonGradientStart,
+                    background_gradient_end: buttonGradientEnd,
+                    background_gradient_angle: parseInt(buttonGradientAngle) || 90,
+                    opacity: parseFloat(buttonOpacity) || 1.0,
+                    hover_background_type: buttonHoverBackgroundType,
+                    hover_background_gradient_start: buttonHoverGradientStart,
+                    hover_background_gradient_end: buttonHoverGradientEnd,
+                    hover_background_gradient_angle: parseInt(buttonHoverGradientAngle) || 90,
+                    hover_opacity: parseFloat(buttonHoverOpacity) || 1.0
                 });
             }
         });
@@ -6822,7 +7088,16 @@ function addBlockButton() {
                         </label>
                     </div>
                 </div>
-                <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">버튼 배경 타입</label>
+                    <select class="form-select block-button-background-type" 
+                            name="block_buttons[${blockButtonIndex}][background_type]"
+                            onchange="handleButtonBackgroundTypeChange(this)">
+                        <option value="color">컬러</option>
+                        <option value="gradient">그라데이션</option>
+                    </select>
+                </div>
+                <div class="row block-button-color-container">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">버튼 배경 컬러</label>
                         <input type="color" 
@@ -6837,6 +7112,43 @@ function addBlockButton() {
                                name="block_buttons[${blockButtonIndex}][text_color]" 
                                value="#ffffff">
                     </div>
+                </div>
+                <div class="row block-button-gradient-container" style="display: none;">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">그라데이션 시작 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-gradient-start" 
+                               name="block_buttons[${blockButtonIndex}][background_gradient_start]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">그라데이션 끝 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-gradient-end" 
+                               name="block_buttons[${blockButtonIndex}][background_gradient_end]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">그라데이션 각도</label>
+                        <input type="number" 
+                               class="form-control block-button-gradient-angle" 
+                               name="block_buttons[${blockButtonIndex}][background_gradient_angle]" 
+                               value="90" 
+                               min="0" 
+                               max="360" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">투명도 (0.0 ~ 1.0)</label>
+                    <input type="number" 
+                           class="form-control block-button-opacity" 
+                           name="block_buttons[${blockButtonIndex}][opacity]" 
+                           value="1.0" 
+                           min="0" 
+                           max="1" 
+                           step="0.1">
+                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -6857,7 +7169,16 @@ function addBlockButton() {
                                step="1">
                     </div>
                 </div>
-                <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">호버 배경 타입</label>
+                    <select class="form-select block-button-hover-background-type" 
+                            name="block_buttons[${blockButtonIndex}][hover_background_type]"
+                            onchange="handleButtonHoverBackgroundTypeChange(this)">
+                        <option value="color">컬러</option>
+                        <option value="gradient">그라데이션</option>
+                    </select>
+                </div>
+                <div class="row block-button-hover-color-container">
                     <div class="col-md-4 mb-3">
                         <label class="form-label">호버 배경 컬러</label>
                         <input type="color" 
@@ -6879,6 +7200,43 @@ function addBlockButton() {
                                name="block_buttons[${blockButtonIndex}][hover_border_color]" 
                                value="#0056b3">
                     </div>
+                </div>
+                <div class="row block-button-hover-gradient-container" style="display: none;">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 그라데이션 시작 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-hover-gradient-start" 
+                               name="block_buttons[${blockButtonIndex}][hover_background_gradient_start]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 그라데이션 끝 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-hover-gradient-end" 
+                               name="block_buttons[${blockButtonIndex}][hover_background_gradient_end]" 
+                               value="#004085">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 그라데이션 각도</label>
+                        <input type="number" 
+                               class="form-control block-button-hover-gradient-angle" 
+                               name="block_buttons[${blockButtonIndex}][hover_background_gradient_angle]" 
+                               value="90" 
+                               min="0" 
+                               max="360" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">호버 투명도 (0.0 ~ 1.0)</label>
+                    <input type="number" 
+                           class="form-control block-button-hover-opacity" 
+                           name="block_buttons[${blockButtonIndex}][hover_opacity]" 
+                           value="1.0" 
+                           min="0" 
+                           max="1" 
+                           step="0.1">
+                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
                 </div>
             </div>
         </div>
@@ -6950,7 +7308,16 @@ function addEditMainBlockButton() {
                         </label>
                     </div>
                 </div>
-                <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">버튼 배경 타입</label>
+                    <select class="form-select edit-main-block-button-background-type" 
+                            name="edit_main_block_buttons[${editMainBlockButtonIndex}][background_type]"
+                            onchange="handleButtonBackgroundTypeChange(this)">
+                        <option value="color">컬러</option>
+                        <option value="gradient">그라데이션</option>
+                    </select>
+                </div>
+                <div class="row edit-main-block-button-color-container">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">버튼 배경 컬러</label>
                         <input type="color" 
@@ -6965,6 +7332,43 @@ function addEditMainBlockButton() {
                                name="edit_main_block_buttons[${editMainBlockButtonIndex}][text_color]" 
                                value="#ffffff">
                     </div>
+                </div>
+                <div class="row edit-main-block-button-gradient-container" style="display: none;">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">그라데이션 시작 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-button-gradient-start" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][background_gradient_start]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">그라데이션 끝 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-button-gradient-end" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][background_gradient_end]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">그라데이션 각도</label>
+                        <input type="number" 
+                               class="form-control edit-main-block-button-gradient-angle" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][background_gradient_angle]" 
+                               value="90" 
+                               min="0" 
+                               max="360" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">투명도 (0.0 ~ 1.0)</label>
+                    <input type="number" 
+                           class="form-control edit-main-block-button-opacity" 
+                           name="edit_main_block_buttons[${editMainBlockButtonIndex}][opacity]" 
+                           value="1.0" 
+                           min="0" 
+                           max="1" 
+                           step="0.1">
+                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -6985,7 +7389,16 @@ function addEditMainBlockButton() {
                                step="1">
                     </div>
                 </div>
-                <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">호버 배경 타입</label>
+                    <select class="form-select edit-main-block-button-hover-background-type" 
+                            name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_background_type]"
+                            onchange="handleButtonHoverBackgroundTypeChange(this)">
+                        <option value="color">컬러</option>
+                        <option value="gradient">그라데이션</option>
+                    </select>
+                </div>
+                <div class="row edit-main-block-button-hover-color-container">
                     <div class="col-md-4 mb-3">
                         <label class="form-label">호버 배경 컬러</label>
                         <input type="color" 
@@ -7007,6 +7420,43 @@ function addEditMainBlockButton() {
                                name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_border_color]" 
                                value="#0056b3">
                     </div>
+                </div>
+                <div class="row edit-main-block-button-hover-gradient-container" style="display: none;">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 그라데이션 시작 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-button-hover-gradient-start" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_background_gradient_start]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 그라데이션 끝 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-button-hover-gradient-end" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_background_gradient_end]" 
+                               value="#004085">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 그라데이션 각도</label>
+                        <input type="number" 
+                               class="form-control edit-main-block-button-hover-gradient-angle" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_background_gradient_angle]" 
+                               value="90" 
+                               min="0" 
+                               max="360" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">호버 투명도 (0.0 ~ 1.0)</label>
+                    <input type="number" 
+                           class="form-control edit-main-block-button-hover-opacity" 
+                           name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_opacity]" 
+                           value="1.0" 
+                           min="0" 
+                           max="1" 
+                           step="0.1">
+                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
                 </div>
             </div>
         </div>

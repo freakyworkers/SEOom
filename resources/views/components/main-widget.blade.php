@@ -141,6 +141,41 @@
                         $buttonHoverBackgroundColor = $button['hover_background_color'] ?? '#0056b3';
                         $buttonHoverTextColor = $button['hover_text_color'] ?? '#ffffff';
                         $buttonHoverBorderColor = $button['hover_border_color'] ?? '#0056b3';
+                        
+                        // 버튼 배경 타입 및 그라데이션 설정
+                        $buttonBackgroundType = $button['background_type'] ?? 'color';
+                        $buttonGradientStart = $button['background_gradient_start'] ?? $buttonBackgroundColor;
+                        $buttonGradientEnd = $button['background_gradient_end'] ?? $buttonHoverBackgroundColor;
+                        $buttonGradientAngle = $button['background_gradient_angle'] ?? 90;
+                        $buttonOpacity = isset($button['opacity']) ? floatval($button['opacity']) : 1.0;
+                        
+                        // 버튼 배경 스타일 생성
+                        $buttonBackgroundStyle = '';
+                        if ($buttonBackgroundType === 'gradient') {
+                            $buttonBackgroundStyle = "background: linear-gradient({$buttonGradientAngle}deg, {$buttonGradientStart}, {$buttonGradientEnd});";
+                        } else {
+                            $buttonBackgroundStyle = "background-color: {$buttonBackgroundColor};";
+                        }
+                        if ($buttonOpacity < 1.0) {
+                            $buttonBackgroundStyle .= " opacity: {$buttonOpacity};";
+                        }
+                        
+                        // Hover 배경 스타일 생성
+                        $buttonHoverBackgroundType = $button['hover_background_type'] ?? 'color';
+                        $buttonHoverGradientStart = $button['hover_background_gradient_start'] ?? $buttonHoverBackgroundColor;
+                        $buttonHoverGradientEnd = $button['hover_background_gradient_end'] ?? $buttonHoverBackgroundColor;
+                        $buttonHoverGradientAngle = $button['hover_background_gradient_angle'] ?? 90;
+                        $buttonHoverOpacity = isset($button['hover_opacity']) ? floatval($button['hover_opacity']) : 1.0;
+                        
+                        $buttonHoverBackgroundStyle = '';
+                        if ($buttonHoverBackgroundType === 'gradient') {
+                            $buttonHoverBackgroundStyle = "background: linear-gradient({$buttonHoverGradientAngle}deg, {$buttonHoverGradientStart}, {$buttonHoverGradientEnd});";
+                        } else {
+                            $buttonHoverBackgroundStyle = "background-color: {$buttonHoverBackgroundColor};";
+                        }
+                        if ($buttonHoverOpacity < 1.0) {
+                            $buttonHoverBackgroundStyle .= " opacity: {$buttonHoverOpacity};";
+                        }
                     @endphp
                     @if($buttonText)
                         @if($buttonLink)
@@ -148,17 +183,17 @@
                                @if($buttonOpenNewTab) target="_blank" rel="noopener noreferrer" @endif
                                style="text-decoration: none; display: inline-block;">
                                 <button class="block-widget-button" 
-                                        style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                        onmouseover="this.style.backgroundColor='{{ $buttonHoverBackgroundColor }}'; this.style.color='{{ $buttonHoverTextColor }}'; this.style.borderColor='{{ $buttonHoverBorderColor }}';"
-                                        onmouseout="this.style.backgroundColor='{{ $buttonBackgroundColor }}'; this.style.color='{{ $buttonTextColor }}'; this.style.borderColor='{{ $buttonBorderColor }}';">
+                                        style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                        onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
+                                        onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
                                     {{ $buttonText }}
                                 </button>
                             </a>
                         @else
                             <button class="block-widget-button" 
-                                    style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                    onmouseover="this.style.backgroundColor='{{ $buttonHoverBackgroundColor }}'; this.style.color='{{ $buttonHoverTextColor }}'; this.style.borderColor='{{ $buttonHoverBorderColor }}';"
-                                    onmouseout="this.style.backgroundColor='{{ $buttonBackgroundColor }}'; this.style.color='{{ $buttonTextColor }}'; this.style.borderColor='{{ $buttonBorderColor }}';">
+                                    style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                    onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
+                                    onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
                                 {{ $buttonText }}
                             </button>
                         @endif
@@ -276,6 +311,41 @@
                                         $buttonHoverTextColor = $button['hover_text_color'] ?? '#ffffff';
                                         $buttonHoverBorderColor = $button['hover_border_color'] ?? '#0056b3';
                                         $buttonColor = $buttonBackgroundColor;
+                                        
+                                        // 버튼 배경 타입 및 그라데이션 설정
+                                        $buttonBackgroundType = $button['background_type'] ?? 'color';
+                                        $buttonGradientStart = $button['background_gradient_start'] ?? $buttonBackgroundColor;
+                                        $buttonGradientEnd = $button['background_gradient_end'] ?? $buttonHoverBackgroundColor;
+                                        $buttonGradientAngle = $button['background_gradient_angle'] ?? 90;
+                                        $buttonOpacity = isset($button['opacity']) ? floatval($button['opacity']) : 1.0;
+                                        
+                                        // 버튼 배경 스타일 생성
+                                        $buttonBackgroundStyle = '';
+                                        if ($buttonBackgroundType === 'gradient') {
+                                            $buttonBackgroundStyle = "background: linear-gradient({$buttonGradientAngle}deg, {$buttonGradientStart}, {$buttonGradientEnd});";
+                                        } else {
+                                            $buttonBackgroundStyle = "background-color: {$buttonBackgroundColor};";
+                                        }
+                                        if ($buttonOpacity < 1.0) {
+                                            $buttonBackgroundStyle .= " opacity: {$buttonOpacity};";
+                                        }
+                                        
+                                        // Hover 배경 스타일 생성
+                                        $buttonHoverBackgroundType = $button['hover_background_type'] ?? 'color';
+                                        $buttonHoverGradientStart = $button['hover_background_gradient_start'] ?? $buttonHoverBackgroundColor;
+                                        $buttonHoverGradientEnd = $button['hover_background_gradient_end'] ?? $buttonHoverBackgroundColor;
+                                        $buttonHoverGradientAngle = $button['hover_background_gradient_angle'] ?? 90;
+                                        $buttonHoverOpacity = isset($button['hover_opacity']) ? floatval($button['hover_opacity']) : 1.0;
+                                        
+                                        $buttonHoverBackgroundStyle = '';
+                                        if ($buttonHoverBackgroundType === 'gradient') {
+                                            $buttonHoverBackgroundStyle = "background: linear-gradient({$buttonHoverGradientAngle}deg, {$buttonHoverGradientStart}, {$buttonHoverGradientEnd});";
+                                        } else {
+                                            $buttonHoverBackgroundStyle = "background-color: {$buttonHoverBackgroundColor};";
+                                        }
+                                        if ($buttonHoverOpacity < 1.0) {
+                                            $buttonHoverBackgroundStyle .= " opacity: {$buttonHoverOpacity};";
+                                        }
                                     @endphp
                                     @if($buttonText)
                                         @if($buttonLink)
@@ -283,17 +353,17 @@
                                                @if($buttonOpenNewTab) target="_blank" rel="noopener noreferrer" @endif
                                                style="text-decoration: none; display: inline-block;">
                                                 <button class="block-widget-button" 
-                                                        style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                                        onmouseover="this.style.backgroundColor='{{ $buttonHoverBackgroundColor }}'; this.style.color='{{ $buttonHoverTextColor }}'; this.style.borderColor='{{ $buttonHoverBorderColor }}';"
-                                                        onmouseout="this.style.backgroundColor='{{ $buttonBackgroundColor }}'; this.style.color='{{ $buttonTextColor }}'; this.style.borderColor='{{ $buttonBorderColor }}';">
+                                                        style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                                        onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
+                                                        onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
                                                     {{ $buttonText }}
                                                 </button>
                                             </a>
                                         @else
                                             <button class="block-widget-button" 
-                                                    style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                                    onmouseover="this.style.backgroundColor='{{ $buttonHoverBackgroundColor }}'; this.style.color='{{ $buttonHoverTextColor }}'; this.style.borderColor='{{ $buttonHoverBorderColor }}';"
-                                                    onmouseout="this.style.backgroundColor='{{ $buttonBackgroundColor }}'; this.style.color='{{ $buttonTextColor }}'; this.style.borderColor='{{ $buttonBorderColor }}';">
+                                                    style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                                    onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
+                                                    onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
                                                 {{ $buttonText }}
                                             </button>
                                         @endif
@@ -460,7 +530,7 @@
         $openNewTab = $imageSettings['open_new_tab'] ?? false;
     @endphp
     @if($imageUrl)
-        <div class="mb-3 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
+        <div class="mb-3 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; margin: 0 auto;" data-widget-id="{{ $widget->id }}">
             @if($link)
                 <a href="{{ $link }}" 
                    @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
@@ -498,7 +568,7 @@
              data-visible-count-mobile="{{ $visibleCountMobile }}"
              data-image-gap="{{ $imageGap }}"
              data-widget-id="{{ $widget->id }}"
-             style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }} {{ $backgroundStyle }} {{ $animationStyle }}">
+             style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }} {{ $backgroundStyle }} {{ $animationStyle }} width: 100%; margin: 0 auto;">
             <div class="image-slide-container" style="display: flex; {{ $slideMode === 'infinite' ? 'flex-direction: row;' : '' }} {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'flex-direction: column; height: 100%;' : '' }}{{ $slideMode === 'single' ? ' transition: transform 0.5s ease-in-out;' : '' }}">
                 @if($slideMode === 'single')
                     @foreach($images as $index => $image)
