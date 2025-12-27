@@ -47,8 +47,8 @@
             } elseif ($backgroundType === 'gradient') {
                 $gradientStart = $container->background_gradient_start ?? '#ffffff';
                 $gradientEnd = $container->background_gradient_end ?? '#000000';
-                $gradientDirection = $container->background_gradient_direction ?? 'to right';
-                $backgroundStyle = 'background: linear-gradient(' . $gradientDirection . ', ' . $gradientStart . ', ' . $gradientEnd . ');';
+                $gradientAngle = $container->background_gradient_angle ?? 90;
+                $backgroundStyle = 'background: linear-gradient(' . $gradientAngle . 'deg, ' . $gradientStart . ', ' . $gradientEnd . ');';
             } elseif ($backgroundType === 'image' && !empty($container->background_image_url)) {
                 $backgroundStyle = 'background-image: url(' . htmlspecialchars($container->background_image_url) . '); background-size: cover; background-position: center; background-repeat: no-repeat;';
             }

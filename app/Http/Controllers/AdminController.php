@@ -3450,7 +3450,7 @@ class AdminController extends Controller
             'background_color' => 'nullable|string|max:7',
             'background_gradient_start' => 'nullable|string|max:7',
             'background_gradient_end' => 'nullable|string|max:7',
-            'background_gradient_direction' => 'nullable|string|max:50',
+            'background_gradient_angle' => 'nullable|integer|min:0|max:360',
             'background_image_url' => 'nullable|string|max:500',
         ]);
 
@@ -3548,26 +3548,26 @@ class AdminController extends Controller
                 $container->background_color = $request->background_color ?? null;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
-                $container->background_gradient_direction = null;
+                $container->background_gradient_angle = null;
                 $container->background_image_url = null;
             } elseif ($request->background_type === 'gradient') {
                 $container->background_color = null;
                 $container->background_gradient_start = $request->background_gradient_start ?? null;
                 $container->background_gradient_end = $request->background_gradient_end ?? null;
-                $container->background_gradient_direction = $request->background_gradient_direction ?? 'to right';
+                $container->background_gradient_angle = $request->background_gradient_angle ?? 90;
                 $container->background_image_url = null;
             } elseif ($request->background_type === 'image') {
                 $container->background_color = null;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
-                $container->background_gradient_direction = null;
+                $container->background_gradient_angle = null;
                 $container->background_image_url = $request->background_image_url ?? null;
             } else {
                 // none
                 $container->background_color = null;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
-                $container->background_gradient_direction = null;
+                $container->background_gradient_angle = null;
                 $container->background_image_url = null;
             }
         }
@@ -4155,7 +4155,7 @@ class AdminController extends Controller
             'background_color' => 'nullable|string|max:7',
             'background_gradient_start' => 'nullable|string|max:7',
             'background_gradient_end' => 'nullable|string|max:7',
-            'background_gradient_direction' => 'nullable|string|max:50',
+            'background_gradient_angle' => 'nullable|integer|min:0|max:360',
             'background_image_url' => 'nullable|string|max:500',
         ]);
 
@@ -4241,26 +4241,26 @@ class AdminController extends Controller
                 $container->background_color = $request->background_color ?? null;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
-                $container->background_gradient_direction = null;
+                $container->background_gradient_angle = null;
                 $container->background_image_url = null;
             } elseif ($request->background_type === 'gradient') {
                 $container->background_color = null;
                 $container->background_gradient_start = $request->background_gradient_start ?? null;
                 $container->background_gradient_end = $request->background_gradient_end ?? null;
-                $container->background_gradient_direction = $request->background_gradient_direction ?? 'to right';
+                $container->background_gradient_angle = $request->background_gradient_angle ?? 90;
                 $container->background_image_url = null;
             } elseif ($request->background_type === 'image') {
                 $container->background_color = null;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
-                $container->background_gradient_direction = null;
+                $container->background_gradient_angle = null;
                 $container->background_image_url = $request->background_image_url ?? null;
             } else {
                 // none
                 $container->background_color = null;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
-                $container->background_gradient_direction = null;
+                $container->background_gradient_angle = null;
                 $container->background_image_url = null;
             }
         }

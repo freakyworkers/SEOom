@@ -241,17 +241,17 @@
                                                                style="width: 40px; height: 38px;"
                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})"
                                                                title="끝 색상">
-                                                        <select class="form-select form-select-sm" 
-                                                                id="container_background_gradient_direction_{{ $container->id }}"
-                                                                style="width: auto; min-width: 100px;"
-                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
-                                                            <option value="to right" {{ ($container->background_gradient_direction ?? 'to right') == 'to right' ? 'selected' : '' }}>좌→우</option>
-                                                            <option value="to bottom" {{ ($container->background_gradient_direction ?? 'to right') == 'to bottom' ? 'selected' : '' }}>상→하</option>
-                                                            <option value="to left" {{ ($container->background_gradient_direction ?? 'to right') == 'to left' ? 'selected' : '' }}>우→좌</option>
-                                                            <option value="to top" {{ ($container->background_gradient_direction ?? 'to right') == 'to top' ? 'selected' : '' }}>하→상</option>
-                                                            <option value="45deg" {{ ($container->background_gradient_direction ?? 'to right') == '45deg' ? 'selected' : '' }}>대각선 (45도)</option>
-                                                            <option value="135deg" {{ ($container->background_gradient_direction ?? 'to right') == '135deg' ? 'selected' : '' }}>대각선 (135도)</option>
-                                                        </select>
+                                                        <input type="number" 
+                                                               class="form-control form-control-sm" 
+                                                               id="container_background_gradient_angle_{{ $container->id }}"
+                                                               value="{{ $container->background_gradient_angle ?? 90 }}"
+                                                               min="0"
+                                                               max="360"
+                                                               step="1"
+                                                               placeholder="90"
+                                                               style="width: auto; min-width: 80px;"
+                                                               onchange="updateContainerBackgroundGradient({{ $container->id }})">
+                                                        <small class="text-muted ms-1">deg</small>
                                                     </div>
                                                     <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-block' : 'none' }}; margin-left: 8px;">
                                                         <input type="text" 
@@ -394,17 +394,17 @@
                                                                id="container_background_gradient_end_mobile_{{ $container->id }}"
                                                                value="{{ $container->background_gradient_end ?? '#000000' }}"
                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
-                                                        <label class="form-label small mb-1">방향</label>
-                                                        <select class="form-select form-select-sm" 
-                                                                id="container_background_gradient_direction_mobile_{{ $container->id }}"
-                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
-                                                            <option value="to right" {{ ($container->background_gradient_direction ?? 'to right') == 'to right' ? 'selected' : '' }}>좌→우</option>
-                                                            <option value="to bottom" {{ ($container->background_gradient_direction ?? 'to right') == 'to bottom' ? 'selected' : '' }}>상→하</option>
-                                                            <option value="to left" {{ ($container->background_gradient_direction ?? 'to right') == 'to left' ? 'selected' : '' }}>우→좌</option>
-                                                            <option value="to top" {{ ($container->background_gradient_direction ?? 'to right') == 'to top' ? 'selected' : '' }}>하→상</option>
-                                                            <option value="45deg" {{ ($container->background_gradient_direction ?? 'to right') == '45deg' ? 'selected' : '' }}>대각선 (45도)</option>
-                                                            <option value="135deg" {{ ($container->background_gradient_direction ?? 'to right') == '135deg' ? 'selected' : '' }}>대각선 (135도)</option>
-                                                        </select>
+                                                        <label class="form-label small mb-1">각도 (deg)</label>
+                                                        <input type="number" 
+                                                               class="form-control form-control-sm" 
+                                                               id="container_background_gradient_angle_mobile_{{ $container->id }}"
+                                                               value="{{ $container->background_gradient_angle ?? 90 }}"
+                                                               min="0"
+                                                               max="360"
+                                                               step="1"
+                                                               placeholder="90"
+                                                               onchange="updateContainerBackgroundGradient({{ $container->id }})">
+                                                        <small class="text-muted">0도: 좌→우, 90도: 상→하, 180도: 우→좌, 270도: 하→상</small>
                                                     </div>
                                                     <div class="col-12" id="container_background_image_mobile_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'block' : 'none' }};">
                                                         <label class="form-label small mb-1">이미지 URL</label>
@@ -958,17 +958,44 @@
                         <div class="mb-3">
                             <label for="edit_main_widget_block_background_type" class="form-label">배경</label>
                             <select class="form-select" id="edit_main_widget_block_background_type" name="block_background_type" onchange="handleEditMainBlockBackgroundTypeChange()">
+                                <option value="none">배경 없음</option>
                                 <option value="color">컬러</option>
+                                <option value="gradient">그라데이션</option>
                                 <option value="image">이미지</option>
                             </select>
                         </div>
-                        <div class="mb-3" id="edit_main_widget_block_color_container">
+                        <div class="mb-3" id="edit_main_widget_block_color_container" style="display: none;">
                             <label for="edit_main_widget_block_background_color" class="form-label">적용 컬러</label>
                             <input type="color" 
                                    class="form-control form-control-color" 
                                    id="edit_main_widget_block_background_color" 
                                    name="block_background_color" 
                                    value="#007bff">
+                        </div>
+                        <div class="mb-3" id="edit_main_widget_block_gradient_container" style="display: none;">
+                            <label for="edit_main_widget_block_gradient_start" class="form-label">시작 색상</label>
+                            <input type="color" 
+                                   class="form-control form-control-color mb-2" 
+                                   id="edit_main_widget_block_gradient_start" 
+                                   name="block_background_gradient_start" 
+                                   value="#ffffff">
+                            <label for="edit_main_widget_block_gradient_end" class="form-label">끝 색상</label>
+                            <input type="color" 
+                                   class="form-control form-control-color mb-2" 
+                                   id="edit_main_widget_block_gradient_end" 
+                                   name="block_background_gradient_end" 
+                                   value="#000000">
+                            <label for="edit_main_widget_block_gradient_angle" class="form-label">각도 (deg)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_main_widget_block_gradient_angle" 
+                                   name="block_background_gradient_angle" 
+                                   value="90"
+                                   min="0"
+                                   max="360"
+                                   step="1"
+                                   placeholder="90">
+                            <small class="text-muted">0도: 좌→우, 90도: 상→하, 180도: 우→좌, 270도: 하→상</small>
                         </div>
                         <div class="mb-3">
                             <label for="edit_main_widget_block_font_color" class="form-label">폰트 컬러</label>
@@ -2076,14 +2103,14 @@ function updateContainerBackgroundGradient(containerId) {
                        document.getElementById(`container_background_gradient_start_mobile_${containerId}`)?.value || '#ffffff';
     const endColor = document.getElementById(`container_background_gradient_end_${containerId}`)?.value || 
                      document.getElementById(`container_background_gradient_end_mobile_${containerId}`)?.value || '#000000';
-    const direction = document.getElementById(`container_background_gradient_direction_${containerId}`)?.value || 
-                      document.getElementById(`container_background_gradient_direction_mobile_${containerId}`)?.value || 'to right';
+    const angle = document.getElementById(`container_background_gradient_angle_${containerId}`)?.value || 
+                  document.getElementById(`container_background_gradient_angle_mobile_${containerId}`)?.value || 90;
     
     const formData = new FormData();
     formData.append('background_type', 'gradient');
     formData.append('background_gradient_start', startColor);
     formData.append('background_gradient_end', endColor);
-    formData.append('background_gradient_direction', direction);
+    formData.append('background_gradient_angle', angle);
     formData.append('_method', 'PUT');
     
     // 현재 컨테이너 설정 유지
@@ -2726,6 +2753,13 @@ function addMainWidget() {
         if (backgroundType === 'color') {
             const backgroundColor = formData.get('block_background_color') || '#007bff';
             settings.background_color = backgroundColor;
+        } else if (backgroundType === 'gradient') {
+            const gradientStart = formData.get('block_background_gradient_start') || '#ffffff';
+            const gradientEnd = formData.get('block_background_gradient_end') || '#000000';
+            const gradientAngle = formData.get('block_background_gradient_angle') || 90;
+            settings.background_gradient_start = gradientStart;
+            settings.background_gradient_end = gradientEnd;
+            settings.background_gradient_angle = parseInt(gradientAngle) || 90;
         } else if (backgroundType === 'image') {
             const imageFile = document.getElementById('widget_block_image_input')?.files[0];
             if (imageFile) {
@@ -2821,6 +2855,13 @@ function addMainWidget() {
             if (backgroundType === 'color') {
                 const backgroundColor = item.querySelector('.block-slide-background-color')?.value || '#007bff';
                 blockItem.background_color = backgroundColor;
+            } else if (backgroundType === 'gradient') {
+                const gradientStart = item.querySelector('.block-slide-background-gradient-start')?.value || '#ffffff';
+                const gradientEnd = item.querySelector('.block-slide-background-gradient-end')?.value || '#000000';
+                const gradientAngle = item.querySelector('.block-slide-background-gradient-angle')?.value || 90;
+                blockItem.background_gradient_start = gradientStart;
+                blockItem.background_gradient_end = gradientEnd;
+                blockItem.background_gradient_angle = parseInt(gradientAngle) || 90;
             } else if (backgroundType === 'image') {
                 const imageFile = item.querySelector(`#block_slide_${itemIndex}_image_input`)?.files[0];
                 if (imageFile) {
@@ -3265,6 +3306,16 @@ function editMainWidget(widgetId) {
                 if (backgroundType === 'color') {
                     if (document.getElementById('edit_main_widget_block_background_color')) {
                         document.getElementById('edit_main_widget_block_background_color').value = settings.background_color || '#007bff';
+                    }
+                } else if (backgroundType === 'gradient') {
+                    if (document.getElementById('edit_main_widget_block_gradient_start')) {
+                        document.getElementById('edit_main_widget_block_gradient_start').value = settings.background_gradient_start || '#ffffff';
+                    }
+                    if (document.getElementById('edit_main_widget_block_gradient_end')) {
+                        document.getElementById('edit_main_widget_block_gradient_end').value = settings.background_gradient_end || '#000000';
+                    }
+                    if (document.getElementById('edit_main_widget_block_gradient_angle')) {
+                        document.getElementById('edit_main_widget_block_gradient_angle').value = settings.background_gradient_angle || 90;
                     }
                 } else if (backgroundType === 'image') {
                     if (settings.background_image_url && document.getElementById('edit_main_widget_block_image_preview_img')) {
@@ -4229,13 +4280,31 @@ function addBlockSlideItem() {
         </div>
         <div class="mb-3"><label class="form-label">배경</label>
             <select class="form-select block-slide-background-type" name="block_slide[${itemIndex}][background_type]" onchange="handleBlockSlideBackgroundTypeChange(${itemIndex})">
+                <option value="none">배경 없음</option>
                 <option value="color">컬러</option>
+                <option value="gradient">그라데이션</option>
                 <option value="image">이미지</option>
             </select>
         </div>
-        <div class="mb-3 block-slide-color-container" id="block_slide_${itemIndex}_color_container">
+        <div class="mb-3 block-slide-color-container" id="block_slide_${itemIndex}_color_container" style="display: none;">
             <label class="form-label">배경 컬러</label>
             <input type="color" class="form-control form-control-color block-slide-background-color" name="block_slide[${itemIndex}][background_color]" value="#007bff">
+        </div>
+        <div class="mb-3 block-slide-gradient-container" id="block_slide_${itemIndex}_gradient_container" style="display: none;">
+            <label class="form-label">시작 색상</label>
+            <input type="color" class="form-control form-control-color mb-2 block-slide-background-gradient-start" name="block_slide[${itemIndex}][background_gradient_start]" value="#ffffff">
+            <label class="form-label">끝 색상</label>
+            <input type="color" class="form-control form-control-color mb-2 block-slide-background-gradient-end" name="block_slide[${itemIndex}][background_gradient_end]" value="#000000">
+            <label class="form-label">각도 (deg)</label>
+            <input type="number" 
+                   class="form-control block-slide-background-gradient-angle" 
+                   name="block_slide[${itemIndex}][background_gradient_angle]" 
+                   value="90"
+                   min="0"
+                   max="360"
+                   step="1"
+                   placeholder="90">
+            <small class="text-muted">0도: 좌→우, 90도: 상→하, 180도: 우→좌, 270도: 하→상</small>
         </div>
         <div class="mb-3"><label class="form-label">폰트 컬러</label>
             <input type="color" class="form-control form-control-color block-slide-font-color" name="block_slide[${itemIndex}][font_color]" value="#ffffff">
@@ -4510,14 +4579,23 @@ function removeBlockSlideItem(itemIndex) {
 function handleBlockSlideBackgroundTypeChange(itemIndex) {
     const backgroundType = document.querySelector(`#block_slide_item_${itemIndex}_body .block-slide-background-type`)?.value;
     const colorContainer = document.getElementById(`block_slide_${itemIndex}_color_container`);
+    const gradientContainer = document.getElementById(`block_slide_${itemIndex}_gradient_container`);
     const imageContainer = document.getElementById(`block_slide_${itemIndex}_image_container`);
+    
+    // 모든 컨테이너 숨기기
+    if (colorContainer) colorContainer.style.display = 'none';
+    if (gradientContainer) gradientContainer.style.display = 'none';
+    if (imageContainer) imageContainer.style.display = 'none';
+    
+    // 선택된 타입에 따라 해당 컨테이너 표시
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
-        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (gradientContainer) gradientContainer.style.display = 'block';
     } else if (backgroundType === 'image') {
-        if (colorContainer) colorContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'block';
     }
+    // 'none'인 경우 모든 컨테이너 숨김
 }
 
 function handleBlockSlideImageChange(itemIndex, input) {
@@ -5265,6 +5343,13 @@ function saveMainWidgetSettings() {
             if (blockItem.background_type === 'color') {
                 const backgroundColorInput = item.querySelector('.edit-main-block-slide-background-color');
                 blockItem.background_color = backgroundColorInput ? backgroundColorInput.value : '#007bff';
+            } else if (blockItem.background_type === 'gradient') {
+                const gradientStartInput = item.querySelector('.edit-main-block-slide-background-gradient-start');
+                const gradientEndInput = item.querySelector('.edit-main-block-slide-background-gradient-end');
+                const gradientAngleInput = item.querySelector('.edit-main-block-slide-background-gradient-angle');
+                blockItem.background_gradient_start = gradientStartInput ? gradientStartInput.value : '#ffffff';
+                blockItem.background_gradient_end = gradientEndInput ? gradientEndInput.value : '#000000';
+                blockItem.background_gradient_angle = gradientAngleInput ? parseInt(gradientAngleInput.value) || 90 : 90;
             } else if (blockItem.background_type === 'image') {
                 const imageFileInput = item.querySelector(`#edit_main_block_slide_${itemIndex}_image_input`);
                 if (imageFileInput && imageFileInput.files[0]) {
@@ -5776,16 +5861,40 @@ function addEditMainBlockSlideItem(blockData = null) {
         <div class="mb-3">
             <label class="form-label">배경</label>
             <select class="form-select edit-main-block-slide-background-type" name="edit_main_block_slide[${itemIndex}][background_type]" onchange="handleEditMainBlockSlideBackgroundTypeChange(${itemIndex})">
+                <option value="none" ${blockData && blockData.background_type === 'none' ? 'selected' : ''}>배경 없음</option>
                 <option value="color" ${!blockData || blockData.background_type === 'color' ? 'selected' : ''}>컬러</option>
+                <option value="gradient" ${blockData && blockData.background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
                 <option value="image" ${blockData && blockData.background_type === 'image' ? 'selected' : ''}>이미지</option>
             </select>
         </div>
-        <div class="mb-3 edit-main-block-slide-color-container" id="edit_main_block_slide_${itemIndex}_color_container" style="${blockData && blockData.background_type === 'image' ? 'display: none;' : ''}">
+        <div class="mb-3 edit-main-block-slide-color-container" id="edit_main_block_slide_${itemIndex}_color_container" style="${!blockData || (blockData.background_type !== 'color' && blockData.background_type !== 'none') ? 'display: none;' : ''}">
             <label class="form-label">배경 컬러</label>
             <input type="color" 
                    class="form-control form-control-color edit-main-block-slide-background-color" 
                    name="edit_main_block_slide[${itemIndex}][background_color]" 
                    value="${blockData ? (blockData.background_color || '#007bff') : '#007bff'}">
+        </div>
+        <div class="mb-3 edit-main-block-slide-gradient-container" id="edit_main_block_slide_${itemIndex}_gradient_container" style="${!blockData || blockData.background_type !== 'gradient' ? 'display: none;' : ''}">
+            <label class="form-label">시작 색상</label>
+            <input type="color" 
+                   class="form-control form-control-color mb-2 edit-main-block-slide-background-gradient-start" 
+                   name="edit_main_block_slide[${itemIndex}][background_gradient_start]" 
+                   value="${blockData ? (blockData.background_gradient_start || '#ffffff') : '#ffffff'}">
+            <label class="form-label">끝 색상</label>
+            <input type="color" 
+                   class="form-control form-control-color mb-2 edit-main-block-slide-background-gradient-end" 
+                   name="edit_main_block_slide[${itemIndex}][background_gradient_end]" 
+                   value="${blockData ? (blockData.background_gradient_end || '#000000') : '#000000'}">
+            <label class="form-label">각도 (deg)</label>
+            <input type="number" 
+                   class="form-control edit-main-block-slide-background-gradient-angle" 
+                   name="edit_main_block_slide[${itemIndex}][background_gradient_angle]" 
+                   value="${blockData ? (blockData.background_gradient_angle || 90) : 90}"
+                   min="0"
+                   max="360"
+                   step="1"
+                   placeholder="90">
+            <small class="text-muted">0도: 좌→우, 90도: 상→하, 180도: 우→좌, 270도: 하→상</small>
         </div>
         <div class="mb-3">
             <label class="form-label">폰트 컬러</label>
@@ -5989,15 +6098,23 @@ function toggleEditMainBlockSlideItem(itemIndex) {
 function handleEditMainBlockSlideBackgroundTypeChange(itemIndex) {
     const backgroundType = document.querySelector(`#edit_main_block_slide_item_${itemIndex} .edit-main-block-slide-background-type`)?.value;
     const colorContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_color_container`);
+    const gradientContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_gradient_container`);
     const imageContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_image_container`);
     
-    if (backgroundType === 'image') {
-        if (colorContainer) colorContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'block';
-    } else {
+    // 모든 컨테이너 숨기기
+    if (colorContainer) colorContainer.style.display = 'none';
+    if (gradientContainer) gradientContainer.style.display = 'none';
+    if (imageContainer) imageContainer.style.display = 'none';
+    
+    // 선택된 타입에 따라 해당 컨테이너 표시
+    if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
-        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (gradientContainer) gradientContainer.style.display = 'block';
+    } else if (backgroundType === 'image') {
+        if (imageContainer) imageContainer.style.display = 'block';
     }
+    // 'none'인 경우 모든 컨테이너 숨김
 }
 
 // 블록슬라이드 수정 모달 버튼 관리
@@ -6379,15 +6496,23 @@ function removeEditMainImageSlideItem(itemIndex) {
 function handleEditMainBlockBackgroundTypeChange() {
     const backgroundType = document.getElementById('edit_main_widget_block_background_type')?.value;
     const colorContainer = document.getElementById('edit_main_widget_block_color_container');
+    const gradientContainer = document.getElementById('edit_main_widget_block_gradient_container');
     const imageContainer = document.getElementById('edit_main_widget_block_image_container');
     
-    if (backgroundType === 'image') {
-        if (colorContainer) colorContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'block';
-    } else {
+    // 모든 컨테이너 숨기기
+    if (colorContainer) colorContainer.style.display = 'none';
+    if (gradientContainer) gradientContainer.style.display = 'none';
+    if (imageContainer) imageContainer.style.display = 'none';
+    
+    // 선택된 타입에 따라 해당 컨테이너 표시
+    if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
-        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (gradientContainer) gradientContainer.style.display = 'block';
+    } else if (backgroundType === 'image') {
+        if (imageContainer) imageContainer.style.display = 'block';
     }
+    // 'none'인 경우 모든 컨테이너 숨김
 }
 
 // 블록 위젯 버튼 관리 변수

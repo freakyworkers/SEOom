@@ -20,7 +20,7 @@ class CustomPageWidgetContainer extends Model
         'background_color',
         'background_gradient_start',
         'background_gradient_end',
-        'background_gradient_direction',
+        'background_gradient_angle',
         'background_image_url',
         'order',
     ];

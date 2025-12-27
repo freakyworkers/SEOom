@@ -69,6 +69,11 @@
         
         if ($backgroundType === 'color') {
             $blockStyle .= " background-color: {$backgroundColor};";
+        } else if ($backgroundType === 'gradient') {
+            $gradientStart = $blockSettings['background_gradient_start'] ?? '#ffffff';
+            $gradientEnd = $blockSettings['background_gradient_end'] ?? '#000000';
+            $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
+            $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
         } else if ($backgroundType === 'image' && $backgroundImageUrl) {
             $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
         }
@@ -2325,6 +2330,11 @@
                     
                     if ($backgroundType === 'color') {
                         $blockStyle .= " background-color: {$backgroundColor};";
+                    } else if ($backgroundType === 'gradient') {
+                        $gradientStart = $blockSettings['background_gradient_start'] ?? '#ffffff';
+                        $gradientEnd = $blockSettings['background_gradient_end'] ?? '#000000';
+                        $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
+                        $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
                     } else if ($backgroundType === 'image' && $backgroundImageUrl) {
                         $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
                     }

@@ -218,17 +218,17 @@
                                                                style="width: 40px; height: 38px;"
                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})"
                                                                title="끝 색상">
-                                                        <select class="form-select form-select-sm" 
-                                                                id="container_background_gradient_direction_{{ $container->id }}"
-                                                                style="width: auto; min-width: 100px;"
-                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
-                                                            <option value="to right" {{ ($container->background_gradient_direction ?? 'to right') == 'to right' ? 'selected' : '' }}>좌→우</option>
-                                                            <option value="to bottom" {{ ($container->background_gradient_direction ?? 'to right') == 'to bottom' ? 'selected' : '' }}>상→하</option>
-                                                            <option value="to left" {{ ($container->background_gradient_direction ?? 'to right') == 'to left' ? 'selected' : '' }}>우→좌</option>
-                                                            <option value="to top" {{ ($container->background_gradient_direction ?? 'to right') == 'to top' ? 'selected' : '' }}>하→상</option>
-                                                            <option value="45deg" {{ ($container->background_gradient_direction ?? 'to right') == '45deg' ? 'selected' : '' }}>대각선 (45도)</option>
-                                                            <option value="135deg" {{ ($container->background_gradient_direction ?? 'to right') == '135deg' ? 'selected' : '' }}>대각선 (135도)</option>
-                                                        </select>
+                                                        <input type="number" 
+                                                               class="form-control form-control-sm" 
+                                                               id="container_background_gradient_angle_{{ $container->id }}"
+                                                               value="{{ $container->background_gradient_angle ?? 90 }}"
+                                                               min="0"
+                                                               max="360"
+                                                               step="1"
+                                                               placeholder="90"
+                                                               style="width: auto; min-width: 80px;"
+                                                               onchange="updateContainerBackgroundGradient({{ $container->id }})">
+                                                        <small class="text-muted ms-1">deg</small>
                                                     </div>
                                                     <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-block' : 'none' }}; margin-left: 8px;">
                                                         <input type="text" 
@@ -358,17 +358,17 @@
                                                                id="container_background_gradient_end_mobile_{{ $container->id }}"
                                                                value="{{ $container->background_gradient_end ?? '#000000' }}"
                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
-                                                        <label class="form-label small mb-1">방향</label>
-                                                        <select class="form-select form-select-sm" 
-                                                                id="container_background_gradient_direction_mobile_{{ $container->id }}"
-                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
-                                                            <option value="to right" {{ ($container->background_gradient_direction ?? 'to right') == 'to right' ? 'selected' : '' }}>좌→우</option>
-                                                            <option value="to bottom" {{ ($container->background_gradient_direction ?? 'to right') == 'to bottom' ? 'selected' : '' }}>상→하</option>
-                                                            <option value="to left" {{ ($container->background_gradient_direction ?? 'to right') == 'to left' ? 'selected' : '' }}>우→좌</option>
-                                                            <option value="to top" {{ ($container->background_gradient_direction ?? 'to right') == 'to top' ? 'selected' : '' }}>하→상</option>
-                                                            <option value="45deg" {{ ($container->background_gradient_direction ?? 'to right') == '45deg' ? 'selected' : '' }}>대각선 (45도)</option>
-                                                            <option value="135deg" {{ ($container->background_gradient_direction ?? 'to right') == '135deg' ? 'selected' : '' }}>대각선 (135도)</option>
-                                                        </select>
+                                                        <label class="form-label small mb-1">각도 (deg)</label>
+                                                        <input type="number" 
+                                                               class="form-control form-control-sm" 
+                                                               id="container_background_gradient_angle_mobile_{{ $container->id }}"
+                                                               value="{{ $container->background_gradient_angle ?? 90 }}"
+                                                               min="0"
+                                                               max="360"
+                                                               step="1"
+                                                               placeholder="90"
+                                                               onchange="updateContainerBackgroundGradient({{ $container->id }})">
+                                                        <small class="text-muted">0도: 좌→우, 90도: 상→하, 180도: 우→좌, 270도: 하→상</small>
                                                     </div>
                                                     <div class="col-12" id="container_background_image_mobile_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'block' : 'none' }};">
                                                         <label class="form-label small mb-1">이미지 URL</label>
@@ -1616,14 +1616,14 @@ function updateContainerBackgroundGradient(containerId) {
                        document.getElementById(`container_background_gradient_start_mobile_${containerId}`)?.value || '#ffffff';
     const endColor = document.getElementById(`container_background_gradient_end_${containerId}`)?.value || 
                      document.getElementById(`container_background_gradient_end_mobile_${containerId}`)?.value || '#000000';
-    const direction = document.getElementById(`container_background_gradient_direction_${containerId}`)?.value || 
-                      document.getElementById(`container_background_gradient_direction_mobile_${containerId}`)?.value || 'to right';
+    const angle = document.getElementById(`container_background_gradient_angle_${containerId}`)?.value || 
+                  document.getElementById(`container_background_gradient_angle_mobile_${containerId}`)?.value || 90;
     
     const formData = new FormData();
     formData.append('background_type', 'gradient');
     formData.append('background_gradient_start', startColor);
     formData.append('background_gradient_end', endColor);
-    formData.append('background_gradient_direction', direction);
+    formData.append('background_gradient_angle', angle);
     formData.append('_method', 'PUT');
     
     // 현재 컨테이너 설정 유지
