@@ -465,6 +465,11 @@
                                                                                         <small class="text-muted d-block">{{ $availableTypes[$widget->type] ?? $widget->type }}</small>
                                                                                     </div>
                                                                                     <div class="d-flex gap-2 justify-content-end pt-2 border-top">
+                                                                                        <span class="bi-grip-vertical btn btn-sm btn-outline-secondary" 
+                                                                                              style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: move; touch-action: none;"
+                                                                                              title="드래그하여 이동">
+                                                                                            <i class="bi bi-grip-vertical"></i>
+                                                                                        </span>
                                                                                         <button type="button" 
                                                                                                 class="btn btn-sm btn-outline-secondary" 
                                                                                                 onclick="moveMainWidgetUp({{ $widget->id }}, {{ $container->id }}, {{ $i }})"
@@ -1501,16 +1506,25 @@
 }
 .widget-item.sortable-chosen {
     cursor: move;
+    touch-action: none; /* 모바일 터치 제스처 방지 */
 }
 .widget-item.sortable-drag {
     opacity: 0.8;
+    touch-action: none; /* 모바일 터치 제스처 방지 */
 }
 .bi-grip-vertical {
     cursor: move;
     user-select: none;
+    touch-action: none; /* 모바일 터치 제스처 방지 */
+    -webkit-user-select: none; /* iOS Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE/Edge */
 }
 .bi-grip-vertical:hover {
     background-color: #e9ecef;
+}
+.widget-list-in-column {
+    touch-action: pan-y; /* 세로 스크롤만 허용 */
 }
 </style>
 @endpush
@@ -3706,6 +3720,10 @@ function initializeMainWidgetSortables() {
             ghostClass: 'sortable-ghost',
             chosenClass: 'sortable-chosen',
             dragClass: 'sortable-drag',
+            touchStartThreshold: 5, // 모바일 터치 감지 임계값
+            forceFallback: false, // 네이티브 HTML5 드래그 사용
+            fallbackOnBody: true, // 모바일에서 body에 클론 생성
+            swapThreshold: 0.65, // 교체 임계값
             onEnd: function(evt) {
                 const fromContainerId = parseInt(evt.from.dataset.containerId);
                 const fromColumnIndex = parseInt(evt.from.dataset.columnIndex);
