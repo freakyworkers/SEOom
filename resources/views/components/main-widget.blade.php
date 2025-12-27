@@ -535,7 +535,7 @@
         $openNewTab = $imageSettings['open_new_tab'] ?? false;
     @endphp
     @if($imageUrl)
-        <div class="mb-3 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%;" data-widget-id="{{ $widget->id }}">
+        <div class="mb-3 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; max-width: 100%;" data-widget-id="{{ $widget->id }}">
             @if($link)
                 <a href="{{ $link }}" 
                    @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif

@@ -8354,19 +8354,21 @@ function makeGradientControlDraggable(control) {
         if (e.target.closest('[onclick*="selectGradientControl"]')) {
             return;
         }
+        // handle이나 컨트롤 자체를 클릭한 경우 드래그 시작
         isDragging = true;
         hasMoved = false;
         control.style.cursor = 'grabbing';
         startX = e.clientX;
         startLeft = parseFloat(control.style.left) || 0;
         e.preventDefault();
+        e.stopPropagation();
     });
     
     document.addEventListener('mousemove', function(e) {
         if (!isDragging) return;
         
         const moveDistance = Math.abs(e.clientX - startX);
-        if (moveDistance > 5) {
+        if (moveDistance > 3) {
             hasMoved = true;
         }
         
@@ -8375,7 +8377,7 @@ function makeGradientControlDraggable(control) {
         
         const rect = preview.getBoundingClientRect();
         const x = e.clientX - rect.left;
-        // 그라데이션 바의 경계 내에서만 이동하도록 제한
+        // 그라데이션 바의 경계 내에서만 이동하도록 제한 (0% ~ 100%)
         const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
         
         control.style.left = `${percent}%`;
@@ -8383,6 +8385,7 @@ function makeGradientControlDraggable(control) {
         
         updateGradientPreview();
         e.preventDefault();
+        e.stopPropagation();
     });
     
     document.addEventListener('mouseup', function(e) {
@@ -8397,6 +8400,8 @@ function makeGradientControlDraggable(control) {
                 }
             }
             hasMoved = false;
+            e.preventDefault();
+            e.stopPropagation();
         }
     });
     
@@ -8421,7 +8426,7 @@ function makeGradientControlDraggable(control) {
         
         const touch = e.touches[0];
         const moveDistance = Math.abs(touch.clientX - startX);
-        if (moveDistance > 5) {
+        if (moveDistance > 3) {
             hasMoved = true;
         }
         
@@ -8430,7 +8435,7 @@ function makeGradientControlDraggable(control) {
         
         const rect = preview.getBoundingClientRect();
         const x = touch.clientX - rect.left;
-        // 그라데이션 바의 경계 내에서만 이동하도록 제한
+        // 그라데이션 바의 경계 내에서만 이동하도록 제한 (0% ~ 100%)
         const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
         
         control.style.left = `${percent}%`;
@@ -8438,6 +8443,7 @@ function makeGradientControlDraggable(control) {
         
         updateGradientPreview();
         e.preventDefault();
+        e.stopPropagation();
     });
     
     document.addEventListener('touchend', function(e) {

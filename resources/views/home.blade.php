@@ -158,7 +158,8 @@
                         
                         // 위젯 간격 설정 (컨테이너별)
                         $widgetSpacing = $container->widget_spacing ?? 3;
-                        $widgetSpacingClass = $isFullHeight ? 'mb-0' : 'mb-' . min(max($widgetSpacing, 0), 5);
+                        $widgetSpacingValue = min(max($widgetSpacing, 0), 5);
+                        $widgetSpacingClass = $isFullHeight ? 'mb-0 mt-0' : 'mb-' . $widgetSpacingValue . ' mt-' . $widgetSpacingValue;
                     @endphp
                     @if(!$isHidden)
                         @php
