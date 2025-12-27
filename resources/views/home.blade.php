@@ -176,9 +176,14 @@
                             @php
                                 $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
                                 // 세로 정렬이 center 또는 bottom일 때 위젯 래퍼에 align-self 추가
-                                if ($verticalAlign === 'center' && !$isFullHeight) {
-                                    $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'align-self: center;';
-                                } elseif ($verticalAlign === 'bottom' && !$isFullHeight) {
+                                // 이미지 위젯의 경우 width를 auto로 설정하여 align-self가 제대로 작동하도록 함
+                                if ($verticalAlign === 'center') {
+                                    if ($widget->type === 'image' || $widget->type === 'image_slide') {
+                                        $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'align-self: center; width: 100%;';
+                                    } else {
+                                        $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'align-self: center;';
+                                    }
+                                } elseif ($verticalAlign === 'bottom') {
                                     $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'align-self: flex-end;';
                                 }
                                 // 마지막 위젯이 아니면 간격 적용

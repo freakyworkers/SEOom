@@ -84,7 +84,7 @@
         $hasButtons = !empty($buttons);
         
         // 스타일 생성
-        $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
+        $blockStyle = "width: 100%; padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
         
         if ($backgroundType === 'color') {
             $blockStyle .= " background-color: {$backgroundColor};";

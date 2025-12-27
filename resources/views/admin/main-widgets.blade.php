@@ -8106,9 +8106,21 @@ function openGradientModal(containerId, type) {
     const angleSliderInput = document.getElementById('gradient_modal_angle_slider');
     
     if (startColorInput) startColorInput.value = startParsed.hex;
-    if (startAlphaInput) startAlphaInput.value = Math.round(startParsed.alpha * 100);
+    if (startAlphaInput) {
+        startAlphaInput.value = Math.round(startParsed.alpha * 100);
+        const startAlphaValueDisplay = document.getElementById('gradient_start_alpha_value');
+        if (startAlphaValueDisplay) {
+            startAlphaValueDisplay.textContent = Math.round(startParsed.alpha * 100) + '%';
+        }
+    }
     if (endColorInput) endColorInput.value = endParsed.hex;
-    if (endAlphaInput) endAlphaInput.value = Math.round(endParsed.alpha * 100);
+    if (endAlphaInput) {
+        endAlphaInput.value = Math.round(endParsed.alpha * 100);
+        const endAlphaValueDisplay = document.getElementById('gradient_end_alpha_value');
+        if (endAlphaValueDisplay) {
+            endAlphaValueDisplay.textContent = Math.round(endParsed.alpha * 100) + '%';
+        }
+    }
     if (angleInput) angleInput.value = angle;
     if (angleSliderInput) angleSliderInput.value = angle;
     
@@ -8201,6 +8213,7 @@ function updateGradientColorControl(type) {
     const colorInput = document.getElementById(`gradient_modal_${type}_color`);
     const alphaInput = document.getElementById(`gradient_modal_${type}_alpha`);
     const display = document.getElementById(`gradient_${type}_color_display`);
+    const alphaValueDisplay = document.getElementById(`gradient_${type}_alpha_value`);
     
     if (!colorInput || !alphaInput) return;
     
@@ -8211,6 +8224,11 @@ function updateGradientColorControl(type) {
     // 표시 업데이트
     if (display) {
         display.style.background = rgba;
+    }
+    
+    // 투명도 값 표시 업데이트
+    if (alphaValueDisplay) {
+        alphaValueDisplay.textContent = alphaInput.value + '%';
     }
     
     // 미리보기 업데이트
@@ -8636,9 +8654,21 @@ function openBlockGradientModal(blockId) {
     const angleSliderInput = document.getElementById('gradient_modal_angle_slider');
     
     if (startColorInput) startColorInput.value = startParsed.hex;
-    if (startAlphaInput) startAlphaInput.value = Math.round(startParsed.alpha * 100);
+    if (startAlphaInput) {
+        startAlphaInput.value = Math.round(startParsed.alpha * 100);
+        const startAlphaValueDisplay = document.getElementById('gradient_start_alpha_value');
+        if (startAlphaValueDisplay) {
+            startAlphaValueDisplay.textContent = Math.round(startParsed.alpha * 100) + '%';
+        }
+    }
     if (endColorInput) endColorInput.value = endParsed.hex;
-    if (endAlphaInput) endAlphaInput.value = Math.round(endParsed.alpha * 100);
+    if (endAlphaInput) {
+        endAlphaInput.value = Math.round(endParsed.alpha * 100);
+        const endAlphaValueDisplay = document.getElementById('gradient_end_alpha_value');
+        if (endAlphaValueDisplay) {
+            endAlphaValueDisplay.textContent = Math.round(endParsed.alpha * 100) + '%';
+        }
+    }
     if (angleInput) angleInput.value = angle;
     if (angleSliderInput) angleSliderInput.value = angle;
     
@@ -8744,9 +8774,21 @@ function openButtonGradientModal(buttonId) {
     const angleSliderInput = document.getElementById('gradient_modal_angle_slider');
     
     if (startColorInput) startColorInput.value = startParsed.hex;
-    if (startAlphaInput) startAlphaInput.value = Math.round(startParsed.alpha * 100);
+    if (startAlphaInput) {
+        startAlphaInput.value = Math.round(startParsed.alpha * 100);
+        const startAlphaValueDisplay = document.getElementById('gradient_start_alpha_value');
+        if (startAlphaValueDisplay) {
+            startAlphaValueDisplay.textContent = Math.round(startParsed.alpha * 100) + '%';
+        }
+    }
     if (endColorInput) endColorInput.value = endParsed.hex;
-    if (endAlphaInput) endAlphaInput.value = Math.round(endParsed.alpha * 100);
+    if (endAlphaInput) {
+        endAlphaInput.value = Math.round(endParsed.alpha * 100);
+        const endAlphaValueDisplay = document.getElementById('gradient_end_alpha_value');
+        if (endAlphaValueDisplay) {
+            endAlphaValueDisplay.textContent = Math.round(endParsed.alpha * 100) + '%';
+        }
+    }
     if (angleInput) angleInput.value = angle;
     if (angleSliderInput) angleSliderInput.value = angle;
     
@@ -8976,11 +9018,7 @@ function hexToRgb(hex) {
                 <!-- 그라데이션 미리보기 바 -->
                 <div class="mb-4" style="position: relative;">
                     <div id="gradient_modal_preview" 
-                         style="width: 100%; height: 120px; border: 1px solid #dee2e6; border-radius: 4px; background: linear-gradient(90deg, rgba(255,255,255,1), rgba(0,0,0,1)); position: relative; background-image: 
-                         repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0),
-                         repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0);
-                         background-position: 0 0, 10px 10px;
-                         background-size: 20px 20px;">
+                         style="width: 100%; height: 120px; border: 1px solid #dee2e6; border-radius: 4px; background: linear-gradient(90deg, rgba(255,255,255,1), rgba(0,0,0,1)); position: relative;">
                         <!-- 그라데이션 바 위에 색상 컨트롤 배치 -->
                         <div id="gradient_color_controls" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;">
                             <!-- 시작 색상 컨트롤 -->
@@ -8994,6 +9032,18 @@ function hexToRgb(hex) {
                                        value="#ffffff"
                                        onchange="updateGradientColorControl('start')"
                                        style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0;">
+                                <!-- 시작 색상 투명도 슬라이더 -->
+                                <div style="position: absolute; top: 52px; left: 0; width: 60px; background: white; border: 1px solid #dee2e6; border-radius: 4px; padding: 2px;">
+                                    <input type="range" 
+                                           id="gradient_modal_start_alpha" 
+                                           min="0" 
+                                           max="100" 
+                                           value="100"
+                                           onchange="updateGradientColorControl('start')"
+                                           style="width: 100%; margin: 0;"
+                                           title="투명도">
+                                    <small style="font-size: 0.6rem; display: block; text-align: center;" id="gradient_start_alpha_value">100%</small>
+                                </div>
                             </div>
                             
                             <!-- 중간 색상 컨트롤들 -->
@@ -9010,6 +9060,18 @@ function hexToRgb(hex) {
                                        value="#000000"
                                        onchange="updateGradientColorControl('end')"
                                        style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0;">
+                                <!-- 끝 색상 투명도 슬라이더 -->
+                                <div style="position: absolute; top: 52px; left: 0; width: 60px; background: white; border: 1px solid #dee2e6; border-radius: 4px; padding: 2px;">
+                                    <input type="range" 
+                                           id="gradient_modal_end_alpha" 
+                                           min="0" 
+                                           max="100" 
+                                           value="100"
+                                           onchange="updateGradientColorControl('end')"
+                                           style="width: 100%; margin: 0;"
+                                           title="투명도">
+                                    <small style="font-size: 0.6rem; display: block; text-align: center;" id="gradient_end_alpha_value">100%</small>
+                                </div>
                             </div>
                         </div>
                     </div>
