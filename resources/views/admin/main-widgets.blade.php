@@ -8208,6 +8208,7 @@ function updateGradientColorControl(type) {
     const alphaInput = document.getElementById(`gradient_modal_${type}_alpha`);
     const display = document.getElementById(`gradient_${type}_color_display`);
     const alphaValueDisplay = document.getElementById(`gradient_${type}_alpha_value`);
+    const iconDisplay = document.getElementById(`gradient_${type}_icon_display`);
     
     if (!colorInput || !alphaInput) return;
     
@@ -8218,6 +8219,11 @@ function updateGradientColorControl(type) {
     // 표시 업데이트
     if (display) {
         display.style.background = rgba;
+    }
+    
+    // 아이콘 표시 업데이트
+    if (iconDisplay) {
+        iconDisplay.style.background = rgba;
     }
     
     // 투명도 값 표시 업데이트
@@ -8351,7 +8357,7 @@ function makeGradientControlDraggable(control) {
             return;
         }
         // 색상 표시 영역(파란 박스)을 클릭한 경우 드래그 시작
-        const colorDisplay = e.target.closest('[onclick*="selectGradientControl"]');
+        const colorDisplay = e.target.closest('.gradient-color-display');
         if (colorDisplay) {
             // 색상 표시 영역을 클릭한 경우 드래그 시작
             isDragging = true;
@@ -8419,7 +8425,15 @@ function makeGradientControlDraggable(control) {
         if (e.target.type === 'color' || e.target.type === 'range' || e.target.closest('input[type="color"]') || e.target.closest('input[type="range"]')) {
             return;
         }
-        if (e.target.closest('[onclick*="selectGradientControl"]')) {
+        const colorDisplay = e.target.closest('.gradient-color-display');
+        if (colorDisplay) {
+            isDragging = true;
+            hasMoved = false;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startLeft = parseFloat(control.style.left) || 0;
+            e.preventDefault();
+            e.stopPropagation();
             return;
         }
         isDragging = true;
@@ -8428,6 +8442,7 @@ function makeGradientControlDraggable(control) {
         startX = touch.clientX;
         startLeft = parseFloat(control.style.left) || 0;
         e.preventDefault();
+        e.stopPropagation();
     });
     
     document.addEventListener('touchmove', function(e) {
@@ -8479,11 +8494,24 @@ function selectGradientControl(control, type) {
     document.querySelectorAll('.gradient-color-control').forEach(c => {
         c.style.border = '';
     });
+    document.querySelectorAll('.gradient-control-icon').forEach(icon => {
+        icon.style.border = '';
+    });
     
     // 새 선택
     selectedGradientControl = control;
     selectedGradientControlType = type;
     control.style.border = '2px solid #0d6efd';
+    
+    // 시작/끝 색상 아이콘 표시
+    const startIcon = document.getElementById('gradient_start_icon');
+    const endIcon = document.getElementById('gradient_end_icon');
+    if (type === 'start' || type === 'end') {
+        if (startIcon) startIcon.style.display = 'block';
+        if (endIcon) endIcon.style.display = 'block';
+        if (type === 'start' && startIcon) startIcon.style.border = '2px solid #0d6efd';
+        if (type === 'end' && endIcon) endIcon.style.border = '2px solid #0d6efd';
+    }
     
     // 설정 패널 업데이트 및 표시
     const settingsPanel = document.getElementById('gradient_selected_control_settings');

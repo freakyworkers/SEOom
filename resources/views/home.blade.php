@@ -141,6 +141,14 @@
                             $hiddenColumns[] = $startCol + $j;
                         }
                     }
+                    // 컨테이너 내 모든 칸의 마지막 위젯인지 확인하기 위해 각 칸의 위젯 개수 확인
+                    $maxWidgetCountPerColumn = 0;
+                    for ($i = 0; $i < $container->columns; $i++) {
+                        if (!in_array($i, $hiddenColumns)) {
+                            $colWidgets = $container->widgets->where('column_index', $i)->sortBy('order');
+                            $maxWidgetCountPerColumn = max($maxWidgetCountPerColumn, $colWidgets->count());
+                        }
+                    }
                 @endphp
                 @for($i = 0; $i < $container->columns; $i++)
                     @php
@@ -181,7 +189,7 @@
                             @php
                                 $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
                                 // 모든 위젯이 칸 영역의 가로 100%를 활용하도록 설정
-                                $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'width: 100%;';
+                                $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'width: 100%; max-width: 100%;';
                                 // 세로 정렬이 center일 때 위젯 래퍼를 flex로 만들어서 중앙 정렬이 작동하도록 함
                                 if ($verticalAlign === 'center' && !$isFullHeight) {
                                     $widgetWrapperStyle .= ' display: flex; align-items: center; justify-content: center;';
@@ -191,12 +199,15 @@
                                 // 마지막 위젯이 아니면 하단 간격 적용, 첫 번째 위젯이 아니면 상단 간격 적용
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
                                 $isFirstWidget = $index === 0;
+                                // 컨테이너 내 모든 칸의 마지막 위젯인지 확인 (모든 칸의 위젯 개수가 같고, 현재 위젯이 마지막이면 하단 마진 제거)
+                                $isLastWidgetInAllColumns = ($isLastWidget && $columnWidgets->count() === $maxWidgetCountPerColumn && $maxWidgetCountPerColumn > 0);
                                 $widgetMarginClass = '';
                                 if (!$isFullHeight) {
                                     if (!$isFirstWidget) {
                                         $widgetMarginClass .= $widgetSpacingTopClass . ' ';
                                     }
-                                    if (!$isLastWidget) {
+                                    // 마지막 위젯이 아니거나, 모든 칸의 마지막 위젯이 아니면 하단 마진 적용
+                                    if (!$isLastWidget || !$isLastWidgetInAllColumns) {
                                         $widgetMarginClass .= $widgetSpacingClass;
                                     }
                                 }
