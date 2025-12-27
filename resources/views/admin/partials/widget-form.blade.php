@@ -244,6 +244,7 @@
         <label for="widget_block_background_type" class="form-label">배경</label>
         <select class="form-select" id="widget_block_background_type" name="block_background_type" onchange="handleBlockBackgroundTypeChange()">
             <option value="color">컬러</option>
+            <option value="gradient">그라데이션</option>
             <option value="image">이미지</option>
         </select>
     </div>
@@ -254,6 +255,29 @@
                id="widget_block_background_color" 
                name="block_background_color" 
                value="#007bff">
+    </div>
+    <div class="mb-3" id="widget_block_gradient_container" style="display: none;">
+        <label class="form-label">그라데이션 설정</label>
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <div id="widget_block_gradient_preview" 
+                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #ffffff, #000000);"
+                 onclick="openBlockGradientModal('widget_block')"
+                 title="그라데이션 설정">
+            </div>
+            <input type="hidden" 
+                   id="widget_block_background_gradient_start"
+                   name="block_background_gradient_start" 
+                   value="#ffffff">
+            <input type="hidden" 
+                   id="widget_block_background_gradient_end"
+                   name="block_background_gradient_end" 
+                   value="#000000">
+            <input type="hidden" 
+                   id="widget_block_background_gradient_angle"
+                   name="block_background_gradient_angle" 
+                   value="90">
+        </div>
+        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
     </div>
     <div class="mb-3">
         <label for="widget_block_font_color" class="form-label">폰트 컬러</label>

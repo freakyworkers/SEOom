@@ -237,7 +237,7 @@
                                                                    min="0" 
                                                                    max="100" 
                                                                    value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}"
-                                                                   style="width: 80px;"
+                                                                   style="width: 80px; background: #6c757d;"
                                                                    onchange="updateContainerBackgroundColor({{ $container->id }})"
                                                                    title="투명도">
                                                             <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_color_alpha_value_{{ $container->id }}">{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}%</small>
@@ -262,20 +262,48 @@
                                                                    value="{{ $container->background_gradient_angle ?? 90 }}">
                                                         </div>
                                                         <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px; flex-wrap: wrap;">
-                                                            <input type="text" 
-                                                                   class="form-control form-control-sm" 
+                                                            <button type="button" 
+                                                                    class="btn btn-sm btn-outline-secondary" 
+                                                                    onclick="document.getElementById('container_background_image_file_{{ $container->id }}').click()"
+                                                                    style="white-space: nowrap;">
+                                                                <i class="bi bi-image"></i> 이미지 선택
+                                                            </button>
+                                                            <input type="file" 
+                                                                   id="container_background_image_file_{{ $container->id }}"
+                                                                   accept="image/*" 
+                                                                   style="display: none;"
+                                                                   onchange="handleContainerBackgroundImageUpload({{ $container->id }}, this)">
+                                                            <input type="hidden" 
                                                                    id="container_background_image_url_{{ $container->id }}"
-                                                                   value="{{ $container->background_image_url ?? '' }}"
-                                                                   placeholder="이미지 URL"
-                                                                   style="width: 200px;"
-                                                                   onchange="updateContainerBackgroundImage({{ $container->id }})">
+                                                                   value="{{ $container->background_image_url ?? '' }}">
+                                                            @if($container->background_image_url)
+                                                                <div id="container_background_image_preview_{{ $container->id }}" style="display: inline-block;">
+                                                                    <img src="{{ $container->background_image_url }}" alt="미리보기" style="max-width: 60px; max-height: 60px; object-fit: cover; border-radius: 4px;">
+                                                                    <button type="button" 
+                                                                            class="btn btn-sm btn-danger ms-1" 
+                                                                            onclick="removeContainerBackgroundImage({{ $container->id }})"
+                                                                            title="이미지 삭제">
+                                                                        <i class="bi bi-x"></i>
+                                                                    </button>
+                                                                </div>
+                                                            @else
+                                                                <div id="container_background_image_preview_{{ $container->id }}" style="display: none;">
+                                                                    <img id="container_background_image_preview_img_{{ $container->id }}" src="" alt="미리보기" style="max-width: 60px; max-height: 60px; object-fit: cover; border-radius: 4px;">
+                                                                    <button type="button" 
+                                                                            class="btn btn-sm btn-danger ms-1" 
+                                                                            onclick="removeContainerBackgroundImage({{ $container->id }})"
+                                                                            title="이미지 삭제">
+                                                                        <i class="bi bi-x"></i>
+                                                                    </button>
+                                                                </div>
+                                                            @endif
                                                             <input type="range" 
                                                                    class="form-range" 
                                                                    id="container_background_image_alpha_{{ $container->id }}"
                                                                    min="0" 
                                                                    max="100" 
                                                                    value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}"
-                                                                   style="width: 80px;"
+                                                                   style="width: 80px; background: #6c757d;"
                                                                    onchange="updateContainerBackgroundImage({{ $container->id }})"
                                                                    title="투명도">
                                                             <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_image_alpha_value_{{ $container->id }}">{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}%</small>
@@ -409,6 +437,7 @@
                                                                min="0" 
                                                                max="100" 
                                                                value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}"
+                                                               style="background: #6c757d;"
                                                                onchange="updateContainerBackgroundColorMobile({{ $container->id }})">
                                                         <div class="d-flex justify-content-between">
                                                             <small class="text-muted" style="font-size: 0.7rem;">0%</small>
@@ -437,25 +466,53 @@
                                                                value="{{ $container->background_gradient_angle ?? 90 }}">
                                                     </div>
                                                     <div class="col-12" id="container_background_image_mobile_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'block' : 'none' }};">
-                                                        <label class="form-label small mb-1">이미지 URL</label>
-                                                        <input type="text" 
-                                                               class="form-control form-control-sm mb-2" 
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-outline-secondary mb-2" 
+                                                                onclick="document.getElementById('container_background_image_file_mobile_{{ $container->id }}').click()"
+                                                                style="white-space: nowrap;">
+                                                            <i class="bi bi-image"></i> 이미지 선택
+                                                        </button>
+                                                        <input type="file" 
+                                                               id="container_background_image_file_mobile_{{ $container->id }}"
+                                                               accept="image/*" 
+                                                               style="display: none;"
+                                                               onchange="handleContainerBackgroundImageUpload({{ $container->id }}, this)">
+                                                        <input type="hidden" 
                                                                id="container_background_image_url_mobile_{{ $container->id }}"
-                                                               value="{{ $container->background_image_url ?? '' }}"
-                                                               placeholder="https://example.com/image.jpg"
-                                                               onchange="updateContainerBackgroundImageMobile({{ $container->id }})">
-                                                        <label class="form-label small mb-1">투명도</label>
+                                                               value="{{ $container->background_image_url ?? '' }}">
+                                                        @if($container->background_image_url)
+                                                            <div id="container_background_image_preview_mobile_{{ $container->id }}" style="display: block; margin-top: 8px;">
+                                                                <img src="{{ $container->background_image_url }}" alt="미리보기" style="max-width: 60px; max-height: 60px; object-fit: cover; border-radius: 4px;">
+                                                                <button type="button" 
+                                                                        class="btn btn-sm btn-danger ms-1" 
+                                                                        onclick="removeContainerBackgroundImage({{ $container->id }})"
+                                                                        title="이미지 삭제">
+                                                                    <i class="bi bi-x"></i>
+                                                                </button>
+                                                            </div>
+                                                        @else
+                                                            <div id="container_background_image_preview_mobile_{{ $container->id }}" style="display: none; margin-top: 8px;">
+                                                                <img id="container_background_image_preview_img_mobile_{{ $container->id }}" src="" alt="미리보기" style="max-width: 60px; max-height: 60px; object-fit: cover; border-radius: 4px;">
+                                                                <button type="button" 
+                                                                        class="btn btn-sm btn-danger ms-1" 
+                                                                        onclick="removeContainerBackgroundImage({{ $container->id }})"
+                                                                        title="이미지 삭제">
+                                                                    <i class="bi bi-x"></i>
+                                                                </button>
+                                                            </div>
+                                                        @endif
+                                                        <label class="form-label small mb-1 mt-2">투명도</label>
                                                         <input type="range" 
                                                                class="form-range" 
                                                                id="container_background_image_alpha_mobile_{{ $container->id }}"
                                                                min="0" 
                                                                max="100" 
                                                                value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}"
+                                                               style="background: #6c757d;"
                                                                onchange="updateContainerBackgroundImageMobile({{ $container->id }})">
                                                         <div class="d-flex justify-content-between">
                                                             <small class="text-muted" style="font-size: 0.7rem;">0%</small>
                                                             <small class="text-muted" id="container_background_image_alpha_value_mobile_{{ $container->id }}" style="font-size: 0.7rem;">{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}%</small>
-                                                            <small class="text-muted" style="font-size: 0.7rem;">100%</small>
                                                         </div>
                                                         <input type="hidden" 
                                                                id="container_background_image_alpha_hidden_mobile_{{ $container->id }}"
@@ -1027,33 +1084,30 @@
                             <div class="d-flex justify-content-between">
                                 <small class="text-muted" style="font-size: 0.7rem;">0%</small>
                                 <small class="text-muted" id="edit_main_widget_block_background_color_alpha_value" style="font-size: 0.7rem;">100%</small>
-                                <small class="text-muted" style="font-size: 0.7rem;">100%</small>
                             </div>
                         </div>
                         <div class="mb-3" id="edit_main_widget_block_gradient_container" style="display: none;">
-                            <label for="edit_main_widget_block_gradient_start" class="form-label">시작 색상</label>
-                            <input type="color" 
-                                   class="form-control form-control-color mb-2" 
-                                   id="edit_main_widget_block_gradient_start" 
-                                   name="block_background_gradient_start" 
-                                   value="#ffffff">
-                            <label for="edit_main_widget_block_gradient_end" class="form-label">끝 색상</label>
-                            <input type="color" 
-                                   class="form-control form-control-color mb-2" 
-                                   id="edit_main_widget_block_gradient_end" 
-                                   name="block_background_gradient_end" 
-                                   value="#000000">
-                            <label for="edit_main_widget_block_gradient_angle" class="form-label">각도 <i class="bi bi-compass" style="font-size: 0.9rem;" title="각도"></i></label>
-                            <input type="number" 
-                                   class="form-control" 
-                                   id="edit_main_widget_block_gradient_angle" 
-                                   name="block_background_gradient_angle" 
-                                   value="90"
-                                   min="0"
-                                   max="360"
-                                   step="1"
-                                   placeholder="90">
-                            <small class="text-muted">0도: 좌→우, 90도: 상→하, 180도: 우→좌, 270도: 하→상</small>
+                            <label class="form-label">그라데이션 설정</label>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <div id="edit_main_widget_block_gradient_preview" 
+                                     style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #ffffff, #000000);"
+                                     onclick="openBlockGradientModal('edit_main_widget_block')"
+                                     title="그라데이션 설정">
+                                </div>
+                                <input type="hidden" 
+                                       id="edit_main_widget_block_gradient_start"
+                                       name="block_background_gradient_start" 
+                                       value="#ffffff">
+                                <input type="hidden" 
+                                       id="edit_main_widget_block_gradient_end"
+                                       name="block_background_gradient_end" 
+                                       value="#000000">
+                                <input type="hidden" 
+                                       id="edit_main_widget_block_gradient_angle"
+                                       name="block_background_gradient_angle" 
+                                       value="90">
+                            </div>
+                            <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
                         </div>
                         <div class="mb-3">
                             <label for="edit_main_widget_block_font_color" class="form-label">폰트 컬러</label>
@@ -1096,7 +1150,6 @@
                             <div class="d-flex justify-content-between">
                                 <small class="text-muted" style="font-size: 0.7rem;">0%</small>
                                 <small class="text-muted" id="edit_main_widget_block_background_image_alpha_value" style="font-size: 0.7rem;">100%</small>
-                                <small class="text-muted" style="font-size: 0.7rem;">100%</small>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -2229,6 +2282,142 @@ function updateContainerBackgroundColor(containerId) {
     });
 }
 
+// 컨테이너 배경 이미지 업로드 처리
+function handleContainerBackgroundImageUpload(containerId, fileInput) {
+    if (!fileInput.files || !fileInput.files[0]) return;
+    
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('background_type', 'image');
+    formData.append('background_image_file', file);
+    
+    const alphaInput = document.getElementById(`container_background_image_alpha_${containerId}`);
+    const alpha = alphaInput ? alphaInput.value : 100;
+    formData.append('background_image_alpha', alpha);
+    formData.append('_method', 'PUT');
+    
+    // 현재 컨테이너 설정 유지
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (containerItem) {
+        const columnsSelect = containerItem.querySelector('select[onchange*="updateContainerColumns"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        }
+        const verticalAlignSelect = containerItem.querySelector('select[onchange*="updateContainerVerticalAlign"]');
+        if (verticalAlignSelect) {
+            formData.append('vertical_align', verticalAlignSelect.value);
+        }
+        const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
+        if (widgetSpacingSelect) {
+            formData.append('widget_spacing', widgetSpacingSelect.value);
+        }
+    }
+    
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    if (fullWidthCheckbox) {
+        formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+    }
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
+    
+    fetch('{{ route("admin.main-widgets.containers.update", ["site" => $site->slug, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 이미지 URL 업데이트
+            const imageUrlInput = document.getElementById(`container_background_image_url_${containerId}`);
+            if (imageUrlInput && data.container && data.container.background_image_url) {
+                imageUrlInput.value = data.container.background_image_url;
+            }
+            
+            // 미리보기 업데이트
+            const preview = document.getElementById(`container_background_image_preview_${containerId}`);
+            const previewImg = document.getElementById(`container_background_image_preview_img_${containerId}`);
+            if (preview && previewImg && data.container && data.container.background_image_url) {
+                previewImg.src = data.container.background_image_url;
+                preview.style.display = 'inline-block';
+            }
+        } else {
+            alert('이미지 업로드에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('이미지 업로드 중 오류가 발생했습니다.');
+    });
+}
+
+// 컨테이너 배경 이미지 삭제
+function removeContainerBackgroundImage(containerId) {
+    if (!confirm('이미지를 삭제하시겠습니까?')) return;
+    
+    const formData = new FormData();
+    formData.append('background_type', 'none');
+    formData.append('_method', 'PUT');
+    
+    // 현재 컨테이너 설정 유지
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (containerItem) {
+        const columnsSelect = containerItem.querySelector('select[onchange*="updateContainerColumns"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        }
+        const verticalAlignSelect = containerItem.querySelector('select[onchange*="updateContainerVerticalAlign"]');
+        if (verticalAlignSelect) {
+            formData.append('vertical_align', verticalAlignSelect.value);
+        }
+        const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
+        if (widgetSpacingSelect) {
+            formData.append('widget_spacing', widgetSpacingSelect.value);
+        }
+    }
+    
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    if (fullWidthCheckbox) {
+        formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+    }
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
+    
+    fetch('{{ route("admin.main-widgets.containers.update", ["site" => $site->slug, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 이미지 URL 초기화
+            const imageUrlInput = document.getElementById(`container_background_image_url_${containerId}`);
+            if (imageUrlInput) imageUrlInput.value = '';
+            
+            // 미리보기 숨기기
+            const preview = document.getElementById(`container_background_image_preview_${containerId}`);
+            if (preview) preview.style.display = 'none';
+        } else {
+            alert('이미지 삭제에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('이미지 삭제 중 오류가 발생했습니다.');
+    });
+}
+
 // 컨테이너 배경 이미지 업데이트 (투명도 포함)
 function updateContainerBackgroundImage(containerId) {
     const imageInput = document.getElementById(`container_background_image_url_${containerId}`);
@@ -2236,7 +2425,7 @@ function updateContainerBackgroundImage(containerId) {
     const alphaValue = document.getElementById(`container_background_image_alpha_value_${containerId}`);
     const alphaHidden = document.getElementById(`container_background_image_alpha_hidden_${containerId}`);
     
-    const imageUrl = imageInput.value;
+    const imageUrl = imageInput ? imageInput.value : '';
     const alpha = alphaInput.value;
     
     if (alphaValue) alphaValue.textContent = alpha + '%';
@@ -2244,7 +2433,9 @@ function updateContainerBackgroundImage(containerId) {
     
     const formData = new FormData();
     formData.append('background_type', 'image');
-    formData.append('background_image_url', imageUrl);
+    if (imageUrl) {
+        formData.append('background_image_url', imageUrl);
+    }
     formData.append('background_image_alpha', alpha);
     formData.append('_method', 'PUT');
     
@@ -2941,14 +3132,16 @@ function addMainWidget() {
                 const buttonGradientStart = buttonCard.querySelector('.block-button-gradient-start')?.value || buttonBackgroundColor;
                 const buttonGradientEnd = buttonCard.querySelector('.block-button-gradient-end')?.value || buttonHoverBackgroundColor;
                 const buttonGradientAngle = buttonCard.querySelector('.block-button-gradient-angle')?.value || '90';
-                const buttonOpacity = buttonCard.querySelector('.block-button-opacity')?.value || '1.0';
+                const buttonOpacityRaw = buttonCard.querySelector('.block-button-opacity')?.value || '100';
+                const buttonOpacity = (parseFloat(buttonOpacityRaw) / 100).toFixed(1);
                 
                 // 호버 배경 타입 및 그라데이션 설정
                 const buttonHoverBackgroundType = buttonCard.querySelector('.block-button-hover-background-type')?.value || 'color';
                 const buttonHoverGradientStart = buttonCard.querySelector('.block-button-hover-gradient-start')?.value || buttonHoverBackgroundColor;
                 const buttonHoverGradientEnd = buttonCard.querySelector('.block-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
                 const buttonHoverGradientAngle = buttonCard.querySelector('.block-button-hover-gradient-angle')?.value || '90';
-                const buttonHoverOpacity = buttonCard.querySelector('.block-button-hover-opacity')?.value || '1.0';
+                const buttonHoverOpacityRaw = buttonCard.querySelector('.block-button-hover-opacity')?.value || '100';
+                const buttonHoverOpacity = (parseFloat(buttonHoverOpacityRaw) / 100).toFixed(1);
                 
                 buttons.push({
                     text: buttonText,
@@ -3063,14 +3256,16 @@ function addMainWidget() {
                     const buttonGradientStart = buttonCard.querySelector('.block-slide-button-gradient-start')?.value || buttonBackgroundColor;
                     const buttonGradientEnd = buttonCard.querySelector('.block-slide-button-gradient-end')?.value || buttonHoverBackgroundColor;
                     const buttonGradientAngle = buttonCard.querySelector('.block-slide-button-gradient-angle')?.value || '90';
-                    const buttonOpacity = buttonCard.querySelector('.block-slide-button-opacity')?.value || '1.0';
+                    const buttonOpacityRaw = buttonCard.querySelector('.block-slide-button-opacity')?.value || '100';
+                    const buttonOpacity = (parseFloat(buttonOpacityRaw) / 100).toFixed(1);
                     
                     // 호버 배경 타입 및 그라데이션 설정
                     const buttonHoverBackgroundType = buttonCard.querySelector('.block-slide-button-hover-background-type')?.value || 'color';
                     const buttonHoverGradientStart = buttonCard.querySelector('.block-slide-button-hover-gradient-start')?.value || buttonHoverBackgroundColor;
                     const buttonHoverGradientEnd = buttonCard.querySelector('.block-slide-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
                     const buttonHoverGradientAngle = buttonCard.querySelector('.block-slide-button-hover-gradient-angle')?.value || '90';
-                    const buttonHoverOpacity = buttonCard.querySelector('.block-slide-button-hover-opacity')?.value || '1.0';
+                    const buttonHoverOpacityRaw = buttonCard.querySelector('.block-slide-button-hover-opacity')?.value || '100';
+                    const buttonHoverOpacity = (parseFloat(buttonHoverOpacityRaw) / 100).toFixed(1);
                     
                     buttons.push({
                         text: buttonText,
@@ -3706,7 +3901,10 @@ function editMainWidget(widgetId) {
                                     }
                                 }
                                 if (buttonCard.querySelector('.edit-main-block-button-opacity')) {
-                                    buttonCard.querySelector('.edit-main-block-button-opacity').value = button.opacity !== undefined ? button.opacity : '1.0';
+                                    const opacityValue = button.opacity !== undefined ? Math.round(button.opacity * 100) : 100;
+                                    buttonCard.querySelector('.edit-main-block-button-opacity').value = opacityValue;
+                                    const opacityValueDisplay = buttonCard.querySelector(`#edit_main_block_button_${editMainBlockButtonIndex}_opacity_value`);
+                                    if (opacityValueDisplay) opacityValueDisplay.textContent = opacityValue + '%';
                                 }
                                 
                                 if (buttonCard.querySelector('.edit-main-block-button-hover-background-type')) {
@@ -3727,7 +3925,10 @@ function editMainWidget(widgetId) {
                                     }
                                 }
                                 if (buttonCard.querySelector('.edit-main-block-button-hover-opacity')) {
-                                    buttonCard.querySelector('.edit-main-block-button-hover-opacity').value = button.hover_opacity !== undefined ? button.hover_opacity : '1.0';
+                                    const hoverOpacityValue = button.hover_opacity !== undefined ? Math.round(button.hover_opacity * 100) : 100;
+                                    buttonCard.querySelector('.edit-main-block-button-hover-opacity').value = hoverOpacityValue;
+                                    const hoverOpacityValueDisplay = buttonCard.querySelector(`#edit_main_block_button_${editMainBlockButtonIndex}_hover_opacity_value`);
+                                    if (hoverOpacityValueDisplay) hoverOpacityValueDisplay.textContent = hoverOpacityValue + '%';
                                 }
                             }
                         }
@@ -4467,13 +4668,20 @@ function handleGalleryDisplayTypeChange() {
 function handleBlockBackgroundTypeChange() {
     const backgroundType = document.getElementById('widget_block_background_type')?.value;
     const colorContainer = document.getElementById('widget_block_color_container');
+    const gradientContainer = document.getElementById('widget_block_gradient_container');
     const imageContainer = document.getElementById('widget_block_image_container');
     
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'block';
         if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'image') {
         if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'block';
     }
 }
@@ -4657,24 +4865,33 @@ function addBlockSlideItem() {
             <div class="d-flex justify-content-between">
                 <small class="text-muted" style="font-size: 0.7rem;">0%</small>
                 <small class="text-muted" id="block_slide_${itemIndex}_background_color_alpha_value" style="font-size: 0.7rem;">100%</small>
-                <small class="text-muted" style="font-size: 0.7rem;">100%</small>
             </div>
         </div>
         <div class="mb-3 block-slide-gradient-container" id="block_slide_${itemIndex}_gradient_container" style="display: none;">
-            <label class="form-label">시작 색상</label>
-            <input type="color" class="form-control form-control-color mb-2 block-slide-background-gradient-start" name="block_slide[${itemIndex}][background_gradient_start]" value="#ffffff">
-            <label class="form-label">끝 색상</label>
-            <input type="color" class="form-control form-control-color mb-2 block-slide-background-gradient-end" name="block_slide[${itemIndex}][background_gradient_end]" value="#000000">
-            <label class="form-label">각도 <i class="bi bi-compass" style="font-size: 0.9rem;" title="각도"></i></label>
-            <input type="number" 
-                   class="form-control block-slide-background-gradient-angle" 
-                   name="block_slide[${itemIndex}][background_gradient_angle]" 
-                   value="90"
-                   min="0"
-                   max="360"
-                   step="1"
-                   placeholder="90">
-            <small class="text-muted">0도: 좌→우, 90도: 상→하, 180도: 우→좌, 270도: 하→상</small>
+            <label class="form-label">그라데이션 설정</label>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div id="block_slide_${itemIndex}_gradient_preview" 
+                     style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #ffffff, #000000);"
+                     onclick="openBlockGradientModal('block_slide_${itemIndex}')"
+                     title="그라데이션 설정">
+                </div>
+                <input type="hidden" 
+                       class="block-slide-background-gradient-start" 
+                       name="block_slide[${itemIndex}][background_gradient_start]" 
+                       id="block_slide_${itemIndex}_gradient_start"
+                       value="#ffffff">
+                <input type="hidden" 
+                       class="block-slide-background-gradient-end" 
+                       name="block_slide[${itemIndex}][background_gradient_end]" 
+                       id="block_slide_${itemIndex}_gradient_end"
+                       value="#000000">
+                <input type="hidden" 
+                       class="block-slide-background-gradient-angle" 
+                       name="block_slide[${itemIndex}][background_gradient_angle]" 
+                       id="block_slide_${itemIndex}_gradient_angle"
+                       value="90">
+            </div>
+            <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
         </div>
         <div class="mb-3"><label class="form-label">폰트 컬러</label>
             <input type="color" class="form-control form-control-color block-slide-font-color" name="block_slide[${itemIndex}][font_color]" value="#ffffff">
@@ -4701,7 +4918,6 @@ function addBlockSlideItem() {
             <div class="d-flex justify-content-between">
                 <small class="text-muted" style="font-size: 0.7rem;">0%</small>
                 <small class="text-muted" id="block_slide_${itemIndex}_background_image_alpha_value" style="font-size: 0.7rem;">100%</small>
-                <small class="text-muted" style="font-size: 0.7rem;">100%</small>
             </div>
         </div>
         <div class="mb-3">
@@ -4919,15 +5135,21 @@ function addBlockSlideButton(itemIndex) {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">투명도 (0.0 ~ 1.0)</label>
-                    <input type="number" 
-                           class="form-control block-slide-button-opacity" 
+                    <label class="form-label">투명도</label>
+                    <input type="range" 
+                           class="form-range block-slide-button-opacity" 
                            name="block_slide[${itemIndex}][buttons][${buttonIndex}][opacity]" 
-                           value="1.0" 
+                           id="block_slide_${itemIndex}_button_${buttonIndex}_opacity"
+                           value="100" 
                            min="0" 
-                           max="1" 
-                           step="0.1">
-                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
+                           max="100" 
+                           step="1"
+                           style="background: #6c757d;"
+                           onchange="document.getElementById('block_slide_${itemIndex}_button_${buttonIndex}_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="block_slide_${itemIndex}_button_${buttonIndex}_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -5007,15 +5229,21 @@ function addBlockSlideButton(itemIndex) {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">호버 투명도 (0.0 ~ 1.0)</label>
-                    <input type="number" 
-                           class="form-control block-slide-button-hover-opacity" 
+                    <label class="form-label">호버 투명도</label>
+                    <input type="range" 
+                           class="form-range block-slide-button-hover-opacity" 
                            name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_opacity]" 
-                           value="1.0" 
+                           id="block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity"
+                           value="100" 
                            min="0" 
-                           max="1" 
-                           step="0.1">
-                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
+                           max="100" 
+                           step="1"
+                           style="background: #6c757d;"
+                           onchange="document.getElementById('block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -5693,14 +5921,16 @@ function saveMainWidgetSettings() {
                 const buttonGradientStart = buttonCard.querySelector('.edit-main-block-button-gradient-start')?.value || buttonBackgroundColor;
                 const buttonGradientEnd = buttonCard.querySelector('.edit-main-block-button-gradient-end')?.value || buttonHoverBackgroundColor;
                 const buttonGradientAngle = buttonCard.querySelector('.edit-main-block-button-gradient-angle')?.value || '90';
-                const buttonOpacity = buttonCard.querySelector('.edit-main-block-button-opacity')?.value || '1.0';
+                const buttonOpacityRaw = buttonCard.querySelector('.edit-main-block-button-opacity')?.value || '100';
+                const buttonOpacity = (parseFloat(buttonOpacityRaw) / 100).toFixed(1);
                 
                 // 호버 배경 타입 및 그라데이션 설정
                 const buttonHoverBackgroundType = buttonCard.querySelector('.edit-main-block-button-hover-background-type')?.value || 'color';
                 const buttonHoverGradientStart = buttonCard.querySelector('.edit-main-block-button-hover-gradient-start')?.value || buttonHoverBackgroundColor;
                 const buttonHoverGradientEnd = buttonCard.querySelector('.edit-main-block-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
                 const buttonHoverGradientAngle = buttonCard.querySelector('.edit-main-block-button-hover-gradient-angle')?.value || '90';
-                const buttonHoverOpacity = buttonCard.querySelector('.edit-main-block-button-hover-opacity')?.value || '1.0';
+                const buttonHoverOpacityRaw = buttonCard.querySelector('.edit-main-block-button-hover-opacity')?.value || '100';
+                const buttonHoverOpacity = (parseFloat(buttonHoverOpacityRaw) / 100).toFixed(1);
                 
                 buttons.push({
                     text: buttonText,
@@ -7140,15 +7370,21 @@ function addBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">투명도 (0.0 ~ 1.0)</label>
-                    <input type="number" 
-                           class="form-control block-button-opacity" 
+                    <label class="form-label">투명도</label>
+                    <input type="range" 
+                           class="form-range block-button-opacity" 
                            name="block_buttons[${blockButtonIndex}][opacity]" 
-                           value="1.0" 
+                           id="block_button_${blockButtonIndex}_opacity"
+                           value="100" 
                            min="0" 
-                           max="1" 
-                           step="0.1">
-                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
+                           max="100" 
+                           step="1"
+                           style="background: #6c757d;"
+                           onchange="document.getElementById('block_button_${blockButtonIndex}_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="block_button_${blockButtonIndex}_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -7228,15 +7464,21 @@ function addBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">호버 투명도 (0.0 ~ 1.0)</label>
-                    <input type="number" 
-                           class="form-control block-button-hover-opacity" 
+                    <label class="form-label">호버 투명도</label>
+                    <input type="range" 
+                           class="form-range block-button-hover-opacity" 
                            name="block_buttons[${blockButtonIndex}][hover_opacity]" 
-                           value="1.0" 
+                           id="block_button_${blockButtonIndex}_hover_opacity"
+                           value="100" 
                            min="0" 
-                           max="1" 
-                           step="0.1">
-                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
+                           max="100" 
+                           step="1"
+                           style="background: #6c757d;"
+                           onchange="document.getElementById('block_button_${blockButtonIndex}_hover_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="block_button_${blockButtonIndex}_hover_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -7360,15 +7602,21 @@ function addEditMainBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">투명도 (0.0 ~ 1.0)</label>
-                    <input type="number" 
-                           class="form-control edit-main-block-button-opacity" 
+                    <label class="form-label">투명도</label>
+                    <input type="range" 
+                           class="form-range edit-main-block-button-opacity" 
                            name="edit_main_block_buttons[${editMainBlockButtonIndex}][opacity]" 
-                           value="1.0" 
+                           id="edit_main_block_button_${editMainBlockButtonIndex}_opacity"
+                           value="100" 
                            min="0" 
-                           max="1" 
-                           step="0.1">
-                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
+                           max="100" 
+                           step="1"
+                           style="background: #6c757d;"
+                           onchange="document.getElementById('edit_main_block_button_${editMainBlockButtonIndex}_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="edit_main_block_button_${editMainBlockButtonIndex}_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -7448,15 +7696,21 @@ function addEditMainBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">호버 투명도 (0.0 ~ 1.0)</label>
-                    <input type="number" 
-                           class="form-control edit-main-block-button-hover-opacity" 
+                    <label class="form-label">호버 투명도</label>
+                    <input type="range" 
+                           class="form-range edit-main-block-button-hover-opacity" 
                            name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_opacity]" 
-                           value="1.0" 
+                           id="edit_main_block_button_${editMainBlockButtonIndex}_hover_opacity"
+                           value="100" 
                            min="0" 
-                           max="1" 
-                           step="0.1">
-                    <small class="text-muted">0.0은 완전 투명, 1.0은 완전 불투명</small>
+                           max="100" 
+                           step="1"
+                           style="background: #6c757d;"
+                           onchange="document.getElementById('edit_main_block_button_${editMainBlockButtonIndex}_hover_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="edit_main_block_button_${editMainBlockButtonIndex}_hover_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -8159,6 +8413,12 @@ function removeGradientMiddleColor(button) {
 
 // 그라데이션 저장
 function saveGradient() {
+    // 블록 그라데이션인 경우
+    if (currentBlockGradientId) {
+        saveBlockGradient();
+        return;
+    }
+    
     if (!currentGradientContainerId) return;
     
     const startColor = document.getElementById('gradient_modal_start_color').value;
@@ -8223,6 +8483,167 @@ function saveGradient() {
     // 모달 닫기
     const modal = bootstrap.Modal.getInstance(document.getElementById('gradientModal'));
     modal.hide();
+}
+
+// 블록 그라데이션 모달 열기
+let currentBlockGradientId = null;
+
+function openBlockGradientModal(blockId) {
+    currentBlockGradientId = blockId;
+    
+    // 현재 값 가져오기
+    const startColorValue = document.getElementById(`${blockId}_gradient_start`)?.value || 
+                           document.getElementById(`${blockId}_background_gradient_start`)?.value || '#ffffff';
+    const endColorValue = document.getElementById(`${blockId}_gradient_end`)?.value || 
+                         document.getElementById(`${blockId}_background_gradient_end`)?.value || '#000000';
+    const angle = document.getElementById(`${blockId}_gradient_angle`)?.value || 
+                  document.getElementById(`${blockId}_background_gradient_angle`)?.value || 90;
+    
+    // RGBA 파싱
+    const startParsed = rgbaToHexAndAlpha(startColorValue);
+    const endParsed = rgbaToHexAndAlpha(endColorValue);
+    
+    // 모달에 값 설정
+    document.getElementById('gradient_modal_start_color').value = startParsed.hex;
+    document.getElementById('gradient_modal_start_alpha').value = Math.round(startParsed.alpha * 100);
+    document.getElementById('gradient_modal_end_color').value = endParsed.hex;
+    document.getElementById('gradient_modal_end_alpha').value = Math.round(endParsed.alpha * 100);
+    document.getElementById('gradient_modal_angle').value = angle;
+    document.getElementById('gradient_modal_angle_slider').value = angle;
+    
+    // 색상 컨트롤 업데이트
+    updateGradientColorControl('start');
+    updateGradientColorControl('end');
+    
+    // 시작/끝 컨트롤에 드래그 기능 추가
+    const startControl = document.getElementById('gradient_start_control');
+    const endControl = document.getElementById('gradient_end_control');
+    if (startControl) {
+        makeGradientControlDraggable(startControl);
+        startControl.addEventListener('click', function(e) {
+            if (e.target.type !== 'color') {
+                selectGradientControl(startControl, 'start');
+            }
+        });
+    }
+    if (endControl) {
+        makeGradientControlDraggable(endControl);
+        endControl.addEventListener('click', function(e) {
+            if (e.target.type !== 'color') {
+                selectGradientControl(endControl, 'end');
+            }
+        });
+    }
+    
+    // 그라데이션 바 클릭 이벤트 (새 중간 색상 추가)
+    const preview = document.getElementById('gradient_modal_preview');
+    if (preview) {
+        preview.addEventListener('click', function(e) {
+            if (e.target === preview || e.target.closest('#gradient_color_controls') === null) {
+                const rect = preview.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                addGradientMiddleColor(percent);
+            }
+        });
+    }
+    
+    // 중간 색상 초기화
+    const middleControlsContainer = document.getElementById('gradient_middle_controls');
+    if (middleControlsContainer) {
+        middleControlsContainer.innerHTML = '';
+    }
+    
+    // 미리보기 업데이트
+    updateGradientPreview();
+    
+    // 설정 패널 숨기기
+    const settingsPanel = document.getElementById('gradient_selected_control_settings');
+    if (settingsPanel) {
+        settingsPanel.style.display = 'none';
+    }
+    selectedGradientControl = null;
+    selectedGradientControlType = null;
+    
+    // 모달 표시
+    const modal = new bootstrap.Modal(document.getElementById('gradientModal'));
+    modal.show();
+}
+
+// 블록 그라데이션 저장 함수 수정
+function saveBlockGradient() {
+    if (!currentBlockGradientId) return;
+    
+    const startColor = document.getElementById('gradient_modal_start_color').value;
+    const startAlpha = document.getElementById('gradient_modal_start_alpha').value;
+    const endColor = document.getElementById('gradient_modal_end_color').value;
+    const endAlpha = document.getElementById('gradient_modal_end_alpha').value;
+    const angle = document.getElementById('gradient_modal_angle').value;
+    
+    // 중간 색상 수집
+    const middleColors = [];
+    const middleControls = document.querySelectorAll('.gradient-middle-control');
+    middleControls.forEach(control => {
+        const color = control.querySelector('input[type="color"]').value;
+        const alpha = control.querySelector('input[type="range"]').value;
+        const position = parseFloat(control.dataset.position) || 50;
+        middleColors.push({ color, alpha, position });
+    });
+    
+    // 위치 순으로 정렬
+    middleColors.sort((a, b) => a.position - b.position);
+    
+    // 그라데이션 문자열 생성
+    let gradientString = '';
+    if (middleColors.length === 0) {
+        gradientString = `linear-gradient(${angle}deg, rgba(${hexToRgb(startColor)}, ${startAlpha / 100}), rgba(${hexToRgb(endColor)}, ${endAlpha / 100}))`;
+    } else {
+        const colors = [
+            `rgba(${hexToRgb(startColor)}, ${startAlpha / 100}) 0%`,
+            ...middleColors.map(m => `rgba(${hexToRgb(m.color)}, ${m.alpha / 100}) ${m.position}%`),
+            `rgba(${hexToRgb(endColor)}, ${endAlpha / 100}) 100%`
+        ];
+        gradientString = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
+    }
+    
+    // 블록 그라데이션 값 저장
+    const startInput = document.getElementById(`${currentBlockGradientId}_gradient_start`) || 
+                      document.getElementById(`${currentBlockGradientId}_background_gradient_start`);
+    const endInput = document.getElementById(`${currentBlockGradientId}_gradient_end`) || 
+                    document.getElementById(`${currentBlockGradientId}_background_gradient_end`);
+    const angleInput = document.getElementById(`${currentBlockGradientId}_gradient_angle`) || 
+                      document.getElementById(`${currentBlockGradientId}_background_gradient_angle`);
+    const preview = document.getElementById(`${currentBlockGradientId}_gradient_preview`) ||
+                   document.getElementById(`${currentBlockGradientId}_background_gradient_preview`);
+    
+    if (startInput) startInput.value = startColor;
+    if (endInput) endInput.value = endColor;
+    if (angleInput) angleInput.value = angle;
+    if (preview) {
+        preview.style.background = gradientString;
+    }
+    
+    // 모달 닫기
+    const modal = bootstrap.Modal.getInstance(document.getElementById('gradientModal'));
+    if (modal) modal.hide();
+}
+
+// 기존 saveGradient 함수를 수정하여 블록 그라데이션도 처리하도록
+const originalSaveGradient = window.saveGradient;
+window.saveGradient = function() {
+    if (currentBlockGradientId) {
+        saveBlockGradient();
+    } else if (currentGradientContainerId) {
+        originalSaveGradient();
+    }
+};
+
+// hex를 RGB로 변환
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? 
+        `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : 
+        '255, 255, 255';
 }
 </script>
 @endpush
