@@ -38,6 +38,24 @@
                 $rowStyle .= ($rowStyle ? ' ' : '') . 'height: 100%;';
             }
             $containerMarginBottom = 'mb-4';
+            
+            // 배경 스타일 추가
+            $backgroundStyle = '';
+            $backgroundType = $container->background_type ?? 'none';
+            if ($backgroundType === 'color' && !empty($container->background_color)) {
+                $backgroundStyle = 'background-color: ' . $container->background_color . ';';
+            } elseif ($backgroundType === 'gradient') {
+                $gradientStart = $container->background_gradient_start ?? '#ffffff';
+                $gradientEnd = $container->background_gradient_end ?? '#000000';
+                $gradientDirection = $container->background_gradient_direction ?? 'to right';
+                $backgroundStyle = 'background: linear-gradient(' . $gradientDirection . ', ' . $gradientStart . ', ' . $gradientEnd . ');';
+            } elseif ($backgroundType === 'image' && !empty($container->background_image_url)) {
+                $backgroundStyle = 'background-image: url(' . htmlspecialchars($container->background_image_url) . '); background-size: cover; background-position: center; background-repeat: no-repeat;';
+            }
+            
+            if ($backgroundStyle) {
+                $containerStyle .= ($containerStyle ? ' ' : '') . $backgroundStyle;
+            }
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
             <div class="row custom-page-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">

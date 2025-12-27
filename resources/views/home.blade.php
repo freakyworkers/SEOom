@@ -112,6 +112,24 @@
             // 컨테이너 여백 처리 - 세로 100%일 때도 하단 여백 유지
             // 모든 컨테이너에 동일하게 하단 여백 적용
             $containerMarginBottom = 'mb-' . min(max($containerSpacing, 0), 5);
+            
+            // 배경 스타일 추가
+            $backgroundStyle = '';
+            $backgroundType = $container->background_type ?? 'none';
+            if ($backgroundType === 'color' && !empty($container->background_color)) {
+                $backgroundStyle = 'background-color: ' . $container->background_color . ';';
+            } elseif ($backgroundType === 'gradient') {
+                $gradientStart = $container->background_gradient_start ?? '#ffffff';
+                $gradientEnd = $container->background_gradient_end ?? '#000000';
+                $gradientDirection = $container->background_gradient_direction ?? 'to right';
+                $backgroundStyle = 'background: linear-gradient(' . $gradientDirection . ', ' . $gradientStart . ', ' . $gradientEnd . ');';
+            } elseif ($backgroundType === 'image' && !empty($container->background_image_url)) {
+                $backgroundStyle = 'background-image: url(' . htmlspecialchars($container->background_image_url) . '); background-size: cover; background-position: center; background-repeat: no-repeat;';
+            }
+            
+            if ($backgroundStyle) {
+                $containerStyle .= ($containerStyle ? ' ' : '') . $backgroundStyle;
+            }
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
             <div class="row main-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">

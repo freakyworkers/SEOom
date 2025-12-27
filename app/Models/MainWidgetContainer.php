@@ -17,6 +17,12 @@ class MainWidgetContainer extends Model
         'full_width',
         'full_height',
         'widget_spacing',
+        'background_type',
+        'background_color',
+        'background_gradient_start',
+        'background_gradient_end',
+        'background_gradient_direction',
+        'background_image_url',
         'order',
     ];
 

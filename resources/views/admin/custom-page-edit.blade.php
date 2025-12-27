@@ -183,6 +183,62 @@
                                                            title="활성화 시 해당 컨테이너가 브라우저 세로 100% 영역을 사용합니다." 
                                                            style="cursor: help; font-size: 0.85rem;"></i>
                                                     </div>
+                                                    <label class="mb-0 small ms-3">배경:</label>
+                                                    <select class="form-select form-select-sm" 
+                                                            style="width: auto; min-width: 100px;" 
+                                                            id="container_background_type_{{ $container->id }}"
+                                                            onchange="handleContainerBackgroundTypeChange({{ $container->id }}, this.value, 'desktop')"
+                                                            data-container-id="{{ $container->id }}">
+                                                        <option value="none" {{ ($container->background_type ?? 'none') == 'none' ? 'selected' : '' }}>없음</option>
+                                                        <option value="color" {{ ($container->background_type ?? 'none') == 'color' ? 'selected' : '' }}>단색</option>
+                                                        <option value="gradient" {{ ($container->background_type ?? 'none') == 'gradient' ? 'selected' : '' }}>그라데이션</option>
+                                                        <option value="image" {{ ($container->background_type ?? 'none') == 'image' ? 'selected' : '' }}>이미지</option>
+                                                    </select>
+                                                    <div id="container_background_color_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'color' ? 'inline-block' : 'none' }}; margin-left: 8px;">
+                                                        <input type="color" 
+                                                               class="form-control form-control-color" 
+                                                               id="container_background_color_input_{{ $container->id }}"
+                                                               value="{{ $container->background_color ?? '#ffffff' }}"
+                                                               style="width: 40px; height: 38px;"
+                                                               onchange="updateContainerBackground({{ $container->id }}, 'color', this.value)"
+                                                               title="배경 색상">
+                                                    </div>
+                                                    <div id="container_background_gradient_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'gradient' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px;">
+                                                        <input type="color" 
+                                                               class="form-control form-control-color" 
+                                                               id="container_background_gradient_start_{{ $container->id }}"
+                                                               value="{{ $container->background_gradient_start ?? '#ffffff' }}"
+                                                               style="width: 40px; height: 38px;"
+                                                               onchange="updateContainerBackgroundGradient({{ $container->id }})"
+                                                               title="시작 색상">
+                                                        <input type="color" 
+                                                               class="form-control form-control-color" 
+                                                               id="container_background_gradient_end_{{ $container->id }}"
+                                                               value="{{ $container->background_gradient_end ?? '#000000' }}"
+                                                               style="width: 40px; height: 38px;"
+                                                               onchange="updateContainerBackgroundGradient({{ $container->id }})"
+                                                               title="끝 색상">
+                                                        <select class="form-select form-select-sm" 
+                                                                id="container_background_gradient_direction_{{ $container->id }}"
+                                                                style="width: auto; min-width: 100px;"
+                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
+                                                            <option value="to right" {{ ($container->background_gradient_direction ?? 'to right') == 'to right' ? 'selected' : '' }}>좌→우</option>
+                                                            <option value="to bottom" {{ ($container->background_gradient_direction ?? 'to right') == 'to bottom' ? 'selected' : '' }}>상→하</option>
+                                                            <option value="to left" {{ ($container->background_gradient_direction ?? 'to right') == 'to left' ? 'selected' : '' }}>우→좌</option>
+                                                            <option value="to top" {{ ($container->background_gradient_direction ?? 'to right') == 'to top' ? 'selected' : '' }}>하→상</option>
+                                                            <option value="45deg" {{ ($container->background_gradient_direction ?? 'to right') == '45deg' ? 'selected' : '' }}>대각선 (45도)</option>
+                                                            <option value="135deg" {{ ($container->background_gradient_direction ?? 'to right') == '135deg' ? 'selected' : '' }}>대각선 (135도)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-block' : 'none' }}; margin-left: 8px;">
+                                                        <input type="text" 
+                                                               class="form-control form-control-sm" 
+                                                               id="container_background_image_url_{{ $container->id }}"
+                                                               value="{{ $container->background_image_url ?? '' }}"
+                                                               placeholder="이미지 URL"
+                                                               style="width: 200px;"
+                                                               onchange="updateContainerBackground({{ $container->id }}, 'image', this.value)">
+                                                    </div>
                                                 </div>
                                                 <div class="d-flex align-items-center gap-2">
                                                     <button type="button" 
@@ -268,6 +324,60 @@
                                                                 세로 100%
                                                             </label>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label class="form-label small mb-1">배경</label>
+                                                        <select class="form-select form-select-sm" 
+                                                                id="container_background_type_mobile_{{ $container->id }}"
+                                                                onchange="handleContainerBackgroundTypeChange({{ $container->id }}, this.value, 'mobile')"
+                                                                data-container-id="{{ $container->id }}">
+                                                            <option value="none" {{ ($container->background_type ?? 'none') == 'none' ? 'selected' : '' }}>없음</option>
+                                                            <option value="color" {{ ($container->background_type ?? 'none') == 'color' ? 'selected' : '' }}>단색</option>
+                                                            <option value="gradient" {{ ($container->background_type ?? 'none') == 'gradient' ? 'selected' : '' }}>그라데이션</option>
+                                                            <option value="image" {{ ($container->background_type ?? 'none') == 'image' ? 'selected' : '' }}>이미지</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12" id="container_background_color_mobile_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'color' ? 'block' : 'none' }};">
+                                                        <label class="form-label small mb-1">색상</label>
+                                                        <input type="color" 
+                                                               class="form-control form-control-color" 
+                                                               id="container_background_color_input_mobile_{{ $container->id }}"
+                                                               value="{{ $container->background_color ?? '#ffffff' }}"
+                                                               onchange="updateContainerBackground({{ $container->id }}, 'color', this.value)">
+                                                    </div>
+                                                    <div class="col-12" id="container_background_gradient_mobile_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'gradient' ? 'block' : 'none' }};">
+                                                        <label class="form-label small mb-1">시작 색상</label>
+                                                        <input type="color" 
+                                                               class="form-control form-control-color mb-2" 
+                                                               id="container_background_gradient_start_mobile_{{ $container->id }}"
+                                                               value="{{ $container->background_gradient_start ?? '#ffffff' }}"
+                                                               onchange="updateContainerBackgroundGradient({{ $container->id }})">
+                                                        <label class="form-label small mb-1">끝 색상</label>
+                                                        <input type="color" 
+                                                               class="form-control form-control-color mb-2" 
+                                                               id="container_background_gradient_end_mobile_{{ $container->id }}"
+                                                               value="{{ $container->background_gradient_end ?? '#000000' }}"
+                                                               onchange="updateContainerBackgroundGradient({{ $container->id }})">
+                                                        <label class="form-label small mb-1">방향</label>
+                                                        <select class="form-select form-select-sm" 
+                                                                id="container_background_gradient_direction_mobile_{{ $container->id }}"
+                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
+                                                            <option value="to right" {{ ($container->background_gradient_direction ?? 'to right') == 'to right' ? 'selected' : '' }}>좌→우</option>
+                                                            <option value="to bottom" {{ ($container->background_gradient_direction ?? 'to right') == 'to bottom' ? 'selected' : '' }}>상→하</option>
+                                                            <option value="to left" {{ ($container->background_gradient_direction ?? 'to right') == 'to left' ? 'selected' : '' }}>우→좌</option>
+                                                            <option value="to top" {{ ($container->background_gradient_direction ?? 'to right') == 'to top' ? 'selected' : '' }}>하→상</option>
+                                                            <option value="45deg" {{ ($container->background_gradient_direction ?? 'to right') == '45deg' ? 'selected' : '' }}>대각선 (45도)</option>
+                                                            <option value="135deg" {{ ($container->background_gradient_direction ?? 'to right') == '135deg' ? 'selected' : '' }}>대각선 (135도)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12" id="container_background_image_mobile_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'block' : 'none' }};">
+                                                        <label class="form-label small mb-1">이미지 URL</label>
+                                                        <input type="text" 
+                                                               class="form-control form-control-sm" 
+                                                               id="container_background_image_url_mobile_{{ $container->id }}"
+                                                               value="{{ $container->background_image_url ?? '' }}"
+                                                               placeholder="https://example.com/image.jpg"
+                                                               onchange="updateContainerBackground({{ $container->id }}, 'image', this.value)">
                                                     </div>
                                                 </div>
                                             </div>
@@ -1368,6 +1478,195 @@ function updateContainerVerticalAlign(containerId, verticalAlign) {
     .catch(error => {
         console.error('Error:', error);
         alert('정렬 설정 업데이트 중 오류가 발생했습니다.');
+    });
+}
+
+// 컨테이너 배경 타입 변경 핸들러
+function handleContainerBackgroundTypeChange(containerId, backgroundType, viewType) {
+    const suffix = viewType === 'mobile' ? '_mobile' : '';
+    
+    // 모든 배경 옵션 숨기기
+    document.getElementById(`container_background_color${suffix}_${containerId}`).style.display = 'none';
+    document.getElementById(`container_background_gradient${suffix}_${containerId}`).style.display = 'none';
+    document.getElementById(`container_background_image${suffix}_${containerId}`).style.display = 'none';
+    
+    // 선택된 타입에 따라 표시
+    if (backgroundType === 'color') {
+        document.getElementById(`container_background_color${suffix}_${containerId}`).style.display = viewType === 'mobile' ? 'block' : 'inline-block';
+    } else if (backgroundType === 'gradient') {
+        document.getElementById(`container_background_gradient${suffix}_${containerId}`).style.display = viewType === 'mobile' ? 'block' : 'inline-flex';
+    } else if (backgroundType === 'image') {
+        document.getElementById(`container_background_image${suffix}_${containerId}`).style.display = viewType === 'mobile' ? 'block' : 'inline-block';
+    }
+    
+    // 배경 타입 업데이트
+    updateContainerBackgroundType(containerId, backgroundType);
+}
+
+// 컨테이너 배경 타입 업데이트
+function updateContainerBackgroundType(containerId, backgroundType) {
+    const formData = new FormData();
+    formData.append('background_type', backgroundType);
+    formData.append('_method', 'PUT');
+    
+    // 현재 컨테이너 설정 유지
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (containerItem) {
+        const columnsSelect = containerItem.querySelector('select[onchange*="updateContainerColumns"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        }
+        const verticalAlignSelect = containerItem.querySelector('select[onchange*="updateContainerVerticalAlign"]');
+        if (verticalAlignSelect) {
+            formData.append('vertical_align', verticalAlignSelect.value);
+        }
+    }
+    
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    if (fullWidthCheckbox) {
+        formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+    }
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
+    
+    fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 성공 알림은 표시하지 않고 조용히 업데이트
+        } else {
+            alert('배경 설정 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('배경 설정 업데이트 중 오류가 발생했습니다.');
+    });
+}
+
+// 컨테이너 배경 업데이트 (단색 또는 이미지)
+function updateContainerBackground(containerId, backgroundType, value) {
+    const formData = new FormData();
+    formData.append('background_type', backgroundType);
+    
+    if (backgroundType === 'color') {
+        formData.append('background_color', value);
+    } else if (backgroundType === 'image') {
+        formData.append('background_image_url', value);
+    }
+    
+    formData.append('_method', 'PUT');
+    
+    // 현재 컨테이너 설정 유지
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (containerItem) {
+        const columnsSelect = containerItem.querySelector('select[onchange*="updateContainerColumns"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        }
+        const verticalAlignSelect = containerItem.querySelector('select[onchange*="updateContainerVerticalAlign"]');
+        if (verticalAlignSelect) {
+            formData.append('vertical_align', verticalAlignSelect.value);
+        }
+    }
+    
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    if (fullWidthCheckbox) {
+        formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+    }
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
+    
+    fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 성공 알림은 표시하지 않고 조용히 업데이트
+        } else {
+            alert('배경 설정 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('배경 설정 업데이트 중 오류가 발생했습니다.');
+    });
+}
+
+// 컨테이너 그라데이션 배경 업데이트
+function updateContainerBackgroundGradient(containerId) {
+    const startColor = document.getElementById(`container_background_gradient_start_${containerId}`)?.value || 
+                       document.getElementById(`container_background_gradient_start_mobile_${containerId}`)?.value || '#ffffff';
+    const endColor = document.getElementById(`container_background_gradient_end_${containerId}`)?.value || 
+                     document.getElementById(`container_background_gradient_end_mobile_${containerId}`)?.value || '#000000';
+    const direction = document.getElementById(`container_background_gradient_direction_${containerId}`)?.value || 
+                      document.getElementById(`container_background_gradient_direction_mobile_${containerId}`)?.value || 'to right';
+    
+    const formData = new FormData();
+    formData.append('background_type', 'gradient');
+    formData.append('background_gradient_start', startColor);
+    formData.append('background_gradient_end', endColor);
+    formData.append('background_gradient_direction', direction);
+    formData.append('_method', 'PUT');
+    
+    // 현재 컨테이너 설정 유지
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (containerItem) {
+        const columnsSelect = containerItem.querySelector('select[onchange*="updateContainerColumns"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        }
+        const verticalAlignSelect = containerItem.querySelector('select[onchange*="updateContainerVerticalAlign"]');
+        if (verticalAlignSelect) {
+            formData.append('vertical_align', verticalAlignSelect.value);
+        }
+    }
+    
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    if (fullWidthCheckbox) {
+        formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+    }
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
+    
+    fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 성공 알림은 표시하지 않고 조용히 업데이트
+        } else {
+            alert('배경 설정 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('배경 설정 업데이트 중 오류가 발생했습니다.');
     });
 }
 

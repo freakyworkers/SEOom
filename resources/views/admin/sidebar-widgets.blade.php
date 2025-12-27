@@ -618,7 +618,7 @@
                                                 </div>
                                             </div>
                                             <div class="mb-3" id="widget_image_slide_visible_count_container" style="display: none;">
-                                                <label for="widget_image_slide_visible_count" class="form-label">표시할 이미지 수</label>
+                                                <label for="widget_image_slide_visible_count" class="form-label">표시할 이미지 수 (PC)</label>
                                                 <input type="number" 
                                                        class="form-control" 
                                                        id="widget_image_slide_visible_count" 
@@ -627,7 +627,19 @@
                                                        max="10" 
                                                        value="3"
                                                        placeholder="3">
-                                                <small class="text-muted">한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
+                                                <small class="text-muted">PC에서 한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
+                                            </div>
+                                            <div class="mb-3" id="widget_image_slide_visible_count_mobile_container" style="display: none;">
+                                                <label for="widget_image_slide_visible_count_mobile" class="form-label">표시할 이미지 수 (모바일)</label>
+                                                <input type="number" 
+                                                       class="form-control" 
+                                                       id="widget_image_slide_visible_count_mobile" 
+                                                       name="image_slide_visible_count_mobile" 
+                                                       min="1" 
+                                                       max="10" 
+                                                       value="2"
+                                                       placeholder="2">
+                                                <small class="text-muted">모바일에서 한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
                                             </div>
                                             <div class="mb-3" id="widget_image_slide_gap_container" style="display: none;">
                                                 <label for="widget_image_slide_gap" class="form-label">이미지 간격 (px)</label>
@@ -1272,7 +1284,7 @@
                             </div>
                         </div>
                         <div class="mb-3" id="edit_widget_image_slide_visible_count_container" style="display: none;">
-                            <label for="edit_widget_image_slide_visible_count" class="form-label">표시할 이미지 수</label>
+                            <label for="edit_widget_image_slide_visible_count" class="form-label">표시할 이미지 수 (PC)</label>
                             <input type="number" 
                                    class="form-control" 
                                    id="edit_widget_image_slide_visible_count" 
@@ -1281,7 +1293,19 @@
                                    max="10" 
                                    value="3"
                                    placeholder="3">
-                            <small class="text-muted">한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
+                            <small class="text-muted">PC에서 한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
+                        </div>
+                        <div class="mb-3" id="edit_widget_image_slide_visible_count_mobile_container" style="display: none;">
+                            <label for="edit_widget_image_slide_visible_count_mobile" class="form-label">표시할 이미지 수 (모바일)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_widget_image_slide_visible_count_mobile" 
+                                   name="edit_image_slide_visible_count_mobile" 
+                                   min="1" 
+                                   max="10" 
+                                   value="2"
+                                   placeholder="2">
+                            <small class="text-muted">모바일에서 한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
                         </div>
                         <div class="mb-3" id="edit_widget_image_slide_gap_container" style="display: none;">
                             <label for="edit_widget_image_slide_gap" class="form-label">이미지 간격 (px)</label>
@@ -2525,6 +2549,8 @@ function handleImageSlideModeChange() {
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (singleCheckbox) singleCheckbox.checked = false;
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
+        const visibleCountMobileContainer = document.getElementById('widget_image_slide_visible_count_mobile_container');
+        if (visibleCountMobileContainer) visibleCountMobileContainer.style.display = 'block';
         if (upRadio) {
             upRadio.disabled = true;
             if (upLabel) upLabel.classList.add('disabled');
@@ -2577,6 +2603,8 @@ function handleEditImageSlideModeChange() {
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (singleCheckbox) singleCheckbox.checked = false;
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
+        const visibleCountMobileContainer = document.getElementById('edit_widget_image_slide_visible_count_mobile_container');
+        if (visibleCountMobileContainer) visibleCountMobileContainer.style.display = 'block';
         if (gapContainer) gapContainer.style.display = 'block';
         if (upRadio) {
             upRadio.disabled = true;
@@ -3324,6 +3352,8 @@ function addWidget() {
         settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
         if (infiniteSlide) {
             settings.visible_count = parseInt(visibleCount) || 3;
+            const visibleCountMobile = document.getElementById('widget_image_slide_visible_count_mobile')?.value || '2';
+            settings.visible_count_mobile = parseInt(visibleCountMobile) || 2;
             settings.image_gap = parseInt(imageGap) || 0;
         }
         
@@ -3812,6 +3842,129 @@ function editWidget(widgetId) {
                                 addEditBlockSlideItem(block);
                             });
                         }
+                    } else if (widgetType === 'image_slide') {
+                        limitContainer.style.display = 'none';
+                        tabMenuContainer.style.display = 'none';
+                        rankingContainer.style.display = 'none';
+                        if (boardContainer) boardContainer.style.display = 'none';
+                        if (sortOrderContainer) sortOrderContainer.style.display = 'none';
+                        if (marqueeDirectionContainer) marqueeDirectionContainer.style.display = 'none';
+                        const galleryContainer = document.getElementById('edit_widget_gallery_container');
+                        const galleryDisplayTypeContainer = document.getElementById('edit_widget_gallery_display_type_container');
+                        const galleryGridContainer = document.getElementById('edit_widget_gallery_grid_container');
+                        const gallerySlideContainer = document.getElementById('edit_widget_gallery_slide_container');
+                        const galleryShowTitleContainer = document.getElementById('edit_widget_gallery_show_title_container');
+                        if (galleryContainer) galleryContainer.style.display = 'none';
+                        if (galleryDisplayTypeContainer) galleryDisplayTypeContainer.style.display = 'none';
+                        if (galleryGridContainer) galleryGridContainer.style.display = 'none';
+                        if (gallerySlideContainer) gallerySlideContainer.style.display = 'none';
+                        if (galleryShowTitleContainer) galleryShowTitleContainer.style.display = 'none';
+                        const customHtmlContainer = document.getElementById('edit_widget_custom_html_container');
+                        if (customHtmlContainer) customHtmlContainer.style.display = 'none';
+                        const blockContainer = document.getElementById('edit_widget_block_container');
+                        if (blockContainer) blockContainer.style.display = 'none';
+                        const blockSlideContainer = document.getElementById('edit_widget_block_slide_container');
+                        if (blockSlideContainer) blockSlideContainer.style.display = 'none';
+                        const imageSlideContainer = document.getElementById('edit_widget_image_slide_container');
+                        if (imageSlideContainer) imageSlideContainer.style.display = 'block';
+                        const editTitleHelp = document.getElementById('edit_widget_title_help');
+                        if (editTitleHelp) editTitleHelp.style.display = 'none';
+                        titleContainer.style.display = 'none';
+                        
+                        // 이미지 슬라이드 설정 값 채우기
+                        const slideDirection = settings.slide_direction || 'left';
+                        const directionRadio = document.querySelector(`input[name="edit_image_slide_direction"][value="${slideDirection}"]`);
+                        if (directionRadio) directionRadio.checked = true;
+                        
+                        const slideMode = settings.slide_mode || 'single';
+                        const singleCheckbox = document.getElementById('edit_widget_image_slide_single');
+                        const infiniteCheckbox = document.getElementById('edit_widget_image_slide_infinite');
+                        const visibleCountInput = document.getElementById('edit_widget_image_slide_visible_count');
+                        const visibleCountMobileInput = document.getElementById('edit_widget_image_slide_visible_count_mobile');
+                        const gapInput = document.getElementById('edit_widget_image_slide_gap');
+                        
+                        if (slideMode === 'infinite') {
+                            if (singleCheckbox) singleCheckbox.checked = false;
+                            if (infiniteCheckbox) infiniteCheckbox.checked = true;
+                            if (visibleCountInput) {
+                                visibleCountInput.value = settings.visible_count || 3;
+                                document.getElementById('edit_widget_image_slide_visible_count_container').style.display = 'block';
+                            }
+                            if (visibleCountMobileInput) {
+                                visibleCountMobileInput.value = settings.visible_count_mobile || 2;
+                                document.getElementById('edit_widget_image_slide_visible_count_mobile_container').style.display = 'block';
+                            }
+                            if (gapInput) {
+                                gapInput.value = settings.image_gap || 0;
+                                document.getElementById('edit_widget_image_slide_gap_container').style.display = 'block';
+                            }
+                            // 배경색 설정 로드
+                            const backgroundTypeSelect = document.getElementById('edit_widget_image_slide_background_type');
+                            const backgroundColorInput = document.getElementById('edit_widget_image_slide_background_color');
+                            const backgroundContainer = document.getElementById('edit_widget_image_slide_background_container');
+                            if (backgroundContainer) {
+                                backgroundContainer.style.display = 'block';
+                            }
+                            if (backgroundTypeSelect) {
+                                backgroundTypeSelect.value = settings.background_type || 'none';
+                                handleEditImageSlideBackgroundTypeChange();
+                            }
+                            if (backgroundColorInput && settings.background_color) {
+                                backgroundColorInput.value = settings.background_color;
+                            }
+                        } else {
+                            if (singleCheckbox) singleCheckbox.checked = true;
+                            if (infiniteCheckbox) infiniteCheckbox.checked = false;
+                            if (visibleCountInput) {
+                                document.getElementById('edit_widget_image_slide_visible_count_container').style.display = 'none';
+                            }
+                            if (visibleCountMobileInput) {
+                                document.getElementById('edit_widget_image_slide_visible_count_mobile_container').style.display = 'none';
+                            }
+                            if (gapInput) {
+                                document.getElementById('edit_widget_image_slide_gap_container').style.display = 'none';
+                            }
+                            const backgroundContainer = document.getElementById('edit_widget_image_slide_background_container');
+                            if (backgroundContainer) {
+                                backgroundContainer.style.display = 'none';
+                            }
+                        }
+                        
+                        // 이미지 아이템들 로드
+                        const images = settings.images || [];
+                        const itemsContainer = document.getElementById('edit_widget_image_slide_items');
+                        if (itemsContainer) {
+                            itemsContainer.innerHTML = '';
+                            editImageSlideItemIndex = 0;
+                            images.forEach((image, index) => {
+                                addEditImageSlideItem();
+                                const item = document.getElementById(`edit_image_slide_item_${editImageSlideItemIndex - 1}`);
+                                if (item) {
+                                    const imageUrlInput = item.querySelector(`#edit_image_slide_${editImageSlideItemIndex - 1}_image_url`);
+                                    const linkInput = item.querySelector(`.edit-image-slide-link`);
+                                    const openNewTabInput = item.querySelector(`.edit-image-slide-open-new-tab`);
+                                    const preview = item.querySelector(`#edit_image_slide_${editImageSlideItemIndex - 1}_image_preview`);
+                                    const previewImg = item.querySelector(`#edit_image_slide_${editImageSlideItemIndex - 1}_image_preview_img`);
+                                    
+                                    if (imageUrlInput && image.image_url) {
+                                        imageUrlInput.value = image.image_url;
+                                    }
+                                    if (linkInput && image.link) {
+                                        linkInput.value = image.link;
+                                    }
+                                    if (openNewTabInput) {
+                                        openNewTabInput.checked = image.open_new_tab || false;
+                                    }
+                                    if (preview && previewImg && image.image_url) {
+                                        previewImg.src = image.image_url;
+                                        preview.style.display = 'block';
+                                    }
+                                }
+                            });
+                        }
+                        
+                        // 모드 변경 핸들러 호출
+                        handleEditImageSlideModeChange();
                     } else {
                         limitContainer.style.display = 'none';
                         tabMenuContainer.style.display = 'none';
@@ -4134,6 +4287,56 @@ function saveWidgetSettings() {
                         });
                         
                         settings.blocks = blockItems;
+                    } else if (widgetType === 'image_slide') {
+                        // 이미지 슬라이드 위젯 설정 수집
+                        const slideDirection = document.querySelector('input[name="edit_image_slide_direction"]:checked')?.value || 'left';
+                        settings.slide_direction = slideDirection;
+                        
+                        const singleSlide = document.getElementById('edit_widget_image_slide_single')?.checked || false;
+                        const infiniteSlide = document.getElementById('edit_widget_image_slide_infinite')?.checked || false;
+                        const visibleCount = document.getElementById('edit_widget_image_slide_visible_count')?.value || '3';
+                        const visibleCountMobile = document.getElementById('edit_widget_image_slide_visible_count_mobile')?.value || '2';
+                        const imageGap = document.getElementById('edit_widget_image_slide_gap')?.value || '0';
+                        const backgroundType = document.getElementById('edit_widget_image_slide_background_type')?.value || 'none';
+                        const backgroundColor = document.getElementById('edit_widget_image_slide_background_color')?.value || '#ffffff';
+                        
+                        settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
+                        if (infiniteSlide) {
+                            settings.visible_count = parseInt(visibleCount) || 3;
+                            settings.visible_count_mobile = parseInt(visibleCountMobile) || 2;
+                            settings.image_gap = parseInt(imageGap) || 0;
+                            settings.background_type = backgroundType;
+                            if (backgroundType === 'color') {
+                                settings.background_color = backgroundColor;
+                            }
+                        }
+                        
+                        // 이미지 아이템들 수집
+                        const imageItems = [];
+                        const imageSlideItems = document.querySelectorAll('.edit-image-slide-item');
+                        imageSlideItems.forEach((item, index) => {
+                            const itemIndex = item.dataset.itemIndex;
+                            const imageFile = item.querySelector(`#edit_image_slide_${itemIndex}_image_input`)?.files[0];
+                            const imageUrl = item.querySelector(`#edit_image_slide_${itemIndex}_image_url`)?.value;
+                            const link = item.querySelector('.edit-image-slide-link')?.value || '';
+                            const openNewTab = item.querySelector('.edit-image-slide-open-new-tab')?.checked || false;
+                            
+                            const imageItem = {
+                                link: link,
+                                open_new_tab: openNewTab
+                            };
+                            
+                            if (imageFile) {
+                                formData.append(`edit_image_slide[${itemIndex}][image_file]`, imageFile);
+                            }
+                            if (imageUrl) {
+                                imageItem.image_url = imageUrl;
+                            }
+                            
+                            imageItems.push(imageItem);
+                        });
+                        
+                        settings.images = imageItems;
                     }
     
     // settings를 JSON으로 추가 (빈 객체가 아닌 경우에만)

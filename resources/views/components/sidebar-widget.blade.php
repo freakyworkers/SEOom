@@ -372,6 +372,7 @@
         $slideDirection = $imageSlideSettings['slide_direction'] ?? 'left';
         $slideMode = $imageSlideSettings['slide_mode'] ?? 'single';
         $visibleCount = $imageSlideSettings['visible_count'] ?? 3;
+        $visibleCountMobile = $imageSlideSettings['visible_count_mobile'] ?? 2;
         $imageGap = $imageSlideSettings['image_gap'] ?? 0;
         $backgroundType = $imageSlideSettings['background_type'] ?? 'none';
         $backgroundColor = $imageSlideSettings['background_color'] ?? '#ffffff';
@@ -388,6 +389,7 @@
              data-direction="{{ $slideDirection }}" 
              data-mode="{{ $slideMode }}"
              data-visible-count="{{ $visibleCount }}"
+             data-visible-count-mobile="{{ $visibleCountMobile }}"
              data-image-gap="{{ $imageGap }}"
              data-widget-id="{{ $widget->id }}"
              style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }} {{ $backgroundStyle }}">
@@ -528,6 +530,35 @@
                 const items = wrapper.querySelectorAll('.image-slide-item');
                 const totalItems = items.length;
                 const imageGap = parseInt(wrapper.dataset.imageGap) || 0;
+                const visibleCountMobile = parseInt(wrapper.dataset.visibleCountMobile) || 2;
+                
+                // 화면 크기에 따라 표시 수량 결정
+                function getVisibleCount() {
+                    return window.innerWidth < 768 ? visibleCountMobile : visibleCount;
+                }
+                
+                // 현재 표시 수량에 따라 아이템 너비 업데이트
+                function updateItemWidths() {
+                    const currentVisibleCount = getVisibleCount();
+                    items.forEach(item => {
+                        const gapTotal = imageGap * (currentVisibleCount - 1);
+                        item.style.width = `calc((100% - ${gapTotal}px) / ${currentVisibleCount})`;
+                    });
+                }
+                
+                // 초기 너비 설정
+                updateItemWidths();
+                
+                // 화면 크기 변경 시 너비 업데이트
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        updateItemWidths();
+                        // 애니메이션 재시작
+                        startAnimation();
+                    }, 250);
+                });
                 
                 if (totalItems <= visibleCount) return;
                 
@@ -536,6 +567,9 @@
                 
                 // 이미지 로드 대기 후 애니메이션 시작
                 function startAnimation() {
+                    const currentVisibleCount = getVisibleCount();
+                    if (totalItems <= currentVisibleCount) return;
+                    
                     // 첫 번째 아이템의 실제 너비 계산
                     const firstItem = items[0];
                     if (!firstItem) return;

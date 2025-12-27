@@ -3446,6 +3446,12 @@ class AdminController extends Controller
             'full_width' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
             'widget_spacing' => 'nullable|integer|min:0|max:5',
+            'background_type' => 'nullable|string|in:none,color,gradient,image',
+            'background_color' => 'nullable|string|max:7',
+            'background_gradient_start' => 'nullable|string|max:7',
+            'background_gradient_end' => 'nullable|string|max:7',
+            'background_gradient_direction' => 'nullable|string|max:50',
+            'background_image_url' => 'nullable|string|max:500',
         ]);
 
         $oldColumns = $container->columns;
@@ -3531,6 +3537,38 @@ class AdminController extends Controller
                 $container->column_merges = $validMerges;
             } else {
                 $container->column_merges = null;
+            }
+        }
+        
+        // 배경 설정 처리
+        if ($request->has('background_type')) {
+            $container->background_type = $request->background_type;
+            
+            if ($request->background_type === 'color') {
+                $container->background_color = $request->background_color ?? null;
+                $container->background_gradient_start = null;
+                $container->background_gradient_end = null;
+                $container->background_gradient_direction = null;
+                $container->background_image_url = null;
+            } elseif ($request->background_type === 'gradient') {
+                $container->background_color = null;
+                $container->background_gradient_start = $request->background_gradient_start ?? null;
+                $container->background_gradient_end = $request->background_gradient_end ?? null;
+                $container->background_gradient_direction = $request->background_gradient_direction ?? 'to right';
+                $container->background_image_url = null;
+            } elseif ($request->background_type === 'image') {
+                $container->background_color = null;
+                $container->background_gradient_start = null;
+                $container->background_gradient_end = null;
+                $container->background_gradient_direction = null;
+                $container->background_image_url = $request->background_image_url ?? null;
+            } else {
+                // none
+                $container->background_color = null;
+                $container->background_gradient_start = null;
+                $container->background_gradient_end = null;
+                $container->background_gradient_direction = null;
+                $container->background_image_url = null;
             }
         }
         
@@ -4113,6 +4151,12 @@ class AdminController extends Controller
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
+            'background_type' => 'nullable|string|in:none,color,gradient,image',
+            'background_color' => 'nullable|string|max:7',
+            'background_gradient_start' => 'nullable|string|max:7',
+            'background_gradient_end' => 'nullable|string|max:7',
+            'background_gradient_direction' => 'nullable|string|max:50',
+            'background_image_url' => 'nullable|string|max:500',
         ]);
 
         $oldColumns = $container->columns;
@@ -4186,6 +4230,38 @@ class AdminController extends Controller
                 $container->column_merges = $validMerges;
             } else {
                 $container->column_merges = null;
+            }
+        }
+        
+        // 배경 설정 처리
+        if ($request->has('background_type')) {
+            $container->background_type = $request->background_type;
+            
+            if ($request->background_type === 'color') {
+                $container->background_color = $request->background_color ?? null;
+                $container->background_gradient_start = null;
+                $container->background_gradient_end = null;
+                $container->background_gradient_direction = null;
+                $container->background_image_url = null;
+            } elseif ($request->background_type === 'gradient') {
+                $container->background_color = null;
+                $container->background_gradient_start = $request->background_gradient_start ?? null;
+                $container->background_gradient_end = $request->background_gradient_end ?? null;
+                $container->background_gradient_direction = $request->background_gradient_direction ?? 'to right';
+                $container->background_image_url = null;
+            } elseif ($request->background_type === 'image') {
+                $container->background_color = null;
+                $container->background_gradient_start = null;
+                $container->background_gradient_end = null;
+                $container->background_gradient_direction = null;
+                $container->background_image_url = $request->background_image_url ?? null;
+            } else {
+                // none
+                $container->background_color = null;
+                $container->background_gradient_start = null;
+                $container->background_gradient_end = null;
+                $container->background_gradient_direction = null;
+                $container->background_image_url = null;
             }
         }
         
