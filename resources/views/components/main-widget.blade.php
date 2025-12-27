@@ -530,11 +530,11 @@
         $openNewTab = $imageSettings['open_new_tab'] ?? false;
     @endphp
     @if($imageUrl)
-        <div class="mb-3 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; margin: 0 auto;" data-widget-id="{{ $widget->id }}">
+        <div class="mb-3 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; display: flex; align-items: center; justify-content: center;" data-widget-id="{{ $widget->id }}">
             @if($link)
                 <a href="{{ $link }}" 
                    @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
-                   style="{{ $isRoundTheme ? 'display: block; border-radius: 0.5rem; overflow: hidden;' : 'display: block;' }}">
+                   style="{{ $isRoundTheme ? 'display: block; border-radius: 0.5rem; overflow: hidden; width: 100%;' : 'display: block; width: 100%;' }}">
             @endif
             <img src="{{ $imageUrl }}" alt="이미지" style="width: 100%; height: auto; display: block;{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }}">
             @if($link)
@@ -568,7 +568,7 @@
              data-visible-count-mobile="{{ $visibleCountMobile }}"
              data-image-gap="{{ $imageGap }}"
              data-widget-id="{{ $widget->id }}"
-             style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }} {{ $backgroundStyle }} {{ $animationStyle }} width: 100%; margin: 0 auto;">
+             style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }} {{ $backgroundStyle }} {{ $animationStyle }} width: 100%; display: flex; align-items: center; justify-content: center;">
             <div class="image-slide-container" style="display: flex; {{ $slideMode === 'infinite' ? 'flex-direction: row;' : '' }} {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'flex-direction: column; height: 100%;' : '' }}{{ $slideMode === 'single' ? ' transition: transform 0.5s ease-in-out;' : '' }}">
                 @if($slideMode === 'single')
                     @foreach($images as $index => $image)

@@ -8149,13 +8149,7 @@ function openGradientModal(containerId, type) {
         if (typeof makeGradientControlDraggable === 'function') {
             makeGradientControlDraggable(endControl);
         }
-        endControl.addEventListener('click', function(e) {
-            if (e.target.type !== 'color') {
-                if (typeof selectGradientControl === 'function') {
-                    selectGradientControl(endControl, 'end');
-                }
-            }
-        });
+        // 클릭 이벤트는 makeGradientControlDraggable에서 처리
     }
     
     // 그라데이션 바 클릭 이벤트 (새 중간 색상 추가)
@@ -8349,10 +8343,19 @@ function makeGradientControlDraggable(control) {
     let isDragging = false;
     let startX = 0;
     let startLeft = 0;
+    let hasMoved = false;
     
     control.addEventListener('mousedown', function(e) {
-        if (e.target.type === 'color') return;
+        // color input이나 투명도 슬라이더를 클릭한 경우 드래그하지 않음
+        if (e.target.type === 'color' || e.target.type === 'range' || e.target.closest('input[type="color"]') || e.target.closest('input[type="range"]')) {
+            return;
+        }
+        // 색상 표시 영역을 클릭한 경우 설정 패널 표시 (드래그하지 않음)
+        if (e.target.closest('[onclick*="selectGradientControl"]')) {
+            return;
+        }
         isDragging = true;
+        hasMoved = false;
         control.style.cursor = 'grabbing';
         startX = e.clientX;
         startLeft = parseFloat(control.style.left) || 0;
@@ -8361,6 +8364,11 @@ function makeGradientControlDraggable(control) {
     
     document.addEventListener('mousemove', function(e) {
         if (!isDragging) return;
+        
+        const moveDistance = Math.abs(e.clientX - startX);
+        if (moveDistance > 5) {
+            hasMoved = true;
+        }
         
         const preview = document.getElementById('gradient_modal_preview');
         if (!preview) return;
@@ -8375,17 +8383,31 @@ function makeGradientControlDraggable(control) {
         updateGradientPreview();
     });
     
-    document.addEventListener('mouseup', function() {
+    document.addEventListener('mouseup', function(e) {
         if (isDragging) {
             isDragging = false;
             control.style.cursor = 'grab';
+            // 드래그가 아닌 클릭인 경우에만 설정 패널 표시
+            if (!hasMoved && e.target.type !== 'color' && !e.target.closest('input[type="color"]') && !e.target.closest('input[type="range"]') && !e.target.closest('[onclick*="selectGradientControl"]')) {
+                const controlType = control.id === 'gradient_start_control' ? 'start' : (control.id === 'gradient_end_control' ? 'end' : 'middle');
+                if (typeof selectGradientControl === 'function') {
+                    selectGradientControl(control, controlType);
+                }
+            }
+            hasMoved = false;
         }
     });
     
     // 터치 이벤트 지원
     control.addEventListener('touchstart', function(e) {
-        if (e.target.type === 'color') return;
+        if (e.target.type === 'color' || e.target.type === 'range' || e.target.closest('input[type="color"]') || e.target.closest('input[type="range"]')) {
+            return;
+        }
+        if (e.target.closest('[onclick*="selectGradientControl"]')) {
+            return;
+        }
         isDragging = true;
+        hasMoved = false;
         const touch = e.touches[0];
         startX = touch.clientX;
         startLeft = parseFloat(control.style.left) || 0;
@@ -8395,10 +8417,15 @@ function makeGradientControlDraggable(control) {
     document.addEventListener('touchmove', function(e) {
         if (!isDragging) return;
         
+        const touch = e.touches[0];
+        const moveDistance = Math.abs(touch.clientX - startX);
+        if (moveDistance > 5) {
+            hasMoved = true;
+        }
+        
         const preview = document.getElementById('gradient_modal_preview');
         if (!preview) return;
         
-        const touch = e.touches[0];
         const rect = preview.getBoundingClientRect();
         const x = touch.clientX - rect.left;
         const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
@@ -8410,9 +8437,17 @@ function makeGradientControlDraggable(control) {
         e.preventDefault();
     });
     
-    document.addEventListener('touchend', function() {
+    document.addEventListener('touchend', function(e) {
         if (isDragging) {
             isDragging = false;
+            // 드래그가 아닌 탭인 경우에만 설정 패널 표시
+            if (!hasMoved && e.target.type !== 'color' && !e.target.closest('input[type="color"]') && !e.target.closest('input[type="range"]') && !e.target.closest('[onclick*="selectGradientControl"]')) {
+                const controlType = control.id === 'gradient_start_control' ? 'start' : (control.id === 'gradient_end_control' ? 'end' : 'middle');
+                if (typeof selectGradientControl === 'function') {
+                    selectGradientControl(control, controlType);
+                }
+            }
+            hasMoved = false;
         }
     });
 }
@@ -8432,36 +8467,43 @@ function selectGradientControl(control, type) {
     selectedGradientControlType = type;
     control.style.border = '2px solid #0d6efd';
     
-    // 설정 패널 업데이트
+    // 설정 패널 업데이트 및 표시
     const settingsPanel = document.getElementById('gradient_selected_control_settings');
     const removeBtn = document.getElementById('gradient_remove_selected');
     
     if (type === 'start') {
         const colorInput = document.getElementById('gradient_modal_start_color');
         const alphaInput = document.getElementById('gradient_modal_start_alpha');
-        document.getElementById('gradient_selected_color').value = colorInput.value;
-        document.getElementById('gradient_selected_alpha').value = alphaInput.value;
-        document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+        if (settingsPanel && colorInput && alphaInput) {
+            document.getElementById('gradient_selected_color').value = colorInput.value;
+            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+            settingsPanel.style.display = 'block';
+        }
         if (removeBtn) removeBtn.style.display = 'none';
     } else if (type === 'end') {
         const colorInput = document.getElementById('gradient_modal_end_color');
         const alphaInput = document.getElementById('gradient_modal_end_alpha');
-        document.getElementById('gradient_selected_color').value = colorInput.value;
-        document.getElementById('gradient_selected_alpha').value = alphaInput.value;
-        document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+        if (settingsPanel && colorInput && alphaInput) {
+            document.getElementById('gradient_selected_color').value = colorInput.value;
+            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+            settingsPanel.style.display = 'block';
+        }
         if (removeBtn) removeBtn.style.display = 'none';
     } else if (type === 'middle') {
         const colorInput = control.querySelector('.gradient-middle-color-input');
         const alphaInput = control.querySelector('.gradient-middle-alpha-input');
-        if (colorInput && alphaInput) {
+        if (settingsPanel && colorInput) {
             document.getElementById('gradient_selected_color').value = colorInput.value;
-            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
-            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
-            if (removeBtn) removeBtn.style.display = 'block';
+            if (alphaInput) {
+                document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+                document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+            }
+            settingsPanel.style.display = 'block';
         }
+        if (removeBtn) removeBtn.style.display = 'block';
     }
-    
-    if (settingsPanel) settingsPanel.style.display = 'block';
 }
 
 // 선택된 컨트롤 업데이트
@@ -8697,13 +8739,7 @@ function openBlockGradientModal(blockId) {
         if (typeof makeGradientControlDraggable === 'function') {
             makeGradientControlDraggable(endControl);
         }
-        endControl.addEventListener('click', function(e) {
-            if (e.target.type !== 'color') {
-                if (typeof selectGradientControl === 'function') {
-                    selectGradientControl(endControl, 'end');
-                }
-            }
-        });
+        // 클릭 이벤트는 makeGradientControlDraggable에서 처리
     }
     
     // 그라데이션 바 클릭 이벤트 (새 중간 색상 추가)
@@ -8817,13 +8853,7 @@ function openButtonGradientModal(buttonId) {
         if (typeof makeGradientControlDraggable === 'function') {
             makeGradientControlDraggable(endControl);
         }
-        endControl.addEventListener('click', function(e) {
-            if (e.target.type !== 'color') {
-                if (typeof selectGradientControl === 'function') {
-                    selectGradientControl(endControl, 'end');
-                }
-            }
-        });
+        // 클릭 이벤트는 makeGradientControlDraggable에서 처리
     }
     
     // 그라데이션 바 클릭 이벤트 (새 중간 색상 추가)
@@ -9024,14 +9054,15 @@ function hexToRgb(hex) {
                             <!-- 시작 색상 컨트롤 -->
                             <div id="gradient_start_control" class="gradient-color-control" data-position="0" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: all; cursor: grab; z-index: 20;">
                                 <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto;"></div>
-                                <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px;">
+                                <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px; cursor: pointer;" onclick="if(typeof selectGradientControl === 'function') selectGradientControl(document.getElementById('gradient_start_control'), 'start');">
                                     <div id="gradient_start_color_display" style="width: 100%; height: 100%; border-radius: 2px; background: #ffffff;"></div>
                                 </div>
                                 <input type="color" 
                                        id="gradient_modal_start_color" 
                                        value="#ffffff"
                                        onchange="updateGradientColorControl('start')"
-                                       style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0;">
+                                       style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0; z-index: 10;"
+                                       onclick="event.stopPropagation();">
                                 <!-- 시작 색상 투명도 슬라이더 -->
                                 <div style="position: absolute; top: 52px; left: 0; width: 60px; background: white; border: 1px solid #dee2e6; border-radius: 4px; padding: 2px;">
                                     <input type="range" 
@@ -9052,14 +9083,15 @@ function hexToRgb(hex) {
                             <!-- 끝 색상 컨트롤 -->
                             <div id="gradient_end_control" class="gradient-color-control" data-position="100" style="position: absolute; left: 100%; top: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: all; cursor: grab; z-index: 20;">
                                 <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto;"></div>
-                                <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px;">
+                                <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px; cursor: pointer;" onclick="if(typeof selectGradientControl === 'function') selectGradientControl(document.getElementById('gradient_end_control'), 'end');">
                                     <div id="gradient_end_color_display" style="width: 100%; height: 100%; border-radius: 2px; background: #000000;"></div>
                                 </div>
                                 <input type="color" 
                                        id="gradient_modal_end_color" 
                                        value="#000000"
                                        onchange="updateGradientColorControl('end')"
-                                       style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0;">
+                                       style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0; z-index: 10;"
+                                       onclick="event.stopPropagation();">
                                 <!-- 끝 색상 투명도 슬라이더 -->
                                 <div style="position: absolute; top: 52px; left: 0; width: 60px; background: white; border: 1px solid #dee2e6; border-radius: 4px; padding: 2px;">
                                     <input type="range" 

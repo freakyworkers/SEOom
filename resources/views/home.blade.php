@@ -175,16 +175,17 @@
                         @foreach($columnWidgets as $index => $widget)
                             @php
                                 $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
+                                // 모든 위젯이 칸 영역의 가로 100%를 활용하도록 설정
+                                $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'width: 100%;';
                                 // 세로 정렬이 center 또는 bottom일 때 위젯 래퍼에 align-self 추가
-                                // 이미지 위젯의 경우 width를 auto로 설정하여 align-self가 제대로 작동하도록 함
                                 if ($verticalAlign === 'center') {
                                     if ($widget->type === 'image' || $widget->type === 'image_slide') {
-                                        $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'align-self: center; width: 100%;';
+                                        $widgetWrapperStyle .= ' align-self: center;';
                                     } else {
-                                        $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'align-self: center;';
+                                        $widgetWrapperStyle .= ' align-self: center;';
                                     }
                                 } elseif ($verticalAlign === 'bottom') {
-                                    $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'align-self: flex-end;';
+                                    $widgetWrapperStyle .= ' align-self: flex-end;';
                                 }
                                 // 마지막 위젯이 아니면 간격 적용
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
