@@ -115,7 +115,15 @@
             </a>
         @endif
         @if($hasButtons)
-            <div style="margin-top: {{ $buttonTopMargin }}px; text-align: {{ $textAlign }}; display: flex; flex-wrap: wrap; gap: 8px;">
+            @php
+                $justifyContent = 'flex-start';
+                if ($textAlign === 'center') {
+                    $justifyContent = 'center';
+                } elseif ($textAlign === 'right') {
+                    $justifyContent = 'flex-end';
+                }
+            @endphp
+            <div style="margin-top: {{ $buttonTopMargin }}px; display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; justify-content: {{ $justifyContent }};">
                 @foreach($buttons as $button)
                     @php
                         $buttonText = $button['text'] ?? '';
@@ -231,7 +239,15 @@
                             </a>
                         @endif
                         @if($hasButtons)
-                            <div style="margin-top: {{ $buttonTopMargin }}px; text-align: {{ $textAlign }}; display: flex; flex-wrap: wrap; gap: 8px;">
+                            @php
+                                $justifyContent = 'flex-start';
+                                if ($textAlign === 'center') {
+                                    $justifyContent = 'center';
+                                } elseif ($textAlign === 'right') {
+                                    $justifyContent = 'flex-end';
+                                }
+                            @endphp
+                            <div style="margin-top: {{ $buttonTopMargin }}px; display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; justify-content: {{ $justifyContent }};">
                                 @foreach($buttons as $button)
                                     @php
                                         $buttonText = $button['text'] ?? '';
