@@ -2320,7 +2320,9 @@ function addMainWidget() {
         const textAlign = formData.get('block_text_align') || 'left';
         const backgroundType = formData.get('block_background_type') || 'color';
         const paddingTop = formData.get('block_padding_top') || '20';
+        const paddingBottom = formData.get('block_padding_bottom') || '20';
         const paddingLeft = formData.get('block_padding_left') || '20';
+        const paddingRight = formData.get('block_padding_right') || '20';
         const blockLink = formData.get('block_link');
         const openNewTab = document.getElementById('widget_block_open_new_tab')?.checked || false;
         const fontColor = formData.get('block_font_color') || '#ffffff';
@@ -2376,7 +2378,9 @@ function addMainWidget() {
         }
         
         settings.padding_top = parseInt(paddingTop);
+        settings.padding_bottom = parseInt(paddingBottom);
         settings.padding_left = parseInt(paddingLeft);
+        settings.padding_right = parseInt(paddingRight);
         
         if (blockLink) {
             settings.link = blockLink;
@@ -2932,8 +2936,14 @@ function editMainWidget(widgetId) {
                 if (document.getElementById('edit_main_widget_block_padding_top')) {
                     document.getElementById('edit_main_widget_block_padding_top').value = settings.padding_top || 20;
                 }
+                if (document.getElementById('edit_main_widget_block_padding_bottom')) {
+                    document.getElementById('edit_main_widget_block_padding_bottom').value = settings.padding_bottom || 20;
+                }
                 if (document.getElementById('edit_main_widget_block_padding_left')) {
                     document.getElementById('edit_main_widget_block_padding_left').value = settings.padding_left || 20;
+                }
+                if (document.getElementById('edit_main_widget_block_padding_right')) {
+                    document.getElementById('edit_main_widget_block_padding_right').value = settings.padding_right || 20;
                 }
                 if (document.getElementById('edit_main_widget_block_link')) {
                     document.getElementById('edit_main_widget_block_link').value = settings.link || '';
@@ -5374,7 +5384,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <input type="number" 
                    class="form-control edit-main-block-slide-padding-bottom" 
                    name="edit_main_block_slide[${itemIndex}][padding_bottom]" 
-                   value="${blockData ? (blockData.padding_bottom || blockData.padding_top || '20') : '20'}"
+                   value="${blockData && blockData.padding_bottom !== undefined ? blockData.padding_bottom : (blockData && blockData.padding_top !== undefined ? blockData.padding_top : '20')}"
                    min="0"
                    max="200"
                    step="1"
@@ -5398,7 +5408,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <input type="number" 
                    class="form-control edit-main-block-slide-padding-right" 
                    name="edit_main_block_slide[${itemIndex}][padding_right]" 
-                   value="${blockData ? (blockData.padding_right || blockData.padding_left || '20') : '20'}"
+                   value="${blockData && blockData.padding_right !== undefined ? blockData.padding_right : (blockData && blockData.padding_left !== undefined ? blockData.padding_left : '20')}"
                    min="0"
                    max="200"
                    step="1"
