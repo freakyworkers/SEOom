@@ -170,8 +170,8 @@
                         // 위젯 간격 설정 (컨테이너별)
                         $widgetSpacing = $container->widget_spacing ?? 3;
                         $widgetSpacingValue = min(max($widgetSpacing, 0), 5);
-                        // 첫 번째 위젯이 아닐 때만 상단 마진 적용
-                        $widgetSpacingClass = $isFullHeight ? 'mb-0 mt-0' : 'mb-' . $widgetSpacingValue;
+                        // 첫 번째 위젯이 아닐 때만 상단 마진 적용, 하단 마진은 제거
+                        $widgetSpacingClass = $isFullHeight ? 'mb-0 mt-0' : 'mb-0';
                         $widgetSpacingTopClass = $isFullHeight ? 'mt-0' : 'mt-' . $widgetSpacingValue;
                     @endphp
                     @if(!$isHidden)
@@ -199,19 +199,12 @@
                                 } elseif ($verticalAlign === 'bottom' && !$isFullHeight) {
                                     $widgetWrapperStyle .= ' display: flex; align-items: flex-end; justify-content: center;';
                                 }
-                                // 마지막 위젯이 아니면 하단 간격 적용, 첫 번째 위젯이 아니면 상단 간격 적용
-                                $isLastWidget = $index === $columnWidgets->count() - 1;
+                                // 첫 번째 위젯이 아니면 상단 간격 적용, 하단 마진은 제거
                                 $isFirstWidget = $index === 0;
-                                // 모든 칸의 위젯 개수가 같고, 현재 위젯이 마지막이면 하단 마진 제거
-                                $isLastWidgetInAllColumns = ($isLastWidget && $allColumnsHaveSameWidgetCount);
                                 $widgetMarginClass = '';
                                 if (!$isFullHeight) {
                                     if (!$isFirstWidget) {
-                                        $widgetMarginClass .= $widgetSpacingTopClass . ' ';
-                                    }
-                                    // 마지막 위젯이 아니거나, 모든 칸의 마지막 위젯이 아니면 하단 마진 적용
-                                    if (!$isLastWidget || !$isLastWidgetInAllColumns) {
-                                        $widgetMarginClass .= $widgetSpacingClass;
+                                        $widgetMarginClass .= $widgetSpacingTopClass;
                                     }
                                 }
                             @endphp

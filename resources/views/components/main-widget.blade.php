@@ -113,7 +113,8 @@
             $blockStyle .= " flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center;";
         }
         
-        $blockMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
+        // 위젯 자체의 하단 마진 제거 (래퍼에서 마진 관리)
+        $blockMarginBottom = 'mb-0';
     @endphp
     <div class="{{ $blockMarginBottom }} {{ $shadowClass }} {{ $animationClass }}" style="{{ $blockStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
         @if($link && !$hasButtons)
@@ -223,7 +224,7 @@
         $blocks = $slideSettings['blocks'] ?? [];
     @endphp
     @if(count($blocks) > 0)
-        <div class="mb-3 block-slide-wrapper {{ $shadowClass }} {{ $animationClass }}" 
+        <div class="mb-0 block-slide-wrapper {{ $shadowClass }} {{ $animationClass }}" 
              style="{{ $animationStyle }}"
              data-direction="{{ $slideDirection }}" 
              data-widget-id="{{ $widget->id }}"
@@ -551,7 +552,7 @@
         $openNewTab = $imageSettings['open_new_tab'] ?? false;
     @endphp
     @if($imageUrl)
-        <div class="mb-3 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; max-width: 100%;" data-widget-id="{{ $widget->id }}">
+        <div class="mb-0 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; max-width: 100%;" data-widget-id="{{ $widget->id }}">
             @if($link)
                 <a href="{{ $link }}" 
                    @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
@@ -582,7 +583,7 @@
         }
     @endphp
     @if(count($images) > 0)
-        <div class="mb-3 image-slide-wrapper {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" 
+        <div class="mb-0 image-slide-wrapper {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" 
              data-direction="{{ $slideDirection }}" 
              data-mode="{{ $slideMode }}"
              data-visible-count="{{ $visibleCount }}"

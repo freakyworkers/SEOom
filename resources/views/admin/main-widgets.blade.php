@@ -8237,7 +8237,7 @@ function updateGradientColorControl(type) {
     
     // 미리보기 업데이트
     if (typeof updateGradientPreview === 'function') {
-        updateGradientPreview();
+    updateGradientPreview();
     }
 }
 
@@ -8364,12 +8364,12 @@ function makeGradientControlDraggable(control) {
         const colorDisplay = e.target.closest('.gradient-color-display');
         if (colorDisplay) {
             // 색상 표시 영역을 클릭한 경우 드래그 시작
-            isDragging = true;
+        isDragging = true;
             hasMoved = false;
-            control.style.cursor = 'grabbing';
-            startX = e.clientX;
-            startLeft = parseFloat(control.style.left) || 0;
-            e.preventDefault();
+        control.style.cursor = 'grabbing';
+        startX = e.clientX;
+        startLeft = parseFloat(control.style.left) || 0;
+        e.preventDefault();
             e.stopPropagation();
             return;
         }
@@ -8431,12 +8431,12 @@ function makeGradientControlDraggable(control) {
         }
         const colorDisplay = e.target.closest('.gradient-color-display');
         if (colorDisplay) {
-            isDragging = true;
+        isDragging = true;
             hasMoved = false;
-            const touch = e.touches[0];
-            startX = touch.clientX;
-            startLeft = parseFloat(control.style.left) || 0;
-            e.preventDefault();
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startLeft = parseFloat(control.style.left) || 0;
+        e.preventDefault();
             e.stopPropagation();
             return;
         }
@@ -8529,9 +8529,9 @@ function selectGradientControl(control, type) {
         const colorInput = document.getElementById('gradient_modal_start_color');
         const alphaInput = document.getElementById('gradient_modal_start_alpha');
         if (settingsPanel && colorInput && alphaInput) {
-            document.getElementById('gradient_selected_color').value = colorInput.value;
-            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
-            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+        document.getElementById('gradient_selected_color').value = colorInput.value;
+        document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+        document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
             settingsPanel.style.display = 'block';
         }
         if (removeBtn) removeBtn.style.display = 'none';
@@ -8539,9 +8539,9 @@ function selectGradientControl(control, type) {
         const colorInput = document.getElementById('gradient_modal_end_color');
         const alphaInput = document.getElementById('gradient_modal_end_alpha');
         if (settingsPanel && colorInput && alphaInput) {
-            document.getElementById('gradient_selected_color').value = colorInput.value;
-            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
-            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+        document.getElementById('gradient_selected_color').value = colorInput.value;
+        document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+        document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
             settingsPanel.style.display = 'block';
         }
         if (removeBtn) removeBtn.style.display = 'none';
@@ -8551,13 +8551,13 @@ function selectGradientControl(control, type) {
         if (settingsPanel && colorInput) {
             document.getElementById('gradient_selected_color').value = colorInput.value;
             if (alphaInput) {
-                document.getElementById('gradient_selected_alpha').value = alphaInput.value;
-                document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
             }
             settingsPanel.style.display = 'block';
         }
-        if (removeBtn) removeBtn.style.display = 'block';
-    }
+            if (removeBtn) removeBtn.style.display = 'block';
+        }
 }
 
 // 선택된 컨트롤 업데이트

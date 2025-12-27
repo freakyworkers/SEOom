@@ -102,7 +102,7 @@ class AuthController extends Controller
                 if ($site->isMasterSite()) {
                     // 라우트가 존재하면 사용, 아니면 직접 경로 사용
                     if (\Route::has('master.admin.dashboard')) {
-                        return redirect()->route('master.admin.dashboard');
+                    return redirect()->route('master.admin.dashboard');
                     }
                     return redirect('/admin/dashboard');
                 }
@@ -136,7 +136,7 @@ class AuthController extends Controller
                 if ($user && $user->canManage()) {
                     // 라우트가 존재하면 사용, 아니면 직접 경로 사용
                     if (\Route::has('master.admin.dashboard')) {
-                        return redirect()->route('master.admin.dashboard');
+                    return redirect()->route('master.admin.dashboard');
                     }
                     return redirect('/admin/dashboard');
                 }
