@@ -91,6 +91,11 @@
         // 스타일 생성
         $blockStyle = "width: 100%; padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
         
+        // 가로 100%일 때 좌우 보더 레디우스 제거
+        if ($isFullWidth) {
+            $blockStyle .= " border-radius: 0 !important;";
+        }
+        
         if ($backgroundType === 'color') {
             $blockStyle .= " background-color: {$backgroundColor};";
         } else if ($backgroundType === 'gradient') {

@@ -8350,8 +8350,17 @@ function makeGradientControlDraggable(control) {
         if (e.target.type === 'color' || e.target.type === 'range' || e.target.closest('input[type="color"]') || e.target.closest('input[type="range"]')) {
             return;
         }
-        // 색상 표시 영역을 클릭한 경우 설정 패널 표시 (드래그하지 않음)
-        if (e.target.closest('[onclick*="selectGradientControl"]')) {
+        // 색상 표시 영역(파란 박스)을 클릭한 경우 드래그 시작
+        const colorDisplay = e.target.closest('[onclick*="selectGradientControl"]');
+        if (colorDisplay) {
+            // 색상 표시 영역을 클릭한 경우 드래그 시작
+            isDragging = true;
+            hasMoved = false;
+            control.style.cursor = 'grabbing';
+            startX = e.clientX;
+            startLeft = parseFloat(control.style.left) || 0;
+            e.preventDefault();
+            e.stopPropagation();
             return;
         }
         // handle이나 컨트롤 자체를 클릭한 경우 드래그 시작
@@ -8392,8 +8401,8 @@ function makeGradientControlDraggable(control) {
         if (isDragging) {
             isDragging = false;
             control.style.cursor = 'grab';
-            // 드래그가 아닌 클릭인 경우에만 설정 패널 표시
-            if (!hasMoved && e.target.type !== 'color' && !e.target.closest('input[type="color"]') && !e.target.closest('input[type="range"]') && !e.target.closest('[onclick*="selectGradientControl"]')) {
+            // 드래그가 아닌 클릭인 경우에만 설정 패널 표시 (색상 표시 영역을 더블클릭하거나 정확히 클릭한 경우)
+            if (!hasMoved && e.target.type !== 'color' && !e.target.closest('input[type="color"]') && !e.target.closest('input[type="range"]') && !e.target.closest('.gradient-color-display')) {
                 const controlType = control.id === 'gradient_start_control' ? 'start' : (control.id === 'gradient_end_control' ? 'end' : 'middle');
                 if (typeof selectGradientControl === 'function') {
                     selectGradientControl(control, controlType);
@@ -9072,18 +9081,6 @@ function hexToRgb(hex) {
                                        onchange="updateGradientColorControl('start')"
                                        style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0; z-index: 10;"
                                        onclick="event.stopPropagation();">
-                                <!-- 시작 색상 투명도 슬라이더 -->
-                                <div style="position: absolute; top: 52px; left: 0; width: 60px; background: white; border: 1px solid #dee2e6; border-radius: 4px; padding: 2px;">
-                                    <input type="range" 
-                                           id="gradient_modal_start_alpha" 
-                                           min="0" 
-                                           max="100" 
-                                           value="100"
-                                           onchange="updateGradientColorControl('start')"
-                                           style="width: 100%; margin: 0;"
-                                           title="투명도">
-                                    <small style="font-size: 0.6rem; display: block; text-align: center;" id="gradient_start_alpha_value">100%</small>
-                                </div>
                             </div>
                             
                             <!-- 중간 색상 컨트롤들 -->
@@ -9092,7 +9089,7 @@ function hexToRgb(hex) {
                             <!-- 끝 색상 컨트롤 -->
                             <div id="gradient_end_control" class="gradient-color-control" data-position="100" style="position: absolute; left: 100%; top: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: all; cursor: grab; z-index: 20;">
                                 <div class="gradient-control-handle" style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto; cursor: grab;"></div>
-                                <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px; cursor: pointer;" onclick="if(typeof selectGradientControl === 'function') selectGradientControl(document.getElementById('gradient_end_control'), 'end');">
+                                <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px; cursor: grab;" class="gradient-color-display">
                                     <div id="gradient_end_color_display" style="width: 100%; height: 100%; border-radius: 2px; background: #000000;"></div>
                                 </div>
                                 <input type="color" 
@@ -9101,18 +9098,6 @@ function hexToRgb(hex) {
                                        onchange="updateGradientColorControl('end')"
                                        style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0; z-index: 10;"
                                        onclick="event.stopPropagation();">
-                                <!-- 끝 색상 투명도 슬라이더 -->
-                                <div style="position: absolute; top: 52px; left: 0; width: 60px; background: white; border: 1px solid #dee2e6; border-radius: 4px; padding: 2px;">
-                                    <input type="range" 
-                                           id="gradient_modal_end_alpha" 
-                                           min="0" 
-                                           max="100" 
-                                           value="100"
-                                           onchange="updateGradientColorControl('end')"
-                                           style="width: 100%; margin: 0;"
-                                           title="투명도">
-                                    <small style="font-size: 0.6rem; display: block; text-align: center;" id="gradient_end_alpha_value">100%</small>
-                                </div>
                             </div>
                         </div>
                     </div>

@@ -159,7 +159,9 @@
                         // 위젯 간격 설정 (컨테이너별)
                         $widgetSpacing = $container->widget_spacing ?? 3;
                         $widgetSpacingValue = min(max($widgetSpacing, 0), 5);
-                        $widgetSpacingClass = $isFullHeight ? 'mb-0 mt-0' : 'mb-' . $widgetSpacingValue . ' mt-' . $widgetSpacingValue;
+                        // 첫 번째 위젯이 아닐 때만 상단 마진 적용
+                        $widgetSpacingClass = $isFullHeight ? 'mb-0 mt-0' : 'mb-' . $widgetSpacingValue;
+                        $widgetSpacingTopClass = $isFullHeight ? 'mt-0' : 'mt-' . $widgetSpacingValue;
                     @endphp
                     @if(!$isHidden)
                         @php
@@ -186,10 +188,20 @@
                                 } elseif ($verticalAlign === 'bottom' && !$isFullHeight) {
                                     $widgetWrapperStyle .= ' display: flex; align-items: flex-end; justify-content: center;';
                                 }
-                                // 마지막 위젯이 아니면 간격 적용
+                                // 마지막 위젯이 아니면 하단 간격 적용, 첫 번째 위젯이 아니면 상단 간격 적용
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
+                                $isFirstWidget = $index === 0;
+                                $widgetMarginClass = '';
+                                if (!$isFullHeight) {
+                                    if (!$isFirstWidget) {
+                                        $widgetMarginClass .= $widgetSpacingTopClass . ' ';
+                                    }
+                                    if (!$isLastWidget) {
+                                        $widgetMarginClass .= $widgetSpacingClass;
+                                    }
+                                }
                             @endphp
-                            <div class="{{ !$isLastWidget && !$isFullHeight ? $widgetSpacingClass : '' }}" style="{{ $widgetWrapperStyle }}">
+                            <div class="{{ $widgetMarginClass }}" style="{{ $widgetWrapperStyle }}">
                                 <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" />
                             </div>
                         @endforeach
