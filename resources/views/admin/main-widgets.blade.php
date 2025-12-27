@@ -4735,11 +4735,11 @@ function saveMainWidgetSettings() {
             }
         }
         
-        settings.padding_top = parseInt(paddingTop);
-        settings.padding_bottom = parseInt(paddingBottom);
-        settings.padding_left = parseInt(paddingLeft);
-        settings.padding_right = parseInt(paddingRight);
-        settings.title_content_gap = parseInt(titleContentGap);
+        settings.padding_top = parseInt(paddingTop) || 20;
+        settings.padding_bottom = parseInt(paddingBottom) || 20;
+        settings.padding_left = parseInt(paddingLeft) || 20;
+        settings.padding_right = parseInt(paddingRight) || 20;
+        settings.title_content_gap = parseInt(titleContentGap) || 8;
         
         if (blockLink) {
             settings.link = blockLink;
