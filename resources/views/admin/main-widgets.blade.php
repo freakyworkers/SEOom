@@ -251,7 +251,7 @@
                                                                placeholder="90"
                                                                style="width: auto; min-width: 80px;"
                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
-                                                        <small class="text-muted ms-1">deg</small>
+                                                        <i class="bi bi-compass text-muted ms-1" style="font-size: 1.1rem;" title="각도"></i>
                                                     </div>
                                                     <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-block' : 'none' }}; margin-left: 8px;">
                                                         <input type="text" 
@@ -394,7 +394,7 @@
                                                                id="container_background_gradient_end_mobile_{{ $container->id }}"
                                                                value="{{ $container->background_gradient_end ?? '#000000' }}"
                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
-                                                        <label class="form-label small mb-1">각도 (deg)</label>
+                                                        <label class="form-label small mb-1">각도 <i class="bi bi-compass" style="font-size: 0.9rem;" title="각도"></i></label>
                                                         <input type="number" 
                                                                class="form-control form-control-sm" 
                                                                id="container_background_gradient_angle_mobile_{{ $container->id }}"
@@ -985,7 +985,7 @@
                                    id="edit_main_widget_block_gradient_end" 
                                    name="block_background_gradient_end" 
                                    value="#000000">
-                            <label for="edit_main_widget_block_gradient_angle" class="form-label">각도 (deg)</label>
+                            <label for="edit_main_widget_block_gradient_angle" class="form-label">각도 <i class="bi bi-compass" style="font-size: 0.9rem;" title="각도"></i></label>
                             <input type="number" 
                                    class="form-control" 
                                    id="edit_main_widget_block_gradient_angle" 
@@ -4299,7 +4299,7 @@ function addBlockSlideItem() {
             <input type="color" class="form-control form-control-color mb-2 block-slide-background-gradient-start" name="block_slide[${itemIndex}][background_gradient_start]" value="#ffffff">
             <label class="form-label">끝 색상</label>
             <input type="color" class="form-control form-control-color mb-2 block-slide-background-gradient-end" name="block_slide[${itemIndex}][background_gradient_end]" value="#000000">
-            <label class="form-label">각도 (deg)</label>
+            <label class="form-label">각도 <i class="bi bi-compass" style="font-size: 0.9rem;" title="각도"></i></label>
             <input type="number" 
                    class="form-control block-slide-background-gradient-angle" 
                    name="block_slide[${itemIndex}][background_gradient_angle]" 
@@ -5889,7 +5889,7 @@ function addEditMainBlockSlideItem(blockData = null) {
                    class="form-control form-control-color mb-2 edit-main-block-slide-background-gradient-end" 
                    name="edit_main_block_slide[${itemIndex}][background_gradient_end]" 
                    value="${blockData ? (blockData.background_gradient_end || '#000000') : '#000000'}">
-            <label class="form-label">각도 (deg)</label>
+            <label class="form-label">각도 <i class="bi bi-compass" style="font-size: 0.9rem;" title="각도"></i></label>
             <input type="number" 
                    class="form-control edit-main-block-slide-background-gradient-angle" 
                    name="edit_main_block_slide[${itemIndex}][background_gradient_angle]" 

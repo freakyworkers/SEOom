@@ -228,7 +228,7 @@
                                                                placeholder="90"
                                                                style="width: auto; min-width: 80px;"
                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
-                                                        <small class="text-muted ms-1">deg</small>
+                                                        <i class="bi bi-compass text-muted ms-1" style="font-size: 1.1rem;" title="각도"></i>
                                                     </div>
                                                     <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-block' : 'none' }}; margin-left: 8px;">
                                                         <input type="text" 
@@ -358,7 +358,7 @@
                                                                id="container_background_gradient_end_mobile_{{ $container->id }}"
                                                                value="{{ $container->background_gradient_end ?? '#000000' }}"
                                                                onchange="updateContainerBackgroundGradient({{ $container->id }})">
-                                                        <label class="form-label small mb-1">각도 (deg)</label>
+                                                        <label class="form-label small mb-1">각도 <i class="bi bi-compass" style="font-size: 0.9rem;" title="각도"></i></label>
                                                         <input type="number" 
                                                                class="form-control form-control-sm" 
                                                                id="container_background_gradient_angle_mobile_{{ $container->id }}"
