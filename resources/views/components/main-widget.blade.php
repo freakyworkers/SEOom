@@ -846,6 +846,10 @@
     if (!$isRoundTheme) {
         $cardStyle .= ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;';
     }
+    // 가로 100%일 때 좌우 보더 레디우스 제거
+    if ($isFullWidth) {
+        $cardStyle .= ($cardStyle ? ' ' : '') . 'border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important;';
+    }
     if ($isFullHeight) {
         $cardStyle .= ($cardStyle ? ' ' : '') . 'flex: 1; display: flex; flex-direction: column; min-height: 0;';
     }
