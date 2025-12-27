@@ -470,7 +470,8 @@ Route::middleware('web')->group(function () {
             })->name('master.admin.sidebar-widgets.reorder');
             
             // Main Widgets
-            Route::match(['get', 'post'], '/main-widgets', function (Request $request) use ($masterSite) {
+            Route::match(['get', 'post'], '/main-widgets', function (Request $request) {
+                $masterSite = \App\Models\Site::getMasterSite();
                 return app(\App\Http\Controllers\AdminController::class)->mainWidgets($masterSite, $request);
             })->name('master.admin.main-widgets');
             Route::post('/main-widgets/containers/store', function (Request $request) use ($masterSite) {
