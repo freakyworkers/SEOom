@@ -4825,6 +4825,164 @@ function updateGradientColorControl(type) {
     updateGradientPreview();
 }
 
+// 그라데이션 컨트롤을 드래그 가능하게 만들기
+function makeGradientControlDraggable(control) {
+    let isDragging = false;
+    let startX = 0;
+    let startLeft = 0;
+    
+    control.addEventListener('mousedown', function(e) {
+        if (e.target.type === 'color') return;
+        isDragging = true;
+        control.style.cursor = 'grabbing';
+        startX = e.clientX;
+        startLeft = parseFloat(control.style.left) || 0;
+        e.preventDefault();
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        
+        const preview = document.getElementById('gradient_modal_preview');
+        if (!preview) return;
+        
+        const rect = preview.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        
+        control.style.left = `${percent}%`;
+        control.setAttribute('data-position', percent);
+        
+        updateGradientPreview();
+    });
+    
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            control.style.cursor = 'grab';
+        }
+    });
+    
+    // 터치 이벤트 지원
+    control.addEventListener('touchstart', function(e) {
+        if (e.target.type === 'color') return;
+        isDragging = true;
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startLeft = parseFloat(control.style.left) || 0;
+        e.preventDefault();
+    });
+    
+    document.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        
+        const preview = document.getElementById('gradient_modal_preview');
+        if (!preview) return;
+        
+        const touch = e.touches[0];
+        const rect = preview.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        
+        control.style.left = `${percent}%`;
+        control.setAttribute('data-position', percent);
+        
+        updateGradientPreview();
+        e.preventDefault();
+    });
+    
+    document.addEventListener('touchend', function() {
+        if (isDragging) {
+            isDragging = false;
+        }
+    });
+}
+
+// 그라데이션 컨트롤 선택
+let selectedGradientControl = null;
+let selectedGradientControlType = null;
+
+function selectGradientControl(control, type) {
+    // 이전 선택 해제
+    document.querySelectorAll('.gradient-color-control').forEach(c => {
+        c.style.border = '';
+    });
+    
+    // 새 선택
+    selectedGradientControl = control;
+    selectedGradientControlType = type;
+    control.style.border = '2px solid #0d6efd';
+    
+    // 설정 패널 업데이트
+    const settingsPanel = document.getElementById('gradient_selected_control_settings');
+    const removeBtn = document.getElementById('gradient_remove_selected');
+    
+    if (type === 'start') {
+        const colorInput = document.getElementById('gradient_modal_start_color');
+        const alphaInput = document.getElementById('gradient_modal_start_alpha');
+        document.getElementById('gradient_selected_color').value = colorInput.value;
+        document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+        document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+        if (removeBtn) removeBtn.style.display = 'none';
+    } else if (type === 'end') {
+        const colorInput = document.getElementById('gradient_modal_end_color');
+        const alphaInput = document.getElementById('gradient_modal_end_alpha');
+        document.getElementById('gradient_selected_color').value = colorInput.value;
+        document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+        document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+        if (removeBtn) removeBtn.style.display = 'none';
+    } else if (type === 'middle') {
+        const colorInput = control.querySelector('.gradient-middle-color-input');
+        const alphaInput = control.querySelector('.gradient-middle-alpha-input');
+        if (colorInput && alphaInput) {
+            document.getElementById('gradient_selected_color').value = colorInput.value;
+            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+            if (removeBtn) removeBtn.style.display = 'block';
+        }
+    }
+    
+    if (settingsPanel) settingsPanel.style.display = 'block';
+}
+
+// 선택된 컨트롤 업데이트
+function updateSelectedGradientControl() {
+    if (!selectedGradientControl || !selectedGradientControlType) return;
+    
+    const color = document.getElementById('gradient_selected_color').value;
+    const alpha = document.getElementById('gradient_selected_alpha').value;
+    document.getElementById('gradient_selected_alpha_value').textContent = alpha + '%';
+    
+    if (selectedGradientControlType === 'start') {
+        document.getElementById('gradient_modal_start_color').value = color;
+        document.getElementById('gradient_modal_start_alpha').value = alpha;
+        updateGradientColorControl('start');
+    } else if (selectedGradientControlType === 'end') {
+        document.getElementById('gradient_modal_end_color').value = color;
+        document.getElementById('gradient_modal_end_alpha').value = alpha;
+        updateGradientColorControl('end');
+    } else if (selectedGradientControlType === 'middle') {
+        const colorInput = selectedGradientControl.querySelector('.gradient-middle-color-input');
+        const alphaInput = selectedGradientControl.querySelector('.gradient-middle-alpha-input');
+        if (colorInput && alphaInput) {
+            colorInput.value = color;
+            alphaInput.value = alpha;
+            updateGradientMiddleColor(colorInput);
+        }
+    }
+}
+
+// 선택된 컨트롤 제거
+function removeSelectedGradientControl() {
+    if (selectedGradientControl && selectedGradientControlType === 'middle') {
+        selectedGradientControl.remove();
+        selectedGradientControl = null;
+        selectedGradientControlType = null;
+        document.getElementById('gradient_selected_control_settings').style.display = 'none';
+        updateGradientPreview();
+    }
+}
+
 // 그라데이션 모달 열기
 function openGradientModal(containerId, type) {
     currentGradientContainerId = containerId;
@@ -4854,12 +5012,50 @@ function openGradientModal(containerId, type) {
     updateGradientColorControl('start');
     updateGradientColorControl('end');
     
+    // 시작/끝 컨트롤에 드래그 기능 추가
+    const startControl = document.getElementById('gradient_start_control');
+    const endControl = document.getElementById('gradient_end_control');
+    if (startControl) {
+        makeGradientControlDraggable(startControl);
+        startControl.addEventListener('click', function(e) {
+            if (e.target.type !== 'color') {
+                selectGradientControl(startControl, 'start');
+            }
+        });
+    }
+    if (endControl) {
+        makeGradientControlDraggable(endControl);
+        endControl.addEventListener('click', function(e) {
+            if (e.target.type !== 'color') {
+                selectGradientControl(endControl, 'end');
+            }
+        });
+    }
+    
+    // 그라데이션 바 클릭 이벤트 (새 중간 색상 추가)
+    const preview = document.getElementById('gradient_modal_preview');
+    if (preview) {
+        preview.addEventListener('click', function(e) {
+            if (e.target === preview || e.target.closest('#gradient_color_controls') === null) {
+                const rect = preview.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                addGradientMiddleColor(percent);
+            }
+        });
+    }
+    
     // 중간 색상 초기화
     const middleControlsContainer = document.getElementById('gradient_middle_controls');
     middleControlsContainer.innerHTML = '';
     
     // 미리보기 업데이트
     updateGradientPreview();
+    
+    // 설정 패널 숨기기
+    document.getElementById('gradient_selected_control_settings').style.display = 'none';
+    selectedGradientControl = null;
+    selectedGradientControlType = null;
     
     // 모달 표시
     const modal = new bootstrap.Modal(document.getElementById('gradientModal'));
@@ -4910,25 +5106,27 @@ function updateGradientPreview() {
 }
 
 // 중간 색상 추가
-function addGradientMiddleColor() {
-    const controlsContainer = document.getElementById('gradient_color_controls');
+function addGradientMiddleColor(position = null) {
     const middleControlsContainer = document.getElementById('gradient_middle_controls');
-    const startControl = document.getElementById('gradient_start_control');
-    const endControl = document.getElementById('gradient_end_control');
     
-    // 중간 색상 개수
-    const middleCount = middleControlsContainer.children.length;
-    const totalPositions = 100;
-    const position = Math.round((totalPositions / (middleCount + 2)) * (middleCount + 1));
+    // 위치가 지정되지 않으면 중간에 추가
+    if (position === null) {
+        const middleCount = middleControlsContainer.children.length;
+        const totalPositions = 100;
+        position = Math.round((totalPositions / (middleCount + 2)) * (middleCount + 1));
+    }
     
     const control = document.createElement('div');
-    control.className = 'gradient-middle-control';
+    control.className = 'gradient-middle-control gradient-color-control';
+    control.setAttribute('data-position', position);
     control.style.position = 'absolute';
     control.style.left = `${position}%`;
-    control.style.bottom = '0';
+    control.style.top = '50%';
+    control.style.transform = 'translate(-50%, -50%)';
     control.style.textAlign = 'center';
-    control.style.transform = 'translateX(-50%)';
-    control.style.zIndex = '10';
+    control.style.pointerEvents = 'all';
+    control.style.cursor = 'grab';
+    control.style.zIndex = '20';
     
     control.innerHTML = `
         <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto;"></div>
@@ -4940,30 +5138,28 @@ function addGradientMiddleColor() {
                value="#808080"
                onchange="updateGradientMiddleColor(this)"
                style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0;">
-        <div class="mt-1">
-            <input type="range" 
-                   class="form-range gradient-middle-alpha-input" 
-                   min="0" 
-                   max="100" 
-                   value="100"
-                   onchange="updateGradientMiddleColor(this.closest('.gradient-middle-control').querySelector('.gradient-middle-color-input'))"
-                   style="width: 60px;">
-            <input type="number" 
-                   class="form-control form-control-sm gradient-middle-position-input" 
-                   value="${position}"
-                   min="0"
-                   max="100"
-                   onchange="updateGradientMiddlePosition(this)"
-                   style="width: 60px; margin-top: 2px; font-size: 0.7rem;">
-            <small class="d-block" style="font-size: 0.7rem;">위치(%)</small>
-        </div>
-        <button type="button" class="btn btn-sm btn-outline-danger mt-1" onclick="removeGradientMiddleColor(this)" style="font-size: 0.7rem; padding: 2px 6px;">
-            <i class="bi bi-x"></i>
-        </button>
+        <input type="range" 
+               class="form-range gradient-middle-alpha-input" 
+               min="0" 
+               max="100" 
+               value="100"
+               onchange="updateGradientMiddleColor(this.closest('.gradient-middle-control').querySelector('.gradient-middle-color-input'))"
+               style="position: absolute; opacity: 0; width: 60px; height: 20px; top: 52px; left: 0; pointer-events: all;">
     `;
+    
+    // 드래그 이벤트 추가
+    makeGradientControlDraggable(control);
+    
+    // 클릭 이벤트 추가 (선택)
+    control.addEventListener('click', function(e) {
+        if (e.target.type !== 'color') {
+            selectGradientControl(control, 'middle');
+        }
+    });
     
     middleControlsContainer.appendChild(control);
     updateGradientMiddleColor(control.querySelector('.gradient-middle-color-input'));
+    selectGradientControl(control, 'middle');
 }
 
 // 중간 색상 업데이트
@@ -4973,25 +5169,22 @@ function updateGradientMiddleColor(colorInput) {
     const display = control.querySelector('.gradient-middle-color-display');
     
     const hex = colorInput.value;
-    const alpha = alphaInput.value / 100;
+    const alpha = alphaInput ? (alphaInput.value / 100) : 1;
     const rgba = hexToRgba(hex, alpha);
     
     if (display) {
         display.style.background = rgba;
     }
     
-    updateGradientPreview();
-}
-
-// 중간 색상 위치 업데이트
-function updateGradientMiddlePosition(positionInput) {
-    const control = positionInput.closest('.gradient-middle-control');
-    const position = parseInt(positionInput.value) || 50;
+    // 선택된 컨트롤이면 설정 패널도 업데이트
+    if (selectedGradientControl === control && selectedGradientControlType === 'middle') {
+        document.getElementById('gradient_selected_color').value = hex;
+        if (alphaInput) {
+            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+        }
+    }
     
-    if (position < 0) positionInput.value = 0;
-    if (position > 100) positionInput.value = 100;
-    
-    control.style.left = `${position}%`;
     updateGradientPreview();
 }
 

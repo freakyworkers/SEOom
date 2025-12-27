@@ -217,14 +217,27 @@
                                                         <option value="gradient" {{ ($container->background_type ?? 'none') == 'gradient' ? 'selected' : '' }}>그라데이션</option>
                                                         <option value="image" {{ ($container->background_type ?? 'none') == 'image' ? 'selected' : '' }}>이미지</option>
                                                     </select>
-                                                    <div id="container_background_color_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'color' ? 'inline-block' : 'none' }}; margin-left: 8px;">
+                                                    <div id="container_background_color_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'color' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px;">
                                                         <input type="color" 
                                                                class="form-control form-control-color" 
                                                                id="container_background_color_input_{{ $container->id }}"
                                                                value="{{ $container->background_color ?? '#ffffff' }}"
                                                                style="width: 40px; height: 38px;"
-                                                               onchange="updateContainerBackground({{ $container->id }}, 'color', this.value)"
+                                                               onchange="updateContainerBackgroundColor({{ $container->id }})"
                                                                title="배경 색상">
+                                                        <input type="range" 
+                                                               class="form-range" 
+                                                               id="container_background_color_alpha_{{ $container->id }}"
+                                                               min="0" 
+                                                               max="100" 
+                                                               value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}"
+                                                               style="width: 80px;"
+                                                               onchange="updateContainerBackgroundColor({{ $container->id }})"
+                                                               title="투명도">
+                                                        <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_color_alpha_value_{{ $container->id }}">{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}%</small>
+                                                        <input type="hidden" 
+                                                               id="container_background_color_alpha_hidden_{{ $container->id }}"
+                                                               value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}">
                                                     </div>
                                                     <div id="container_background_gradient_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'gradient' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px;">
                                                         <div id="container_gradient_preview_{{ $container->id }}" 
@@ -242,14 +255,27 @@
                                                                id="container_background_gradient_angle_{{ $container->id }}"
                                                                value="{{ $container->background_gradient_angle ?? 90 }}">
                                                     </div>
-                                                    <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-block' : 'none' }}; margin-left: 8px;">
+                                                    <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px; flex-wrap: wrap;">
                                                         <input type="text" 
                                                                class="form-control form-control-sm" 
                                                                id="container_background_image_url_{{ $container->id }}"
                                                                value="{{ $container->background_image_url ?? '' }}"
                                                                placeholder="이미지 URL"
                                                                style="width: 200px;"
-                                                               onchange="updateContainerBackground({{ $container->id }}, 'image', this.value)">
+                                                               onchange="updateContainerBackgroundImage({{ $container->id }})">
+                                                        <input type="range" 
+                                                               class="form-range" 
+                                                               id="container_background_image_alpha_{{ $container->id }}"
+                                                               min="0" 
+                                                               max="100" 
+                                                               value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}"
+                                                               style="width: 80px;"
+                                                               onchange="updateContainerBackgroundImage({{ $container->id }})"
+                                                               title="투명도">
+                                                        <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_image_alpha_value_{{ $container->id }}">{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}%</small>
+                                                        <input type="hidden" 
+                                                               id="container_background_image_alpha_hidden_{{ $container->id }}"
+                                                               value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}">
                                                     </div>
                                                 </div>
                                                 <div class="d-flex align-items-center gap-2">
@@ -365,10 +391,26 @@
                                                     <div class="col-12" id="container_background_color_mobile_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'color' ? 'block' : 'none' }};">
                                                         <label class="form-label small mb-1">색상</label>
                                                         <input type="color" 
-                                                               class="form-control form-control-color" 
+                                                               class="form-control form-control-color mb-2" 
                                                                id="container_background_color_input_mobile_{{ $container->id }}"
                                                                value="{{ $container->background_color ?? '#ffffff' }}"
-                                                               onchange="updateContainerBackground({{ $container->id }}, 'color', this.value)">
+                                                               onchange="updateContainerBackgroundColorMobile({{ $container->id }})">
+                                                        <label class="form-label small mb-1">투명도</label>
+                                                        <input type="range" 
+                                                               class="form-range" 
+                                                               id="container_background_color_alpha_mobile_{{ $container->id }}"
+                                                               min="0" 
+                                                               max="100" 
+                                                               value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}"
+                                                               onchange="updateContainerBackgroundColorMobile({{ $container->id }})">
+                                                        <div class="d-flex justify-content-between">
+                                                            <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                                                            <small class="text-muted" id="container_background_color_alpha_value_mobile_{{ $container->id }}" style="font-size: 0.7rem;">{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}%</small>
+                                                            <small class="text-muted" style="font-size: 0.7rem;">100%</small>
+                                                        </div>
+                                                        <input type="hidden" 
+                                                               id="container_background_color_alpha_hidden_mobile_{{ $container->id }}"
+                                                               value="{{ isset($container->background_color_alpha) ? $container->background_color_alpha : 100 }}">
                                                     </div>
                                                     <div class="col-12" id="container_background_gradient_mobile_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'gradient' ? 'block' : 'none' }};">
                                                         <label class="form-label small mb-1">그라데이션</label>
@@ -390,11 +432,27 @@
                                                     <div class="col-12" id="container_background_image_mobile_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'block' : 'none' }};">
                                                         <label class="form-label small mb-1">이미지 URL</label>
                                                         <input type="text" 
-                                                               class="form-control form-control-sm" 
+                                                               class="form-control form-control-sm mb-2" 
                                                                id="container_background_image_url_mobile_{{ $container->id }}"
                                                                value="{{ $container->background_image_url ?? '' }}"
                                                                placeholder="https://example.com/image.jpg"
-                                                               onchange="updateContainerBackground({{ $container->id }}, 'image', this.value)">
+                                                               onchange="updateContainerBackgroundImageMobile({{ $container->id }})">
+                                                        <label class="form-label small mb-1">투명도</label>
+                                                        <input type="range" 
+                                                               class="form-range" 
+                                                               id="container_background_image_alpha_mobile_{{ $container->id }}"
+                                                               min="0" 
+                                                               max="100" 
+                                                               value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}"
+                                                               onchange="updateContainerBackgroundImageMobile({{ $container->id }})">
+                                                        <div class="d-flex justify-content-between">
+                                                            <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                                                            <small class="text-muted" id="container_background_image_alpha_value_mobile_{{ $container->id }}" style="font-size: 0.7rem;">{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}%</small>
+                                                            <small class="text-muted" style="font-size: 0.7rem;">100%</small>
+                                                        </div>
+                                                        <input type="hidden" 
+                                                               id="container_background_image_alpha_hidden_mobile_{{ $container->id }}"
+                                                               value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}">
                                                     </div>
                                                 </div>
                                             </div>
@@ -948,10 +1006,24 @@
                         <div class="mb-3" id="edit_main_widget_block_color_container" style="display: none;">
                             <label for="edit_main_widget_block_background_color" class="form-label">적용 컬러</label>
                             <input type="color" 
-                                   class="form-control form-control-color" 
+                                   class="form-control form-control-color mb-2" 
                                    id="edit_main_widget_block_background_color" 
                                    name="block_background_color" 
                                    value="#007bff">
+                            <label for="edit_main_widget_block_background_color_alpha" class="form-label">투명도</label>
+                            <input type="range" 
+                                   class="form-range" 
+                                   id="edit_main_widget_block_background_color_alpha" 
+                                   name="block_background_color_alpha"
+                                   min="0" 
+                                   max="100" 
+                                   value="100"
+                                   onchange="document.getElementById('edit_main_widget_block_background_color_alpha_value').textContent = this.value + '%'">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                                <small class="text-muted" id="edit_main_widget_block_background_color_alpha_value" style="font-size: 0.7rem;">100%</small>
+                                <small class="text-muted" style="font-size: 0.7rem;">100%</small>
+                            </div>
                         </div>
                         <div class="mb-3" id="edit_main_widget_block_gradient_container" style="display: none;">
                             <label for="edit_main_widget_block_gradient_start" class="form-label">시작 색상</label>
@@ -988,7 +1060,7 @@
                         </div>
                         <div class="mb-3" id="edit_main_widget_block_image_container" style="display: none;">
                             <label class="form-label">배경 이미지</label>
-                            <div class="d-flex align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-2 mb-2">
                                 <button type="button" 
                                         class="btn btn-outline-secondary" 
                                         id="edit_main_widget_block_image_btn"
@@ -1006,6 +1078,20 @@
                                     <img id="edit_main_widget_block_image_preview_img" src="" alt="미리보기" style="max-width: 100px; max-height: 100px; object-fit: cover;">
                                     <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeEditMainBlockImage()">삭제</button>
                                 </div>
+                            </div>
+                            <label for="edit_main_widget_block_background_image_alpha" class="form-label">투명도</label>
+                            <input type="range" 
+                                   class="form-range" 
+                                   id="edit_main_widget_block_background_image_alpha" 
+                                   name="block_background_image_alpha"
+                                   min="0" 
+                                   max="100" 
+                                   value="100"
+                                   onchange="document.getElementById('edit_main_widget_block_background_image_alpha_value').textContent = this.value + '%'">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                                <small class="text-muted" id="edit_main_widget_block_background_image_alpha_value" style="font-size: 0.7rem;">100%</small>
+                                <small class="text-muted" style="font-size: 0.7rem;">100%</small>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -1952,15 +2038,69 @@ function handleContainerBackgroundTypeChange(containerId, backgroundType, viewTy
     
     // 선택된 타입에 따라 표시
     if (backgroundType === 'color') {
-        document.getElementById(`container_background_color${suffix}_${containerId}`).style.display = viewType === 'mobile' ? 'block' : 'inline-block';
+        document.getElementById(`container_background_color${suffix}_${containerId}`).style.display = viewType === 'mobile' ? 'block' : 'inline-flex';
     } else if (backgroundType === 'gradient') {
         document.getElementById(`container_background_gradient${suffix}_${containerId}`).style.display = viewType === 'mobile' ? 'block' : 'inline-flex';
     } else if (backgroundType === 'image') {
-        document.getElementById(`container_background_image${suffix}_${containerId}`).style.display = viewType === 'mobile' ? 'block' : 'inline-block';
+        document.getElementById(`container_background_image${suffix}_${containerId}`).style.display = viewType === 'mobile' ? 'block' : 'inline-flex';
     }
     
     // 배경 타입 업데이트
     updateContainerBackgroundType(containerId, backgroundType);
+}
+
+// 모바일 배경 색상 업데이트
+function updateContainerBackgroundColorMobile(containerId) {
+    const colorInput = document.getElementById(`container_background_color_input_mobile_${containerId}`);
+    const alphaInput = document.getElementById(`container_background_color_alpha_mobile_${containerId}`);
+    const alphaValue = document.getElementById(`container_background_color_alpha_value_mobile_${containerId}`);
+    const alphaHidden = document.getElementById(`container_background_color_alpha_hidden_mobile_${containerId}`);
+    
+    const color = colorInput.value;
+    const alpha = alphaInput.value;
+    
+    if (alphaValue) alphaValue.textContent = alpha + '%';
+    if (alphaHidden) alphaHidden.value = alpha;
+    
+    // 데스크탑 버전도 동기화
+    const desktopColorInput = document.getElementById(`container_background_color_input_${containerId}`);
+    const desktopAlphaInput = document.getElementById(`container_background_color_alpha_${containerId}`);
+    const desktopAlphaValue = document.getElementById(`container_background_color_alpha_value_${containerId}`);
+    const desktopAlphaHidden = document.getElementById(`container_background_color_alpha_hidden_${containerId}`);
+    
+    if (desktopColorInput) desktopColorInput.value = color;
+    if (desktopAlphaInput) desktopAlphaInput.value = alpha;
+    if (desktopAlphaValue) desktopAlphaValue.textContent = alpha + '%';
+    if (desktopAlphaHidden) desktopAlphaHidden.value = alpha;
+    
+    updateContainerBackgroundColor(containerId);
+}
+
+// 모바일 배경 이미지 업데이트
+function updateContainerBackgroundImageMobile(containerId) {
+    const imageInput = document.getElementById(`container_background_image_url_mobile_${containerId}`);
+    const alphaInput = document.getElementById(`container_background_image_alpha_mobile_${containerId}`);
+    const alphaValue = document.getElementById(`container_background_image_alpha_value_mobile_${containerId}`);
+    const alphaHidden = document.getElementById(`container_background_image_alpha_hidden_mobile_${containerId}`);
+    
+    const imageUrl = imageInput.value;
+    const alpha = alphaInput.value;
+    
+    if (alphaValue) alphaValue.textContent = alpha + '%';
+    if (alphaHidden) alphaHidden.value = alpha;
+    
+    // 데스크탑 버전도 동기화
+    const desktopImageInput = document.getElementById(`container_background_image_url_${containerId}`);
+    const desktopAlphaInput = document.getElementById(`container_background_image_alpha_${containerId}`);
+    const desktopAlphaValue = document.getElementById(`container_background_image_alpha_value_${containerId}`);
+    const desktopAlphaHidden = document.getElementById(`container_background_image_alpha_hidden_${containerId}`);
+    
+    if (desktopImageInput) desktopImageInput.value = imageUrl;
+    if (desktopAlphaInput) desktopAlphaInput.value = alpha;
+    if (desktopAlphaValue) desktopAlphaValue.textContent = alpha + '%';
+    if (desktopAlphaHidden) desktopAlphaHidden.value = alpha;
+    
+    updateContainerBackgroundImage(containerId);
 }
 
 // 컨테이너 배경 타입 업데이트
@@ -2017,17 +2157,90 @@ function updateContainerBackgroundType(containerId, backgroundType) {
     });
 }
 
-// 컨테이너 배경 업데이트 (단색 또는 이미지)
-function updateContainerBackground(containerId, backgroundType, value) {
-    const formData = new FormData();
-    formData.append('background_type', backgroundType);
+// 컨테이너 배경 색상 업데이트 (투명도 포함)
+function updateContainerBackgroundColor(containerId) {
+    const colorInput = document.getElementById(`container_background_color_input_${containerId}`);
+    const alphaInput = document.getElementById(`container_background_color_alpha_${containerId}`);
+    const alphaValue = document.getElementById(`container_background_color_alpha_value_${containerId}`);
+    const alphaHidden = document.getElementById(`container_background_color_alpha_hidden_${containerId}`);
     
-    if (backgroundType === 'color') {
-        formData.append('background_color', value);
-    } else if (backgroundType === 'image') {
-        formData.append('background_image_url', value);
+    const color = colorInput.value;
+    const alpha = alphaInput.value;
+    
+    if (alphaValue) alphaValue.textContent = alpha + '%';
+    if (alphaHidden) alphaHidden.value = alpha;
+    
+    const formData = new FormData();
+    formData.append('background_type', 'color');
+    formData.append('background_color', color);
+    formData.append('background_color_alpha', alpha);
+    formData.append('_method', 'PUT');
+    
+    // 현재 컨테이너 설정 유지
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (containerItem) {
+        const columnsSelect = containerItem.querySelector('select[onchange*="updateContainerColumns"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        }
+        const verticalAlignSelect = containerItem.querySelector('select[onchange*="updateContainerVerticalAlign"]');
+        if (verticalAlignSelect) {
+            formData.append('vertical_align', verticalAlignSelect.value);
+        }
+        const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
+        if (widgetSpacingSelect) {
+            formData.append('widget_spacing', widgetSpacingSelect.value);
+        }
     }
     
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    if (fullWidthCheckbox) {
+        formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+    }
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
+    
+    fetch('{{ route("admin.main-widgets.containers.update", ["site" => $site->slug, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 성공 알림은 표시하지 않고 조용히 업데이트
+        } else {
+            alert('배경 설정 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('배경 설정 업데이트 중 오류가 발생했습니다.');
+    });
+}
+
+// 컨테이너 배경 이미지 업데이트 (투명도 포함)
+function updateContainerBackgroundImage(containerId) {
+    const imageInput = document.getElementById(`container_background_image_url_${containerId}`);
+    const alphaInput = document.getElementById(`container_background_image_alpha_${containerId}`);
+    const alphaValue = document.getElementById(`container_background_image_alpha_value_${containerId}`);
+    const alphaHidden = document.getElementById(`container_background_image_alpha_hidden_${containerId}`);
+    
+    const imageUrl = imageInput.value;
+    const alpha = alphaInput.value;
+    
+    if (alphaValue) alphaValue.textContent = alpha + '%';
+    if (alphaHidden) alphaHidden.value = alpha;
+    
+    const formData = new FormData();
+    formData.append('background_type', 'image');
+    formData.append('background_image_url', imageUrl);
+    formData.append('background_image_alpha', alpha);
     formData.append('_method', 'PUT');
     
     // 현재 컨테이너 설정 유지
@@ -7068,12 +7281,50 @@ function openGradientModal(containerId, type) {
     updateGradientColorControl('start');
     updateGradientColorControl('end');
     
+    // 시작/끝 컨트롤에 드래그 기능 추가
+    const startControl = document.getElementById('gradient_start_control');
+    const endControl = document.getElementById('gradient_end_control');
+    if (startControl) {
+        makeGradientControlDraggable(startControl);
+        startControl.addEventListener('click', function(e) {
+            if (e.target.type !== 'color') {
+                selectGradientControl(startControl, 'start');
+            }
+        });
+    }
+    if (endControl) {
+        makeGradientControlDraggable(endControl);
+        endControl.addEventListener('click', function(e) {
+            if (e.target.type !== 'color') {
+                selectGradientControl(endControl, 'end');
+            }
+        });
+    }
+    
+    // 그라데이션 바 클릭 이벤트 (새 중간 색상 추가)
+    const preview = document.getElementById('gradient_modal_preview');
+    if (preview) {
+        preview.addEventListener('click', function(e) {
+            if (e.target === preview || e.target.closest('#gradient_color_controls') === null) {
+                const rect = preview.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                addGradientMiddleColor(percent);
+            }
+        });
+    }
+    
     // 중간 색상 초기화
     const middleControlsContainer = document.getElementById('gradient_middle_controls');
     middleControlsContainer.innerHTML = '';
     
     // 미리보기 업데이트
     updateGradientPreview();
+    
+    // 설정 패널 숨기기
+    document.getElementById('gradient_selected_control_settings').style.display = 'none';
+    selectedGradientControl = null;
+    selectedGradientControlType = null;
     
     // 모달 표시
     const modal = new bootstrap.Modal(document.getElementById('gradientModal'));
@@ -7124,11 +7375,10 @@ function updateGradientPreview() {
     middleControls.forEach((control) => {
         const colorInput = control.querySelector('.gradient-middle-color-input');
         const alphaInput = control.querySelector('.gradient-middle-alpha-input');
-        const positionInput = control.querySelector('.gradient-middle-position-input');
-        if (colorInput && alphaInput && positionInput) {
+        const position = parseFloat(control.getAttribute('data-position')) || parseFloat(control.style.left) || 50;
+        if (colorInput) {
             const hex = colorInput.value;
-            const alpha = alphaInput.value / 100;
-            const position = parseInt(positionInput.value) || 50;
+            const alpha = alphaInput ? (alphaInput.value / 100) : 1;
             middleColors.push({ rgba: hexToRgba(hex, alpha), position });
         }
     });
@@ -7151,25 +7401,27 @@ function updateGradientPreview() {
 }
 
 // 중간 색상 추가
-function addGradientMiddleColor() {
-    const controlsContainer = document.getElementById('gradient_color_controls');
+function addGradientMiddleColor(position = null) {
     const middleControlsContainer = document.getElementById('gradient_middle_controls');
-    const startControl = document.getElementById('gradient_start_control');
-    const endControl = document.getElementById('gradient_end_control');
     
-    // 중간 색상 개수
-    const middleCount = middleControlsContainer.children.length;
-    const totalPositions = 100;
-    const position = Math.round((totalPositions / (middleCount + 2)) * (middleCount + 1));
+    // 위치가 지정되지 않으면 중간에 추가
+    if (position === null) {
+        const middleCount = middleControlsContainer.children.length;
+        const totalPositions = 100;
+        position = Math.round((totalPositions / (middleCount + 2)) * (middleCount + 1));
+    }
     
     const control = document.createElement('div');
-    control.className = 'gradient-middle-control';
+    control.className = 'gradient-middle-control gradient-color-control';
+    control.setAttribute('data-position', position);
     control.style.position = 'absolute';
     control.style.left = `${position}%`;
-    control.style.bottom = '0';
+    control.style.top = '50%';
+    control.style.transform = 'translate(-50%, -50%)';
     control.style.textAlign = 'center';
-    control.style.transform = 'translateX(-50%)';
-    control.style.zIndex = '10';
+    control.style.pointerEvents = 'all';
+    control.style.cursor = 'grab';
+    control.style.zIndex = '20';
     
     control.innerHTML = `
         <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto;"></div>
@@ -7181,30 +7433,186 @@ function addGradientMiddleColor() {
                value="#808080"
                onchange="updateGradientMiddleColor(this)"
                style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0;">
-        <div class="mt-1">
-            <input type="range" 
-                   class="form-range gradient-middle-alpha-input" 
-                   min="0" 
-                   max="100" 
-                   value="100"
-                   onchange="updateGradientMiddleColor(this.closest('.gradient-middle-control').querySelector('.gradient-middle-color-input'))"
-                   style="width: 60px;">
-            <input type="number" 
-                   class="form-control form-control-sm gradient-middle-position-input" 
-                   value="${position}"
-                   min="0"
-                   max="100"
-                   onchange="updateGradientMiddlePosition(this)"
-                   style="width: 60px; margin-top: 2px; font-size: 0.7rem;">
-            <small class="d-block" style="font-size: 0.7rem;">위치(%)</small>
-        </div>
-        <button type="button" class="btn btn-sm btn-outline-danger mt-1" onclick="removeGradientMiddleColor(this)" style="font-size: 0.7rem; padding: 2px 6px;">
-            <i class="bi bi-x"></i>
-        </button>
+        <input type="range" 
+               class="form-range gradient-middle-alpha-input" 
+               min="0" 
+               max="100" 
+               value="100"
+               onchange="updateGradientMiddleColor(this.closest('.gradient-middle-control').querySelector('.gradient-middle-color-input'))"
+               style="position: absolute; opacity: 0; width: 60px; height: 20px; top: 52px; left: 0; pointer-events: all;">
     `;
+    
+    // 드래그 이벤트 추가
+    makeGradientControlDraggable(control);
+    
+    // 클릭 이벤트 추가 (선택)
+    control.addEventListener('click', function(e) {
+        if (e.target.type !== 'color') {
+            selectGradientControl(control, 'middle');
+        }
+    });
     
     middleControlsContainer.appendChild(control);
     updateGradientMiddleColor(control.querySelector('.gradient-middle-color-input'));
+    selectGradientControl(control, 'middle');
+}
+
+// 그라데이션 컨트롤을 드래그 가능하게 만들기
+function makeGradientControlDraggable(control) {
+    let isDragging = false;
+    let startX = 0;
+    let startLeft = 0;
+    
+    control.addEventListener('mousedown', function(e) {
+        if (e.target.type === 'color') return;
+        isDragging = true;
+        control.style.cursor = 'grabbing';
+        startX = e.clientX;
+        startLeft = parseFloat(control.style.left) || 0;
+        e.preventDefault();
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        
+        const preview = document.getElementById('gradient_modal_preview');
+        if (!preview) return;
+        
+        const rect = preview.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        
+        control.style.left = `${percent}%`;
+        control.setAttribute('data-position', percent);
+        
+        updateGradientPreview();
+    });
+    
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            control.style.cursor = 'grab';
+        }
+    });
+    
+    // 터치 이벤트 지원
+    control.addEventListener('touchstart', function(e) {
+        if (e.target.type === 'color') return;
+        isDragging = true;
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startLeft = parseFloat(control.style.left) || 0;
+        e.preventDefault();
+    });
+    
+    document.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        
+        const preview = document.getElementById('gradient_modal_preview');
+        if (!preview) return;
+        
+        const touch = e.touches[0];
+        const rect = preview.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        
+        control.style.left = `${percent}%`;
+        control.setAttribute('data-position', percent);
+        
+        updateGradientPreview();
+        e.preventDefault();
+    });
+    
+    document.addEventListener('touchend', function() {
+        if (isDragging) {
+            isDragging = false;
+        }
+    });
+}
+
+// 그라데이션 컨트롤 선택
+let selectedGradientControl = null;
+let selectedGradientControlType = null;
+
+function selectGradientControl(control, type) {
+    // 이전 선택 해제
+    document.querySelectorAll('.gradient-color-control').forEach(c => {
+        c.style.border = '';
+    });
+    
+    // 새 선택
+    selectedGradientControl = control;
+    selectedGradientControlType = type;
+    control.style.border = '2px solid #0d6efd';
+    
+    // 설정 패널 업데이트
+    const settingsPanel = document.getElementById('gradient_selected_control_settings');
+    const removeBtn = document.getElementById('gradient_remove_selected');
+    
+    if (type === 'start') {
+        const colorInput = document.getElementById('gradient_modal_start_color');
+        const alphaInput = document.getElementById('gradient_modal_start_alpha');
+        document.getElementById('gradient_selected_color').value = colorInput.value;
+        document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+        document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+        if (removeBtn) removeBtn.style.display = 'none';
+    } else if (type === 'end') {
+        const colorInput = document.getElementById('gradient_modal_end_color');
+        const alphaInput = document.getElementById('gradient_modal_end_alpha');
+        document.getElementById('gradient_selected_color').value = colorInput.value;
+        document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+        document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+        if (removeBtn) removeBtn.style.display = 'none';
+    } else if (type === 'middle') {
+        const colorInput = control.querySelector('.gradient-middle-color-input');
+        const alphaInput = control.querySelector('.gradient-middle-alpha-input');
+        if (colorInput && alphaInput) {
+            document.getElementById('gradient_selected_color').value = colorInput.value;
+            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+            if (removeBtn) removeBtn.style.display = 'block';
+        }
+    }
+    
+    if (settingsPanel) settingsPanel.style.display = 'block';
+}
+
+// 선택된 컨트롤 업데이트
+function updateSelectedGradientControl() {
+    if (!selectedGradientControl || !selectedGradientControlType) return;
+    
+    const color = document.getElementById('gradient_selected_color').value;
+    const alpha = document.getElementById('gradient_selected_alpha').value;
+    document.getElementById('gradient_selected_alpha_value').textContent = alpha + '%';
+    
+    if (selectedGradientControlType === 'start') {
+        document.getElementById('gradient_modal_start_color').value = color;
+        document.getElementById('gradient_modal_start_alpha').value = alpha;
+        updateGradientColorControl('start');
+    } else if (selectedGradientControlType === 'end') {
+        document.getElementById('gradient_modal_end_color').value = color;
+        document.getElementById('gradient_modal_end_alpha').value = alpha;
+        updateGradientColorControl('end');
+    } else if (selectedGradientControlType === 'middle') {
+        const colorInput = selectedGradientControl.querySelector('.gradient-middle-color-input');
+        const alphaInput = selectedGradientControl.querySelector('.gradient-middle-alpha-input');
+        if (colorInput && alphaInput) {
+            colorInput.value = color;
+            alphaInput.value = alpha;
+            updateGradientMiddleColor(colorInput);
+        }
+    }
+}
+
+// 선택된 컨트롤 제거
+function removeSelectedGradientControl() {
+    if (selectedGradientControl && selectedGradientControlType === 'middle') {
+        selectedGradientControl.remove();
+        selectedGradientControl = null;
+        selectedGradientControlType = null;
+        document.getElementById('gradient_selected_control_settings').style.display = 'none';
+        updateGradientPreview();
+    }
 }
 
 // 중간 색상 업데이트
@@ -7214,25 +7622,22 @@ function updateGradientMiddleColor(colorInput) {
     const display = control.querySelector('.gradient-middle-color-display');
     
     const hex = colorInput.value;
-    const alpha = alphaInput.value / 100;
+    const alpha = alphaInput ? (alphaInput.value / 100) : 1;
     const rgba = hexToRgba(hex, alpha);
     
     if (display) {
         display.style.background = rgba;
     }
     
-    updateGradientPreview();
-}
-
-// 중간 색상 위치 업데이트
-function updateGradientMiddlePosition(positionInput) {
-    const control = positionInput.closest('.gradient-middle-control');
-    const position = parseInt(positionInput.value) || 50;
+    // 선택된 컨트롤이면 설정 패널도 업데이트
+    if (selectedGradientControl === control && selectedGradientControlType === 'middle') {
+        document.getElementById('gradient_selected_color').value = hex;
+        if (alphaInput) {
+            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+        }
+    }
     
-    if (position < 0) positionInput.value = 0;
-    if (position > 100) positionInput.value = 100;
-    
-    control.style.left = `${position}%`;
     updateGradientPreview();
 }
 
@@ -7280,11 +7685,10 @@ function saveGradient() {
     middleControls.forEach((control) => {
         const colorInput = control.querySelector('.gradient-middle-color-input');
         const alphaInput = control.querySelector('.gradient-middle-alpha-input');
-        const positionInput = control.querySelector('.gradient-middle-position-input');
-        if (colorInput && alphaInput && positionInput) {
+        const position = parseFloat(control.getAttribute('data-position')) || parseFloat(control.style.left) || 50;
+        if (colorInput) {
             const hex = colorInput.value;
-            const alpha = alphaInput.value / 100;
-            const position = parseInt(positionInput.value) || 50;
+            const alpha = alphaInput ? (alphaInput.value / 100) : 1;
             const rgba = alpha === 1 ? hex : hexToRgba(hex, alpha);
             middleColors.push({ color: rgba, position });
         }
@@ -7330,58 +7734,67 @@ function saveGradient() {
                          repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0);
                          background-position: 0 0, 10px 10px;
                          background-size: 20px 20px;">
-                    </div>
-                    <!-- 그라데이션 바 아래 색상 컨트롤 영역 -->
-                    <div id="gradient_color_controls" style="position: relative; height: 80px; margin-top: 10px;">
-                        <!-- 시작 색상 컨트롤 -->
-                        <div id="gradient_start_control" style="position: absolute; left: 0; bottom: 0; text-align: center;">
-                            <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto;"></div>
-                            <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px;">
-                                <div id="gradient_start_color_display" style="width: 100%; height: 100%; border-radius: 2px; background: #ffffff;"></div>
-                            </div>
-                            <input type="color" 
-                                   id="gradient_modal_start_color" 
-                                   value="#ffffff"
-                                   onchange="updateGradientColorControl('start')"
-                                   style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0;">
-                            <div class="mt-1">
-                                <input type="range" 
-                                       class="form-range" 
-                                       id="gradient_modal_start_alpha" 
-                                       min="0" 
-                                       max="100" 
-                                       value="100"
+                        <!-- 그라데이션 바 위에 색상 컨트롤 배치 -->
+                        <div id="gradient_color_controls" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;">
+                            <!-- 시작 색상 컨트롤 -->
+                            <div id="gradient_start_control" class="gradient-color-control" data-position="0" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: all; cursor: grab; z-index: 20;">
+                                <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto;"></div>
+                                <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px;">
+                                    <div id="gradient_start_color_display" style="width: 100%; height: 100%; border-radius: 2px; background: #ffffff;"></div>
+                                </div>
+                                <input type="color" 
+                                       id="gradient_modal_start_color" 
+                                       value="#ffffff"
                                        onchange="updateGradientColorControl('start')"
-                                       style="width: 60px;">
-                                <small class="d-block" style="font-size: 0.7rem;">투명도</small>
+                                       style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0;">
+                            </div>
+                            
+                            <!-- 중간 색상 컨트롤들 -->
+                            <div id="gradient_middle_controls"></div>
+                            
+                            <!-- 끝 색상 컨트롤 -->
+                            <div id="gradient_end_control" class="gradient-color-control" data-position="100" style="position: absolute; left: 100%; top: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: all; cursor: grab; z-index: 20;">
+                                <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto;"></div>
+                                <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px;">
+                                    <div id="gradient_end_color_display" style="width: 100%; height: 100%; border-radius: 2px; background: #000000;"></div>
+                                </div>
+                                <input type="color" 
+                                       id="gradient_modal_end_color" 
+                                       value="#000000"
+                                       onchange="updateGradientColorControl('end')"
+                                       style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0;">
                             </div>
                         </div>
-                        
-                        <!-- 중간 색상 컨트롤들 -->
-                        <div id="gradient_middle_controls"></div>
-                        
-                        <!-- 끝 색상 컨트롤 -->
-                        <div id="gradient_end_control" style="position: absolute; right: 0; bottom: 0; text-align: center;">
-                            <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto;"></div>
-                            <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px;">
-                                <div id="gradient_end_color_display" style="width: 100%; height: 100%; border-radius: 2px; background: #000000;"></div>
+                    </div>
+                    <!-- 그라데이션 바 아래 컨트롤 영역 -->
+                    <div id="gradient_control_panel" style="margin-top: 10px;">
+                        <!-- 선택된 색상 컨트롤의 설정 -->
+                        <div id="gradient_selected_control_settings" style="display: none;">
+                            <div class="mb-2">
+                                <label class="form-label small">색상</label>
+                                <input type="color" 
+                                       id="gradient_selected_color" 
+                                       onchange="updateSelectedGradientControl()"
+                                       class="form-control form-control-color">
                             </div>
-                            <input type="color" 
-                                   id="gradient_modal_end_color" 
-                                   value="#000000"
-                                   onchange="updateGradientColorControl('end')"
-                                   style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0;">
-                            <div class="mt-1">
+                            <div class="mb-2">
+                                <label class="form-label small">투명도</label>
                                 <input type="range" 
                                        class="form-range" 
-                                       id="gradient_modal_end_alpha" 
+                                       id="gradient_selected_alpha" 
                                        min="0" 
                                        max="100" 
                                        value="100"
-                                       onchange="updateGradientColorControl('end')"
-                                       style="width: 60px;">
-                                <small class="d-block" style="font-size: 0.7rem;">투명도</small>
+                                       onchange="updateSelectedGradientControl()">
+                                <div class="d-flex justify-content-between">
+                                    <small style="font-size: 0.7rem;">0%</small>
+                                    <small id="gradient_selected_alpha_value" style="font-size: 0.7rem;">100%</small>
+                                    <small style="font-size: 0.7rem;">100%</small>
+                                </div>
                             </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger w-100" id="gradient_remove_selected" onclick="removeSelectedGradientControl()" style="display: none;">
+                                <i class="bi bi-x"></i> 색상 제거
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -7391,7 +7804,7 @@ function saveGradient() {
                     <button type="button" class="btn btn-sm btn-outline-primary w-100" onclick="addGradientMiddleColor()">
                         <i class="bi bi-plus"></i> 중간 색상 추가
                     </button>
-                    <small class="text-muted d-block mt-1">중간 색상을 추가하여 더 복잡한 그라데이션을 만들 수 있습니다.</small>
+                    <small class="text-muted d-block mt-1">그라데이션 바를 클릭하거나 버튼을 눌러 중간 색상을 추가할 수 있습니다. 색상 컨트롤을 드래그하여 위치를 이동할 수 있습니다.</small>
                 </div>
                 
                 <!-- 각도 -->
