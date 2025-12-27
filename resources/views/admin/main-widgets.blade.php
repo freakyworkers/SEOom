@@ -4149,6 +4149,11 @@ function handleImageSlideModeChange() {
     const upLabel = upRadio ? upRadio.nextElementSibling : null;
     const downLabel = downRadio ? downRadio.nextElementSibling : null;
     
+    // 체크박스 상호 배타적 처리 - 1단 슬라이드가 체크되려고 할 때 무한루프가 체크되어 있으면 먼저 해제
+    if (singleCheckbox && singleCheckbox.checked && infiniteCheckbox && infiniteCheckbox.checked) {
+        infiniteCheckbox.checked = false;
+    }
+    
     // 체크박스 상호 배타적 처리 - 무한루프 체크를 먼저 확인
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (singleCheckbox) singleCheckbox.checked = false;
@@ -5737,6 +5742,11 @@ function handleEditMainImageSlideModeChange() {
     const downRadio = document.getElementById('edit_main_image_slide_direction_down');
     const upLabel = upRadio ? upRadio.nextElementSibling : null;
     const downLabel = downRadio ? downRadio.nextElementSibling : null;
+    
+    // 체크박스 상호 배타적 처리 - 1단 슬라이드가 체크되려고 할 때 무한루프가 체크되어 있으면 먼저 해제
+    if (singleCheckbox && singleCheckbox.checked && infiniteCheckbox && infiniteCheckbox.checked) {
+        infiniteCheckbox.checked = false;
+    }
     
     // 체크박스 상호 배타적 처리 - 무한루프 체크를 먼저 확인
     if (infiniteCheckbox && infiniteCheckbox.checked) {
