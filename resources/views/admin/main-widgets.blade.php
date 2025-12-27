@@ -3053,7 +3053,9 @@ function addMainWidget() {
             
             if (backgroundType === 'color') {
                 const backgroundColor = item.querySelector('.block-slide-background-color')?.value || '#007bff';
+                const backgroundColorAlpha = item.querySelector('.block-slide-background-color-alpha')?.value || 100;
                 blockItem.background_color = backgroundColor;
+                blockItem.background_color_alpha = parseInt(backgroundColorAlpha) || 100;
             } else if (backgroundType === 'gradient') {
                 const gradientStart = item.querySelector('.block-slide-background-gradient-start')?.value || '#ffffff';
                 const gradientEnd = item.querySelector('.block-slide-background-gradient-end')?.value || '#000000';
@@ -3067,9 +3069,11 @@ function addMainWidget() {
                     formData.append(`block_slide[${itemIndex}][background_image_file]`, imageFile);
                 }
                 const imageUrl = item.querySelector(`#block_slide_${itemIndex}_background_image_url`)?.value;
+                const imageAlpha = item.querySelector('.block-slide-background-image-alpha')?.value || 100;
                 if (imageUrl) {
                     blockItem.background_image_url = imageUrl;
                 }
+                blockItem.background_image_alpha = parseInt(imageAlpha) || 100;
             }
             
             blockItems.push(blockItem);
@@ -4491,7 +4495,20 @@ function addBlockSlideItem() {
         </div>
         <div class="mb-3 block-slide-color-container" id="block_slide_${itemIndex}_color_container" style="display: none;">
             <label class="form-label">배경 컬러</label>
-            <input type="color" class="form-control form-control-color block-slide-background-color" name="block_slide[${itemIndex}][background_color]" value="#007bff">
+            <input type="color" class="form-control form-control-color mb-2 block-slide-background-color" name="block_slide[${itemIndex}][background_color]" value="#007bff">
+            <label class="form-label">투명도</label>
+            <input type="range" 
+                   class="form-range block-slide-background-color-alpha" 
+                   name="block_slide[${itemIndex}][background_color_alpha]"
+                   min="0" 
+                   max="100" 
+                   value="100"
+                   onchange="document.getElementById('block_slide_${itemIndex}_background_color_alpha_value').textContent = this.value + '%'">
+            <div class="d-flex justify-content-between">
+                <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                <small class="text-muted" id="block_slide_${itemIndex}_background_color_alpha_value" style="font-size: 0.7rem;">100%</small>
+                <small class="text-muted" style="font-size: 0.7rem;">100%</small>
+            </div>
         </div>
         <div class="mb-3 block-slide-gradient-container" id="block_slide_${itemIndex}_gradient_container" style="display: none;">
             <label class="form-label">시작 색상</label>
@@ -4514,7 +4531,7 @@ function addBlockSlideItem() {
         </div>
         <div class="mb-3 block-slide-image-container" id="block_slide_${itemIndex}_image_container" style="display: none;">
             <label class="form-label">배경 이미지</label>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 mb-2">
                 <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('block_slide_${itemIndex}_image_input').click()"><i class="bi bi-image"></i> 이미지 선택</button>
                 <input type="file" id="block_slide_${itemIndex}_image_input" name="block_slide[${itemIndex}][background_image]" accept="image/*" style="display: none;" onchange="handleBlockSlideImageChange(${itemIndex}, this)">
                 <input type="hidden" class="block-slide-background-image-url" name="block_slide[${itemIndex}][background_image_url]" id="block_slide_${itemIndex}_background_image_url">
@@ -4522,6 +4539,19 @@ function addBlockSlideItem() {
                     <img id="block_slide_${itemIndex}_image_preview_img" src="" alt="미리보기" style="max-width: 100px; max-height: 100px; object-fit: cover;">
                     <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeBlockSlideImage(${itemIndex})">삭제</button>
                 </div>
+            </div>
+            <label class="form-label">투명도</label>
+            <input type="range" 
+                   class="form-range block-slide-background-image-alpha" 
+                   name="block_slide[${itemIndex}][background_image_alpha]"
+                   min="0" 
+                   max="100" 
+                   value="100"
+                   onchange="document.getElementById('block_slide_${itemIndex}_background_image_alpha_value').textContent = this.value + '%'">
+            <div class="d-flex justify-content-between">
+                <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                <small class="text-muted" id="block_slide_${itemIndex}_background_image_alpha_value" style="font-size: 0.7rem;">100%</small>
+                <small class="text-muted" style="font-size: 0.7rem;">100%</small>
             </div>
         </div>
         <div class="mb-3">
@@ -5545,7 +5575,9 @@ function saveMainWidgetSettings() {
             
             if (blockItem.background_type === 'color') {
                 const backgroundColorInput = item.querySelector('.edit-main-block-slide-background-color');
+                const backgroundColorAlphaInput = item.querySelector('.edit-main-block-slide-background-color-alpha');
                 blockItem.background_color = backgroundColorInput ? backgroundColorInput.value : '#007bff';
+                blockItem.background_color_alpha = backgroundColorAlphaInput ? parseInt(backgroundColorAlphaInput.value) || 100 : 100;
             } else if (blockItem.background_type === 'gradient') {
                 const gradientStartInput = item.querySelector('.edit-main-block-slide-background-gradient-start');
                 const gradientEndInput = item.querySelector('.edit-main-block-slide-background-gradient-end');
@@ -5559,9 +5591,11 @@ function saveMainWidgetSettings() {
                     formData.append(`edit_block_slide[${itemIndex}][background_image_file]`, imageFileInput.files[0]);
                 }
                 const imageUrlInput = item.querySelector(`#edit_main_block_slide_${itemIndex}_background_image_url`);
+                const imageAlphaInput = item.querySelector('.edit-main-block-slide-background-image-alpha');
                 if (imageUrlInput && imageUrlInput.value) {
                     blockItem.background_image_url = imageUrlInput.value;
                 }
+                blockItem.background_image_alpha = imageAlphaInput ? parseInt(imageAlphaInput.value) || 100 : 100;
             }
             
             blockItems.push(blockItem);
@@ -6073,9 +6107,22 @@ function addEditMainBlockSlideItem(blockData = null) {
         <div class="mb-3 edit-main-block-slide-color-container" id="edit_main_block_slide_${itemIndex}_color_container" style="${!blockData || (blockData.background_type !== 'color' && blockData.background_type !== 'none') ? 'display: none;' : ''}">
             <label class="form-label">배경 컬러</label>
             <input type="color" 
-                   class="form-control form-control-color edit-main-block-slide-background-color" 
+                   class="form-control form-control-color mb-2 edit-main-block-slide-background-color" 
                    name="edit_main_block_slide[${itemIndex}][background_color]" 
                    value="${blockData ? (blockData.background_color || '#007bff') : '#007bff'}">
+            <label class="form-label">투명도</label>
+            <input type="range" 
+                   class="form-range edit-main-block-slide-background-color-alpha" 
+                   name="edit_main_block_slide[${itemIndex}][background_color_alpha]"
+                   min="0" 
+                   max="100" 
+                   value="${blockData ? (blockData.background_color_alpha || 100) : 100}"
+                   onchange="document.getElementById('edit_main_block_slide_${itemIndex}_background_color_alpha_value').textContent = this.value + '%'">
+            <div class="d-flex justify-content-between">
+                <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                <small class="text-muted" id="edit_main_block_slide_${itemIndex}_background_color_alpha_value" style="font-size: 0.7rem;">${blockData ? (blockData.background_color_alpha || 100) : 100}%</small>
+                <small class="text-muted" style="font-size: 0.7rem;">100%</small>
+            </div>
         </div>
         <div class="mb-3 edit-main-block-slide-gradient-container" id="edit_main_block_slide_${itemIndex}_gradient_container" style="${!blockData || blockData.background_type !== 'gradient' ? 'display: none;' : ''}">
             <label class="form-label">시작 색상</label>
@@ -6108,7 +6155,7 @@ function addEditMainBlockSlideItem(blockData = null) {
         </div>
         <div class="mb-3 edit-main-block-slide-image-container" id="edit_main_block_slide_${itemIndex}_image_container" style="${!blockData || blockData.background_type !== 'image' ? 'display: none;' : ''}">
             <label class="form-label">배경 이미지</label>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 mb-2">
                 <button type="button" 
                         class="btn btn-outline-secondary" 
                         onclick="document.getElementById('edit_main_block_slide_${itemIndex}_image_input').click()">
@@ -6125,6 +6172,19 @@ function addEditMainBlockSlideItem(blockData = null) {
                     <img id="edit_main_block_slide_${itemIndex}_image_preview_img" src="${blockData && blockData.background_image_url ? blockData.background_image_url : ''}" alt="미리보기" style="max-width: 100px; max-height: 100px; object-fit: cover;">
                     <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeEditMainBlockSlideImage(${itemIndex})">삭제</button>
                 </div>
+            </div>
+            <label class="form-label">투명도</label>
+            <input type="range" 
+                   class="form-range edit-main-block-slide-background-image-alpha" 
+                   name="edit_main_block_slide[${itemIndex}][background_image_alpha]"
+                   min="0" 
+                   max="100" 
+                   value="${blockData ? (blockData.background_image_alpha || 100) : 100}"
+                   onchange="document.getElementById('edit_main_block_slide_${itemIndex}_background_image_alpha_value').textContent = this.value + '%'">
+            <div class="d-flex justify-content-between">
+                <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                <small class="text-muted" id="edit_main_block_slide_${itemIndex}_background_image_alpha_value" style="font-size: 0.7rem;">${blockData ? (blockData.background_image_alpha || 100) : 100}%</small>
+                <small class="text-muted" style="font-size: 0.7rem;">100%</small>
             </div>
         </div>
         <div class="mb-3">
