@@ -8202,6 +8202,8 @@ function updateGradientColorControl(type) {
     const alphaInput = document.getElementById(`gradient_modal_${type}_alpha`);
     const display = document.getElementById(`gradient_${type}_color_display`);
     
+    if (!colorInput || !alphaInput) return;
+    
     const hex = colorInput.value;
     const alpha = alphaInput.value / 100;
     const rgba = hexToRgba(hex, alpha);
@@ -8212,16 +8214,26 @@ function updateGradientColorControl(type) {
     }
     
     // 미리보기 업데이트
-    updateGradientPreview();
+    if (typeof updateGradientPreview === 'function') {
+        updateGradientPreview();
+    }
 }
 
 // 그라데이션 미리보기 업데이트
 function updateGradientPreview() {
-    const startColor = document.getElementById('gradient_modal_start_color').value;
-    const startAlpha = document.getElementById('gradient_modal_start_alpha').value / 100;
-    const endColor = document.getElementById('gradient_modal_end_color').value;
-    const endAlpha = document.getElementById('gradient_modal_end_alpha').value / 100;
-    const angle = document.getElementById('gradient_modal_angle').value || 90;
+    const startColorInput = document.getElementById('gradient_modal_start_color');
+    const startAlphaInput = document.getElementById('gradient_modal_start_alpha');
+    const endColorInput = document.getElementById('gradient_modal_end_color');
+    const endAlphaInput = document.getElementById('gradient_modal_end_alpha');
+    const angleInput = document.getElementById('gradient_modal_angle');
+    
+    if (!startColorInput || !startAlphaInput || !endColorInput || !endAlphaInput || !angleInput) return;
+    
+    const startColor = startColorInput.value;
+    const startAlpha = startAlphaInput.value / 100;
+    const endColor = endColorInput.value;
+    const endAlpha = endAlphaInput.value / 100;
+    const angle = angleInput.value || 90;
     
     const startRgba = hexToRgba(startColor, startAlpha);
     const endRgba = hexToRgba(endColor, endAlpha);
