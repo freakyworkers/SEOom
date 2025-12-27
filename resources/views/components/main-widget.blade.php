@@ -21,6 +21,7 @@
     // 테마 설정 가져오기
     $themeMain = $site->getSetting('theme_main', 'round');
     $isRoundTheme = $themeMain === 'round';
+    $isOriginalRoundTheme = $isRoundTheme; // 원래 테마 설정 저장 (버튼용)
     
     // 세로 100% 설정 확인
     $isFullHeight = $isFullHeight ?? false;
@@ -28,7 +29,7 @@
     // 가로 100% 설정 확인
     $isFullWidth = $isFullWidth ?? false;
     
-    // 가로 100%일 때는 라운드 제거
+    // 가로 100%일 때는 라운드 제거 (버튼 제외)
     if ($isFullWidth) {
         $isRoundTheme = false;
     }
@@ -186,6 +187,9 @@
                         if ($buttonHoverOpacity < 1.0) {
                             $buttonHoverBackgroundStyle .= " opacity: {$buttonHoverOpacity};";
                         }
+                        
+                        // 버튼 border-radius 설정 (원래 테마가 라운드인 경우 라운드 적용)
+                        $buttonBorderRadius = $isOriginalRoundTheme ? '0.5rem' : '4px';
                     @endphp
                     @if($buttonText)
                         @if($buttonLink)
@@ -193,17 +197,17 @@
                                @if($buttonOpenNewTab) target="_blank" rel="noopener noreferrer" @endif
                                style="text-decoration: none; display: inline-block;">
                                 <button class="block-widget-button" 
-                                        style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                        onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
-                                        onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
+                                        style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                        onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
+                                        onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
                                     {{ $buttonText }}
                                 </button>
                             </a>
                         @else
                             <button class="block-widget-button" 
-                                    style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                    onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
-                                    onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
+                                    style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                    onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
+                                    onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
                                 {{ $buttonText }}
                             </button>
                         @endif
@@ -356,6 +360,9 @@
                                         if ($buttonHoverOpacity < 1.0) {
                                             $buttonHoverBackgroundStyle .= " opacity: {$buttonHoverOpacity};";
                                         }
+                                        
+                                        // 버튼 border-radius 설정 (원래 테마가 라운드인 경우 라운드 적용)
+                                        $buttonBorderRadius = $isOriginalRoundTheme ? '0.5rem' : '4px';
                                     @endphp
                                     @if($buttonText)
                                         @if($buttonLink)
@@ -363,17 +370,17 @@
                                                @if($buttonOpenNewTab) target="_blank" rel="noopener noreferrer" @endif
                                                style="text-decoration: none; display: inline-block;">
                                                 <button class="block-widget-button" 
-                                                        style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                                        onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
-                                                        onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
+                                                        style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                                        onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
+                                                        onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
                                                     {{ $buttonText }}
                                                 </button>
                                             </a>
                                         @else
                                             <button class="block-widget-button" 
-                                                    style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                                    onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
-                                                    onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
+                                                    style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                                    onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
+                                                    onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
                                                 {{ $buttonText }}
                                             </button>
                                         @endif
@@ -443,13 +450,17 @@
                             </a>
                         @endif
                         @if($showButton && $buttonText)
+                            @php
+                                // 버튼 border-radius 설정 (원래 테마가 라운드인 경우 라운드 적용)
+                                $buttonBorderRadius = $isOriginalRoundTheme ? '0.5rem' : '4px';
+                            @endphp
                             <div class="mt-3" style="text-align: {{ $textAlign }};">
                                 @if($link)
                                     <a href="{{ $link }}" 
                                        @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
                                        style="text-decoration: none; display: inline-block;">
                                         <button class="block-widget-button" 
-                                                style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                                style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
                                                 onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
                                                 onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
                                             {{ $buttonText }}
@@ -457,7 +468,7 @@
                                     </a>
                                 @else
                                     <button class="block-widget-button" 
-                                            style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                            style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
                                             onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
                                             onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
                                         {{ $buttonText }}
@@ -2613,13 +2624,17 @@
                         </a>
                     @endif
                     @if($showButton && $buttonText)
+                        @php
+                            // 버튼 border-radius 설정 (원래 테마가 라운드인 경우 라운드 적용)
+                            $buttonBorderRadius = $isOriginalRoundTheme ? '0.5rem' : '4px';
+                        @endphp
                         <div class="mt-3" style="text-align: {{ $textAlign }};">
                             @if($link)
                                 <a href="{{ $link }}" 
                                    @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
                                    style="text-decoration: none; display: inline-block;">
                                     <button class="block-widget-button" 
-                                            style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                            style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
                                             onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
                                             onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
                                         {{ $buttonText }}
@@ -2627,7 +2642,7 @@
                                 </a>
                             @else
                                 <button class="block-widget-button" 
-                                        style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                        style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
                                         onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
                                         onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
                                     {{ $buttonText }}

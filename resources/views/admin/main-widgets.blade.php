@@ -8503,14 +8503,18 @@ function selectGradientControl(control, type) {
     selectedGradientControlType = type;
     control.style.border = '2px solid #0d6efd';
     
-    // 시작/끝 색상 아이콘 표시
+    // 시작/끝 색상 아이콘 표시 및 선택 표시
     const startIcon = document.getElementById('gradient_start_icon');
     const endIcon = document.getElementById('gradient_end_icon');
-    if (type === 'start' || type === 'end') {
-        if (startIcon) startIcon.style.display = 'block';
-        if (endIcon) endIcon.style.display = 'block';
-        if (type === 'start' && startIcon) startIcon.style.border = '2px solid #0d6efd';
-        if (type === 'end' && endIcon) endIcon.style.border = '2px solid #0d6efd';
+    if (type === 'start' && startIcon) {
+        startIcon.style.border = '2px solid #0d6efd';
+        if (endIcon) endIcon.style.border = '2px solid #6c757d';
+    } else if (type === 'end' && endIcon) {
+        endIcon.style.border = '2px solid #0d6efd';
+        if (startIcon) startIcon.style.border = '2px solid #6c757d';
+    } else if (type === 'middle') {
+        if (startIcon) startIcon.style.border = '2px solid #6c757d';
+        if (endIcon) endIcon.style.border = '2px solid #6c757d';
     }
     
     // 설정 패널 업데이트 및 표시
