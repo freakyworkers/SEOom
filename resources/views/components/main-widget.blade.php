@@ -28,6 +28,11 @@
     // 가로 100% 설정 확인
     $isFullWidth = $isFullWidth ?? false;
     
+    // 가로 100%일 때는 라운드 제거
+    if ($isFullWidth) {
+        $isRoundTheme = false;
+    }
+    
     // 위젯 그림자 설정 확인 (기본값: ON)
     $widgetShadow = $site->getSetting('widget_shadow', '1') == '1';
     
@@ -530,7 +535,7 @@
         $openNewTab = $imageSettings['open_new_tab'] ?? false;
     @endphp
     @if($imageUrl)
-        <div class="mb-3 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; display: flex; align-items: center; justify-content: center;" data-widget-id="{{ $widget->id }}">
+        <div class="mb-3 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%;" data-widget-id="{{ $widget->id }}">
             @if($link)
                 <a href="{{ $link }}" 
                    @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
@@ -568,7 +573,7 @@
              data-visible-count-mobile="{{ $visibleCountMobile }}"
              data-image-gap="{{ $imageGap }}"
              data-widget-id="{{ $widget->id }}"
-             style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }} {{ $backgroundStyle }} {{ $animationStyle }} width: 100%; display: flex; align-items: center; justify-content: center;">
+             style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }} {{ $backgroundStyle }} {{ $animationStyle }} width: 100%;">
             <div class="image-slide-container" style="display: flex; {{ $slideMode === 'infinite' ? 'flex-direction: row;' : '' }} {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'flex-direction: column; height: 100%;' : '' }}{{ $slideMode === 'single' ? ' transition: transform 0.5s ease-in-out;' : '' }}">
                 @if($slideMode === 'single')
                     @foreach($images as $index => $image)

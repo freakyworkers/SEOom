@@ -152,7 +152,8 @@
                         if ($isFullHeight) {
                             $colStyle .= ($colStyle ? ' ' : '') . 'height: 100%; display: flex; flex-direction: column;';
                         }
-                        $colMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
+                        // 컬럼 간 여백은 항상 유지 (가로 100%가 아닐 때만)
+                        $colMarginBottom = $isFullWidth ? 'mb-0' : ($isFullHeight ? 'mb-0' : 'mb-3');
                         
                         // 위젯 간격 설정 (컨테이너별)
                         $widgetSpacing = $container->widget_spacing ?? 3;
@@ -177,16 +178,7 @@
                                 $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
                                 // 모든 위젯이 칸 영역의 가로 100%를 활용하도록 설정
                                 $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'width: 100%;';
-                                // 세로 정렬이 center 또는 bottom일 때 위젯 래퍼에 align-self 추가
-                                if ($verticalAlign === 'center') {
-                                    if ($widget->type === 'image' || $widget->type === 'image_slide') {
-                                        $widgetWrapperStyle .= ' align-self: center;';
-                                    } else {
-                                        $widgetWrapperStyle .= ' align-self: center;';
-                                    }
-                                } elseif ($verticalAlign === 'bottom') {
-                                    $widgetWrapperStyle .= ' align-self: flex-end;';
-                                }
+                                // 세로 정렬은 컬럼의 flex 설정으로 처리되므로 위젯 래퍼에는 추가하지 않음
                                 // 마지막 위젯이 아니면 간격 적용
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
                             @endphp

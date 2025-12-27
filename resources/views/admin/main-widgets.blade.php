@@ -8375,12 +8375,14 @@ function makeGradientControlDraggable(control) {
         
         const rect = preview.getBoundingClientRect();
         const x = e.clientX - rect.left;
+        // 그라데이션 바의 경계 내에서만 이동하도록 제한
         const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
         
         control.style.left = `${percent}%`;
         control.setAttribute('data-position', percent);
         
         updateGradientPreview();
+        e.preventDefault();
     });
     
     document.addEventListener('mouseup', function(e) {
@@ -8428,6 +8430,7 @@ function makeGradientControlDraggable(control) {
         
         const rect = preview.getBoundingClientRect();
         const x = touch.clientX - rect.left;
+        // 그라데이션 바의 경계 내에서만 이동하도록 제한
         const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
         
         control.style.left = `${percent}%`;
@@ -9048,9 +9051,11 @@ function hexToRgb(hex) {
                 <!-- 그라데이션 미리보기 바 -->
                 <div class="mb-4" style="position: relative;">
                     <div id="gradient_modal_preview" 
-                         style="width: 100%; height: 120px; border: 1px solid #dee2e6; border-radius: 4px; background: linear-gradient(90deg, rgba(255,255,255,1), rgba(0,0,0,1)); position: relative;">
+                         style="width: 100%; height: 120px; border: 1px solid #dee2e6; border-radius: 4px; background: linear-gradient(90deg, rgba(255,255,255,1), rgba(0,0,0,1)); position: relative; overflow: hidden;">
                         <!-- 그라데이션 바 위에 색상 컨트롤 배치 -->
                         <div id="gradient_color_controls" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;">
+                        <!-- 드래그 가능한 영역 표시를 위한 바 -->
+                        <div id="gradient_drag_bar" style="position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: rgba(0,0,0,0.05); pointer-events: all; cursor: crosshair;"></div>
                             <!-- 시작 색상 컨트롤 -->
                             <div id="gradient_start_control" class="gradient-color-control" data-position="0" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: all; cursor: grab; z-index: 20;">
                                 <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto;"></div>
