@@ -117,7 +117,7 @@
                         <div class="card-header bg-light">
                             <h6 class="mb-0">{{ $customPage->name }}</h6>
                         </div>
-                        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                        <div class="card-body">
                             <div id="containersList">
                                 @if($containers->isEmpty())
                                     <div class="text-center py-5 text-muted">
