@@ -100,7 +100,11 @@ class AuthController extends Controller
                 
                 // 마스터 사이트인 경우 관리자 대시보드로 리다이렉트
                 if ($site->isMasterSite()) {
-                    return redirect()->route('master.admin.dashboard');
+                    // 라우트가 존재하면 사용, 아니면 직접 경로 사용
+                    if (\Route::has('master.admin.dashboard')) {
+                        return redirect()->route('master.admin.dashboard');
+                    }
+                    return redirect('/admin/dashboard');
                 }
                 // 커스텀 도메인/서브도메인인 경우 루트 경로로, 아니면 /site/{slug}로
                 return redirect($site->getHomeUrl());
@@ -130,7 +134,11 @@ class AuthController extends Controller
                 // 관리자 권한이 있는 경우에만 대시보드로, 아니면 홈으로
                 $user = auth()->user();
                 if ($user && $user->canManage()) {
-                    return redirect()->route('master.admin.dashboard');
+                    // 라우트가 존재하면 사용, 아니면 직접 경로 사용
+                    if (\Route::has('master.admin.dashboard')) {
+                        return redirect()->route('master.admin.dashboard');
+                    }
+                    return redirect('/admin/dashboard');
                 }
                 return redirect('/');
             }

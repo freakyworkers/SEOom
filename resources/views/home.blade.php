@@ -175,6 +175,12 @@
                         @foreach($columnWidgets as $index => $widget)
                             @php
                                 $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
+                                // 세로 정렬이 center 또는 bottom일 때 위젯 래퍼에 align-self 추가
+                                if ($verticalAlign === 'center' && !$isFullHeight) {
+                                    $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'align-self: center;';
+                                } elseif ($verticalAlign === 'bottom' && !$isFullHeight) {
+                                    $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'align-self: flex-end;';
+                                }
                                 // 마지막 위젯이 아니면 간격 적용
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
                             @endphp

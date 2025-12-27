@@ -8541,14 +8541,14 @@ function saveGradient() {
     // hidden input 업데이트
     const startInput = document.getElementById(`container_background_gradient_start_${currentGradientContainerId}`);
     const endInput = document.getElementById(`container_background_gradient_end_${currentGradientContainerId}`);
-    const angleInput = document.getElementById(`container_background_gradient_angle_${currentGradientContainerId}`);
+    const angleInputHidden = document.getElementById(`container_background_gradient_angle_${currentGradientContainerId}`);
     const startInputMobile = document.getElementById(`container_background_gradient_start_mobile_${currentGradientContainerId}`);
     const endInputMobile = document.getElementById(`container_background_gradient_end_mobile_${currentGradientContainerId}`);
     const angleInputMobile = document.getElementById(`container_background_gradient_angle_mobile_${currentGradientContainerId}`);
     
     if (startInput) startInput.value = startColorValue;
     if (endInput) endInput.value = endColorValue;
-    if (angleInput) angleInput.value = angle;
+    if (angleInputHidden) angleInputHidden.value = angle;
     if (startInputMobile) startInputMobile.value = startColorValue;
     if (endInputMobile) endInputMobile.value = endColorValue;
     if (angleInputMobile) angleInputMobile.value = angle;
@@ -8610,6 +8610,114 @@ function openBlockGradientModal(blockId) {
                          document.getElementById(`${blockId}_background_gradient_end`)?.value || '#000000';
     const angle = document.getElementById(`${blockId}_gradient_angle`)?.value || 
                   document.getElementById(`${blockId}_background_gradient_angle`)?.value || 90;
+    
+    // RGBA 파싱
+    const startParsed = rgbaToHexAndAlpha(startColorValue);
+    const endParsed = rgbaToHexAndAlpha(endColorValue);
+    
+    // 모달에 값 설정 (null 체크 추가)
+    const startColorInput = document.getElementById('gradient_modal_start_color');
+    const startAlphaInput = document.getElementById('gradient_modal_start_alpha');
+    const endColorInput = document.getElementById('gradient_modal_end_color');
+    const endAlphaInput = document.getElementById('gradient_modal_end_alpha');
+    const angleInput = document.getElementById('gradient_modal_angle');
+    const angleSliderInput = document.getElementById('gradient_modal_angle_slider');
+    
+    if (startColorInput) startColorInput.value = startParsed.hex;
+    if (startAlphaInput) startAlphaInput.value = Math.round(startParsed.alpha * 100);
+    if (endColorInput) endColorInput.value = endParsed.hex;
+    if (endAlphaInput) endAlphaInput.value = Math.round(endParsed.alpha * 100);
+    if (angleInput) angleInput.value = angle;
+    if (angleSliderInput) angleSliderInput.value = angle;
+    
+    // 색상 컨트롤 업데이트
+    if (typeof updateGradientColorControl === 'function') {
+        updateGradientColorControl('start');
+        updateGradientColorControl('end');
+    }
+    
+    // 시작/끝 컨트롤에 드래그 기능 추가
+    const startControl = document.getElementById('gradient_start_control');
+    const endControl = document.getElementById('gradient_end_control');
+    if (startControl) {
+        if (typeof makeGradientControlDraggable === 'function') {
+            makeGradientControlDraggable(startControl);
+        }
+        startControl.addEventListener('click', function(e) {
+            if (e.target.type !== 'color') {
+                if (typeof selectGradientControl === 'function') {
+                    selectGradientControl(startControl, 'start');
+                }
+            }
+        });
+    }
+    if (endControl) {
+        if (typeof makeGradientControlDraggable === 'function') {
+            makeGradientControlDraggable(endControl);
+        }
+        endControl.addEventListener('click', function(e) {
+            if (e.target.type !== 'color') {
+                if (typeof selectGradientControl === 'function') {
+                    selectGradientControl(endControl, 'end');
+                }
+            }
+        });
+    }
+    
+    // 그라데이션 바 클릭 이벤트 (새 중간 색상 추가)
+    const preview = document.getElementById('gradient_modal_preview');
+    if (preview) {
+        preview.addEventListener('click', function(e) {
+            if (e.target === preview || e.target.closest('#gradient_color_controls') === null) {
+                if (typeof addGradientMiddleColor === 'function') {
+                    const rect = preview.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                    addGradientMiddleColor(percent);
+                }
+            }
+        });
+    }
+    
+    // 중간 색상 초기화
+    const middleControlsContainer = document.getElementById('gradient_middle_controls');
+    if (middleControlsContainer) {
+        middleControlsContainer.innerHTML = '';
+    }
+    
+    // 미리보기 업데이트
+    if (typeof updateGradientPreview === 'function') {
+        updateGradientPreview();
+    }
+    
+    // 설정 패널 숨기기
+    const settingsPanel = document.getElementById('gradient_selected_control_settings');
+    if (settingsPanel) {
+        settingsPanel.style.display = 'none';
+    }
+    selectedGradientControl = null;
+    selectedGradientControlType = null;
+    
+    // 모달 표시
+    const modalElement = document.getElementById('gradientModal');
+    if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
+}
+
+// 버튼 그라데이션 모달 열기
+function openButtonGradientModal(buttonId) {
+    // 컨테이너 그라데이션 ID 초기화
+    currentGradientContainerId = null;
+    currentGradientType = null;
+    currentBlockGradientId = null;
+    currentButtonGradientId = buttonId;
+    
+    // 현재 값 가져오기
+    const startColorValue = document.getElementById(`${buttonId}_gradient_start`)?.value || '#007bff';
+    const endColorValue = document.getElementById(`${buttonId}_gradient_end`)?.value || '#0056b3';
+    const angle = document.getElementById(`${buttonId}_gradient_angle`)?.value || 90;
     
     // RGBA 파싱
     const startParsed = rgbaToHexAndAlpha(startColorValue);
