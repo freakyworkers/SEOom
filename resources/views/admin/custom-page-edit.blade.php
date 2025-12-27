@@ -1174,7 +1174,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 컨테이너 가로 개수 업데이트
 function updateContainerColumns(containerId, columns) {
-    if (!confirm('컨테이너의 가로 개수를 변경하시겠습니까? 컬럼 수가 줄어들면 해당 컬럼의 위젯들이 삭제됩니다.')) {
+    if (!confirm('컨테이너의 가로 개수를 변경하시겠습니까? 컬럼 수가 줄어들면 해당 컬럼의 위젯들이 자동으로 기존 컬럼들에 재배치됩니다.')) {
         // 취소 시 원래 값으로 복원
         location.reload();
         return;

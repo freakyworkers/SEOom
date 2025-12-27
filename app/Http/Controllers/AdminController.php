@@ -3451,12 +3451,35 @@ class AdminController extends Controller
         $oldColumns = $container->columns;
         $newColumns = $request->has('columns') ? $request->columns : $container->columns;
 
-        // 컬럼 수가 줄어들면, 삭제되는 컬럼의 위젯들을 처리
+        // 컬럼 수가 줄어들면, 삭제되는 컬럼의 위젯들을 기존 컬럼들에 재배치
         if ($newColumns < $oldColumns) {
-            // 삭제되는 컬럼의 위젯들 삭제
-            MainWidget::where('container_id', $container->id)
+            // 삭제되는 컬럼의 위젯들을 가져옴
+            $widgetsToRelocate = MainWidget::where('container_id', $container->id)
                 ->where('column_index', '>=', $newColumns)
-                ->delete();
+                ->orderBy('column_index')
+                ->orderBy('order')
+                ->get();
+            
+            // 각 기존 컬럼의 최대 order 값 계산
+            $maxOrders = [];
+            for ($i = 0; $i < $newColumns; $i++) {
+                $maxOrder = MainWidget::where('container_id', $container->id)
+                    ->where('column_index', $i)
+                    ->max('order');
+                $maxOrders[$i] = $maxOrder ?? 0;
+            }
+            
+            // 위젯들을 기존 컬럼들에 순서대로 재배치 (round-robin 방식)
+            $currentColumn = 0;
+            foreach ($widgetsToRelocate as $widget) {
+                $maxOrders[$currentColumn]++;
+                $widget->column_index = $currentColumn;
+                $widget->order = $maxOrders[$currentColumn];
+                $widget->save();
+                
+                // 다음 컬럼으로 이동 (round-robin)
+                $currentColumn = ($currentColumn + 1) % $newColumns;
+            }
         }
 
         $container->columns = $newColumns;
@@ -4071,11 +4094,35 @@ class AdminController extends Controller
         $oldColumns = $container->columns;
         $newColumns = $request->has('columns') ? $request->columns : $container->columns;
 
-        // 컬럼 수가 줄어들면, 삭제되는 컬럼의 위젯들을 처리
+        // 컬럼 수가 줄어들면, 삭제되는 컬럼의 위젯들을 기존 컬럼들에 재배치
         if ($newColumns < $oldColumns) {
-            CustomPageWidget::where('container_id', $container->id)
+            // 삭제되는 컬럼의 위젯들을 가져옴
+            $widgetsToRelocate = CustomPageWidget::where('container_id', $container->id)
                 ->where('column_index', '>=', $newColumns)
-                ->delete();
+                ->orderBy('column_index')
+                ->orderBy('order')
+                ->get();
+            
+            // 각 기존 컬럼의 최대 order 값 계산
+            $maxOrders = [];
+            for ($i = 0; $i < $newColumns; $i++) {
+                $maxOrder = CustomPageWidget::where('container_id', $container->id)
+                    ->where('column_index', $i)
+                    ->max('order');
+                $maxOrders[$i] = $maxOrder ?? 0;
+            }
+            
+            // 위젯들을 기존 컬럼들에 순서대로 재배치 (round-robin 방식)
+            $currentColumn = 0;
+            foreach ($widgetsToRelocate as $widget) {
+                $maxOrders[$currentColumn]++;
+                $widget->column_index = $currentColumn;
+                $widget->order = $maxOrders[$currentColumn];
+                $widget->save();
+                
+                // 다음 컬럼으로 이동 (round-robin)
+                $currentColumn = ($currentColumn + 1) % $newColumns;
+            }
         }
 
         $container->columns = $newColumns;
