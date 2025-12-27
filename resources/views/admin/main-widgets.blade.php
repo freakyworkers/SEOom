@@ -5159,29 +5159,32 @@ function addBlockSlideButton(itemIndex) {
                     </div>
                 </div>
                 <div class="row block-slide-button-gradient-container" style="display: none;">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">그라데이션 시작 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color block-slide-button-gradient-start" 
-                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_start]" 
-                               value="#007bff">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">그라데이션 끝 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color block-slide-button-gradient-end" 
-                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_end]" 
-                               value="#0056b3">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">그라데이션 각도</label>
-                        <input type="number" 
-                               class="form-control block-slide-button-gradient-angle" 
-                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_angle]" 
-                               value="90" 
-                               min="0" 
-                               max="360" 
-                               step="1">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="block_slide_${itemIndex}_button_${buttonIndex}_gradient_preview" 
+                                 class="block-slide-button-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #007bff, #0056b3);"
+                                 onclick="openButtonGradientModal('block_slide_${itemIndex}_button_${buttonIndex}')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="block-slide-button-gradient-start" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_gradient_start"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_start]" 
+                                   value="#007bff">
+                            <input type="hidden" 
+                                   class="block-slide-button-gradient-end" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_gradient_end"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_end]" 
+                                   value="#0056b3">
+                            <input type="hidden" 
+                                   class="block-slide-button-gradient-angle" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_gradient_angle"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_angle]" 
+                                   value="90">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -5252,29 +5255,32 @@ function addBlockSlideButton(itemIndex) {
                     </div>
                 </div>
                 <div class="row block-slide-button-hover-gradient-container" style="display: none;">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">호버 그라데이션 시작 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color block-slide-button-hover-gradient-start" 
-                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_start]" 
-                               value="#0056b3">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">호버 그라데이션 끝 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color block-slide-button-hover-gradient-end" 
-                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_end]" 
-                               value="#004085">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">호버 그라데이션 각도</label>
-                        <input type="number" 
-                               class="form-control block-slide-button-hover-gradient-angle" 
-                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_angle]" 
-                               value="90" 
-                               min="0" 
-                               max="360" 
-                               step="1">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">호버 그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_preview" 
+                                 class="block-slide-button-hover-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #0056b3, #004085);"
+                                 onclick="openButtonGradientModal('block_slide_${itemIndex}_button_${buttonIndex}_hover')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="block-slide-button-hover-gradient-start" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_start"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_start]" 
+                                   value="#0056b3">
+                            <input type="hidden" 
+                                   class="block-slide-button-hover-gradient-end" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_end"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_end]" 
+                                   value="#004085">
+                            <input type="hidden" 
+                                   class="block-slide-button-hover-gradient-angle" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_angle"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_angle]" 
+                                   value="90">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -7392,29 +7398,32 @@ function addBlockButton() {
                     </div>
                 </div>
                 <div class="row block-button-gradient-container" style="display: none;">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">그라데이션 시작 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color block-button-gradient-start" 
-                               name="block_buttons[${blockButtonIndex}][background_gradient_start]" 
-                               value="#007bff">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">그라데이션 끝 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color block-button-gradient-end" 
-                               name="block_buttons[${blockButtonIndex}][background_gradient_end]" 
-                               value="#0056b3">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">그라데이션 각도</label>
-                        <input type="number" 
-                               class="form-control block-button-gradient-angle" 
-                               name="block_buttons[${blockButtonIndex}][background_gradient_angle]" 
-                               value="90" 
-                               min="0" 
-                               max="360" 
-                               step="1">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="block_button_${blockButtonIndex}_gradient_preview" 
+                                 class="block-button-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #007bff, #0056b3);"
+                                 onclick="openButtonGradientModal('block_button_${blockButtonIndex}')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="block-button-gradient-start" 
+                                   id="block_button_${blockButtonIndex}_gradient_start"
+                                   name="block_buttons[${blockButtonIndex}][background_gradient_start]" 
+                                   value="#007bff">
+                            <input type="hidden" 
+                                   class="block-button-gradient-end" 
+                                   id="block_button_${blockButtonIndex}_gradient_end"
+                                   name="block_buttons[${blockButtonIndex}][background_gradient_end]" 
+                                   value="#0056b3">
+                            <input type="hidden" 
+                                   class="block-button-gradient-angle" 
+                                   id="block_button_${blockButtonIndex}_gradient_angle"
+                                   name="block_buttons[${blockButtonIndex}][background_gradient_angle]" 
+                                   value="90">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -7485,29 +7494,32 @@ function addBlockButton() {
                     </div>
                 </div>
                 <div class="row block-button-hover-gradient-container" style="display: none;">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">호버 그라데이션 시작 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color block-button-hover-gradient-start" 
-                               name="block_buttons[${blockButtonIndex}][hover_background_gradient_start]" 
-                               value="#0056b3">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">호버 그라데이션 끝 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color block-button-hover-gradient-end" 
-                               name="block_buttons[${blockButtonIndex}][hover_background_gradient_end]" 
-                               value="#004085">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">호버 그라데이션 각도</label>
-                        <input type="number" 
-                               class="form-control block-button-hover-gradient-angle" 
-                               name="block_buttons[${blockButtonIndex}][hover_background_gradient_angle]" 
-                               value="90" 
-                               min="0" 
-                               max="360" 
-                               step="1">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">호버 그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="block_button_${blockButtonIndex}_hover_gradient_preview" 
+                                 class="block-button-hover-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #0056b3, #004085);"
+                                 onclick="openButtonGradientModal('block_button_${blockButtonIndex}_hover')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="block-button-hover-gradient-start" 
+                                   id="block_button_${blockButtonIndex}_hover_gradient_start"
+                                   name="block_buttons[${blockButtonIndex}][hover_background_gradient_start]" 
+                                   value="#0056b3">
+                            <input type="hidden" 
+                                   class="block-button-hover-gradient-end" 
+                                   id="block_button_${blockButtonIndex}_hover_gradient_end"
+                                   name="block_buttons[${blockButtonIndex}][hover_background_gradient_end]" 
+                                   value="#004085">
+                            <input type="hidden" 
+                                   class="block-button-hover-gradient-angle" 
+                                   id="block_button_${blockButtonIndex}_hover_gradient_angle"
+                                   name="block_buttons[${blockButtonIndex}][hover_background_gradient_angle]" 
+                                   value="90">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -7622,29 +7634,32 @@ function addEditMainBlockButton() {
                     </div>
                 </div>
                 <div class="row edit-main-block-button-gradient-container" style="display: none;">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">그라데이션 시작 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color edit-main-block-button-gradient-start" 
-                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][background_gradient_start]" 
-                               value="#007bff">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">그라데이션 끝 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color edit-main-block-button-gradient-end" 
-                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][background_gradient_end]" 
-                               value="#0056b3">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">그라데이션 각도</label>
-                        <input type="number" 
-                               class="form-control edit-main-block-button-gradient-angle" 
-                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][background_gradient_angle]" 
-                               value="90" 
-                               min="0" 
-                               max="360" 
-                               step="1">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="edit_main_block_button_${editMainBlockButtonIndex}_gradient_preview" 
+                                 class="edit-main-block-button-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #007bff, #0056b3);"
+                                 onclick="openButtonGradientModal('edit_main_block_button_${editMainBlockButtonIndex}')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="edit-main-block-button-gradient-start" 
+                                   id="edit_main_block_button_${editMainBlockButtonIndex}_gradient_start"
+                                   name="edit_main_block_buttons[${editMainBlockButtonIndex}][background_gradient_start]" 
+                                   value="#007bff">
+                            <input type="hidden" 
+                                   class="edit-main-block-button-gradient-end" 
+                                   id="edit_main_block_button_${editMainBlockButtonIndex}_gradient_end"
+                                   name="edit_main_block_buttons[${editMainBlockButtonIndex}][background_gradient_end]" 
+                                   value="#0056b3">
+                            <input type="hidden" 
+                                   class="edit-main-block-button-gradient-angle" 
+                                   id="edit_main_block_button_${editMainBlockButtonIndex}_gradient_angle"
+                                   name="edit_main_block_buttons[${editMainBlockButtonIndex}][background_gradient_angle]" 
+                                   value="90">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -7715,29 +7730,32 @@ function addEditMainBlockButton() {
                     </div>
                 </div>
                 <div class="row edit-main-block-button-hover-gradient-container" style="display: none;">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">호버 그라데이션 시작 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color edit-main-block-button-hover-gradient-start" 
-                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_background_gradient_start]" 
-                               value="#0056b3">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">호버 그라데이션 끝 컬러</label>
-                        <input type="color" 
-                               class="form-control form-control-color edit-main-block-button-hover-gradient-end" 
-                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_background_gradient_end]" 
-                               value="#004085">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">호버 그라데이션 각도</label>
-                        <input type="number" 
-                               class="form-control edit-main-block-button-hover-gradient-angle" 
-                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_background_gradient_angle]" 
-                               value="90" 
-                               min="0" 
-                               max="360" 
-                               step="1">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">호버 그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="edit_main_block_button_${editMainBlockButtonIndex}_hover_gradient_preview" 
+                                 class="edit-main-block-button-hover-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #0056b3, #004085);"
+                                 onclick="openButtonGradientModal('edit_main_block_button_${editMainBlockButtonIndex}_hover')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="edit-main-block-button-hover-gradient-start" 
+                                   id="edit_main_block_button_${editMainBlockButtonIndex}_hover_gradient_start"
+                                   name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_background_gradient_start]" 
+                                   value="#0056b3">
+                            <input type="hidden" 
+                                   class="edit-main-block-button-hover-gradient-end" 
+                                   id="edit_main_block_button_${editMainBlockButtonIndex}_hover_gradient_end"
+                                   name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_background_gradient_end]" 
+                                   value="#004085">
+                            <input type="hidden" 
+                                   class="edit-main-block-button-hover-gradient-angle" 
+                                   id="edit_main_block_button_${editMainBlockButtonIndex}_hover_gradient_angle"
+                                   name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_background_gradient_angle]" 
+                                   value="90">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -8488,13 +8506,19 @@ function removeGradientMiddleColor(button) {
 
 // 그라데이션 저장
 function saveGradient() {
+    // 버튼 그라데이션인 경우
+    if (currentButtonGradientId) {
+        saveButtonGradient();
+        return;
+    }
+    
     // 블록 그라데이션인 경우
     if (currentBlockGradientId) {
         saveBlockGradient();
         return;
     }
     
-    if (!currentGradientContainerId && !currentBlockGradientId) return;
+    if (!currentGradientContainerId && !currentBlockGradientId && !currentButtonGradientId) return;
     
     const startColorInput = document.getElementById('gradient_modal_start_color');
     const startAlphaInput = document.getElementById('gradient_modal_start_alpha');
@@ -8570,6 +8594,8 @@ function saveGradient() {
 
 // 블록 그라데이션 모달 열기
 let currentBlockGradientId = null;
+// 버튼 그라데이션 모달 열기
+let currentButtonGradientId = null;
 
 function openBlockGradientModal(blockId) {
     // 컨테이너 그라데이션 ID 초기화
@@ -8729,6 +8755,74 @@ function saveBlockGradient() {
     if (startInput) startInput.value = startColor;
     if (endInput) endInput.value = endColor;
     if (angleInput) angleInput.value = angle;
+    if (preview) {
+        preview.style.background = gradientString;
+    }
+    
+    // 모달 닫기
+    const modal = bootstrap.Modal.getInstance(document.getElementById('gradientModal'));
+    if (modal) modal.hide();
+}
+
+// 버튼 그라데이션 저장 함수
+function saveButtonGradient() {
+    if (!currentButtonGradientId) return;
+    
+    const startColorInput = document.getElementById('gradient_modal_start_color');
+    const startAlphaInput = document.getElementById('gradient_modal_start_alpha');
+    const endColorInput = document.getElementById('gradient_modal_end_color');
+    const endAlphaInput = document.getElementById('gradient_modal_end_alpha');
+    const angleInput = document.getElementById('gradient_modal_angle');
+    
+    if (!startColorInput || !startAlphaInput || !endColorInput || !endAlphaInput || !angleInput) return;
+    
+    const startColor = startColorInput.value;
+    const startAlpha = startAlphaInput.value / 100;
+    const endColor = endColorInput.value;
+    const endAlpha = endAlphaInput.value / 100;
+    const angle = angleInput.value || 90;
+    
+    // 투명도가 100%면 hex, 아니면 rgba로 저장
+    const startColorValue = startAlpha === 1 ? startColor : hexToRgba(startColor, startAlpha);
+    const endColorValue = endAlpha === 1 ? endColor : hexToRgba(endColor, endAlpha);
+    
+    // 중간 색상 수집
+    const middleColors = [];
+    const middleControls = document.querySelectorAll('.gradient-middle-control');
+    middleControls.forEach(control => {
+        const colorInput = control.querySelector('.gradient-middle-color-input');
+        const alphaInput = control.querySelector('.gradient-middle-alpha-input');
+        const position = parseFloat(control.getAttribute('data-position')) || parseFloat(control.style.left) || 50;
+        if (colorInput) {
+            const color = colorInput.value;
+            const alpha = alphaInput ? (alphaInput.value / 100) : 1;
+            const colorValue = alpha === 1 ? color : hexToRgba(color, alpha);
+            middleColors.push({ color: colorValue, position });
+        }
+    });
+    
+    // 위치 순으로 정렬
+    middleColors.sort((a, b) => a.position - b.position);
+    
+    // 그라데이션 문자열 생성
+    const startRgba = hexToRgba(startColor, startAlpha);
+    const endRgba = hexToRgba(endColor, endAlpha);
+    
+    let gradientString = `linear-gradient(${angle}deg, ${startRgba}`;
+    middleColors.forEach(mc => {
+        gradientString += `, ${mc.color} ${mc.position}%`;
+    });
+    gradientString += `, ${endRgba})`;
+    
+    // 버튼 그라데이션 값 저장
+    const startInput = document.getElementById(`${currentButtonGradientId}_gradient_start`);
+    const endInput = document.getElementById(`${currentButtonGradientId}_gradient_end`);
+    const angleInputEl = document.getElementById(`${currentButtonGradientId}_gradient_angle`);
+    const preview = document.getElementById(`${currentButtonGradientId}_gradient_preview`);
+    
+    if (startInput) startInput.value = startColorValue;
+    if (endInput) endInput.value = endColorValue;
+    if (angleInputEl) angleInputEl.value = angle;
     if (preview) {
         preview.style.background = gradientString;
     }
