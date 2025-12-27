@@ -148,6 +148,7 @@
                         $mergeSpan = $columnMerges[$i] ?? 1;
                         $colWidth = $mergeSpan * (12 / $container->columns);
                         $columnWidgets = $container->widgets->where('column_index', $i)->sortBy('order');
+                        // 가로 100%일 때만 padding 제거, 일반적인 경우에는 Bootstrap gutter 유지
                         $colStyle = $isFullWidth ? 'padding-left: 0; padding-right: 0;' : '';
                         if ($isFullHeight) {
                             $colStyle .= ($colStyle ? ' ' : '') . 'height: 100%; display: flex; flex-direction: column;';
@@ -178,7 +179,12 @@
                                 $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
                                 // 모든 위젯이 칸 영역의 가로 100%를 활용하도록 설정
                                 $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'width: 100%;';
-                                // 세로 정렬은 컬럼의 flex 설정으로 처리되므로 위젯 래퍼에는 추가하지 않음
+                                // 세로 정렬이 center일 때 위젯 래퍼를 flex로 만들어서 중앙 정렬이 작동하도록 함
+                                if ($verticalAlign === 'center' && !$isFullHeight) {
+                                    $widgetWrapperStyle .= ' display: flex; align-items: center; justify-content: center;';
+                                } elseif ($verticalAlign === 'bottom' && !$isFullHeight) {
+                                    $widgetWrapperStyle .= ' display: flex; align-items: flex-end; justify-content: center;';
+                                }
                                 // 마지막 위젯이 아니면 간격 적용
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
                             @endphp

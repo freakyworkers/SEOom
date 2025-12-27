@@ -9054,11 +9054,9 @@ function hexToRgb(hex) {
                          style="width: 100%; height: 120px; border: 1px solid #dee2e6; border-radius: 4px; background: linear-gradient(90deg, rgba(255,255,255,1), rgba(0,0,0,1)); position: relative; overflow: hidden;">
                         <!-- 그라데이션 바 위에 색상 컨트롤 배치 -->
                         <div id="gradient_color_controls" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;">
-                        <!-- 드래그 가능한 영역 표시를 위한 바 -->
-                        <div id="gradient_drag_bar" style="position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: rgba(0,0,0,0.05); pointer-events: all; cursor: crosshair;"></div>
                             <!-- 시작 색상 컨트롤 -->
                             <div id="gradient_start_control" class="gradient-color-control" data-position="0" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: all; cursor: grab; z-index: 20;">
-                                <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto;"></div>
+                                <div class="gradient-control-handle" style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto; cursor: grab;"></div>
                                 <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px; cursor: pointer;" onclick="if(typeof selectGradientControl === 'function') selectGradientControl(document.getElementById('gradient_start_control'), 'start');">
                                     <div id="gradient_start_color_display" style="width: 100%; height: 100%; border-radius: 2px; background: #ffffff;"></div>
                                 </div>
@@ -9087,7 +9085,7 @@ function hexToRgb(hex) {
                             
                             <!-- 끝 색상 컨트롤 -->
                             <div id="gradient_end_control" class="gradient-color-control" data-position="100" style="position: absolute; left: 100%; top: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: all; cursor: grab; z-index: 20;">
-                                <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto;"></div>
+                                <div class="gradient-control-handle" style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto; cursor: grab;"></div>
                                 <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px; cursor: pointer;" onclick="if(typeof selectGradientControl === 'function') selectGradientControl(document.getElementById('gradient_end_control'), 'end');">
                                     <div id="gradient_end_color_display" style="width: 100%; height: 100%; border-radius: 2px; background: #000000;"></div>
                                 </div>
