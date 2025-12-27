@@ -390,6 +390,8 @@
                                                                         @foreach($columnWidgets as $widget)
                                                                             <div class="widget-item card mb-2" 
                                                                                  data-widget-id="{{ $widget->id }}" 
+                                                                                 data-container-id="{{ $container->id }}"
+                                                                                 data-column-index="{{ $i }}"
                                                                                  data-widget-title="{{ $widget->title }}"
                                                                                  data-widget-type="{{ $widget->type }}"
                                                                                  data-widget-active="{{ $widget->is_active ? '1' : '0' }}"
@@ -407,6 +409,11 @@
                                                                                             <small class="text-muted">{{ $availableTypes[$widget->type] ?? $widget->type }}</small>
                                                                                         </div>
                                                                                         <div class="d-flex gap-1">
+                                                                                            <span class="bi-grip-vertical btn btn-sm btn-outline-secondary p-1" 
+                                                                                                  style="width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: move;"
+                                                                                                  title="드래그하여 이동">
+                                                                                                <i class="bi bi-grip-vertical" style="font-size: 14px;"></i>
+                                                                                            </span>
                                                                                             <button type="button" 
                                                                                                     class="btn btn-sm btn-outline-secondary p-1" 
                                                                                                     onclick="moveMainWidgetUp({{ $widget->id }}, {{ $container->id }}, {{ $i }})"
@@ -1486,12 +1493,36 @@
     </div>
 </div>
 
+@push('styles')
+<style>
+.widget-item.sortable-ghost {
+    opacity: 0.4;
+    background: #f0f0f0;
+}
+.widget-item.sortable-chosen {
+    cursor: move;
+}
+.widget-item.sortable-drag {
+    opacity: 0.8;
+}
+.bi-grip-vertical {
+    cursor: move;
+    user-select: none;
+}
+.bi-grip-vertical:hover {
+    background-color: #e9ecef;
+}
+</style>
+@endpush
+
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
 let currentContainerId = null;
 let currentColumnIndex = null;
 let currentEditWidgetId = null;
 let successModalReloadHandler = null;
+let mainWidgetSortables = {}; // 각 위젯 리스트의 Sortable 인스턴스 저장
 
 // 컨테이너 추가
 document.getElementById('addContainerForm').addEventListener('submit', function(e) {
@@ -3310,15 +3341,30 @@ function moveMainWidgetDown(widgetId, containerId, columnIndex) {
 }
 
 // 위젯 순서 저장
-function saveMainWidgetOrder(containerId, columnIndex) {
+function saveMainWidgetOrder(containerId, columnIndex, movedWidget = null) {
     const widgetList = document.querySelector(`.widget-list-in-column[data-container-id="${containerId}"][data-column-index="${columnIndex}"]`);
     if (!widgetList) return;
     
     const widgets = Array.from(widgetList.querySelectorAll('.widget-item'));
-    const widgetData = widgets.map((item, index) => ({
-        id: parseInt(item.dataset.widgetId),
-        order: index + 1
-    }));
+    const widgetData = widgets.map((item, index) => {
+        const widgetId = parseInt(item.dataset.widgetId);
+        const itemContainerId = parseInt(item.dataset.containerId);
+        const itemColumnIndex = parseInt(item.dataset.columnIndex);
+        
+        const data = {
+            id: widgetId,
+            order: index + 1
+        };
+        
+        // 위젯이 다른 컨테이너로 이동한 경우
+        if (movedWidget && movedWidget.id === widgetId && 
+            (itemContainerId !== containerId || itemColumnIndex !== columnIndex)) {
+            data.container_id = containerId;
+            data.column_index = columnIndex;
+        }
+        
+        return data;
+    });
     
     fetch('{{ route("admin.main-widgets.reorder", ["site" => $site->slug]) }}', {
         method: 'POST',
@@ -3339,6 +3385,15 @@ function saveMainWidgetOrder(containerId, columnIndex) {
             console.error('순서 저장 실패:', data.message);
             alert('위젯 순서 저장에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
             location.reload(); // 실패 시 새로고침
+        } else {
+            // 위젯이 이동한 경우 데이터 속성 업데이트
+            if (movedWidget) {
+                const movedElement = document.querySelector(`.widget-item[data-widget-id="${movedWidget.id}"]`);
+                if (movedElement) {
+                    movedElement.dataset.containerId = containerId;
+                    movedElement.dataset.columnIndex = columnIndex;
+                }
+            }
         }
     })
     .catch(error => {
@@ -3623,7 +3678,67 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Sortable.js 초기화 - 모든 위젯 리스트에 드래그 앤 드롭 기능 추가
+    initializeMainWidgetSortables();
 });
+
+// 메인 위젯 Sortable 초기화
+function initializeMainWidgetSortables() {
+    // 모든 위젯 리스트 찾기
+    const widgetLists = document.querySelectorAll('.widget-list-in-column');
+    
+    widgetLists.forEach(widgetList => {
+        const containerId = widgetList.dataset.containerId;
+        const columnIndex = widgetList.dataset.columnIndex;
+        const sortableKey = `${containerId}_${columnIndex}`;
+        
+        // 이미 초기화된 경우 제거
+        if (mainWidgetSortables[sortableKey]) {
+            mainWidgetSortables[sortableKey].destroy();
+        }
+        
+        // Sortable 초기화
+        mainWidgetSortables[sortableKey] = Sortable.create(widgetList, {
+            group: 'main-widgets', // 모든 위젯 리스트 간 이동 허용
+            animation: 150,
+            handle: '.bi-grip-vertical', // 드래그 핸들
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            dragClass: 'sortable-drag',
+            onEnd: function(evt) {
+                const fromContainerId = parseInt(evt.from.dataset.containerId);
+                const fromColumnIndex = parseInt(evt.from.dataset.columnIndex);
+                const toContainerId = parseInt(evt.to.dataset.containerId);
+                const toColumnIndex = parseInt(evt.to.dataset.columnIndex);
+                const widgetId = parseInt(evt.item.dataset.widgetId);
+                
+                // 위젯이 다른 컨테이너로 이동한 경우
+                if (fromContainerId !== toContainerId || fromColumnIndex !== toColumnIndex) {
+                    // 이동된 위젯 정보 저장
+                    const movedWidget = {
+                        id: widgetId,
+                        fromContainerId: fromContainerId,
+                        fromColumnIndex: fromColumnIndex,
+                        toContainerId: toContainerId,
+                        toColumnIndex: toColumnIndex
+                    };
+                    
+                    // 새 위치의 순서 저장
+                    saveMainWidgetOrder(toContainerId, toColumnIndex, movedWidget);
+                    
+                    // 원래 위치의 순서도 저장 (위젯이 제거되었으므로)
+                    if (fromContainerId !== toContainerId || fromColumnIndex !== toColumnIndex) {
+                        saveMainWidgetOrder(fromContainerId, fromColumnIndex);
+                    }
+                } else {
+                    // 같은 컬럼 내에서 순서만 변경
+                    saveMainWidgetOrder(toContainerId, toColumnIndex);
+                }
+            }
+        });
+    });
+}
 
 // 사이드 위젯 페이지의 공통 함수들 (필요한 경우에만 정의)
 function handleGalleryDisplayTypeChange() {

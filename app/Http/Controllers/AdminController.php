@@ -3813,6 +3813,8 @@ class AdminController extends Controller
             'widgets' => 'required|array',
             'widgets.*.id' => 'required|integer',
             'widgets.*.order' => 'required|integer',
+            'widgets.*.container_id' => 'nullable|integer', // 이동된 위젯의 새 컨테이너 ID
+            'widgets.*.column_index' => 'nullable|integer', // 이동된 위젯의 새 컬럼 인덱스
         ]);
 
         $containerId = $request->container_id;
@@ -3831,16 +3833,38 @@ class AdminController extends Controller
             ], 404);
         }
 
-        // 위젯 순서 업데이트
+        // 위젯 순서 업데이트 및 컨테이너 이동 처리
         foreach ($widgets as $widgetData) {
             $widget = MainWidget::where('id', $widgetData['id'])
                 ->where('site_id', $site->id)
-                ->where('container_id', $containerId)
-                ->where('column_index', $columnIndex)
                 ->first();
 
-            if ($widget) {
-                $widget->update(['order' => $widgetData['order']]);
+            if (!$widget) {
+                continue;
+            }
+
+            // 위젯이 다른 컨테이너로 이동한 경우
+            if (isset($widgetData['container_id']) && isset($widgetData['column_index'])) {
+                $newContainerId = $widgetData['container_id'];
+                $newColumnIndex = $widgetData['column_index'];
+                
+                // 새 컨테이너가 해당 사이트에 속하는지 확인
+                $newContainer = MainWidgetContainer::where('id', $newContainerId)
+                    ->where('site_id', $site->id)
+                    ->first();
+                
+                if ($newContainer && $newColumnIndex < $newContainer->columns) {
+                    // 위젯을 새 컨테이너로 이동
+                    $widget->container_id = $newContainerId;
+                    $widget->column_index = $newColumnIndex;
+                    $widget->order = $widgetData['order'];
+                    $widget->save();
+                }
+            } else {
+                // 같은 컨테이너 내에서 순서만 변경
+                if ($widget->container_id == $containerId && $widget->column_index == $columnIndex) {
+                    $widget->update(['order' => $widgetData['order']]);
+                }
             }
         }
 
@@ -4400,6 +4424,8 @@ class AdminController extends Controller
             'widgets' => 'required|array',
             'widgets.*.id' => 'required|integer',
             'widgets.*.order' => 'required|integer',
+            'widgets.*.container_id' => 'nullable|integer', // 이동된 위젯의 새 컨테이너 ID
+            'widgets.*.column_index' => 'nullable|integer', // 이동된 위젯의 새 컬럼 인덱스
         ]);
 
         $containerId = $request->container_id;
@@ -4418,16 +4444,38 @@ class AdminController extends Controller
             ], 404);
         }
 
-        // 위젯 순서 업데이트
+        // 위젯 순서 업데이트 및 컨테이너 이동 처리
         foreach ($widgets as $widgetData) {
             $widget = CustomPageWidget::where('id', $widgetData['id'])
                 ->where('custom_page_id', $customPage->id)
-                ->where('container_id', $containerId)
-                ->where('column_index', $columnIndex)
                 ->first();
 
-            if ($widget) {
-                $widget->update(['order' => $widgetData['order']]);
+            if (!$widget) {
+                continue;
+            }
+
+            // 위젯이 다른 컨테이너로 이동한 경우
+            if (isset($widgetData['container_id']) && isset($widgetData['column_index'])) {
+                $newContainerId = $widgetData['container_id'];
+                $newColumnIndex = $widgetData['column_index'];
+                
+                // 새 컨테이너가 해당 커스텀 페이지에 속하는지 확인
+                $newContainer = CustomPageWidgetContainer::where('id', $newContainerId)
+                    ->where('custom_page_id', $customPage->id)
+                    ->first();
+                
+                if ($newContainer && $newColumnIndex < $newContainer->columns) {
+                    // 위젯을 새 컨테이너로 이동
+                    $widget->container_id = $newContainerId;
+                    $widget->column_index = $newColumnIndex;
+                    $widget->order = $widgetData['order'];
+                    $widget->save();
+                }
+            } else {
+                // 같은 컨테이너 내에서 순서만 변경
+                if ($widget->container_id == $containerId && $widget->column_index == $columnIndex) {
+                    $widget->update(['order' => $widgetData['order']]);
+                }
             }
         }
 
