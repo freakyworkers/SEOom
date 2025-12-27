@@ -464,47 +464,51 @@
                                                                                         </h6>
                                                                                         <small class="text-muted d-block">{{ $availableTypes[$widget->type] ?? $widget->type }}</small>
                                                                                     </div>
-                                                                                    <div class="d-flex gap-2 justify-content-end pt-2 border-top">
-                                                                                        <span class="bi-grip-vertical btn btn-sm btn-outline-secondary" 
-                                                                                              style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: move; touch-action: none;"
-                                                                                              title="드래그하여 이동">
-                                                                                            <i class="bi bi-grip-vertical"></i>
-                                                                                        </span>
-                                                                                        <button type="button" 
-                                                                                                class="btn btn-sm btn-outline-secondary" 
-                                                                                                onclick="moveMainWidgetUp({{ $widget->id }}, {{ $container->id }}, {{ $i }})"
-                                                                                                title="위로 이동"
-                                                                                                style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                                                                                            <i class="bi bi-arrow-up"></i>
-                                                                                        </button>
-                                                                                        <button type="button" 
-                                                                                                class="btn btn-sm btn-outline-secondary" 
-                                                                                                onclick="moveMainWidgetDown({{ $widget->id }}, {{ $container->id }}, {{ $i }})"
-                                                                                                title="아래로 이동"
-                                                                                                style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                                                                                            <i class="bi bi-arrow-down"></i>
-                                                                                        </button>
-                                                                                        <button type="button" 
-                                                                                                class="btn btn-sm btn-outline-info" 
-                                                                                                onclick="openMainWidgetAnimationModal({{ $widget->id }})"
-                                                                                                title="애니메이션 설정"
-                                                                                                style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                                                                                            <i class="bi bi-magic"></i>
-                                                                                        </button>
-                                                                                        <button type="button" 
-                                                                                                class="btn btn-sm btn-outline-primary" 
-                                                                                                onclick="editMainWidget({{ $widget->id }})"
-                                                                                                title="설정"
-                                                                                                style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                                                                                            <i class="bi bi-gear"></i>
-                                                                                        </button>
-                                                                                        <button type="button" 
-                                                                                                class="btn btn-sm btn-outline-danger" 
-                                                                                                onclick="deleteMainWidget({{ $widget->id }})"
-                                                                                                title="삭제"
-                                                                                                style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                                                                                            <i class="bi bi-trash"></i>
-                                                                                        </button>
+                                                                                    <div class="pt-2 border-top">
+                                                                                        <div class="d-flex gap-2 justify-content-end mb-2">
+                                                                                            <span class="bi-grip-vertical btn btn-sm btn-outline-secondary" 
+                                                                                                  style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: move; touch-action: none;"
+                                                                                                  title="드래그하여 이동">
+                                                                                                <i class="bi bi-grip-vertical"></i>
+                                                                                            </span>
+                                                                                            <button type="button" 
+                                                                                                    class="btn btn-sm btn-outline-secondary" 
+                                                                                                    onclick="moveMainWidgetUp({{ $widget->id }}, {{ $container->id }}, {{ $i }})"
+                                                                                                    title="위로 이동"
+                                                                                                    style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                                                                <i class="bi bi-arrow-up"></i>
+                                                                                            </button>
+                                                                                            <button type="button" 
+                                                                                                    class="btn btn-sm btn-outline-secondary" 
+                                                                                                    onclick="moveMainWidgetDown({{ $widget->id }}, {{ $container->id }}, {{ $i }})"
+                                                                                                    title="아래로 이동"
+                                                                                                    style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                                                                <i class="bi bi-arrow-down"></i>
+                                                                                            </button>
+                                                                                        </div>
+                                                                                        <div class="d-flex gap-2 justify-content-end">
+                                                                                            <button type="button" 
+                                                                                                    class="btn btn-sm btn-outline-info" 
+                                                                                                    onclick="openMainWidgetAnimationModal({{ $widget->id }})"
+                                                                                                    title="애니메이션 설정"
+                                                                                                    style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                                                                <i class="bi bi-magic"></i>
+                                                                                            </button>
+                                                                                            <button type="button" 
+                                                                                                    class="btn btn-sm btn-outline-primary" 
+                                                                                                    onclick="editMainWidget({{ $widget->id }})"
+                                                                                                    title="설정"
+                                                                                                    style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                                                                <i class="bi bi-gear"></i>
+                                                                                            </button>
+                                                                                            <button type="button" 
+                                                                                                    class="btn btn-sm btn-outline-danger" 
+                                                                                                    onclick="deleteMainWidget({{ $widget->id }})"
+                                                                                                    title="삭제"
+                                                                                                    style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                                                                <i class="bi bi-trash"></i>
+                                                                                            </button>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
