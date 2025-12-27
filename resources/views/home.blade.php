@@ -141,14 +141,17 @@
                             $hiddenColumns[] = $startCol + $j;
                         }
                     }
-                    // 컨테이너 내 모든 칸의 마지막 위젯인지 확인하기 위해 각 칸의 위젯 개수 확인
-                    $maxWidgetCountPerColumn = 0;
+                    // 컨테이너 내 모든 칸의 위젯 개수 확인
+                    $columnWidgetCounts = [];
                     for ($i = 0; $i < $container->columns; $i++) {
                         if (!in_array($i, $hiddenColumns)) {
                             $colWidgets = $container->widgets->where('column_index', $i)->sortBy('order');
-                            $maxWidgetCountPerColumn = max($maxWidgetCountPerColumn, $colWidgets->count());
+                            $columnWidgetCounts[$i] = $colWidgets->count();
                         }
                     }
+                    // 모든 칸의 위젯 개수가 같은지 확인
+                    $uniqueWidgetCounts = array_unique(array_values($columnWidgetCounts));
+                    $allColumnsHaveSameWidgetCount = count($uniqueWidgetCounts) === 1 && !empty($uniqueWidgetCounts);
                 @endphp
                 @for($i = 0; $i < $container->columns; $i++)
                     @php
@@ -199,8 +202,8 @@
                                 // 마지막 위젯이 아니면 하단 간격 적용, 첫 번째 위젯이 아니면 상단 간격 적용
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
                                 $isFirstWidget = $index === 0;
-                                // 컨테이너 내 모든 칸의 마지막 위젯인지 확인 (모든 칸의 위젯 개수가 같고, 현재 위젯이 마지막이면 하단 마진 제거)
-                                $isLastWidgetInAllColumns = ($isLastWidget && $columnWidgets->count() === $maxWidgetCountPerColumn && $maxWidgetCountPerColumn > 0);
+                                // 모든 칸의 위젯 개수가 같고, 현재 위젯이 마지막이면 하단 마진 제거
+                                $isLastWidgetInAllColumns = ($isLastWidget && $allColumnsHaveSameWidgetCount);
                                 $widgetMarginClass = '';
                                 if (!$isFullHeight) {
                                     if (!$isFirstWidget) {

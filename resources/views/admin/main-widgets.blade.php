@@ -6270,6 +6270,10 @@ function saveMainWidgetSettings() {
         } else if (countdownType === 'number') {
             const animationCheckbox = document.getElementById('edit_main_widget_countdown_animation');
             settings.countdown_animation_enabled = animationCheckbox ? animationCheckbox.checked : false;
+            // 기존 설정이 있으면 유지
+            if (!settings.countdown_animation_enabled && existingSettings.countdown_animation_enabled !== undefined) {
+                settings.countdown_animation_enabled = existingSettings.countdown_animation_enabled;
+            }
             
             // 숫자 카운트 항목 수집
             const numberItems = [];
