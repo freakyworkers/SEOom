@@ -21,7 +21,7 @@
 </div>
 <div class="mb-3" id="widget_title_container">
     <label for="widget_title" class="form-label">
-        위젯 제목
+        위젯 제목 <span id="widget_title_optional" style="display: none;">(선택사항)</span>
         <span id="widget_title_help" style="display: none;">
             <i class="bi bi-question-circle text-muted ms-1" 
                data-bs-toggle="tooltip" 
@@ -175,8 +175,8 @@
               id="widget_custom_html" 
               name="custom_html" 
               rows="10"
-              placeholder="HTML 코드를 입력하세요"></textarea>
-    <small class="text-muted">사이드바에 표시할 HTML 코드를 입력하세요.</small>
+              placeholder="<style><script><html> 코드를 입력하세요"></textarea>
+    <small class="text-muted">위젯에 표시할 HTML 코드를 입력하세요.</small>
 </div>
 <div class="mb-3" id="widget_block_container" style="display: none;">
     <div class="mb-3">

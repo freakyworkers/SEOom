@@ -892,8 +892,8 @@
                                   id="edit_main_widget_custom_html" 
                                   name="custom_html" 
                                   rows="10"
-                                  placeholder="HTML 코드를 입력하세요"></textarea>
-                        <small class="text-muted">메인 페이지에 표시할 HTML 코드를 입력하세요.</small>
+                                  placeholder="<style><script><html> 코드를 입력하세요"></textarea>
+                        <small class="text-muted">위젯에 표시할 HTML 코드를 입력하세요.</small>
                     </div>
                     <div class="mb-3" id="edit_main_widget_block_container" style="display: none;">
                         <div class="mb-3">
@@ -1605,7 +1605,7 @@
                     </div>
                     <div class="mb-3" id="edit_main_widget_title_container_main">
                         <label for="edit_main_widget_title" class="form-label">
-                            위젯 제목
+                            위젯 제목 <span id="edit_main_widget_title_optional" style="display: none;">(선택사항)</span>
                             <i class="bi bi-question-circle text-muted ms-1" 
                                id="edit_main_widget_title_help"
                                data-bs-toggle="tooltip" 
@@ -3277,6 +3277,8 @@ function editMainWidget(widgetId) {
             } else if (widgetType === 'custom_html') {
                 if (customHtmlContainer) customHtmlContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'block';
+                const titleOptional = document.getElementById('edit_main_widget_title_optional');
+                if (titleOptional) titleOptional.style.display = 'inline';
                 if (document.getElementById('edit_main_widget_custom_html')) {
                     document.getElementById('edit_main_widget_custom_html').value = settings.html || settings.custom_html || '';
                 }
@@ -4007,7 +4009,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (widgetType === 'custom_html') {
                 if (customHtmlContainer) customHtmlContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'block';
-                if (titleInput) titleInput.required = true;
+                if (titleInput) titleInput.required = false;
+                const titleOptional = document.getElementById('widget_title_optional');
+                if (titleOptional) titleOptional.style.display = 'inline';
             } else if (widgetType === 'block') {
                 if (blockContainer) blockContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'none';
