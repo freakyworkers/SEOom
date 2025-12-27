@@ -98,7 +98,7 @@ Route::middleware('web')->group(function () {
         
         Route::post('/logout', function (Request $request) use ($masterSite) {
             return app(\App\Http\Controllers\AuthController::class)->logout($request, $masterSite);
-        })->middleware('auth')->name('master.logout');
+        })->middleware('auth')->name('master.site.logout');
         
         // Store Routes (스토어)
         Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
