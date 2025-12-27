@@ -351,42 +351,26 @@
         <small class="text-muted">제목과 내용 사이의 여백을 입력하세요 (0~100).</small>
     </div>
     <div class="mb-3">
-        <div class="form-check">
-            <input class="form-check-input" 
-                   type="checkbox" 
-                   id="widget_block_show_button" 
-                   name="block_show_button"
-                   onchange="handleBlockButtonToggle()">
-            <label class="form-check-label" for="widget_block_show_button">
-                버튼 추가
-            </label>
+        <label class="form-label">버튼 관리</label>
+        <div id="widget_block_buttons_list">
+            <!-- 버튼들이 여기에 동적으로 추가됨 -->
         </div>
+        <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addBlockButton()">
+            <i class="bi bi-plus-circle me-1"></i>버튼 추가
+        </button>
     </div>
-    <div class="mb-3" id="widget_block_button_container" style="display: none;">
-        <div class="mb-3">
-            <label for="widget_block_button_text" class="form-label">버튼 텍스트</label>
-            <input type="text" 
-                   class="form-control" 
-                   id="widget_block_button_text" 
-                   name="block_button_text" 
-                   placeholder="버튼 텍스트를 입력하세요">
-        </div>
-        <div class="mb-3">
-            <label for="widget_block_button_background_color" class="form-label">버튼 배경 컬러</label>
-            <input type="color" 
-                   class="form-control form-control-color" 
-                   id="widget_block_button_background_color" 
-                   name="block_button_background_color" 
-                   value="#007bff">
-        </div>
-        <div class="mb-3">
-            <label for="widget_block_button_text_color" class="form-label">버튼 텍스트 컬러</label>
-            <input type="color" 
-                   class="form-control form-control-color" 
-                   id="widget_block_button_text_color" 
-                   name="block_button_text_color" 
-                   value="#ffffff">
-        </div>
+    <div class="mb-3">
+        <label for="widget_block_button_top_margin" class="form-label">버튼 상단 여백 (px)</label>
+        <input type="number" 
+               class="form-control" 
+               id="widget_block_button_top_margin" 
+               name="block_button_top_margin" 
+               value="12"
+               min="0"
+               max="100"
+               step="1"
+               placeholder="12">
+        <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
     </div>
     <div class="mb-3">
         <label for="widget_block_link" class="form-label">
@@ -545,7 +529,7 @@
         </div>
     </div>
     <div class="mb-3" id="widget_image_slide_visible_count_container" style="display: none;">
-        <label for="widget_image_slide_visible_count" class="form-label">표시할 이미지 수</label>
+        <label for="widget_image_slide_visible_count" class="form-label">표시할 이미지 수 (PC)</label>
         <input type="number" 
                class="form-control" 
                id="widget_image_slide_visible_count" 
@@ -554,7 +538,19 @@
                max="10" 
                value="3"
                placeholder="3">
-        <small class="text-muted">한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
+        <small class="text-muted">PC에서 한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
+    </div>
+    <div class="mb-3" id="widget_image_slide_visible_count_mobile_container" style="display: none;">
+        <label for="widget_image_slide_visible_count_mobile" class="form-label">표시할 이미지 수 (모바일)</label>
+        <input type="number" 
+               class="form-control" 
+               id="widget_image_slide_visible_count_mobile" 
+               name="image_slide_visible_count_mobile" 
+               min="1" 
+               max="10" 
+               value="2"
+               placeholder="2">
+        <small class="text-muted">모바일에서 한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
     </div>
     <div class="mb-3" id="widget_image_slide_gap_container" style="display: none;">
         <label for="widget_image_slide_gap" class="form-label">이미지 간격 (px)</label>

@@ -64,11 +64,24 @@
         $fontColor = $blockSettings['font_color'] ?? '#ffffff';
         $titleFontSize = $blockSettings['title_font_size'] ?? '16';
         $contentFontSize = $blockSettings['content_font_size'] ?? '14';
-        $showButton = $blockSettings['show_button'] ?? false;
-        $buttonText = $blockSettings['button_text'] ?? '';
-        $buttonBackgroundColor = $blockSettings['button_background_color'] ?? '#007bff';
-        $buttonTextColor = $blockSettings['button_text_color'] ?? '#ffffff';
+        // 버튼 데이터 (하위 호환성: 기존 단일 버튼 데이터도 지원)
+        $buttons = $blockSettings['buttons'] ?? [];
+        if (!is_array($buttons)) {
+            $showButton = $blockSettings['show_button'] ?? false;
+            if ($showButton && isset($blockSettings['button_text'])) {
+                $buttons = [[
+                    'text' => $blockSettings['button_text'] ?? '',
+                    'link' => $blockSettings['link'] ?? '',
+                    'open_new_tab' => $blockSettings['open_new_tab'] ?? false,
+                    'background_color' => $blockSettings['button_background_color'] ?? '#007bff',
+                    'text_color' => $blockSettings['button_text_color'] ?? '#ffffff'
+                ]];
+            } else {
+                $buttons = [];
+            }
+        }
         $buttonTopMargin = $blockSettings['button_top_margin'] ?? 12;
+        $hasButtons = !empty($buttons);
         
         // 스타일 생성
         $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
@@ -87,7 +100,7 @@
         $blockMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
     @endphp
     <div class="{{ $blockMarginBottom }} {{ $shadowClass }} {{ $animationClass }}" style="{{ $blockStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
-        @if($link && !$showButton)
+        @if($link && !$hasButtons)
             <a href="{{ $link }}" 
                style="color: {{ $fontColor }}; text-decoration: none; display: block;"
                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
@@ -98,30 +111,41 @@
         @if($blockContent)
             <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $contentFontSize }}px; white-space: pre-wrap;">{{ $blockContent }}</p>
         @endif
-        @if($link && !$showButton)
+        @if($link && !$hasButtons)
             </a>
         @endif
-        @if($showButton && $buttonText)
-            <div style="margin-top: {{ $buttonTopMargin }}px; text-align: {{ $textAlign }};">
-                @if($link)
-                    <a href="{{ $link }}" 
-                       @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
-                       style="text-decoration: none; display: inline-block;">
-                        <button class="block-widget-button" 
-                                style="border: 2px solid {{ $buttonBackgroundColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                onmouseover="this.style.opacity='0.9';"
-                                onmouseout="this.style.opacity='1';">
-                            {{ $buttonText }}
-                        </button>
-                    </a>
-                @else
-                    <button class="block-widget-button" 
-                            style="border: 2px solid {{ $buttonBackgroundColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                            onmouseover="this.style.opacity='0.9';"
-                            onmouseout="this.style.opacity='1';">
-                        {{ $buttonText }}
-                    </button>
-                @endif
+        @if($hasButtons)
+            <div style="margin-top: {{ $buttonTopMargin }}px; text-align: {{ $textAlign }}; display: flex; flex-wrap: wrap; gap: 8px;">
+                @foreach($buttons as $button)
+                    @php
+                        $buttonText = $button['text'] ?? '';
+                        $buttonLink = $button['link'] ?? '';
+                        $buttonOpenNewTab = $button['open_new_tab'] ?? false;
+                        $buttonBackgroundColor = $button['background_color'] ?? '#007bff';
+                        $buttonTextColor = $button['text_color'] ?? '#ffffff';
+                    @endphp
+                    @if($buttonText)
+                        @if($buttonLink)
+                            <a href="{{ $buttonLink }}" 
+                               @if($buttonOpenNewTab) target="_blank" rel="noopener noreferrer" @endif
+                               style="text-decoration: none; display: inline-block;">
+                                <button class="block-widget-button" 
+                                        style="border: 2px solid {{ $buttonBackgroundColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                        onmouseover="this.style.opacity='0.9';"
+                                        onmouseout="this.style.opacity='1';">
+                                    {{ $buttonText }}
+                                </button>
+                            </a>
+                        @else
+                            <button class="block-widget-button" 
+                                    style="border: 2px solid {{ $buttonBackgroundColor }}; color: {{ $buttonTextColor }}; background-color: {{ $buttonBackgroundColor }}; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                    onmouseover="this.style.opacity='0.9';"
+                                    onmouseout="this.style.opacity='1';">
+                                {{ $buttonText }}
+                            </button>
+                        @endif
+                    @endif
+                @endforeach
             </div>
         @endif
     </div>
@@ -156,11 +180,24 @@
                         $fontColor = $block['font_color'] ?? '#ffffff';
                         $titleFontSize = $block['title_font_size'] ?? '16';
                         $contentFontSize = $block['content_font_size'] ?? '14';
-                        $showButton = $block['show_button'] ?? false;
-                        $buttonText = $block['button_text'] ?? '';
-                        $buttonBackgroundColor = $block['button_background_color'] ?? '#007bff';
-                        $buttonTextColor = $block['button_text_color'] ?? '#ffffff';
+                        // 버튼 데이터 (하위 호환성: 기존 단일 버튼 데이터도 지원)
+                        $buttons = $block['buttons'] ?? [];
+                        if (!is_array($buttons)) {
+                            $showButton = $block['show_button'] ?? false;
+                            if ($showButton && isset($block['button_text'])) {
+                                $buttons = [[
+                                    'text' => $block['button_text'] ?? '',
+                                    'link' => $block['link'] ?? '',
+                                    'open_new_tab' => $block['open_new_tab'] ?? false,
+                                    'background_color' => $block['button_background_color'] ?? '#007bff',
+                                    'text_color' => $block['button_text_color'] ?? '#ffffff'
+                                ]];
+                            } else {
+                                $buttons = [];
+                            }
+                        }
                         $buttonTopMargin = $block['button_top_margin'] ?? 12;
+                        $hasButtons = !empty($buttons);
                         
                         // 스타일 생성
                         $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
@@ -179,7 +216,7 @@
                         }
                     @endphp
                     <div class="block-slide-item" style="{{ $blockStyle }}" data-index="{{ $index }}">
-                        @if($link && !$showButton)
+                        @if($link && !$hasButtons)
                             <a href="{{ $link }}" 
                                style="color: {{ $fontColor }}; text-decoration: none; display: block;"
                                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
@@ -190,30 +227,42 @@
                         @if($blockContent)
                             <p class="mb-0" style="color: {{ $fontColor }}; font-size: 0.9rem; white-space: pre-wrap;">{{ $blockContent }}</p>
                         @endif
-                        @if($link && !$showButton)
+                        @if($link && !$hasButtons)
                             </a>
                         @endif
-                        @if($showButton && $buttonText)
-                            <div style="margin-top: {{ $buttonTopMargin }}px; text-align: {{ $textAlign }};">
-                                @if($link)
-                                    <a href="{{ $link }}" 
-                                       @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
-                                       style="text-decoration: none; display: inline-block;">
-                                        <button class="block-widget-button" 
-                                                style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                                onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
-                                                onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
-                                            {{ $buttonText }}
-                                        </button>
-                                    </a>
-                                @else
-                                    <button class="block-widget-button" 
-                                            style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                            onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
-                                            onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
-                                        {{ $buttonText }}
-                                    </button>
-                                @endif
+                        @if($hasButtons)
+                            <div style="margin-top: {{ $buttonTopMargin }}px; text-align: {{ $textAlign }}; display: flex; flex-wrap: wrap; gap: 8px;">
+                                @foreach($buttons as $button)
+                                    @php
+                                        $buttonText = $button['text'] ?? '';
+                                        $buttonLink = $button['link'] ?? '';
+                                        $buttonOpenNewTab = $button['open_new_tab'] ?? false;
+                                        $buttonBackgroundColor = $button['background_color'] ?? '#007bff';
+                                        $buttonTextColor = $button['text_color'] ?? '#ffffff';
+                                        $buttonColor = $buttonBackgroundColor;
+                                    @endphp
+                                    @if($buttonText)
+                                        @if($buttonLink)
+                                            <a href="{{ $buttonLink }}" 
+                                               @if($buttonOpenNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                               style="text-decoration: none; display: inline-block;">
+                                                <button class="block-widget-button" 
+                                                        style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                                        onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
+                                                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
+                                                    {{ $buttonText }}
+                                                </button>
+                                            </a>
+                                        @else
+                                            <button class="block-widget-button" 
+                                                    style="border: 2px solid {{ $buttonColor }}; color: {{ $buttonColor }}; background-color: transparent; padding: 8px 20px; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                                    onmouseover="this.style.backgroundColor='{{ $buttonColor }}'; this.style.color='#ffffff';"
+                                                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $buttonColor }}';">
+                                                {{ $buttonText }}
+                                            </button>
+                                        @endif
+                                    @endif
+                                @endforeach
                             </div>
                         @endif
                     </div>
@@ -388,6 +437,7 @@
         $slideDirection = $imageSlideSettings['slide_direction'] ?? 'left';
         $slideMode = $imageSlideSettings['slide_mode'] ?? 'single';
         $visibleCount = $imageSlideSettings['visible_count'] ?? 3;
+        $visibleCountMobile = $imageSlideSettings['visible_count_mobile'] ?? 2;
         $imageGap = $imageSlideSettings['image_gap'] ?? 0;
         $backgroundType = $imageSlideSettings['background_type'] ?? 'none';
         $backgroundColor = $imageSlideSettings['background_color'] ?? '#ffffff';
@@ -404,6 +454,7 @@
              data-direction="{{ $slideDirection }}" 
              data-mode="{{ $slideMode }}"
              data-visible-count="{{ $visibleCount }}"
+             data-visible-count-mobile="{{ $visibleCountMobile }}"
              data-image-gap="{{ $imageGap }}"
              data-widget-id="{{ $widget->id }}"
              style="position: relative; overflow: hidden; {{ ($slideMode === 'single' && in_array($slideDirection, ['up', 'down'])) ? 'height: 200px;' : '' }}{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }} {{ $backgroundStyle }} {{ $animationStyle }}">
@@ -544,6 +595,35 @@
                 const items = wrapper.querySelectorAll('.image-slide-item');
                 const totalItems = items.length;
                 const imageGap = parseInt(wrapper.dataset.imageGap) || 0;
+                const visibleCountMobile = parseInt(wrapper.dataset.visibleCountMobile) || 2;
+                
+                // 화면 크기에 따라 표시 수량 결정
+                function getVisibleCount() {
+                    return window.innerWidth < 768 ? visibleCountMobile : visibleCount;
+                }
+                
+                // 현재 표시 수량에 따라 아이템 너비 업데이트
+                function updateItemWidths() {
+                    const currentVisibleCount = getVisibleCount();
+                    items.forEach(item => {
+                        const gapTotal = imageGap * (currentVisibleCount - 1);
+                        item.style.width = `calc((100% - ${gapTotal}px) / ${currentVisibleCount})`;
+                    });
+                }
+                
+                // 초기 너비 설정
+                updateItemWidths();
+                
+                // 화면 크기 변경 시 너비 업데이트
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        updateItemWidths();
+                        // 애니메이션 재시작
+                        startAnimation();
+                    }, 250);
+                });
                 
                 if (totalItems <= visibleCount) return;
                 
@@ -552,6 +632,9 @@
                 
                 // 이미지 로드 대기 후 애니메이션 시작
                 function startAnimation() {
+                    const currentVisibleCount = getVisibleCount();
+                    if (totalItems <= currentVisibleCount) return;
+                    
                     // 첫 번째 아이템의 실제 너비 계산
                     const firstItem = items[0];
                     if (!firstItem) return;

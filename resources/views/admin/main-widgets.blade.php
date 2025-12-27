@@ -940,55 +940,26 @@
                             <small class="text-muted">제목과 내용 사이의 여백을 입력하세요 (0~100).</small>
                         </div>
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" 
-                                       type="checkbox" 
-                                       id="edit_main_widget_block_show_button" 
-                                       name="block_show_button"
-                                       onchange="handleEditMainBlockButtonToggle()">
-                                <label class="form-check-label" for="edit_main_widget_block_show_button">
-                                    버튼 추가
-                                </label>
+                            <label class="form-label">버튼 관리</label>
+                            <div id="edit_main_widget_block_buttons_list">
+                                <!-- 버튼들이 여기에 동적으로 추가됨 -->
                             </div>
+                            <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addEditMainBlockButton()">
+                                <i class="bi bi-plus-circle me-1"></i>버튼 추가
+                            </button>
                         </div>
-                        <div class="mb-3" id="edit_main_widget_block_button_container" style="display: none;">
-                            <div class="mb-3">
-                                <label for="edit_main_widget_block_button_text" class="form-label">버튼 텍스트</label>
-                                <input type="text" 
-                                       class="form-control" 
-                                       id="edit_main_widget_block_button_text" 
-                                       name="block_button_text" 
-                                       placeholder="버튼 텍스트를 입력하세요">
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_main_widget_block_button_top_margin" class="form-label">버튼 상단 여백 (px)</label>
-                                <input type="number" 
-                                       class="form-control" 
-                                       id="edit_main_widget_block_button_top_margin" 
-                                       name="block_button_top_margin" 
-                                       value="12"
-                                       min="0"
-                                       max="100"
-                                       step="1"
-                                       placeholder="12">
-                                <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_main_widget_block_button_background_color" class="form-label">버튼 배경 컬러</label>
-                                <input type="color" 
-                                       class="form-control form-control-color" 
-                                       id="edit_main_widget_block_button_background_color" 
-                                       name="block_button_background_color" 
-                                       value="#007bff">
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_main_widget_block_button_text_color" class="form-label">버튼 텍스트 컬러</label>
-                                <input type="color" 
-                                       class="form-control form-control-color" 
-                                       id="edit_main_widget_block_button_text_color" 
-                                       name="block_button_text_color" 
-                                       value="#ffffff">
-                            </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_block_button_top_margin" class="form-label">버튼 상단 여백 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_main_widget_block_button_top_margin" 
+                                   name="block_button_top_margin" 
+                                   value="12"
+                                   min="0"
+                                   max="100"
+                                   step="1"
+                                   placeholder="12">
+                            <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
                         </div>
                         <div class="mb-3">
                             <label for="edit_main_widget_block_link" class="form-label">
@@ -1141,7 +1112,7 @@
                             </div>
                         </div>
                         <div class="mb-3" id="edit_main_widget_image_slide_visible_count_container" style="display: none;">
-                            <label for="edit_main_widget_image_slide_visible_count" class="form-label">표시할 이미지 수</label>
+                            <label for="edit_main_widget_image_slide_visible_count" class="form-label">표시할 이미지 수 (PC)</label>
                             <input type="number" 
                                    class="form-control" 
                                    id="edit_main_widget_image_slide_visible_count" 
@@ -1150,7 +1121,19 @@
                                    max="10" 
                                    value="3"
                                    placeholder="3">
-                            <small class="text-muted">한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
+                            <small class="text-muted">PC에서 한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
+                        </div>
+                        <div class="mb-3" id="edit_main_widget_image_slide_visible_count_mobile_container" style="display: none;">
+                            <label for="edit_main_widget_image_slide_visible_count_mobile" class="form-label">표시할 이미지 수 (모바일)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_main_widget_image_slide_visible_count_mobile" 
+                                   name="edit_main_image_slide_visible_count_mobile" 
+                                   min="1" 
+                                   max="10" 
+                                   value="2"
+                                   placeholder="2">
+                            <small class="text-muted">모바일에서 한번에 표시할 이미지 개수를 입력하세요 (1~10).</small>
                         </div>
                         <div class="mb-3" id="edit_main_widget_image_slide_gap_container" style="display: none;">
                             <label for="edit_main_widget_image_slide_gap" class="form-label">이미지 간격 (px)</label>
@@ -2343,10 +2326,27 @@ function addMainWidget() {
         const fontColor = formData.get('block_font_color') || '#ffffff';
         const titleFontSize = formData.get('block_title_font_size') || '16';
         const contentFontSize = formData.get('block_content_font_size') || '14';
-        const showButton = document.getElementById('widget_block_show_button')?.checked || false;
-        const buttonText = formData.get('block_button_text') || '';
-        const buttonBackgroundColor = formData.get('block_button_background_color') || '#007bff';
-        const buttonTextColor = formData.get('block_button_text_color') || '#ffffff';
+        // 버튼 데이터 수집
+        const buttons = [];
+        const buttonInputs = document.querySelectorAll('.block-button-text');
+        buttonInputs.forEach((input, index) => {
+            const buttonText = input.value || '';
+            if (buttonText) {
+                const buttonCard = input.closest('.card');
+                const buttonLink = buttonCard.querySelector('.block-button-link')?.value || '';
+                const buttonOpenNewTab = buttonCard.querySelector('.block-button-open-new-tab')?.checked || false;
+                const buttonBackgroundColor = buttonCard.querySelector('.block-button-background-color')?.value || '#007bff';
+                const buttonTextColor = buttonCard.querySelector('.block-button-text-color')?.value || '#ffffff';
+                
+                buttons.push({
+                    text: buttonText,
+                    link: buttonLink,
+                    open_new_tab: buttonOpenNewTab,
+                    background_color: buttonBackgroundColor,
+                    text_color: buttonTextColor
+                });
+            }
+        });
         
         if (blockTitle) {
             settings.block_title = blockTitle;
@@ -2359,12 +2359,7 @@ function addMainWidget() {
         settings.font_color = fontColor;
         settings.title_font_size = titleFontSize;
         settings.content_font_size = contentFontSize;
-        settings.show_button = showButton;
-        if (showButton) {
-            settings.button_text = buttonText;
-            settings.button_background_color = buttonBackgroundColor;
-            settings.button_text_color = buttonTextColor;
-        }
+        settings.buttons = buttons;
         
         if (backgroundType === 'color') {
             const backgroundColor = formData.get('block_background_color') || '#007bff';
@@ -2410,10 +2405,27 @@ function addMainWidget() {
             const fontColor = item.querySelector('.block-slide-font-color')?.value || '#ffffff';
             const titleFontSize = item.querySelector('.block-slide-title-font-size')?.value || '16';
             const contentFontSize = item.querySelector('.block-slide-content-font-size')?.value || '14';
-            const showButton = item.querySelector('.block-slide-show-button')?.checked || false;
-            const buttonText = item.querySelector('.block-slide-button-text')?.value || '';
-            const buttonBackgroundColor = item.querySelector('.block-slide-button-background-color')?.value || '#007bff';
-            const buttonTextColor = item.querySelector('.block-slide-button-text-color')?.value || '#ffffff';
+            // 버튼 데이터 수집
+            const buttons = [];
+            const buttonInputs = item.querySelectorAll('.block-slide-button-text');
+            buttonInputs.forEach((input) => {
+                const buttonText = input.value || '';
+                if (buttonText) {
+                    const buttonCard = input.closest('.card');
+                    const buttonLink = buttonCard.querySelector('.block-slide-button-link')?.value || '';
+                    const buttonOpenNewTab = buttonCard.querySelector('.block-slide-button-open-new-tab')?.checked || false;
+                    const buttonBackgroundColor = buttonCard.querySelector('.block-slide-button-background-color')?.value || '#007bff';
+                    const buttonTextColor = buttonCard.querySelector('.block-slide-button-text-color')?.value || '#ffffff';
+                    
+                    buttons.push({
+                        text: buttonText,
+                        link: buttonLink,
+                        open_new_tab: buttonOpenNewTab,
+                        background_color: buttonBackgroundColor,
+                        text_color: buttonTextColor
+                    });
+                }
+            });
             
             const blockItem = {
                 title: title,
@@ -2427,6 +2439,7 @@ function addMainWidget() {
                 title_content_gap: parseInt(titleContentGap),
                 link: link,
                 open_new_tab: openNewTab,
+                buttons: buttons,
                 font_color: fontColor,
                 title_font_size: titleFontSize,
                 content_font_size: contentFontSize,
@@ -2480,11 +2493,13 @@ function addMainWidget() {
         const singleSlide = document.getElementById('widget_image_slide_single')?.checked || false;
         const infiniteSlide = document.getElementById('widget_image_slide_infinite')?.checked || false;
         const visibleCount = document.getElementById('widget_image_slide_visible_count')?.value || '3';
+        const visibleCountMobile = document.getElementById('widget_image_slide_visible_count_mobile')?.value || '2';
         const imageGap = document.getElementById('widget_image_slide_gap')?.value || '0';
         
         settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
         if (infiniteSlide) {
             settings.visible_count = parseInt(visibleCount) || 3;
+            settings.visible_count_mobile = parseInt(visibleCountMobile) || 2;
             settings.image_gap = parseInt(imageGap) || 0;
         }
         
@@ -2927,24 +2942,43 @@ function editMainWidget(widgetId) {
                     document.getElementById('edit_main_widget_block_open_new_tab').checked = settings.open_new_tab || false;
                 }
                 
-                const showButton = settings.show_button || false;
-                if (document.getElementById('edit_main_widget_block_show_button')) {
-                    document.getElementById('edit_main_widget_block_show_button').checked = showButton;
-                    handleEditMainBlockButtonToggle();
+                // 버튼 데이터 로드
+                const buttonsContainer = document.getElementById('edit_main_widget_block_buttons_list');
+                if (buttonsContainer) {
+                    buttonsContainer.innerHTML = '';
+                    editMainBlockButtonIndex = 0;
+                    
+                    // 기존 버튼 데이터 로드 (하위 호환성: 기존 단일 버튼 데이터도 지원)
+                    let buttons = settings.buttons || [];
+                    if (!Array.isArray(buttons) && settings.show_button && settings.button_text) {
+                        // 기존 단일 버튼 데이터를 배열로 변환
+                        buttons = [{
+                            text: settings.button_text || '',
+                            link: settings.link || '',
+                            open_new_tab: settings.open_new_tab || false,
+                            background_color: settings.button_background_color || '#007bff',
+                            text_color: settings.button_text_color || '#ffffff'
+                        }];
+                    }
+                    
+                    buttons.forEach((button, index) => {
+                        if (button.text) {
+                            addEditMainBlockButton();
+                            const buttonId = `edit_main_block_button_${editMainBlockButtonIndex - 1}`;
+                            const buttonCard = document.getElementById(buttonId);
+                            if (buttonCard) {
+                                buttonCard.querySelector('.edit-main-block-button-text').value = button.text || '';
+                                buttonCard.querySelector('.edit-main-block-button-link').value = button.link || '';
+                                buttonCard.querySelector('.edit-main-block-button-open-new-tab').checked = button.open_new_tab || false;
+                                buttonCard.querySelector('.edit-main-block-button-background-color').value = button.background_color || '#007bff';
+                                buttonCard.querySelector('.edit-main-block-button-text-color').value = button.text_color || '#ffffff';
+                            }
+                        }
+                    });
                 }
-                if (showButton) {
-                    if (document.getElementById('edit_main_widget_block_button_text')) {
-                        document.getElementById('edit_main_widget_block_button_text').value = settings.button_text || '';
-                    }
-                    if (document.getElementById('edit_main_widget_block_button_top_margin')) {
-                        document.getElementById('edit_main_widget_block_button_top_margin').value = settings.button_top_margin || 12;
-                    }
-                    if (document.getElementById('edit_main_widget_block_button_background_color')) {
-                        document.getElementById('edit_main_widget_block_button_background_color').value = settings.button_background_color || '#007bff';
-                    }
-                    if (document.getElementById('edit_main_widget_block_button_text_color')) {
-                        document.getElementById('edit_main_widget_block_button_text_color').value = settings.button_text_color || '#ffffff';
-                    }
+                
+                if (document.getElementById('edit_main_widget_block_button_top_margin')) {
+                    document.getElementById('edit_main_widget_block_button_top_margin').value = settings.button_top_margin || 12;
                 }
             } else if (widgetType === 'block_slide') {
                 if (blockSlideContainer) blockSlideContainer.style.display = 'block';
@@ -2990,6 +3024,7 @@ function editMainWidget(widgetId) {
                 const singleCheckbox = document.getElementById('edit_main_widget_image_slide_single');
                 const infiniteCheckbox = document.getElementById('edit_main_widget_image_slide_infinite');
                 const visibleCountInput = document.getElementById('edit_main_widget_image_slide_visible_count');
+                const visibleCountMobileInput = document.getElementById('edit_main_widget_image_slide_visible_count_mobile');
                 const gapInput = document.getElementById('edit_main_widget_image_slide_gap');
                 
                 if (slideMode === 'infinite') {
@@ -2998,6 +3033,10 @@ function editMainWidget(widgetId) {
                     if (visibleCountInput) {
                         visibleCountInput.value = settings.visible_count || 3;
                         document.getElementById('edit_main_widget_image_slide_visible_count_container').style.display = 'block';
+                    }
+                    if (visibleCountMobileInput) {
+                        visibleCountMobileInput.value = settings.visible_count_mobile || 2;
+                        document.getElementById('edit_main_widget_image_slide_visible_count_mobile_container').style.display = 'block';
                     }
                     if (gapInput) {
                         gapInput.value = settings.image_gap || 0;
@@ -3795,35 +3834,25 @@ function addBlockSlideItem() {
             <small class="text-muted">제목과 내용 사이의 여백을 입력하세요 (0~100).</small>
         </div>
         <div class="mb-3">
-            <div class="form-check">
-                <input class="form-check-input block-slide-show-button" type="checkbox" name="block_slide[${itemIndex}][show_button]" id="block_slide_${itemIndex}_show_button" onchange="handleBlockSlideButtonToggle(${itemIndex})">
-                <label class="form-check-label" for="block_slide_${itemIndex}_show_button">버튼 추가</label>
+            <label class="form-label">버튼 관리</label>
+            <div class="block-slide-buttons-list" id="block_slide_${itemIndex}_buttons_list">
+                <!-- 버튼들이 여기에 동적으로 추가됨 -->
             </div>
+            <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addBlockSlideButton(${itemIndex})">
+                <i class="bi bi-plus-circle me-1"></i>버튼 추가
+            </button>
         </div>
-        <div class="mb-3 block-slide-button-container" id="block_slide_${itemIndex}_button_container" style="display: none;">
-            <div class="mb-3"><label class="form-label">버튼 텍스트</label>
-                <input type="text" class="form-control block-slide-button-text" name="block_slide[${itemIndex}][button_text]" placeholder="버튼 텍스트를 입력하세요">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">버튼 상단 여백 (px)</label>
-                <input type="number" 
-                       class="form-control block-slide-button-top-margin" 
-                       name="block_slide[${itemIndex}][button_top_margin]" 
-                       value="12"
-                       min="0"
-                       max="100"
-                       step="1"
-                       placeholder="12">
-                <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">버튼 배경 컬러</label>
-                <input type="color" class="form-control form-control-color block-slide-button-background-color" name="block_slide[${itemIndex}][button_background_color]" value="#007bff">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">버튼 텍스트 컬러</label>
-                <input type="color" class="form-control form-control-color block-slide-button-text-color" name="block_slide[${itemIndex}][button_text_color]" value="#ffffff">
-            </div>
+        <div class="mb-3">
+            <label class="form-label">버튼 상단 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-button-top-margin" 
+                   name="block_slide[${itemIndex}][button_top_margin]" 
+                   value="12"
+                   min="0"
+                   max="100"
+                   step="1"
+                   placeholder="12">
+            <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
         </div>
         <div class="mb-3"><label class="form-label">
             연결 링크 <small class="text-muted">(선택사항)</small>
@@ -3860,12 +3889,80 @@ function toggleBlockSlideItem(itemIndex) {
     }
 }
 
-function handleBlockSlideButtonToggle(itemIndex) {
-    const showButton = document.getElementById(`block_slide_${itemIndex}_show_button`)?.checked;
-    const buttonContainer = document.getElementById(`block_slide_${itemIndex}_button_container`);
-    if (buttonContainer) {
-        buttonContainer.style.display = showButton ? 'block' : 'none';
+// 블록슬라이드 버튼 관리
+let blockSlideButtonIndices = {};
+
+function addBlockSlideButton(itemIndex) {
+    if (!blockSlideButtonIndices[itemIndex]) {
+        blockSlideButtonIndices[itemIndex] = 0;
     }
+    
+    const container = document.getElementById(`block_slide_${itemIndex}_buttons_list`);
+    if (!container) return;
+    
+    const buttonIndex = blockSlideButtonIndices[itemIndex];
+    const buttonId = `block_slide_${itemIndex}_button_${buttonIndex}`;
+    const buttonHtml = `
+        <div class="card mb-3" id="${buttonId}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">버튼 ${buttonIndex + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeBlockSlideButton('${buttonId}', ${itemIndex})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 텍스트</label>
+                    <input type="text" 
+                           class="form-control block-slide-button-text" 
+                           name="block_slide[${itemIndex}][buttons][${buttonIndex}][text]" 
+                           placeholder="버튼 텍스트를 입력하세요">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 링크</label>
+                    <input type="url" 
+                           class="form-control block-slide-button-link" 
+                           name="block_slide[${itemIndex}][buttons][${buttonIndex}][link]" 
+                           placeholder="https://example.com">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input block-slide-button-open-new-tab" 
+                               type="checkbox" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][open_new_tab]" 
+                               id="block_slide_${itemIndex}_button_${buttonIndex}_open_new_tab">
+                        <label class="form-check-label" for="block_slide_${itemIndex}_button_${buttonIndex}_open_new_tab">
+                            새창에서 열기
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-background-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-text-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][text_color]" 
+                               value="#ffffff">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', buttonHtml);
+    blockSlideButtonIndices[itemIndex]++;
+}
+
+function removeBlockSlideButton(buttonId, itemIndex) {
+    const button = document.getElementById(buttonId);
+    if (button) button.remove();
 }
 
 function removeBlockSlideItem(itemIndex) {
@@ -4021,6 +4118,7 @@ function handleImageSlideModeChange() {
     const singleCheckbox = document.getElementById('widget_image_slide_single');
     const infiniteCheckbox = document.getElementById('widget_image_slide_infinite');
     const visibleCountContainer = document.getElementById('widget_image_slide_visible_count_container');
+    const visibleCountMobileContainer = document.getElementById('widget_image_slide_visible_count_mobile_container');
     const gapContainer = document.getElementById('widget_image_slide_gap_container');
     const backgroundContainer = document.getElementById('widget_image_slide_background_container');
     const directionGroup = document.getElementById('image_slide_direction_group');
@@ -4029,10 +4127,16 @@ function handleImageSlideModeChange() {
     const upLabel = upRadio ? upRadio.nextElementSibling : null;
     const downLabel = downRadio ? downRadio.nextElementSibling : null;
     
-    // 체크박스 상호 배타적 처리
+    // 체크박스 상호 배타적 처리 - 1단 슬라이드가 체크되면 무한루프 해제
+    if (singleCheckbox && singleCheckbox.checked) {
+        if (infiniteCheckbox) infiniteCheckbox.checked = false;
+    }
+    
+    // 무한루프 슬라이드 처리
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (singleCheckbox) singleCheckbox.checked = false;
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
+        if (visibleCountMobileContainer) visibleCountMobileContainer.style.display = 'block';
         if (gapContainer) gapContainer.style.display = 'block';
         if (backgroundContainer) backgroundContainer.style.display = 'block';
         
@@ -4067,10 +4171,6 @@ function handleImageSlideModeChange() {
             downRadio.disabled = false;
             if (downLabel) downLabel.classList.remove('disabled');
         }
-    }
-    
-    if (singleCheckbox && singleCheckbox.checked) {
-        if (infiniteCheckbox) infiniteCheckbox.checked = false;
     }
     
     // 툴팁 초기화
@@ -4476,10 +4576,27 @@ function saveMainWidgetSettings() {
         const fontColor = document.getElementById('edit_main_widget_block_font_color')?.value || '#ffffff';
         const titleFontSize = document.getElementById('edit_main_widget_block_title_font_size')?.value || '16';
         const contentFontSize = document.getElementById('edit_main_widget_block_content_font_size')?.value || '14';
-        const showButton = document.getElementById('edit_main_widget_block_show_button')?.checked || false;
-        const buttonText = document.getElementById('edit_main_widget_block_button_text')?.value || '';
-        const buttonBackgroundColor = document.getElementById('edit_main_widget_block_button_background_color')?.value || '#007bff';
-        const buttonTextColor = document.getElementById('edit_main_widget_block_button_text_color')?.value || '#ffffff';
+        // 버튼 데이터 수집
+        const buttons = [];
+        const buttonInputs = document.querySelectorAll('.edit-main-block-button-text');
+        buttonInputs.forEach((input) => {
+            const buttonText = input.value || '';
+            if (buttonText) {
+                const buttonCard = input.closest('.card');
+                const buttonLink = buttonCard.querySelector('.edit-main-block-button-link')?.value || '';
+                const buttonOpenNewTab = buttonCard.querySelector('.edit-main-block-button-open-new-tab')?.checked || false;
+                const buttonBackgroundColor = buttonCard.querySelector('.edit-main-block-button-background-color')?.value || '#007bff';
+                const buttonTextColor = buttonCard.querySelector('.edit-main-block-button-text-color')?.value || '#ffffff';
+                
+                buttons.push({
+                    text: buttonText,
+                    link: buttonLink,
+                    open_new_tab: buttonOpenNewTab,
+                    background_color: buttonBackgroundColor,
+                    text_color: buttonTextColor
+                });
+            }
+        });
         
         if (blockTitle) {
             settings.block_title = blockTitle;
@@ -4492,12 +4609,11 @@ function saveMainWidgetSettings() {
         settings.font_color = fontColor;
         settings.title_font_size = titleFontSize;
         settings.content_font_size = contentFontSize;
-        settings.show_button = showButton;
-        if (showButton) {
-            const buttonTopMargin = document.getElementById('edit_main_widget_block_button_top_margin')?.value || '12';
-            settings.button_text = buttonText;
-            settings.button_background_color = buttonBackgroundColor;
-            settings.button_text_color = buttonTextColor;
+        settings.buttons = buttons;
+        
+        const buttonTopMargin = document.getElementById('edit_main_widget_block_button_top_margin')?.value || '12';
+        if (buttonTopMargin) {
+            settings.button_top_margin = parseInt(buttonTopMargin);
             settings.button_top_margin = parseInt(buttonTopMargin);
         }
         
@@ -4548,10 +4664,29 @@ function saveMainWidgetSettings() {
             const fontColorInput = item.querySelector('.edit-main-block-slide-font-color');
             const titleFontSizeInput = item.querySelector('.edit-main-block-slide-title-font-size');
             const contentFontSizeInput = item.querySelector('.edit-main-block-slide-content-font-size');
-            const showButtonCheckbox = item.querySelector('.edit-main-block-slide-show-button');
-            const buttonTextInput = item.querySelector('.edit-main-block-slide-button-text');
             const buttonTopMarginInput = item.querySelector('.edit-main-block-slide-button-top-margin');
-            const buttonColorInput = item.querySelector('.edit-main-block-slide-button-color');
+            
+            // 버튼 데이터 수집
+            const buttons = [];
+            const buttonInputs = item.querySelectorAll('.edit-main-block-slide-button-text');
+            buttonInputs.forEach((input) => {
+                const buttonText = input.value || '';
+                if (buttonText) {
+                    const buttonCard = input.closest('.card');
+                    const buttonLink = buttonCard.querySelector('.edit-main-block-slide-button-link')?.value || '';
+                    const buttonOpenNewTab = buttonCard.querySelector('.edit-main-block-slide-button-open-new-tab')?.checked || false;
+                    const buttonBackgroundColor = buttonCard.querySelector('.edit-main-block-slide-button-background-color')?.value || '#007bff';
+                    const buttonTextColor = buttonCard.querySelector('.edit-main-block-slide-button-text-color')?.value || '#ffffff';
+                    
+                    buttons.push({
+                        text: buttonText,
+                        link: buttonLink,
+                        open_new_tab: buttonOpenNewTab,
+                        background_color: buttonBackgroundColor,
+                        text_color: buttonTextColor
+                    });
+                }
+            });
             
             const blockItem = {
                 title: titleInput ? titleInput.value : '',
@@ -4568,14 +4703,11 @@ function saveMainWidgetSettings() {
                 link: linkInput ? linkInput.value : '',
                 open_new_tab: openNewTabCheckbox ? openNewTabCheckbox.checked : false,
                 font_color: fontColorInput ? fontColorInput.value : '#ffffff',
-                show_button: showButtonCheckbox ? showButtonCheckbox.checked : false
+                buttons: buttons
             };
             
-            if (blockItem.show_button) {
-                blockItem.button_text = buttonTextInput ? buttonTextInput.value : '';
-                blockItem.button_top_margin = buttonTopMarginInput ? parseInt(buttonTopMarginInput.value) : 12;
-                blockItem.button_background_color = buttonBackgroundColorInput ? buttonBackgroundColorInput.value : '#007bff';
-                blockItem.button_text_color = buttonTextColorInput ? buttonTextColorInput.value : '#ffffff';
+            if (buttonTopMarginInput) {
+                blockItem.button_top_margin = parseInt(buttonTopMarginInput.value) || 12;
             }
             
             if (blockItem.background_type === 'color') {
@@ -4618,6 +4750,7 @@ function saveMainWidgetSettings() {
         const singleSlide = document.getElementById('edit_main_widget_image_slide_single')?.checked || false;
         const infiniteSlide = document.getElementById('edit_main_widget_image_slide_infinite')?.checked || false;
         const visibleCount = document.getElementById('edit_main_widget_image_slide_visible_count')?.value || '3';
+        const visibleCountMobile = document.getElementById('edit_main_widget_image_slide_visible_count_mobile')?.value || '2';
         const imageGap = document.getElementById('edit_main_widget_image_slide_gap')?.value || '0';
         const backgroundType = document.getElementById('edit_main_widget_image_slide_background_type')?.value || 'none';
         const backgroundColor = document.getElementById('edit_main_widget_image_slide_background_color')?.value || '#ffffff';
@@ -4625,6 +4758,7 @@ function saveMainWidgetSettings() {
         settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
         if (infiniteSlide) {
             settings.visible_count = parseInt(visibleCount) || 3;
+            settings.visible_count_mobile = parseInt(visibleCountMobile) || 2;
             settings.image_gap = parseInt(imageGap) || 0;
             settings.background_type = backgroundType;
             if (backgroundType === 'color') {
@@ -5190,41 +5324,25 @@ function addEditMainBlockSlideItem(blockData = null) {
             <small class="text-muted">제목과 내용 사이의 여백을 입력하세요 (0~100).</small>
         </div>
         <div class="mb-3">
-            <div class="form-check">
-                <input class="form-check-input edit-main-block-slide-show-button" 
-                       type="checkbox" 
-                       name="edit_main_block_slide[${itemIndex}][show_button]"
-                       id="edit_main_block_slide_${itemIndex}_show_button"
-                       ${blockData && blockData.show_button ? 'checked' : ''}
-                       onchange="handleEditMainBlockSlideButtonToggle(${itemIndex})">
-                <label class="form-check-label" for="edit_main_block_slide_${itemIndex}_show_button">
-                    버튼 추가
-                </label>
+            <label class="form-label">버튼 관리</label>
+            <div class="edit-main-block-slide-buttons-list" id="edit_main_block_slide_${itemIndex}_buttons_list">
+                <!-- 버튼들이 여기에 동적으로 추가됨 -->
             </div>
+            <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addEditMainBlockSlideButton(${itemIndex})">
+                <i class="bi bi-plus-circle me-1"></i>버튼 추가
+            </button>
         </div>
-        <div class="mb-3 edit-main-block-slide-button-container" id="edit_main_block_slide_${itemIndex}_button_container" style="${blockData && blockData.show_button ? '' : 'display: none;'}">
-            <div class="mb-3">
-                <label class="form-label">버튼 텍스트</label>
-                <input type="text" 
-                       class="form-control edit-main-block-slide-button-text" 
-                       name="edit_main_block_slide[${itemIndex}][button_text]" 
-                       placeholder="버튼 텍스트를 입력하세요"
-                       value="${blockData ? (blockData.button_text || '') : ''}">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">버튼 배경 컬러</label>
-                <input type="color" 
-                       class="form-control form-control-color edit-main-block-slide-button-background-color" 
-                       name="edit_main_block_slide[${itemIndex}][button_background_color]" 
-                       value="${blockData ? (blockData.button_background_color || '#007bff') : '#007bff'}">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">버튼 텍스트 컬러</label>
-                <input type="color" 
-                       class="form-control form-control-color edit-main-block-slide-button-text-color" 
-                       name="edit_main_block_slide[${itemIndex}][button_text_color]" 
-                       value="${blockData ? (blockData.button_text_color || '#ffffff') : '#ffffff'}">
-            </div>
+        <div class="mb-3">
+            <label class="form-label">버튼 상단 여백 (px)</label>
+            <input type="number" 
+                   class="form-control edit-main-block-slide-button-top-margin" 
+                   name="edit_main_block_slide[${itemIndex}][button_top_margin]" 
+                   value="${blockData ? (blockData.button_top_margin || '12') : '12'}"
+                   min="0"
+                   max="100"
+                   step="1"
+                   placeholder="12">
+            <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
         </div>
         <div class="mb-3">
             <label class="form-label">
@@ -5257,6 +5375,43 @@ function addEditMainBlockSlideItem(blockData = null) {
     item.appendChild(header);
     item.appendChild(body);
     container.appendChild(item);
+    
+    // 버튼 데이터 로드
+    if (blockData) {
+        const buttonsContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_buttons_list`);
+        if (buttonsContainer) {
+            editMainBlockSlideButtonIndices[itemIndex] = 0;
+            
+            // 기존 버튼 데이터 로드 (하위 호환성: 기존 단일 버튼 데이터도 지원)
+            let buttons = blockData.buttons || [];
+            if (!Array.isArray(buttons) && blockData.show_button && blockData.button_text) {
+                // 기존 단일 버튼 데이터를 배열로 변환
+                buttons = [{
+                    text: blockData.button_text || '',
+                    link: blockData.link || '',
+                    open_new_tab: blockData.open_new_tab || false,
+                    background_color: blockData.button_background_color || '#007bff',
+                    text_color: blockData.button_text_color || '#ffffff'
+                }];
+            }
+            
+            buttons.forEach((button) => {
+                if (button.text) {
+                    addEditMainBlockSlideButton(itemIndex);
+                    const buttonIndex = editMainBlockSlideButtonIndices[itemIndex] - 1;
+                    const buttonId = `edit_main_block_slide_${itemIndex}_button_${buttonIndex}`;
+                    const buttonCard = document.getElementById(buttonId);
+                    if (buttonCard) {
+                        buttonCard.querySelector('.edit-main-block-slide-button-text').value = button.text || '';
+                        buttonCard.querySelector('.edit-main-block-slide-button-link').value = button.link || '';
+                        buttonCard.querySelector('.edit-main-block-slide-button-open-new-tab').checked = button.open_new_tab || false;
+                        buttonCard.querySelector('.edit-main-block-slide-button-background-color').value = button.background_color || '#007bff';
+                        buttonCard.querySelector('.edit-main-block-slide-button-text-color').value = button.text_color || '#ffffff';
+                    }
+                }
+            });
+        }
+    }
 }
 
 function toggleEditMainBlockSlideItem(itemIndex) {
@@ -5287,12 +5442,80 @@ function handleEditMainBlockSlideBackgroundTypeChange(itemIndex) {
     }
 }
 
-function handleEditMainBlockSlideButtonToggle(itemIndex) {
-    const showButton = document.getElementById(`edit_main_block_slide_${itemIndex}_show_button`)?.checked;
-    const buttonContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_button_container`);
-    if (buttonContainer) {
-        buttonContainer.style.display = showButton ? 'block' : 'none';
+// 블록슬라이드 수정 모달 버튼 관리
+let editMainBlockSlideButtonIndices = {};
+
+function addEditMainBlockSlideButton(itemIndex) {
+    if (!editMainBlockSlideButtonIndices[itemIndex]) {
+        editMainBlockSlideButtonIndices[itemIndex] = 0;
     }
+    
+    const container = document.getElementById(`edit_main_block_slide_${itemIndex}_buttons_list`);
+    if (!container) return;
+    
+    const buttonIndex = editMainBlockSlideButtonIndices[itemIndex];
+    const buttonId = `edit_main_block_slide_${itemIndex}_button_${buttonIndex}`;
+    const buttonHtml = `
+        <div class="card mb-3" id="${buttonId}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">버튼 ${buttonIndex + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeEditMainBlockSlideButton('${buttonId}', ${itemIndex})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 텍스트</label>
+                    <input type="text" 
+                           class="form-control edit-main-block-slide-button-text" 
+                           name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][text]" 
+                           placeholder="버튼 텍스트를 입력하세요">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 링크</label>
+                    <input type="url" 
+                           class="form-control edit-main-block-slide-button-link" 
+                           name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][link]" 
+                           placeholder="https://example.com">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input edit-main-block-slide-button-open-new-tab" 
+                               type="checkbox" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][open_new_tab]" 
+                               id="edit_main_block_slide_${itemIndex}_button_${buttonIndex}_open_new_tab">
+                        <label class="form-check-label" for="edit_main_block_slide_${itemIndex}_button_${buttonIndex}_open_new_tab">
+                            새창에서 열기
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-slide-button-background-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][background_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-slide-button-text-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][text_color]" 
+                               value="#ffffff">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', buttonHtml);
+    editMainBlockSlideButtonIndices[itemIndex]++;
+}
+
+function removeEditMainBlockSlideButton(buttonId, itemIndex) {
+    const button = document.getElementById(buttonId);
+    if (button) button.remove();
 }
 
 function handleEditMainBlockSlideImageChange(itemIndex, input) {
@@ -5462,6 +5685,7 @@ function handleEditMainImageSlideModeChange() {
     const singleCheckbox = document.getElementById('edit_main_widget_image_slide_single');
     const infiniteCheckbox = document.getElementById('edit_main_widget_image_slide_infinite');
     const visibleCountContainer = document.getElementById('edit_main_widget_image_slide_visible_count_container');
+    const visibleCountMobileContainer = document.getElementById('edit_main_widget_image_slide_visible_count_mobile_container');
     const gapContainer = document.getElementById('edit_main_widget_image_slide_gap_container');
     const backgroundContainer = document.getElementById('edit_main_widget_image_slide_background_container');
     const directionGroup = document.getElementById('edit_main_image_slide_direction_group');
@@ -5470,10 +5694,16 @@ function handleEditMainImageSlideModeChange() {
     const upLabel = upRadio ? upRadio.nextElementSibling : null;
     const downLabel = downRadio ? downRadio.nextElementSibling : null;
     
-    // 체크박스 상호 배타적 처리
+    // 체크박스 상호 배타적 처리 - 1단 슬라이드가 체크되면 무한루프 해제
+    if (singleCheckbox && singleCheckbox.checked) {
+        if (infiniteCheckbox) infiniteCheckbox.checked = false;
+    }
+    
+    // 무한루프 슬라이드 처리
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (singleCheckbox) singleCheckbox.checked = false;
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
+        if (visibleCountMobileContainer) visibleCountMobileContainer.style.display = 'block';
         if (gapContainer) gapContainer.style.display = 'block';
         if (backgroundContainer) backgroundContainer.style.display = 'block';
         
@@ -5510,10 +5740,6 @@ function handleEditMainImageSlideModeChange() {
         }
     }
     
-    if (singleCheckbox && singleCheckbox.checked) {
-        if (infiniteCheckbox) infiniteCheckbox.checked = false;
-    }
-    
     // 툴팁 초기화
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -5543,20 +5769,148 @@ function handleEditMainBlockBackgroundTypeChange() {
     }
 }
 
-function handleEditMainBlockButtonToggle() {
-    const showButton = document.getElementById('edit_main_widget_block_show_button')?.checked;
-    const buttonContainer = document.getElementById('edit_main_widget_block_button_container');
-    if (buttonContainer) {
-        buttonContainer.style.display = showButton ? 'block' : 'none';
-    }
+// 블록 위젯 버튼 관리 변수
+let blockButtonIndex = 0;
+let editMainBlockButtonIndex = 0;
+
+// 새 위젯 추가용 블록 버튼 추가
+function addBlockButton() {
+    const container = document.getElementById('widget_block_buttons_list');
+    if (!container) return;
+    
+    const buttonId = `block_button_${blockButtonIndex}`;
+    const buttonHtml = `
+        <div class="card mb-3" id="${buttonId}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">버튼 ${blockButtonIndex + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeBlockButton('${buttonId}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 텍스트</label>
+                    <input type="text" 
+                           class="form-control block-button-text" 
+                           name="block_buttons[${blockButtonIndex}][text]" 
+                           placeholder="버튼 텍스트를 입력하세요">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 링크</label>
+                    <input type="url" 
+                           class="form-control block-button-link" 
+                           name="block_buttons[${blockButtonIndex}][link]" 
+                           placeholder="https://example.com">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input block-button-open-new-tab" 
+                               type="checkbox" 
+                               name="block_buttons[${blockButtonIndex}][open_new_tab]" 
+                               id="block_button_${blockButtonIndex}_open_new_tab">
+                        <label class="form-check-label" for="block_button_${blockButtonIndex}_open_new_tab">
+                            새창에서 열기
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-background-color" 
+                               name="block_buttons[${blockButtonIndex}][background_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-text-color" 
+                               name="block_buttons[${blockButtonIndex}][text_color]" 
+                               value="#ffffff">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', buttonHtml);
+    blockButtonIndex++;
 }
 
-function handleBlockButtonToggle() {
-    const showButton = document.getElementById('widget_block_show_button')?.checked;
-    const buttonContainer = document.getElementById('widget_block_button_container');
-    if (buttonContainer) {
-        buttonContainer.style.display = showButton ? 'block' : 'none';
-    }
+// 새 위젯 추가용 블록 버튼 삭제
+function removeBlockButton(buttonId) {
+    const button = document.getElementById(buttonId);
+    if (button) button.remove();
+}
+
+// 수정 모달용 블록 버튼 추가
+function addEditMainBlockButton() {
+    const container = document.getElementById('edit_main_widget_block_buttons_list');
+    if (!container) return;
+    
+    const buttonId = `edit_main_block_button_${editMainBlockButtonIndex}`;
+    const buttonHtml = `
+        <div class="card mb-3" id="${buttonId}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">버튼 ${editMainBlockButtonIndex + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeEditMainBlockButton('${buttonId}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 텍스트</label>
+                    <input type="text" 
+                           class="form-control edit-main-block-button-text" 
+                           name="edit_main_block_buttons[${editMainBlockButtonIndex}][text]" 
+                           placeholder="버튼 텍스트를 입력하세요">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 링크</label>
+                    <input type="url" 
+                           class="form-control edit-main-block-button-link" 
+                           name="edit_main_block_buttons[${editMainBlockButtonIndex}][link]" 
+                           placeholder="https://example.com">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input edit-main-block-button-open-new-tab" 
+                               type="checkbox" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][open_new_tab]" 
+                               id="edit_main_block_button_${editMainBlockButtonIndex}_open_new_tab">
+                        <label class="form-check-label" for="edit_main_block_button_${editMainBlockButtonIndex}_open_new_tab">
+                            새창에서 열기
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-button-background-color" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][background_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-main-block-button-text-color" 
+                               name="edit_main_block_buttons[${editMainBlockButtonIndex}][text_color]" 
+                               value="#ffffff">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', buttonHtml);
+    editMainBlockButtonIndex++;
+}
+
+// 수정 모달용 블록 버튼 삭제
+function removeEditMainBlockButton(buttonId) {
+    const button = document.getElementById(buttonId);
+    if (button) button.remove();
 }
 
 function handleEditMainBlockImageChange(input) {
