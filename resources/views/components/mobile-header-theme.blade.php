@@ -653,6 +653,24 @@
     /* 모바일 메뉴 로그인 위젯 너비 100% */
     .mobile-menu-login-widget {
         width: 100% !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* 좌에서우/우에서좌 메뉴에서 로그인 위젯 표시 보장 */
+    .navbar-collapse.mobile-menu-overlay.slide-in-left .mobile-menu-login-widget,
+    .navbar-collapse.mobile-menu-overlay.slide-in-right .mobile-menu-login-widget {
+        width: 100% !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
     
     /* 모바일 메뉴 로그인 위젯 내부 카드 스타일 제거 */
@@ -660,6 +678,19 @@
         border-top: none !important;
         margin-bottom: 0 !important;
         width: 100% !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    /* 좌에서우/우에서좌 메뉴에서 로그인 위젯 내부 카드 표시 보장 */
+    .navbar-collapse.mobile-menu-overlay.slide-in-left .mobile-menu-login-widget > div,
+    .navbar-collapse.mobile-menu-overlay.slide-in-right .mobile-menu-login-widget > div {
+        width: 100% !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        overflow: visible !important;
     }
     
     /* 모바일 메뉴 사용자 드롭다운 버튼 너비 100% */
