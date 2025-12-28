@@ -1628,9 +1628,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const marqueeDirectionContainer = document.getElementById('widget_marquee_direction_container');
         
         // 모든 위젯 타입 컨테이너 참조
-        const blockContainer = document.getElementById('widget_block_container');
-        const blockSlideContainer = document.getElementById('widget_block_slide_container');
-        const imageContainer = document.getElementById('widget_image_container');
+        let blockContainer = document.getElementById('widget_block_container');
+        let blockSlideContainer = document.getElementById('widget_block_slide_container');
+        let imageContainer = document.getElementById('widget_image_container');
         let imageSlideContainer = document.getElementById('widget_image_slide_container');
         
         if (widgetType === 'popular_posts' || widgetType === 'recent_posts' || widgetType === 'weekly_popular_posts' || widgetType === 'monthly_popular_posts') {
@@ -1902,11 +1902,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (galleryShowTitleContainer) galleryShowTitleContainer.style.display = 'none';
             const customHtmlContainer = document.getElementById('widget_custom_html_container');
             if (customHtmlContainer) customHtmlContainer.style.display = 'none';
-            const blockContainer = document.getElementById('widget_block_container');
+            blockContainer = document.getElementById('widget_block_container');
             if (blockContainer) blockContainer.style.display = 'block';
-            const blockSlideContainer = document.getElementById('widget_block_slide_container');
+            blockSlideContainer = document.getElementById('widget_block_slide_container');
             if (blockSlideContainer) blockSlideContainer.style.display = 'none';
-            const imageContainer = document.getElementById('widget_image_container');
+            imageContainer = document.getElementById('widget_image_container');
             if (imageContainer) imageContainer.style.display = 'none';
             imageSlideContainer = document.getElementById('widget_image_slide_container');
             if (imageSlideContainer) imageSlideContainer.style.display = 'none';
@@ -1932,11 +1932,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (galleryShowTitleContainer) galleryShowTitleContainer.style.display = 'none';
             const customHtmlContainer = document.getElementById('widget_custom_html_container');
             if (customHtmlContainer) customHtmlContainer.style.display = 'none';
-            const blockContainer = document.getElementById('widget_block_container');
+            blockContainer = document.getElementById('widget_block_container');
             if (blockContainer) blockContainer.style.display = 'none';
-            const blockSlideContainer = document.getElementById('widget_block_slide_container');
+            blockSlideContainer = document.getElementById('widget_block_slide_container');
             if (blockSlideContainer) blockSlideContainer.style.display = 'block';
-            const imageContainer = document.getElementById('widget_image_container');
+            imageContainer = document.getElementById('widget_image_container');
             if (imageContainer) imageContainer.style.display = 'none';
             imageSlideContainer = document.getElementById('widget_image_slide_container');
             if (imageSlideContainer) imageSlideContainer.style.display = 'none';
@@ -1946,7 +1946,7 @@ document.addEventListener('DOMContentLoaded', function() {
             titleInput.required = false;
             
             // 첫 번째 블록 아이템 자동 추가
-            const itemsContainer = document.getElementById('widget_block_slide_items');
+            let itemsContainer = document.getElementById('widget_block_slide_items');
             if (itemsContainer && itemsContainer.children.length === 0) {
                 addBlockSlideItem();
             }
@@ -1988,7 +1988,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (marqueeDirectionContainer) marqueeDirectionContainer.style.display = 'none';
             imageSlideContainer = document.getElementById('widget_image_slide_container');
             if (imageSlideContainer) imageSlideContainer.style.display = 'block';
-            const itemsContainer = document.getElementById('widget_image_slide_items');
+            let itemsContainer = document.getElementById('widget_image_slide_items');
             if (itemsContainer && itemsContainer.children.length === 0) {
                 addImageSlideItem();
             }
@@ -2005,11 +2005,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (galleryShowTitleContainer) galleryShowTitleContainer.style.display = 'none';
             const customHtmlContainer = document.getElementById('widget_custom_html_container');
             if (customHtmlContainer) customHtmlContainer.style.display = 'none';
-            const blockContainer = document.getElementById('widget_block_container');
+            blockContainer = document.getElementById('widget_block_container');
             if (blockContainer) blockContainer.style.display = 'none';
-            const blockSlideContainer = document.getElementById('widget_block_slide_container');
+            blockSlideContainer = document.getElementById('widget_block_slide_container');
             if (blockSlideContainer) blockSlideContainer.style.display = 'none';
-            const imageContainer = document.getElementById('widget_image_container');
+            imageContainer = document.getElementById('widget_image_container');
             if (imageContainer) imageContainer.style.display = 'none';
             imageSlideContainer = document.getElementById('widget_image_slide_container');
             if (imageSlideContainer) imageSlideContainer.style.display = 'block';
@@ -2019,7 +2019,7 @@ document.addEventListener('DOMContentLoaded', function() {
             titleInput.required = false;
             
             // 첫 번째 이미지 아이템 자동 추가
-            const itemsContainer = document.getElementById('widget_image_slide_items');
+            itemsContainer = document.getElementById('widget_image_slide_items');
             if (itemsContainer && itemsContainer.children.length === 0) {
                 addImageSlideItem();
             }
