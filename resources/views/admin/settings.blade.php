@@ -954,6 +954,30 @@
                             <option value="theme04" {{ ($settings['theme_bottom'] ?? 'theme03') === 'theme04' ? 'selected' : '' }}>테마04</option>
                             <option value="theme05" {{ ($settings['theme_bottom'] ?? 'theme03') === 'theme05' ? 'selected' : '' }}>테마05</option>
                         </select>
+                        
+                        {{-- Powered by SEOom Builder 해제 체크박스 --}}
+                        @php
+                            $isPaidPlan = $site->plan && $site->plan !== 'free' && $site->plan !== 'Free';
+                            $plan = $site->planModel();
+                            if ($plan) {
+                                $isPaidPlan = $plan->price > 0;
+                            }
+                        @endphp
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   name="hide_powered_by" 
+                                   id="hide_powered_by" 
+                                   value="1"
+                                   {{ ($settings['hide_powered_by'] ?? '0') == '1' ? 'checked' : '' }}
+                                   {{ !$isPaidPlan ? 'disabled' : '' }}>
+                            <label class="form-check-label {{ !$isPaidPlan ? 'text-muted' : '' }}" for="hide_powered_by">
+                                Powered by SEOom Builder 해제
+                                @if(!$isPaidPlan)
+                                    <span class="badge bg-secondary ms-1">유료 플랜 전용</span>
+                                @endif
+                            </label>
+                        </div>
                     </div>
                     <div class="col-md-8">
                         <div class="d-flex align-items-center mb-2" style="height: 24px;">

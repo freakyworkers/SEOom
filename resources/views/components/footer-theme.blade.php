@@ -40,6 +40,9 @@
         $mobileMenuCount = \App\Models\MobileMenu::where('site_id', $site->id)->count();
         $hasMobileMenu = $mobileMenuCount > 0;
     }
+    
+    // Powered by SEOom Builder 표시 여부
+    $hidePoweredBy = $site->getSetting('hide_powered_by', '0') == '1';
 @endphp
 
 @if($theme === 'theme02')
@@ -107,16 +110,18 @@
                 {{-- Copyright --}}
                 <div class="mb-2">
                     <p class="mb-0" style="color: {{ $footerTextColor }} !important;">
-                        &copy; {{ date('Y') }} All rights reserved.
+                        &copy; {{ date('Y') }} {{ $siteName }} All rights reserved.
                     </p>
                 </div>
                 
                 {{-- Powered by --}}
+                @if(!$hidePoweredBy)
                 <div>
                     <p class="mb-0" style="color: {{ $footerTextColor }} !important;">
-                        Powered by <strong>SEOom Builder</strong>
+                        Powered by <a href="https://seoomweb.com" target="_blank" style="color: {{ $footerTextColor }} !important; text-decoration: none;"><strong>SEOom Builder</strong></a>
                     </p>
                 </div>
+                @endif
             </div>
         </div>
     </footer>
@@ -182,16 +187,18 @@
                 {{-- Copyright --}}
                 <div class="mb-2">
                     <p class="mb-0" style="color: {{ $footerTextColor }} !important;">
-                        ⓒ All rights reserved.
+                        ⓒ {{ $siteName }} All rights reserved.
                     </p>
                 </div>
                 
                 {{-- Powered by --}}
+                @if(!$hidePoweredBy)
                 <div>
                     <p class="mb-0" style="color: {{ $footerTextColor }} !important;">
-                        Powered by <strong>SEOom Builder</strong>
+                        Powered by <a href="https://seoomweb.com" target="_blank" style="color: {{ $footerTextColor }} !important; text-decoration: none;"><strong>SEOom Builder</strong></a>
                     </p>
                 </div>
+                @endif
             </div>
         </div>
     </footer>
@@ -262,11 +269,13 @@
             </div>
             
             {{-- 세 번째 줄: Powered by SEOom Builder (우측 정렬) --}}
+            @if(!$hidePoweredBy)
             <div class="text-end">
                 <p class="mb-0" style="color: {{ $footerTextColor }} !important;">
-                    Powered by <strong>SEOom Builder</strong>
+                    Powered by <a href="https://seoomweb.com" target="_blank" style="color: {{ $footerTextColor }} !important; text-decoration: none;"><strong>SEOom Builder</strong></a>
                 </p>
             </div>
+            @endif
         </div>
     </footer>
 @elseif($theme === 'theme05')
@@ -328,11 +337,13 @@
                 </div>
                 
                 {{-- Powered by --}}
+                @if(!$hidePoweredBy)
                 <div>
                     <p class="mb-0" style="color: {{ $footerTextColor }} !important;">
-                        Powered by <strong>SEOom Builder</strong>
+                        Powered by <a href="https://seoomweb.com" target="_blank" style="color: {{ $footerTextColor }} !important; text-decoration: none;"><strong>SEOom Builder</strong></a>
                     </p>
                 </div>
+                @endif
             </div>
         </div>
     </footer>
@@ -393,11 +404,15 @@
                 @else
                 <div class="col-md-4"></div>
                 @endif
+                @if(!$hidePoweredBy)
                 <div class="col-md-4 text-md-end">
                     <p class="text-muted mb-0" style="color: {{ $footerTextColor }} !important;">
-                        Powered by <strong>SEOom Builder</strong>
+                        Powered by <a href="https://seoomweb.com" target="_blank" style="color: {{ $footerTextColor }} !important; text-decoration: none;"><strong>SEOom Builder</strong></a>
                     </p>
                 </div>
+                @else
+                <div class="col-md-4"></div>
+                @endif
             </div>
         </div>
     </footer>
