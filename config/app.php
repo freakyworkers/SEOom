@@ -65,6 +65,19 @@ return [
     
     /*
     |--------------------------------------------------------------------------
+    | ALB DNS Name
+    |--------------------------------------------------------------------------
+    |
+    | This is the DNS name of the Application Load Balancer for CNAME record
+    | configuration. When set, domains will use CNAME records pointing to the
+    | ALB instead of A records pointing to a server IP.
+    |
+    */
+    
+    'alb_dns' => env('ALB_DNS', null),
+    
+    /*
+    |--------------------------------------------------------------------------
     | Nameservers
     |--------------------------------------------------------------------------
     |

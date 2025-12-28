@@ -228,9 +228,14 @@ class CloudflareService
      */
     protected function addDnsRecords(string $zoneId, string $domain): void
     {
+        $albDns = config('app.alb_dns');
         $serverIp = config('app.server_ip');
-        if (!$serverIp) {
-            Log::warning('Server IP not configured, skipping DNS record creation');
+        
+        // ALB DNS가 설정되어 있으면 CNAME 레코드 사용, 그렇지 않으면 A 레코드 사용
+        $useAlb = !empty($albDns);
+        
+        if (!$useAlb && !$serverIp) {
+            Log::warning('Neither ALB DNS nor Server IP configured, skipping DNS record creation');
             return;
         }
 
@@ -251,22 +256,44 @@ class CloudflareService
             Log::warning('Failed to get zone info', ['zone_id' => $zoneId]);
         }
 
-        $records = [
-            [
-                'type' => 'A',
-                'name' => '', // 빈 문자열로 보내면 Cloudflare가 루트 도메인으로 인식
-                'content' => $serverIp,
-                'proxied' => false, // 프록시 비활성화 (서버에 SSL이 없을 수 있으므로)
-                'ttl' => 1, // Auto
-            ],
-            [
-                'type' => 'A',
-                'name' => 'www',
-                'content' => $serverIp,
-                'proxied' => false, // 프록시 비활성화
-                'ttl' => 1, // Auto
-            ],
-        ];
+        if ($useAlb) {
+            // ALB DNS를 사용하는 CNAME 레코드 (Cloudflare CNAME Flattening 활용)
+            $records = [
+                [
+                    'type' => 'CNAME',
+                    'name' => '@', // 루트 도메인 (Cloudflare가 CNAME Flattening 처리)
+                    'content' => $albDns,
+                    'proxied' => true, // Cloudflare 프록시 활성화 (SSL, CDN, 보안)
+                    'ttl' => 1, // Auto
+                ],
+                [
+                    'type' => 'CNAME',
+                    'name' => 'www',
+                    'content' => $albDns,
+                    'proxied' => true, // Cloudflare 프록시 활성화
+                    'ttl' => 1, // Auto
+                ],
+            ];
+            Log::info('Using ALB DNS for domain', ['domain' => $domain, 'alb_dns' => $albDns]);
+        } else {
+            // 기존 A 레코드 방식
+            $records = [
+                [
+                    'type' => 'A',
+                    'name' => '', // 빈 문자열로 보내면 Cloudflare가 루트 도메인으로 인식
+                    'content' => $serverIp,
+                    'proxied' => false, // 프록시 비활성화 (서버에 SSL이 없을 수 있으므로)
+                    'ttl' => 1, // Auto
+                ],
+                [
+                    'type' => 'A',
+                    'name' => 'www',
+                    'content' => $serverIp,
+                    'proxied' => false, // 프록시 비활성화
+                    'ttl' => 1, // Auto
+                ],
+            ];
+        }
 
         foreach ($records as $record) {
             try {
