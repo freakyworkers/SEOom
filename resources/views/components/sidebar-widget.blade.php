@@ -1520,19 +1520,25 @@
                                             }
                                             
                                             // wrapper 너비를 container 너비와 동일하게 설정
+                                            // 여러 번 재시도하여 container 너비가 계산될 때까지 대기
+                                            let retryCount = 0;
+                                            const maxRetries = 20;
+                                            
                                             function setWrapperWidth() {
                                                 const containerWidth = container.getBoundingClientRect().width;
                                                 if (containerWidth > 0) {
                                                     wrapper.style.width = containerWidth + 'px';
                                                     wrapper.style.minWidth = containerWidth + 'px';
-                                                } else {
-                                                    // container 너비가 아직 계산되지 않았으면 재시도
+                                                } else if (retryCount < maxRetries) {
+                                                    retryCount++;
                                                     requestAnimationFrame(() => {
-                                                        setTimeout(setWrapperWidth, 50);
+                                                        setTimeout(setWrapperWidth, 100);
                                                     });
                                                 }
                                             }
-                                            setWrapperWidth();
+                                            
+                                            // 초기 지연 후 시작
+                                            setTimeout(setWrapperWidth, 200);
                                         }
                                         
                                         // 호버 시 일시 정지
