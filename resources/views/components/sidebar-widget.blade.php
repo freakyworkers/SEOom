@@ -1425,6 +1425,7 @@
                                             </a>
                                         </div>
                                     @endforeach
+                                </div>
                             </div>
                         </div>
                         <script>
