@@ -1445,10 +1445,9 @@
                                     
                                     const direction = wrapper.dataset.direction || 'left';
                                     const cols = parseInt(wrapper.dataset.cols) || 3;
-                                    const items = wrapper.querySelectorAll('.gallery-slide-item:not(.gallery-slide-duplicate)');
-                                    const itemCount = items.length;
+                                    const totalItems = {{ $galleryPosts->count() }};
                                     
-                                    if (itemCount <= cols) return; // 슬라이드 불필요
+                                    if (totalItems <= cols) return; // 슬라이드 불필요
                                     
                                     let currentIndex = 0;
                                     let intervalId;
@@ -1457,6 +1456,9 @@
                                     function slideNext() {
                                         if (isTransitioning) return;
                                         isTransitioning = true;
+                                        
+                                        const items = wrapper.querySelectorAll('.gallery-slide-item:not(.gallery-slide-duplicate)');
+                                        const itemCount = items.length;
                                         
                                         if (direction === 'left') {
                                             currentIndex += cols;
