@@ -1536,6 +1536,7 @@
                                 }
                             })();
                         </script>
+                        </div>
                     @endif
                 @endif
                 @break
