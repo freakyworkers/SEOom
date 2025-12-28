@@ -224,6 +224,61 @@ class CloudflareService
     }
 
     /**
+     * Get all existing DNS records for a zone by name (all types)
+     */
+    protected function getExistingDnsRecordsAll(string $zoneId, string $name = ''): array
+    {
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->apiToken,
+            ])->get("{$this->apiUrl}/zones/{$zoneId}/dns_records");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if ($data['success'] ?? false && !empty($data['result'])) {
+                    $matchingRecords = [];
+                    
+                    // Zone 정보 가져오기
+                    $zoneResponse = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $this->apiToken,
+                    ])->get("{$this->apiUrl}/zones/{$zoneId}");
+                    
+                    $zoneName = '';
+                    if ($zoneResponse->successful()) {
+                        $zoneData = $zoneResponse->json();
+                        $zoneName = $zoneData['result']['name'] ?? '';
+                    }
+                    
+                    foreach ($data['result'] as $record) {
+                        $recordName = $record['name'] ?? '';
+                        
+                        // 루트 도메인 검색 (name이 '', '@', 또는 zone 이름과 동일)
+                        if (($name === '' || $name === '@') && $recordName === $zoneName) {
+                            $matchingRecords[] = $record;
+                        }
+                        // 서브도메인 검색 (www.example.com 또는 www)
+                        elseif ($name !== '' && $name !== '@') {
+                            $fullSubdomain = $name . '.' . $zoneName;
+                            if ($recordName === $name || $recordName === $fullSubdomain) {
+                                $matchingRecords[] = $record;
+                            }
+                        }
+                    }
+                    
+                    return $matchingRecords;
+                }
+            }
+            return [];
+        } catch (\Exception $e) {
+            Log::error('Exception while getting all DNS records', [
+                'zone_id' => $zoneId,
+                'error' => $e->getMessage(),
+            ]);
+            return [];
+        }
+    }
+
+    /**
      * Add or update DNS records for the domain
      */
     protected function addDnsRecords(string $zoneId, string $domain): void
@@ -297,69 +352,58 @@ class CloudflareService
 
         foreach ($records as $record) {
             try {
-                // 기존 레코드 확인
+                // 기존 레코드 확인 (같은 이름의 A, AAAA, CNAME 레코드 모두 검색)
                 $recordName = $record['name'] ?: ($zoneInfo['name'] ?? $domain);
-                $existingRecord = $this->getExistingDnsRecords($zoneId, $record['type'], $record['name']);
+                $existingRecords = $this->getExistingDnsRecordsAll($zoneId, $record['name']);
                 
-                if ($existingRecord) {
-                    // 기존 레코드 업데이트
-                    $recordId = $existingRecord['id'];
-                    $updateData = [
-                        'type' => $record['type'],
-                        'name' => $record['name'],
-                        'content' => $record['content'],
-                        'proxied' => $record['proxied'],
-                        'ttl' => $record['ttl'],
-                    ];
-                    
-                    $response = Http::withHeaders([
-                        'Authorization' => 'Bearer ' . $this->apiToken,
-                        'Content-Type' => 'application/json',
-                    ])->put("{$this->apiUrl}/zones/{$zoneId}/dns_records/{$recordId}", $updateData);
-                    
-                    if ($response->successful()) {
-                        $data = $response->json();
-                        if ($data['success'] ?? false) {
-                            Log::info('DNS record updated successfully', [
+                // 기존 A, AAAA, CNAME 레코드 삭제 (타입이 다를 경우 충돌 방지)
+                foreach ($existingRecords as $existingRecord) {
+                    $existingType = $existingRecord['type'] ?? '';
+                    if (in_array($existingType, ['A', 'AAAA', 'CNAME'])) {
+                        $deleteResponse = Http::withHeaders([
+                            'Authorization' => 'Bearer ' . $this->apiToken,
+                        ])->delete("{$this->apiUrl}/zones/{$zoneId}/dns_records/{$existingRecord['id']}");
+                        
+                        if ($deleteResponse->successful()) {
+                            Log::info('Existing DNS record deleted before creating new one', [
                                 'zone_id' => $zoneId,
-                                'record_id' => $recordId,
-                                'record' => $record,
+                                'deleted_record' => $existingRecord,
                             ]);
-                        } else {
-                            Log::warning('Failed to update DNS record', [
+                        }
+                    }
+                }
+                
+                // 새 레코드 추가
+                $response = Http::withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiToken,
+                    'Content-Type' => 'application/json',
+                ])->post("{$this->apiUrl}/zones/{$zoneId}/dns_records", $record);
+                
+                if ($response->successful()) {
+                    $data = $response->json();
+                    if ($data['success'] ?? false) {
+                        Log::info('DNS record added successfully', [
+                            'zone_id' => $zoneId,
+                            'record' => $record,
+                        ]);
+                    } else {
+                        $errors = $data['errors'] ?? [];
+                        $errorMessages = array_column($errors, 'message');
+                        if (!empty($errorMessages)) {
+                            Log::warning('Failed to add DNS record', [
                                 'zone_id' => $zoneId,
-                                'record_id' => $recordId,
                                 'record' => $record,
-                                'response' => $data,
+                                'errors' => $errorMessages,
                             ]);
                         }
                     }
                 } else {
-                    // 새 레코드 추가
-                    $response = Http::withHeaders([
-                        'Authorization' => 'Bearer ' . $this->apiToken,
-                        'Content-Type' => 'application/json',
-                    ])->post("{$this->apiUrl}/zones/{$zoneId}/dns_records", $record);
-                    
-                    if ($response->successful()) {
-                        $data = $response->json();
-                        if ($data['success'] ?? false) {
-                            Log::info('DNS record added successfully', [
-                                'zone_id' => $zoneId,
-                                'record' => $record,
-                            ]);
-                        } else {
-                            $errors = $data['errors'] ?? [];
-                            $errorMessages = array_column($errors, 'message');
-                            if (!empty($errorMessages)) {
-                                Log::warning('Failed to add DNS record', [
-                                    'zone_id' => $zoneId,
-                                    'record' => $record,
-                                    'errors' => $errorMessages,
-                                ]);
-                            }
-                        }
-                    }
+                    Log::error('Failed to add DNS record - HTTP error', [
+                        'zone_id' => $zoneId,
+                        'record' => $record,
+                        'status' => $response->status(),
+                        'response' => $response->json(),
+                    ]);
                 }
             } catch (\Exception $e) {
                 Log::error('Exception while processing DNS record', [
