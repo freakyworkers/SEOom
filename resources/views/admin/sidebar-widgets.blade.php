@@ -5547,6 +5547,7 @@ function saveGradient() {
         return;
     }
 }
+</script>
 @endpush
 @endsection
 
