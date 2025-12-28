@@ -1577,8 +1577,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // 위젯 타입 변경 시 게시글 수 입력 필드 표시/숨김
-    document.getElementById('widget_type').addEventListener('change', function() {
-        const widgetType = this.value;
+    const widgetTypeSelect = document.getElementById('widget_type');
+    if (widgetTypeSelect) {
+        widgetTypeSelect.addEventListener('change', function() {
+            const widgetType = this.value;
         const selectedOption = this.options[this.selectedIndex];
         const description = selectedOption.dataset.description;
         const descriptionDiv = document.getElementById('widget_type_description');
@@ -2029,7 +2031,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayTypeSelect.value = 'grid';
             }
         }
-    });
+        });
+    }
 });
 
 // 블록 배경 타입 변경 핸들러
