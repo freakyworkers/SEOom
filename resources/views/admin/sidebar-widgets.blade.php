@@ -4692,7 +4692,7 @@ function saveSidebarWidgetAnimation() {
     existingSettings.animation_delay = animationDelay;
     
     // 위젯 설정 업데이트 API 호출
-    const updateRoute = '{{ $site->isMasterSite() ? route("master.admin.sidebar-widgets.update", ["widget" => ":id"]) : route("admin.sidebar-widgets.update", ["site" => $site->slug, "widget" => ":id"]) }}';
+    const updateRoute = '{{ $site->isMasterSite() ? url("/admin/sidebar-widgets/:id") : route("admin.sidebar-widgets.update", ["site" => $site->slug, "widget" => ":id"]) }}';
     const actualRoute = updateRoute.replace(':id', widgetId);
     
     const formData = new FormData();
