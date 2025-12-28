@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Cloudflare/ALB 프록시 뒤에서 HTTPS URL 생성 강제
+        if ($this->app->environment('production') || config('app.force_https', false)) {
+            URL::forceScheme('https');
+        }
         // Laravel Socialite 패키지가 설치되어 있는 경우에만 프로바이더 등록
         if (class_exists(\Laravel\Socialite\Contracts\Factory::class)) {
             try {
