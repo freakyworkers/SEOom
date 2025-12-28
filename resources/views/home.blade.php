@@ -221,7 +221,7 @@
                                 }
                             @endphp
                             <div class="{{ $widgetMarginClass }}" style="{{ $widgetWrapperStyle }}">
-                                <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" />
+                                <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" :isFirstWidget="$isFirstWidget" :isLastWidget="$isLastWidget" />
                             </div>
                         @endforeach
                         </div>

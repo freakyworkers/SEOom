@@ -29,6 +29,12 @@
     // 가로 100% 설정 확인
     $isFullWidth = $isFullWidth ?? false;
     
+    // 첫 번째 위젯 여부 확인
+    $isFirstWidget = $isFirstWidget ?? false;
+    
+    // 마지막 위젯 여부 확인
+    $isLastWidget = $isLastWidget ?? false;
+    
     // 가로 100%일 때는 라운드 제거 (버튼 제외)
     if ($isFullWidth) {
         $isRoundTheme = false;
@@ -874,7 +880,15 @@
     if ($isFullHeight) {
         $cardStyle .= ($cardStyle ? ' ' : '') . 'flex: 1; display: flex; flex-direction: column; min-height: 0;';
     }
-    $cardMarginBottom = $isFullHeight ? 'mb-0' : 'mb-3';
+    // 첫 번째 위젯은 상단 마진 제거
+    if ($isFirstWidget) {
+        $cardStyle .= ($cardStyle ? ' ' : '') . 'margin-top: 0 !important;';
+    }
+    // 마지막 위젯은 하단 마진 제거
+    $cardMarginBottom = ($isFullHeight || $isLastWidget) ? 'mb-0' : 'mb-3';
+    if ($isLastWidget) {
+        $cardStyle .= ($cardStyle ? ' ' : '') . 'margin-bottom: 0 !important;';
+    }
 @endphp
 <div class="card {{ $shadowClass }} {{ $animationClass }} {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
     @if($hasTitle)
