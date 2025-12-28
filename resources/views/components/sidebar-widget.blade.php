@@ -1444,13 +1444,9 @@
                                         
                                         const direction = wrapper.dataset.direction || 'left';
                                         const cols = parseInt(wrapper.dataset.cols) || 3;
-                                        const items = wrapper.querySelectorAll('.gallery-slide-item:not(.gallery-slide-duplicate)');
-                                        const itemCount = items.length;
+                                        const totalItems = {{ $galleryPosts->count() }};
                                         
-                                        if (itemCount <= cols) return; // 슬라이드 불필요
-                                        
-                                        // 초기 transform 설정
-                                        wrapper.style.transform = 'translateX(0)';
+                                        if (totalItems <= cols) return; // 슬라이드 불필요
                                         
                                         let currentIndex = 0;
                                         let intervalId;
