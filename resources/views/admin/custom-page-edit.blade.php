@@ -1332,6 +1332,58 @@
 .widget-list-in-column {
     touch-action: pan-y; /* 세로 스크롤만 허용 */
 }
+
+/* 투명도 슬라이더 바 스타일 통일 */
+.form-range {
+    background: #6c757d;
+    height: 6px;
+}
+
+.form-range::-webkit-slider-thumb {
+    background: #0d6efd;
+    border: 2px solid #fff;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.form-range::-moz-range-thumb {
+    background: #0d6efd;
+    border: 2px solid #fff;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.form-range::-webkit-slider-runnable-track {
+    background: #6c757d;
+    height: 6px;
+    border-radius: 3px;
+}
+
+.form-range::-moz-range-track {
+    background: #6c757d;
+    height: 6px;
+    border-radius: 3px;
+}
+
+.form-range:focus {
+    outline: none;
+}
+
+.form-range:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.form-range:focus::-moz-range-thumb {
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
 </style>
 @endpush
 
@@ -1939,22 +1991,24 @@ function handleContainerBackgroundImageUpload(containerId, fileInput) {
     .then(data => {
         if (data.success) {
             // 이미지 URL 업데이트
+            const imageUrl = (data.container && data.container.background_image_url) || data.background_image_url;
             const imageUrlInput = document.getElementById(`container_background_image_url_${containerId}`);
-            if (imageUrlInput && data.background_image_url) {
-                imageUrlInput.value = data.background_image_url;
+            if (imageUrlInput && imageUrl) {
+                imageUrlInput.value = imageUrl;
             }
             
             // 미리보기 업데이트
-            const previewDiv = document.getElementById(`container_background_image_preview_${containerId}`);
-            if (data.background_image_url) {
-                if (!previewDiv) {
+            const preview = document.getElementById(`container_background_image_preview_${containerId}`);
+            const previewImg = document.getElementById(`container_background_image_preview_img_${containerId}`);
+            if (imageUrl) {
+                if (!preview) {
                     const imageContainer = document.getElementById(`container_background_image_${containerId}`);
                     if (imageContainer) {
                         const newPreview = document.createElement('div');
                         newPreview.id = `container_background_image_preview_${containerId}`;
                         newPreview.style.display = 'inline-block';
                         newPreview.innerHTML = `
-                            <img src="${data.background_image_url}" alt="미리보기" style="max-width: 60px; max-height: 60px; object-fit: cover; border-radius: 4px;">
+                            <img id="container_background_image_preview_img_${containerId}" src="${imageUrl}" alt="미리보기" style="max-width: 60px; max-height: 60px; object-fit: cover; border-radius: 4px;">
                             <button type="button" 
                                     class="btn btn-sm btn-danger ms-1" 
                                     onclick="removeContainerBackgroundImage(${containerId})"
@@ -1965,34 +2019,10 @@ function handleContainerBackgroundImageUpload(containerId, fileInput) {
                         imageContainer.appendChild(newPreview);
                     }
                 } else {
-                    const img = previewDiv.querySelector('img');
-                    if (img) {
-                        img.src = data.background_image_url;
+                    if (previewImg) {
+                        previewImg.src = imageUrl;
                     }
-                }
-                
-                // 투명도 슬라이더 표시 (이미 있으면 업데이트, 없으면 추가)
-                const imageContainer = document.getElementById(`container_background_image_${containerId}`);
-                if (imageContainer) {
-                    let alphaDiv = imageContainer.querySelector('[id^="container_background_image_alpha"]')?.parentElement;
-                    if (!alphaDiv) {
-                        alphaDiv = document.createElement('div');
-                        alphaDiv.style.cssText = 'display: flex; align-items: center; gap: 4px; margin-left: 8px;';
-                        alphaDiv.innerHTML = `
-                            <label class="mb-0 small">투명도:</label>
-                            <input type="range" 
-                                   class="form-range" 
-                                   id="container_background_image_alpha_${containerId}"
-                                   min="0" 
-                                   max="100" 
-                                   value="100"
-                                   style="width: 80px;"
-                                   onchange="updateContainerBackgroundImageAlpha(${containerId}, this.value)"
-                                   title="투명도">
-                            <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_image_alpha_value_${containerId}">100%</small>
-                        `;
-                        imageContainer.appendChild(alphaDiv);
-                    }
+                    preview.style.display = 'inline-block';
                 }
             }
         } else {
