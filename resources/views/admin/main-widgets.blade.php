@@ -8539,6 +8539,10 @@ function selectGradientControl(control, type) {
             document.getElementById('gradient_selected_position_value').textContent = position + '%';
             settingsPanel.style.display = 'block';
             if (positionControl) positionControl.style.display = 'block';
+            // 시작/끝 색상도 위치 조정 가능하도록
+            if (type === 'start' || type === 'end') {
+                if (positionControl) positionControl.style.display = 'block';
+            }
         }
         if (removeBtn) removeBtn.style.display = 'none';
     } else if (type === 'end') {
@@ -8553,6 +8557,10 @@ function selectGradientControl(control, type) {
             document.getElementById('gradient_selected_position_value').textContent = position + '%';
             settingsPanel.style.display = 'block';
             if (positionControl) positionControl.style.display = 'block';
+            // 시작/끝 색상도 위치 조정 가능하도록
+            if (type === 'start' || type === 'end') {
+                if (positionControl) positionControl.style.display = 'block';
+            }
         }
         if (removeBtn) removeBtn.style.display = 'none';
     } else if (type === 'middle') {
@@ -8569,6 +8577,10 @@ function selectGradientControl(control, type) {
             document.getElementById('gradient_selected_position_value').textContent = position + '%';
             settingsPanel.style.display = 'block';
             if (positionControl) positionControl.style.display = 'block';
+            // 시작/끝 색상도 위치 조정 가능하도록
+            if (type === 'start' || type === 'end') {
+                if (positionControl) positionControl.style.display = 'block';
+            }
         }
         if (removeBtn) removeBtn.style.display = 'block';
     }
