@@ -1431,16 +1431,33 @@
                                 (function() {
                                     function initGallerySlide() {
                                         const widgetId = {{ $widget->id }};
-                                        const container = document.getElementById('gallery-slider-' + widgetId);
-                                        const wrapper = document.getElementById('gallery-slide-wrapper-' + widgetId);
-                                        if (!container || !wrapper) {
+                                        
+                                        // 실제로 보이는 wrapper 찾기 (querySelectorAll 사용)
+                                        const allWrappers = document.querySelectorAll('[id="gallery-slide-wrapper-' + widgetId + '"]');
+                                        let visibleWrapper = null;
+                                        let visibleContainer = null;
+                                        
+                                        for (let wrapper of allWrappers) {
+                                            const rect = wrapper.getBoundingClientRect();
+                                            const style = window.getComputedStyle(wrapper);
+                                            if (rect.width > 0 && style.display !== 'none' && style.visibility !== 'hidden') {
+                                                visibleWrapper = wrapper;
+                                                visibleContainer = wrapper.closest('#gallery-slider-' + widgetId);
+                                                break;
+                                            }
+                                        }
+                                        
+                                        if (!visibleContainer || !visibleWrapper) {
                                             setTimeout(initGallerySlide, 100); // Retry if elements are not found
                                             return;
                                         }
                                         
                                         // 이미 초기화된 위젯은 건너뛰기
-                                        if (wrapper.dataset.initialized === 'true') return;
-                                        wrapper.dataset.initialized = 'true';
+                                        if (visibleWrapper.dataset.initialized === 'true') return;
+                                        visibleWrapper.dataset.initialized = 'true';
+                                        
+                                        const container = visibleContainer;
+                                        const wrapper = visibleWrapper;
                                         
                                         const direction = wrapper.dataset.direction || 'left';
                                         const cols = parseInt(wrapper.dataset.cols) || 3;
@@ -1520,28 +1537,12 @@
                                             }
                                             
                                             // wrapper 너비를 container 너비와 동일하게 설정
-                                            // 실제로 보이는 container 찾기 (부모 요소들 중에서)
-                                            function findVisibleContainer(element) {
-                                                let current = element;
-                                                while (current && current !== document.body) {
-                                                    const rect = current.getBoundingClientRect();
-                                                    const style = window.getComputedStyle(current);
-                                                    if (rect.width > 0 && style.display !== 'none' && style.visibility !== 'hidden') {
-                                                        return current;
-                                                    }
-                                                    current = current.parentElement;
-                                                }
-                                                return null;
-                                            }
-                                            
                                             // 여러 번 재시도하여 container 너비가 계산될 때까지 대기
                                             let retryCount = 0;
                                             const maxRetries = 30;
                                             
                                             function setWrapperWidth() {
-                                                // 실제로 보이는 container 찾기
-                                                const visibleContainer = findVisibleContainer(container) || container;
-                                                const containerWidth = visibleContainer.getBoundingClientRect().width;
+                                                const containerWidth = container.getBoundingClientRect().width;
                                                 
                                                 if (containerWidth > 0) {
                                                     wrapper.style.width = containerWidth + 'px';
