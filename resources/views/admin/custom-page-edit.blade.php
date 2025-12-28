@@ -4666,7 +4666,7 @@ function saveCustomPageWidgetSettings() {
             settings.limit = parseInt(cols) * parseInt(rows);
         } else if (displayType === 'slide') {
             const slideCols = document.getElementById('edit_custom_page_widget_gallery_slide_cols')?.value;
-            const slideDirectionRadio = document.querySelector('input[name="edit_custom_page_gallery_slide_direction"]:checked');
+            const slideDirectionRadio = document.querySelector('input[name="edit_main_gallery_slide_direction"]:checked');
             const slideDirection = slideDirectionRadio ? slideDirectionRadio.value : 'left';
             if (slideCols) {
                 settings.slide_cols = parseInt(slideCols);
