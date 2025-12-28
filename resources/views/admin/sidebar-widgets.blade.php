@@ -5385,17 +5385,24 @@ function updateGradientMiddleColor(colorInput) {
 
 // 블록 그라데이션 모달 열기
 function openBlockGradientModal(blockId) {
+    // 컨테이너 그라데이션 ID 초기화
     currentGradientContainerId = null;
     currentGradientType = null;
     currentBlockGradientId = blockId;
     
-    const startColorValue = document.getElementById(`${blockId}_gradient_start`)?.value || '#ffffff';
-    const endColorValue = document.getElementById(`${blockId}_gradient_end`)?.value || '#000000';
-    const angle = document.getElementById(`${blockId}_gradient_angle`)?.value || 90;
+    // 현재 값 가져오기
+    const startColorValue = document.getElementById(`${blockId}_gradient_start`)?.value || 
+                           document.getElementById(`${blockId}_background_gradient_start`)?.value || '#ffffff';
+    const endColorValue = document.getElementById(`${blockId}_gradient_end`)?.value || 
+                         document.getElementById(`${blockId}_background_gradient_end`)?.value || '#000000';
+    const angle = document.getElementById(`${blockId}_gradient_angle`)?.value || 
+                  document.getElementById(`${blockId}_background_gradient_angle`)?.value || 90;
     
+    // RGBA 파싱
     const startParsed = rgbaToHexAndAlpha(startColorValue);
     const endParsed = rgbaToHexAndAlpha(endColorValue);
     
+    // 모달에 값 설정 (null 체크 추가)
     const startColorInput = document.getElementById('gradient_modal_start_color');
     const startAlphaInput = document.getElementById('gradient_modal_start_alpha');
     const endColorInput = document.getElementById('gradient_modal_end_color');
@@ -5422,39 +5429,39 @@ function openBlockGradientModal(blockId) {
     if (angleInput) angleInput.value = angle;
     if (angleSliderInput) angleSliderInput.value = angle;
     
+    // 색상 컨트롤 업데이트
     if (typeof updateGradientColorControl === 'function') {
         updateGradientColorControl('start');
         updateGradientColorControl('end');
     }
     
+    // 시작/끝 컨트롤에 드래그 기능 추가
     const startControl = document.getElementById('gradient_start_control');
     const endControl = document.getElementById('gradient_end_control');
     if (startControl) {
         if (typeof makeGradientControlDraggable === 'function') {
             makeGradientControlDraggable(startControl);
         }
-        startControl.addEventListener('click', function(e) {
-            if (e.target.type !== 'color') {
-                if (typeof selectGradientControl === 'function') {
-                    selectGradientControl(startControl, 'start');
-                }
-            }
-        });
+        // 클릭 이벤트는 색상 표시 영역에서 처리
     }
     if (endControl) {
         if (typeof makeGradientControlDraggable === 'function') {
             makeGradientControlDraggable(endControl);
         }
+        // 클릭 이벤트는 makeGradientControlDraggable에서 처리
     }
     
-    const preview = document.getElementById('gradient_modal_preview');
-    if (preview) {
-        // 그라데이션 바 클릭 이벤트 제거 (아이콘 방식으로 변경)
-    }
+    // 그라데이션 바 클릭 이벤트 제거 (아이콘 방식으로 변경)
     
+    // 중간 색상 초기화
     const middleControlsContainer = document.getElementById('gradient_middle_controls');
     if (middleControlsContainer) {
         middleControlsContainer.innerHTML = '';
+    }
+    
+    // 미리보기 업데이트
+    if (typeof updateGradientPreview === 'function') {
+        updateGradientPreview();
     }
     
     // 설정 패널 숨기기
@@ -5465,42 +5472,19 @@ function openBlockGradientModal(blockId) {
     selectedGradientControl = null;
     selectedGradientControlType = null;
     
-    // 미리보기 업데이트 (모달 열기 전에 완료)
-    if (typeof updateGradientPreview === 'function') {
-        updateGradientPreview();
-    }
-    
-    // 중간 색상 아이콘 업데이트 (모달 열기 전에 완료)
-    if (typeof updateGradientMiddleIcons === 'function') {
-        updateGradientMiddleIcons();
-    }
-    
     // 모달 표시
     const modalElement = document.getElementById('gradientModal');
-    if (!modalElement) {
-        console.error('그라데이션 모달을 찾을 수 없습니다.');
-        return;
-    }
-    
-    // 기존 모달 인스턴스 확인 및 제거
-    const existingModal = bootstrap.Modal.getInstance(modalElement);
-    if (existingModal) {
-        existingModal.dispose();
-    }
-    
-    // 새 모달 인스턴스 생성 및 표시
-    const modal = new bootstrap.Modal(modalElement);
-    modal.show();
-    
-    // 모달이 완전히 표시된 후 추가 업데이트
-    setTimeout(() => {
-        if (typeof updateGradientPreview === 'function') {
-            updateGradientPreview();
+    if (modalElement) {
+        // 기존 모달 인스턴스 확인 및 제거
+        const existingModal = bootstrap.Modal.getInstance(modalElement);
+        if (existingModal) {
+            existingModal.dispose();
         }
-        if (typeof updateGradientMiddleIcons === 'function') {
-            updateGradientMiddleIcons();
-        }
-    }, 100);
+        
+        // 새 모달 인스턴스 생성 및 표시
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
 }
 
 // 블록 그라데이션 저장
