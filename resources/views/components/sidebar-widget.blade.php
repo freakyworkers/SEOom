@@ -1312,6 +1312,8 @@
                                      data-cols="{{ $slideCols }}"
                                      style="display: flex; 
                                             width: 100%;
+                                            min-width: 100%;
+                                            flex-shrink: 0;
                                             @if($slideDirection === 'left' || $slideDirection === 'right')
                                                 flex-direction: row; 
                                                 transition: transform 0.5s ease;
