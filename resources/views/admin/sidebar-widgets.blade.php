@@ -5481,9 +5481,25 @@ function openBlockGradientModal(blockId) {
             existingModal.dispose();
         }
         
+        // z-index를 높게 설정하여 다른 모달 위에 표시
+        modalElement.style.zIndex = '1060';
+        const backdrop = document.querySelector('.modal-backdrop:last-of-type');
+        if (backdrop) {
+            backdrop.style.zIndex = '1059';
+        }
+        
         // 새 모달 인스턴스 생성 및 표시
         const modal = new bootstrap.Modal(modalElement);
         modal.show();
+        
+        // 모달이 완전히 표시된 후 z-index 재설정
+        modalElement.addEventListener('shown.bs.modal', function() {
+            modalElement.style.zIndex = '1060';
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 1) {
+                backdrops[backdrops.length - 1].style.zIndex = '1059';
+            }
+        }, { once: true });
     }
 }
 
@@ -5550,6 +5566,19 @@ function saveGradient() {
 </script>
 @endpush
 @endsection
+
+<style>
+/* 그라데이션 모달이 다른 모달 위에 표시되도록 z-index 설정 */
+#gradientModal {
+    z-index: 1060 !important;
+}
+#gradientModal.show {
+    z-index: 1060 !important;
+}
+.modal-backdrop.show ~ .modal-backdrop.show {
+    z-index: 1059 !important;
+}
+</style>
 
 <!-- 그라데이션 설정 모달 -->
 <div class="modal fade" id="gradientModal" tabindex="-1" aria-labelledby="gradientModalLabel" aria-hidden="true">
