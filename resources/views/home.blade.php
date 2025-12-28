@@ -178,12 +178,14 @@
                         @php
                             // 세로 정렬을 위해 컬럼을 flex 컨테이너로 만들기
                             $colFlexStyle = $colStyle;
-                            if ($verticalAlign === 'center' || $verticalAlign === 'bottom') {
+                            if ($verticalAlign === 'center' || $verticalAlign === 'bottom' || $verticalAlign === 'top') {
                                 $colFlexStyle .= ($colFlexStyle ? ' ' : '') . 'display: flex; flex-direction: column;';
                                 if ($verticalAlign === 'center') {
                                     $colFlexStyle .= ' justify-content: center;';
                                 } elseif ($verticalAlign === 'bottom') {
                                     $colFlexStyle .= ' justify-content: flex-end;';
+                                } elseif ($verticalAlign === 'top') {
+                                    $colFlexStyle .= ' justify-content: flex-start;';
                                 }
                             }
                         @endphp

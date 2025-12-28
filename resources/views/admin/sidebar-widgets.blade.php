@@ -3717,6 +3717,12 @@ function editWidget(widgetId) {
                                 if (document.getElementById('edit_widget_gallery_slide_cols')) {
                                     document.getElementById('edit_widget_gallery_slide_cols').value = settings.slide_cols || 3;
                                 }
+                                // 슬라이드 방향 라디오 버튼 체크
+                                const slideDirection = settings.slide_direction || 'left';
+                                const slideDirectionRadio = document.querySelector(`input[name="edit_gallery_slide_direction"][value="${slideDirection}"]`);
+                                if (slideDirectionRadio) {
+                                    slideDirectionRadio.checked = true;
+                                }
                                 if (document.getElementById('edit_widget_gallery_show_arrows')) {
                                     document.getElementById('edit_widget_gallery_show_arrows').checked = settings.show_arrows !== false;
                                 }

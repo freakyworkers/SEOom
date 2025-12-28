@@ -1430,20 +1430,28 @@
                         </div>
                         <script>
                             (function() {
-                                const widgetId = {{ $widget->id }};
-                                const container = document.getElementById('gallery-slider-' + widgetId);
-                                const wrapper = document.getElementById('gallery-slide-wrapper-' + widgetId);
-                                if (!container || !wrapper) return;
-                                
-                                const direction = wrapper.dataset.direction || 'left';
-                                const cols = parseInt(wrapper.dataset.cols) || 3;
-                                const totalItems = {{ $galleryPosts->count() }};
-                                
-                                if (totalItems <= cols) return; // 슬라이드 불필요
-                                
-                                let currentIndex = 0;
-                                let intervalId;
-                                let isTransitioning = false;
+                                function initGallerySlide() {
+                                    const widgetId = {{ $widget->id }};
+                                    const container = document.getElementById('gallery-slider-' + widgetId);
+                                    const wrapper = document.getElementById('gallery-slide-wrapper-' + widgetId);
+                                    if (!container || !wrapper) {
+                                        setTimeout(initGallerySlide, 100);
+                                        return;
+                                    }
+                                    
+                                    // 이미 초기화된 위젯은 건너뛰기
+                                    if (wrapper.dataset.initialized === 'true') return;
+                                    wrapper.dataset.initialized = 'true';
+                                    
+                                    const direction = wrapper.dataset.direction || 'left';
+                                    const cols = parseInt(wrapper.dataset.cols) || 3;
+                                    const totalItems = {{ $galleryPosts->count() }};
+                                    
+                                    if (totalItems <= cols) return; // 슬라이드 불필요
+                                    
+                                    let currentIndex = 0;
+                                    let intervalId;
+                                    let isTransitioning = false;
                                 
                                 function slideNext() {
                                     if (isTransitioning) return;
@@ -1559,8 +1567,16 @@
                                 container.addEventListener('mouseenter', stopAutoSlide);
                                 container.addEventListener('mouseleave', startAutoSlide);
                                 
-                                // 자동 슬라이드 시작
-                                startAutoSlide();
+                                    // 자동 슬라이드 시작
+                                    startAutoSlide();
+                                }
+                                
+                                // DOMContentLoaded 또는 지연 실행
+                                if (document.readyState === 'loading') {
+                                    document.addEventListener('DOMContentLoaded', initGallerySlide);
+                                } else {
+                                    setTimeout(initGallerySlide, 500);
+                                }
                             })();
                         </script>
                     @endif
