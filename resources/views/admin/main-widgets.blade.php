@@ -3831,14 +3831,27 @@ function editMainWidget(widgetId) {
                         document.getElementById('edit_main_widget_block_background_color').value = settings.background_color || '#007bff';
                     }
                 } else if (backgroundType === 'gradient') {
-                    if (document.getElementById('edit_main_widget_block_gradient_start')) {
-                        document.getElementById('edit_main_widget_block_gradient_start').value = settings.background_gradient_start || '#ffffff';
+                    const gradientStartInput = document.getElementById('edit_main_widget_block_gradient_start');
+                    const gradientEndInput = document.getElementById('edit_main_widget_block_gradient_end');
+                    const gradientAngleInput = document.getElementById('edit_main_widget_block_gradient_angle');
+                    const gradientPreview = document.getElementById('edit_main_widget_block_gradient_preview');
+                    
+                    if (gradientStartInput) {
+                        gradientStartInput.value = settings.background_gradient_start || '#ffffff';
                     }
-                    if (document.getElementById('edit_main_widget_block_gradient_end')) {
-                        document.getElementById('edit_main_widget_block_gradient_end').value = settings.background_gradient_end || '#000000';
+                    if (gradientEndInput) {
+                        gradientEndInput.value = settings.background_gradient_end || '#000000';
                     }
-                    if (document.getElementById('edit_main_widget_block_gradient_angle')) {
-                        document.getElementById('edit_main_widget_block_gradient_angle').value = settings.background_gradient_angle || 90;
+                    if (gradientAngleInput) {
+                        gradientAngleInput.value = settings.background_gradient_angle || 90;
+                    }
+                    
+                    // 그라데이션 미리보기 업데이트
+                    if (gradientPreview && gradientStartInput && gradientEndInput && gradientAngleInput) {
+                        const startValue = gradientStartInput.value;
+                        const endValue = gradientEndInput.value;
+                        const angleValue = gradientAngleInput.value || 90;
+                        gradientPreview.style.background = `linear-gradient(${angleValue}deg, ${startValue}, ${endValue})`;
                     }
                 } else if (backgroundType === 'image') {
                     if (settings.background_image_url && document.getElementById('edit_main_widget_block_image_preview_img')) {
@@ -6036,12 +6049,24 @@ function saveMainWidgetSettings() {
             settings.background_color = backgroundColor;
             settings.background_color_alpha = parseInt(backgroundColorAlpha) || 100;
         } else if (backgroundType === 'gradient') {
-            const gradientStart = document.getElementById('edit_main_widget_block_gradient_start')?.value || '#ffffff';
-            const gradientEnd = document.getElementById('edit_main_widget_block_gradient_end')?.value || '#000000';
-            const gradientAngle = document.getElementById('edit_main_widget_block_gradient_angle')?.value || '90';
-            settings.background_gradient_start = gradientStart;
-            settings.background_gradient_end = gradientEnd;
-            settings.background_gradient_angle = parseInt(gradientAngle) || 90;
+            // 두 가지 필드명 모두 확인
+            const gradientStartInput = document.getElementById('edit_main_widget_block_gradient_start') || 
+                                     document.getElementById('edit_main_widget_block_background_gradient_start');
+            const gradientEndInput = document.getElementById('edit_main_widget_block_gradient_end') || 
+                                   document.getElementById('edit_main_widget_block_background_gradient_end');
+            const gradientAngleInput = document.getElementById('edit_main_widget_block_gradient_angle') || 
+                                     document.getElementById('edit_main_widget_block_background_gradient_angle');
+            
+            // 값이 있으면 사용, 없으면 기본값 (하지만 저장된 값이 우선)
+            if (gradientStartInput && gradientStartInput.value) {
+                settings.background_gradient_start = gradientStartInput.value;
+            }
+            if (gradientEndInput && gradientEndInput.value) {
+                settings.background_gradient_end = gradientEndInput.value;
+            }
+            if (gradientAngleInput && gradientAngleInput.value) {
+                settings.background_gradient_angle = parseInt(gradientAngleInput.value) || 90;
+            }
         } else if (backgroundType === 'image') {
             const imageFile = document.getElementById('edit_main_widget_block_image_input')?.files[0];
             if (imageFile) {
@@ -6916,6 +6941,21 @@ function addEditMainBlockSlideItem(blockData = null) {
             if (linkContainer && buttons.length > 0) {
                 linkContainer.style.display = 'none';
             }
+        }
+    }
+    
+    // 그라데이션 미리보기 업데이트 (RGBA 값 처리)
+    if (blockData && blockData.background_type === 'gradient') {
+        const gradientPreview = document.getElementById(`edit_main_block_slide_${itemIndex}_gradient_preview`);
+        const gradientStartInput = document.getElementById(`edit_main_block_slide_${itemIndex}_gradient_start`);
+        const gradientEndInput = document.getElementById(`edit_main_block_slide_${itemIndex}_gradient_end`);
+        const gradientAngleInput = document.getElementById(`edit_main_block_slide_${itemIndex}_gradient_angle`);
+        
+        if (gradientPreview && gradientStartInput && gradientEndInput && gradientAngleInput) {
+            const startValue = gradientStartInput.value;
+            const endValue = gradientEndInput.value;
+            const angleValue = gradientAngleInput.value || 90;
+            gradientPreview.style.background = `linear-gradient(${angleValue}deg, ${startValue}, ${endValue})`;
         }
     }
 }
