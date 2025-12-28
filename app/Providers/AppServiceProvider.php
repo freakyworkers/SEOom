@@ -21,10 +21,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Cloudflare/ALB 프록시 뒤에서 HTTPS URL 생성 강제
-        // X-Forwarded-Proto 헤더가 https인 경우에만 HTTPS 강제
-        if (request()->header('X-Forwarded-Proto') === 'https' || 
-            request()->secure() || 
-            config('app.force_https', false)) {
+        // $_SERVER 변수를 직접 체크하여 X-Forwarded-Proto 헤더 확인
+        $forwardedProto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? null;
+        $isSecure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+        
+        if ($forwardedProto === 'https' || $isSecure || config('app.force_https', false)) {
             URL::forceScheme('https');
         }
         // Laravel Socialite 패키지가 설치되어 있는 경우에만 프로바이더 등록
