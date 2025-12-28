@@ -256,6 +256,13 @@ class CloudflareService
                         if (($name === '' || $name === '@') && $recordName === $zoneName) {
                             $matchingRecords[] = $record;
                         }
+                        // 와일드카드 검색 (*.example.com)
+                        elseif ($name === '*') {
+                            $wildcardName = '*.' . $zoneName;
+                            if ($recordName === '*' || $recordName === $wildcardName) {
+                                $matchingRecords[] = $record;
+                            }
+                        }
                         // 서브도메인 검색 (www.example.com 또는 www)
                         elseif ($name !== '' && $name !== '@') {
                             $fullSubdomain = $name . '.' . $zoneName;
@@ -328,6 +335,13 @@ class CloudflareService
                     'proxied' => true, // Cloudflare 프록시 활성화
                     'ttl' => 1, // Auto
                 ],
+                [
+                    'type' => 'CNAME',
+                    'name' => '*', // 와일드카드 (모든 서브도메인)
+                    'content' => $albDns,
+                    'proxied' => true, // Cloudflare 프록시 활성화
+                    'ttl' => 1, // Auto
+                ],
             ];
             Log::info('Using ALB DNS for domain', ['domain' => $domain, 'alb_dns' => $albDns]);
         } else {
@@ -343,6 +357,13 @@ class CloudflareService
                 [
                     'type' => 'A',
                     'name' => 'www',
+                    'content' => $serverIp,
+                    'proxied' => false, // 프록시 비활성화
+                    'ttl' => 1, // Auto
+                ],
+                [
+                    'type' => 'A',
+                    'name' => '*', // 와일드카드 (모든 서브도메인)
                     'content' => $serverIp,
                     'proxied' => false, // 프록시 비활성화
                     'ttl' => 1, // Auto
