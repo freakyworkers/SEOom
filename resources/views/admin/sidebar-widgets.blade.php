@@ -1631,7 +1631,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const blockContainer = document.getElementById('widget_block_container');
         const blockSlideContainer = document.getElementById('widget_block_slide_container');
         const imageContainer = document.getElementById('widget_image_container');
-        const imageSlideContainer = document.getElementById('widget_image_slide_container');
+        let imageSlideContainer = document.getElementById('widget_image_slide_container');
         
         if (widgetType === 'popular_posts' || widgetType === 'recent_posts' || widgetType === 'weekly_popular_posts' || widgetType === 'monthly_popular_posts') {
             if (limitContainer) limitContainer.style.display = 'block';
@@ -1908,7 +1908,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (blockSlideContainer) blockSlideContainer.style.display = 'none';
             const imageContainer = document.getElementById('widget_image_container');
             if (imageContainer) imageContainer.style.display = 'none';
-            const imageSlideContainer = document.getElementById('widget_image_slide_container');
+            imageSlideContainer = document.getElementById('widget_image_slide_container');
             if (imageSlideContainer) imageSlideContainer.style.display = 'none';
             const titleHelp = document.getElementById('widget_title_help');
             if (titleHelp) titleHelp.style.display = 'none';
@@ -1938,7 +1938,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (blockSlideContainer) blockSlideContainer.style.display = 'block';
             const imageContainer = document.getElementById('widget_image_container');
             if (imageContainer) imageContainer.style.display = 'none';
-            const imageSlideContainer = document.getElementById('widget_image_slide_container');
+            imageSlideContainer = document.getElementById('widget_image_slide_container');
             if (imageSlideContainer) imageSlideContainer.style.display = 'none';
             const titleHelp = document.getElementById('widget_title_help');
             if (titleHelp) titleHelp.style.display = 'none';
@@ -1974,7 +1974,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (blockSlideContainer) blockSlideContainer.style.display = 'none';
             const imageContainer = document.getElementById('widget_image_container');
             if (imageContainer) imageContainer.style.display = 'block';
-            const imageSlideContainer = document.getElementById('widget_image_slide_container');
+            imageSlideContainer = document.getElementById('widget_image_slide_container');
             if (imageSlideContainer) imageSlideContainer.style.display = 'none';
             const titleHelp = document.getElementById('widget_title_help');
             if (titleHelp) titleHelp.style.display = 'none';
@@ -1986,7 +1986,7 @@ document.addEventListener('DOMContentLoaded', function() {
             boardContainer.style.display = 'none';
             if (sortOrderContainer) sortOrderContainer.style.display = 'none';
             if (marqueeDirectionContainer) marqueeDirectionContainer.style.display = 'none';
-            const imageSlideContainer = document.getElementById('widget_image_slide_container');
+            imageSlideContainer = document.getElementById('widget_image_slide_container');
             if (imageSlideContainer) imageSlideContainer.style.display = 'block';
             const itemsContainer = document.getElementById('widget_image_slide_items');
             if (itemsContainer && itemsContainer.children.length === 0) {
@@ -2011,7 +2011,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (blockSlideContainer) blockSlideContainer.style.display = 'none';
             const imageContainer = document.getElementById('widget_image_container');
             if (imageContainer) imageContainer.style.display = 'none';
-            const imageSlideContainer = document.getElementById('widget_image_slide_container');
+            imageSlideContainer = document.getElementById('widget_image_slide_container');
             if (imageSlideContainer) imageSlideContainer.style.display = 'block';
             const titleHelp = document.getElementById('widget_title_help');
             if (titleHelp) titleHelp.style.display = 'none';
