@@ -127,8 +127,8 @@
         <div class="mb-3 block-slide-wrapper {{ $shadowClass }}" 
              data-direction="{{ $slideDirection }}" 
              data-widget-id="{{ $widget->id }}"
-             style="position: relative; overflow: hidden; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 200px;' : '' }}">
-            <div class="block-slide-container" style="display: flex; transition: transform 0.5s ease-in-out; {{ in_array($slideDirection, ['up', 'down']) ? 'flex-direction: column; height: 100%;' : '' }}">
+             style="position: relative; overflow: hidden; width: 100%; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 200px;' : '' }}">
+            <div class="block-slide-container" style="display: flex; width: calc(100% * {{ count($blocks) }}); transition: transform 0.5s ease-in-out; {{ in_array($slideDirection, ['up', 'down']) ? 'flex-direction: column; height: 100%;' : '' }}">
                 @foreach($blocks as $index => $block)
                     @php
                         $blockTitle = $block['title'] ?? '';
@@ -164,7 +164,7 @@
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
                         if (in_array($slideDirection, ['left', 'right'])) {
-                            $blockStyle .= " width: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; flex-shrink: 0;";
                         } else {
                             $blockStyle .= " width: 100%; height: 100%; flex-shrink: 0;";
                         }
@@ -241,7 +241,7 @@
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
                         if (in_array($slideDirection, ['left', 'right'])) {
-                            $blockStyle .= " width: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; flex-shrink: 0;";
                         } else {
                             $blockStyle .= " width: 100%; height: 100%; flex-shrink: 0;";
                         }
