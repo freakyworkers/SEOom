@@ -9180,6 +9180,9 @@ function hexToRgb(hex) {
                                        onchange="updateGradientColorControl('start')"
                                        style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0; z-index: 10;"
                                        onclick="event.stopPropagation();">
+                                <input type="hidden" 
+                                       id="gradient_modal_start_alpha" 
+                                       value="100">
                             </div>
                             
                             <!-- 중간 색상 컨트롤들 -->
@@ -9197,6 +9200,9 @@ function hexToRgb(hex) {
                                        onchange="updateGradientColorControl('end')"
                                        style="position: absolute; opacity: 0; width: 60px; height: 40px; cursor: pointer; top: 12px; left: 0; z-index: 10;"
                                        onclick="event.stopPropagation();">
+                                <input type="hidden" 
+                                       id="gradient_modal_end_alpha" 
+                                       value="100">
                             </div>
                         </div>
                     </div>
