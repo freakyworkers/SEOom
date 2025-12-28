@@ -1427,8 +1427,7 @@
                                     @endforeach
                                 </div>
                             </div>
-                        </div>
-                        <script>
+                            <script>
                             (function() {
                                 function initGallerySlide() {
                                     const widgetId = {{ $widget->id }};
