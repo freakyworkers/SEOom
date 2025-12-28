@@ -3397,6 +3397,11 @@ function addMainWidget() {
             blockItems.push(blockItem);
         });
         
+        if (blockItems.length === 0) {
+            alert('블록 슬라이드 위젯에는 최소 1개 이상의 블록이 필요합니다. "블록 추가하기" 버튼을 클릭하여 블록을 추가해주세요.');
+            return;
+        }
+        
         settings.blocks = blockItems;
     } else if (widgetType === 'image') {
         const imageFile = document.getElementById('widget_image_input')?.files[0];
