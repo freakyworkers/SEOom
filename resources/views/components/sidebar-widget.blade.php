@@ -1311,6 +1311,7 @@
                                      data-direction="{{ $slideDirection }}"
                                      data-cols="{{ $slideCols }}"
                                      style="display: flex; 
+                                            transform: translateX(0);
                                             @if($slideDirection === 'left' || $slideDirection === 'right')
                                                 flex-direction: row; 
                                                 transition: transform 0.5s ease;
@@ -1448,6 +1449,9 @@
                                         const itemCount = items.length;
                                         
                                         if (itemCount <= cols) return; // 슬라이드 불필요
+                                        
+                                        // 초기 transform 설정 (반드시 0으로 시작)
+                                        wrapper.style.transform = 'translateX(0)';
                                         
                                         let currentIndex = 0;
                                         let intervalId;
