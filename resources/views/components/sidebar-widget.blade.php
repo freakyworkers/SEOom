@@ -1304,7 +1304,7 @@
                             $slideCols = $widgetSettings['slide_cols'] ?? 3;
                             $slideDirection = $widgetSettings['slide_direction'] ?? 'left';
                         @endphp
-                        <div class="gallery-slider position-relative" id="gallery-slider-{{ $widget->id }}" style="overflow: hidden; position: relative; width: 100%;">
+                        <div class="gallery-slider position-relative" id="gallery-slider-{{ $widget->id }}" style="overflow: hidden; position: relative;">
                             <div class="gallery-slide-container" style="overflow: hidden; position: relative; width: 100%;">
                                 <div class="gallery-slide-wrapper" 
                                      id="gallery-slide-wrapper-{{ $widget->id }}"
