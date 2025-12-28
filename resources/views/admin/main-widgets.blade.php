@@ -8340,6 +8340,7 @@ function addGradientMiddleColor(position = null) {
     middleControlsContainer.appendChild(control);
     updateGradientMiddleColor(control.querySelector('.gradient-middle-color-input'));
     selectGradientControl(control, 'middle');
+    updateGradientMiddleIcons();
 }
 
 // 그라데이션 컨트롤을 드래그 가능하게 만들기
