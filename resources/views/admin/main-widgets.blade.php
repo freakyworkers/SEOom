@@ -9135,6 +9135,17 @@ function hexToRgb(hex) {
                     </div>
                     <!-- 그라데이션 바 아래 컨트롤 영역 -->
                     <div id="gradient_control_panel" style="margin-top: 10px;">
+                        <!-- 시작/끝 색상 아이콘 표시 영역 -->
+                        <div id="gradient_start_end_controls" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                            <!-- 시작 색상 아이콘 -->
+                            <div id="gradient_start_icon" class="gradient-control-icon" style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; padding: 2px; cursor: pointer;" onclick="selectGradientControl(document.getElementById('gradient_start_control'), 'start')">
+                                <div id="gradient_start_icon_display" style="width: 100%; height: 100%; border-radius: 2px; background: #ffffff;"></div>
+                            </div>
+                            <!-- 끝 색상 아이콘 -->
+                            <div id="gradient_end_icon" class="gradient-control-icon" style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; padding: 2px; cursor: pointer;" onclick="selectGradientControl(document.getElementById('gradient_end_control'), 'end')">
+                                <div id="gradient_end_icon_display" style="width: 100%; height: 100%; border-radius: 2px; background: #000000;"></div>
+                            </div>
+                        </div>
                         <!-- 선택된 색상 컨트롤의 설정 -->
                         <div id="gradient_selected_control_settings" style="display: none;">
                             <div class="mb-2">
