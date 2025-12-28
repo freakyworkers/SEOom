@@ -224,8 +224,18 @@
         $blocks = $slideSettings['blocks'] ?? [];
     @endphp
     @if(count($blocks) > 0)
+        @php
+            $blockSlideWrapperStyle = $animationStyle . ' position: relative; overflow: hidden; width: 100%;';
+            if (in_array($slideDirection, ['up', 'down'])) {
+                $blockSlideWrapperStyle .= ' height: 200px;';
+            }
+            // 가로 100%일 때 보더 레디우스 제거
+            if ($isFullWidth) {
+                $blockSlideWrapperStyle .= ' border-radius: 0 !important;';
+            }
+        @endphp
         <div class="mb-0 block-slide-wrapper {{ $shadowClass }} {{ $animationClass }}" 
-             style="{{ $animationStyle }} position: relative; overflow: hidden; width: 100%; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 200px;' : '' }}"
+             style="{{ $blockSlideWrapperStyle }}"
              data-direction="{{ $slideDirection }}" 
              data-widget-id="{{ $widget->id }}">
             <div class="block-slide-container" style="display: flex; width: calc(100% * {{ count($blocks) }}); transition: transform 0.5s ease-in-out; {{ in_array($slideDirection, ['up', 'down']) ? 'flex-direction: column; height: 100%;' : '' }}">

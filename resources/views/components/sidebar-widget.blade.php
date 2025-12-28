@@ -323,26 +323,10 @@
                     }
                     
                     if (direction === 'left' || direction === 'right') {
-                        // wrapper의 너비를 기준으로 이동
-                        const wrapperWidth = wrapper.offsetWidth;
-                        if (wrapperWidth === 0) {
-                            // 너비가 0이면 다시 시도
-                            setTimeout(updatePosition, 100);
-                            return;
-                        }
-                        const translateX = -(currentIndex * wrapperWidth);
-                        container.style.transform = `translateX(${translateX}px)`;
+                        container.style.transform = `translateX(-${currentIndex * 100}%)`;
                     } else if (direction === 'up' || direction === 'down') {
                         container.style.flexDirection = direction === 'up' ? 'column-reverse' : 'column';
-                        // wrapper의 높이를 기준으로 이동
-                        const wrapperHeight = wrapper.offsetHeight;
-                        if (wrapperHeight === 0) {
-                            // 높이가 0이면 다시 시도
-                            setTimeout(updatePosition, 100);
-                            return;
-                        }
-                        const translateY = -(currentIndex * wrapperHeight);
-                        container.style.transform = `translateY(${translateY}px)`;
+                        container.style.transform = `translateY(-${currentIndex * 100}%)`;
                     }
                 }
                 
@@ -1514,11 +1498,17 @@
                                 }
                                 
                                 // 초기 설정
+                                wrapper.style.transition = 'transform 0.5s ease';
+                                wrapper.style.transform = 'translateX(0)';
+                                
                                 if (direction === 'left' || direction === 'right') {
                                     const slideContainer = container.querySelector('.gallery-slide-container');
                                     if (slideContainer) {
                                         slideContainer.style.width = '100%';
                                     }
+                                    wrapper.style.transform = 'translateX(0)';
+                                } else if (direction === 'up' || direction === 'down') {
+                                    wrapper.style.transform = 'translateY(0)';
                                 }
                                 
                                 // 호버 시 일시 정지

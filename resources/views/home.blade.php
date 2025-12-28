@@ -200,11 +200,15 @@
                                     $widgetWrapperStyle .= ' display: flex; align-items: flex-end; justify-content: center;';
                                 }
                                 // 첫 번째 위젯이 아니면 상단 간격 적용, 하단 마진은 제거
+                                // 세로 정렬이 상단일 때 첫 번째 위젯의 상단 마진 제거
                                 $isFirstWidget = $index === 0;
                                 $widgetMarginClass = '';
                                 if (!$isFullHeight) {
                                     if (!$isFirstWidget) {
                                         $widgetMarginClass .= $widgetSpacingTopClass;
+                                    } elseif ($isFirstWidget && $verticalAlign === 'top') {
+                                        // 첫 번째 위젯이고 세로 정렬이 상단일 때 상단 마진 제거
+                                        $widgetMarginClass = 'mt-0';
                                     }
                                 }
                             @endphp
