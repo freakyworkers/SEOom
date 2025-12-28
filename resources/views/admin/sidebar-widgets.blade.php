@@ -267,16 +267,6 @@
                                                     <label class="btn btn-outline-primary" for="gallery_direction_right">
                                                         <i class="bi bi-arrow-right"></i> 우
                                                     </label>
-                                                    
-                                                    <input type="radio" class="btn-check" name="gallery_slide_direction" id="gallery_direction_up" value="up">
-                                                    <label class="btn btn-outline-primary" for="gallery_direction_up">
-                                                        <i class="bi bi-arrow-up"></i> 상
-                                                    </label>
-                                                    
-                                                    <input type="radio" class="btn-check" name="gallery_slide_direction" id="gallery_direction_down" value="down">
-                                                    <label class="btn btn-outline-primary" for="gallery_direction_down">
-                                                        <i class="bi bi-arrow-down"></i> 하
-                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -949,16 +939,6 @@
                                 <input type="radio" class="btn-check" name="edit_gallery_slide_direction" id="edit_gallery_direction_right" value="right">
                                 <label class="btn btn-outline-primary" for="edit_gallery_direction_right">
                                     <i class="bi bi-arrow-right"></i> 우
-                                </label>
-                                
-                                <input type="radio" class="btn-check" name="edit_gallery_slide_direction" id="edit_gallery_direction_up" value="up">
-                                <label class="btn btn-outline-primary" for="edit_gallery_direction_up">
-                                    <i class="bi bi-arrow-up"></i> 상
-                                </label>
-                                
-                                <input type="radio" class="btn-check" name="edit_gallery_slide_direction" id="edit_gallery_direction_down" value="down">
-                                <label class="btn btn-outline-primary" for="edit_gallery_direction_down">
-                                    <i class="bi bi-arrow-down"></i> 하
                                 </label>
                             </div>
                         </div>
@@ -3717,8 +3697,11 @@ function editWidget(widgetId) {
                                 if (document.getElementById('edit_widget_gallery_slide_cols')) {
                                     document.getElementById('edit_widget_gallery_slide_cols').value = settings.slide_cols || 3;
                                 }
-                                // 슬라이드 방향 라디오 버튼 체크
-                                const slideDirection = settings.slide_direction || 'left';
+                                // 슬라이드 방향 라디오 버튼 체크 (up, down은 left로 변환)
+                                let slideDirection = settings.slide_direction || 'left';
+                                if (slideDirection === 'up' || slideDirection === 'down') {
+                                    slideDirection = 'left';
+                                }
                                 const slideDirectionRadio = document.querySelector(`input[name="edit_gallery_slide_direction"][value="${slideDirection}"]`);
                                 if (slideDirectionRadio) {
                                     slideDirectionRadio.checked = true;

@@ -789,14 +789,6 @@
                                 <label class="btn btn-outline-primary" for="edit_main_gallery_direction_right">
                                     <i class="bi bi-arrow-right"></i> 우
                                 </label>
-                                <input type="radio" class="btn-check" name="edit_main_gallery_slide_direction" id="edit_main_gallery_direction_up" value="up">
-                                <label class="btn btn-outline-primary" for="edit_main_gallery_direction_up">
-                                    <i class="bi bi-arrow-up"></i> 상
-                                </label>
-                                <input type="radio" class="btn-check" name="edit_main_gallery_slide_direction" id="edit_main_gallery_direction_down" value="down">
-                                <label class="btn btn-outline-primary" for="edit_main_gallery_direction_down">
-                                    <i class="bi bi-arrow-down"></i> 하
-                                </label>
                             </div>
                         </div>
                     </div>
@@ -3260,6 +3252,15 @@ function editCustomPageWidget(widgetId) {
                         if (gallerySlideContainer) gallerySlideContainer.style.display = 'block';
                         if (document.getElementById('edit_custom_page_widget_gallery_slide_cols')) {
                             document.getElementById('edit_custom_page_widget_gallery_slide_cols').value = settings.slide_cols || 3;
+                        }
+                        // 슬라이드 방향 라디오 버튼 체크 (up, down은 left로 변환)
+                        let slideDirection = settings.slide_direction || 'left';
+                        if (slideDirection === 'up' || slideDirection === 'down') {
+                            slideDirection = 'left';
+                        }
+                        const slideDirectionRadio = document.querySelector(`input[name="edit_main_gallery_slide_direction"][value="${slideDirection}"]`);
+                        if (slideDirectionRadio) {
+                            slideDirectionRadio.checked = true;
                         }
                     }
                 }

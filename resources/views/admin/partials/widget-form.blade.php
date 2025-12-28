@@ -143,16 +143,6 @@
             <label class="btn btn-outline-primary" for="gallery_direction_right">
                 <i class="bi bi-arrow-right"></i> 우
             </label>
-            
-            <input type="radio" class="btn-check" name="gallery_slide_direction" id="gallery_direction_up" value="up">
-            <label class="btn btn-outline-primary" for="gallery_direction_up">
-                <i class="bi bi-arrow-up"></i> 상
-            </label>
-            
-            <input type="radio" class="btn-check" name="gallery_slide_direction" id="gallery_direction_down" value="down">
-            <label class="btn btn-outline-primary" for="gallery_direction_down">
-                <i class="bi bi-arrow-down"></i> 하
-            </label>
         </div>
     </div>
 </div>
