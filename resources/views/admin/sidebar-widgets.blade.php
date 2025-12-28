@@ -5457,22 +5457,33 @@ function openBlockGradientModal(blockId) {
         middleControlsContainer.innerHTML = '';
     }
     
-    if (typeof updateGradientPreview === 'function') {
-        updateGradientPreview();
-    }
-    
-    const settingsPanel = document.getElementById('gradient_selected_control_settings');
-    if (settingsPanel) {
-        settingsPanel.style.display = 'none';
-    }
-    selectedGradientControl = null;
-    selectedGradientControlType = null;
-    
+    // 모달 표시
     const modalElement = document.getElementById('gradientModal');
-    if (modalElement) {
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
+    if (!modalElement) {
+        console.error('그라데이션 모달을 찾을 수 없습니다.');
+        return;
     }
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+    
+    // 모달이 표시된 후 값 설정
+    setTimeout(() => {
+        if (typeof updateGradientPreview === 'function') {
+            updateGradientPreview();
+        }
+        
+        const settingsPanel = document.getElementById('gradient_selected_control_settings');
+        if (settingsPanel) {
+            settingsPanel.style.display = 'none';
+        }
+        selectedGradientControl = null;
+        selectedGradientControlType = null;
+        
+        // 중간 색상 아이콘 업데이트
+        if (typeof updateGradientMiddleIcons === 'function') {
+            updateGradientMiddleIcons();
+        }
+    }, 100);
 }
 
 // 블록 그라데이션 저장
