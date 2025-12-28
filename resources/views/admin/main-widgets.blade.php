@@ -8241,6 +8241,16 @@ function updateGradientPreview() {
     const startRgba = hexToRgba(startColor, startAlpha);
     const endRgba = hexToRgba(endColor, endAlpha);
     
+    // 시작 색상 위치 가져오기
+    const startControl = document.getElementById('gradient_start_control');
+    const startPositionStr = startControl ? (startControl.style.left || startControl.getAttribute('data-position') || '0') : '0';
+    const startPosition = parseFloat(startPositionStr.toString().replace('%', '')) || 0;
+    
+    // 끝 색상 위치 가져오기
+    const endControl = document.getElementById('gradient_end_control');
+    const endPositionStr = endControl ? (endControl.style.left || endControl.getAttribute('data-position') || '100') : '100';
+    const endPosition = parseFloat(endPositionStr.toString().replace('%', '')) || 100;
+    
     // 중간 색상들 가져오기
     const middleColors = [];
     const middleControls = document.querySelectorAll('.gradient-middle-control');
@@ -8256,15 +8266,24 @@ function updateGradientPreview() {
         }
     });
     
-    // 중간 색상이 있으면 정렬
-    middleColors.sort((a, b) => a.position - b.position);
+    // 모든 색상 정렬 (시작, 중간, 끝)
+    const allColors = [
+        { rgba: startRgba, position: startPosition },
+        ...middleColors,
+        { rgba: endRgba, position: endPosition }
+    ];
+    allColors.sort((a, b) => a.position - b.position);
     
     // 그라데이션 문자열 생성
-    let gradientString = `linear-gradient(${angle}deg, ${startRgba}`;
-    middleColors.forEach(mc => {
-        gradientString += `, ${mc.rgba} ${mc.position}%`;
+    let gradientString = `linear-gradient(${angle}deg`;
+    allColors.forEach((color, index) => {
+        if (index === 0) {
+            gradientString += `, ${color.rgba} ${color.position}%`;
+        } else {
+            gradientString += `, ${color.rgba} ${color.position}%`;
+        }
     });
-    gradientString += `, ${endRgba})`;
+    gradientString += `)`;
     
     // 미리보기 업데이트
     const preview = document.getElementById('gradient_modal_preview');
