@@ -16,6 +16,7 @@ class CustomPageWidgetContainer extends Model
         'vertical_align',
         'full_width',
         'full_height',
+        'widget_spacing',
         'background_type',
         'background_color',
         'background_gradient_start',
@@ -31,6 +32,7 @@ class CustomPageWidgetContainer extends Model
         'order' => 'integer',
         'full_width' => 'boolean',
         'full_height' => 'boolean',
+        'widget_spacing' => 'integer',
     ];
 
     /**

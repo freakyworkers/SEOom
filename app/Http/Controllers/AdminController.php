@@ -4239,6 +4239,11 @@ class AdminController extends Controller
             $container->full_height = false;
         }
         
+        // widget_spacing 처리
+        if ($request->has('widget_spacing')) {
+            $container->widget_spacing = $request->widget_spacing;
+        }
+        
         // column_merges 처리
         if ($request->has('column_merges')) {
             $columnMerges = json_decode($request->column_merges, true);
