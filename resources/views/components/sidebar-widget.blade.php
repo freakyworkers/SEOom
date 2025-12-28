@@ -1563,10 +1563,10 @@
                                     wrapper.style.transform = 'translateY(0)';
                                 }
                                 
-                                // 호버 시 일시 정지
-                                container.addEventListener('mouseenter', stopAutoSlide);
-                                container.addEventListener('mouseleave', startAutoSlide);
-                                
+                                    // 호버 시 일시 정지
+                                    container.addEventListener('mouseenter', stopAutoSlide);
+                                    container.addEventListener('mouseleave', startAutoSlide);
+                                    
                                     // 자동 슬라이드 시작
                                     startAutoSlide();
                                 }

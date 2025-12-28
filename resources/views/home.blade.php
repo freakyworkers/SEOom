@@ -195,12 +195,7 @@
                                 $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
                                 // 모든 위젯이 칸 영역의 가로 100%를 활용하도록 설정
                                 $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'width: 100%; max-width: 100%;';
-                                // 세로 정렬이 center일 때 위젯 래퍼를 flex로 만들어서 중앙 정렬이 작동하도록 함
-                                if ($verticalAlign === 'center' && !$isFullHeight) {
-                                    $widgetWrapperStyle .= ' display: flex; align-items: center; justify-content: center;';
-                                } elseif ($verticalAlign === 'bottom' && !$isFullHeight) {
-                                    $widgetWrapperStyle .= ' display: flex; align-items: flex-end; justify-content: center;';
-                                }
+                                // 세로 정렬은 컬럼 레벨에서만 처리하고, 위젯 래퍼에는 flex를 적용하지 않음 (위젯 크기 보존)
                                 // 첫 번째 위젯이 아니면 상단 간격 적용, 하단 마진은 제거
                                 // 세로 정렬이 상단일 때 첫 번째 위젯의 상단 마진 제거
                                 $isFirstWidget = $index === 0;
