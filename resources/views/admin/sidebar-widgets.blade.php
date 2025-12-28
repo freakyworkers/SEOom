@@ -2250,6 +2250,7 @@ function addBlockSlideItem() {
             <label class="form-label">배경</label>
             <select class="form-select block-slide-background-type" name="block_slide[${itemIndex}][background_type]" onchange="handleBlockSlideBackgroundTypeChange(${itemIndex})">
                 <option value="color">컬러</option>
+                <option value="gradient">그라데이션</option>
                 <option value="image">이미지</option>
             </select>
         </div>
@@ -2259,6 +2260,32 @@ function addBlockSlideItem() {
                    class="form-control form-control-color block-slide-background-color" 
                    name="block_slide[${itemIndex}][background_color]" 
                    value="#007bff">
+        </div>
+        <div class="mb-3 block-slide-gradient-container" id="block_slide_${itemIndex}_gradient_container" style="display: none;">
+            <label class="form-label">그라데이션 설정</label>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div id="block_slide_${itemIndex}_gradient_preview" 
+                     style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #ffffff, #000000);"
+                     onclick="openBlockGradientModal('block_slide_${itemIndex}')"
+                     title="그라데이션 설정">
+                </div>
+                <input type="hidden" 
+                       class="block-slide-background-gradient-start" 
+                       name="block_slide[${itemIndex}][background_gradient_start]" 
+                       id="block_slide_${itemIndex}_gradient_start"
+                       value="#ffffff">
+                <input type="hidden" 
+                       class="block-slide-background-gradient-end" 
+                       name="block_slide[${itemIndex}][background_gradient_end]" 
+                       id="block_slide_${itemIndex}_gradient_end"
+                       value="#000000">
+                <input type="hidden" 
+                       class="block-slide-background-gradient-angle" 
+                       name="block_slide[${itemIndex}][background_gradient_angle]" 
+                       id="block_slide_${itemIndex}_gradient_angle"
+                       value="90">
+            </div>
+            <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
         </div>
         <div class="mb-3">
             <label class="form-label">폰트 컬러</label>
@@ -2366,13 +2393,20 @@ function removeBlockSlideItem(itemIndex) {
 function handleBlockSlideBackgroundTypeChange(itemIndex) {
     const backgroundType = document.querySelector(`#block_slide_item_${itemIndex}_body .block-slide-background-type`).value;
     const colorContainer = document.getElementById(`block_slide_${itemIndex}_color_container`);
+    const gradientContainer = document.getElementById(`block_slide_${itemIndex}_gradient_container`);
     const imageContainer = document.getElementById(`block_slide_${itemIndex}_image_container`);
     
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'block';
         if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'image') {
         if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'block';
     }
 }
@@ -2781,15 +2815,42 @@ function addEditBlockSlideItem(blockData = null) {
             <label class="form-label">배경</label>
             <select class="form-select edit-block-slide-background-type" name="edit_block_slide[${itemIndex}][background_type]" onchange="handleEditBlockSlideBackgroundTypeChange(${itemIndex})">
                 <option value="color" ${!blockData || blockData.background_type === 'color' ? 'selected' : ''}>컬러</option>
+                <option value="gradient" ${blockData && blockData.background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
                 <option value="image" ${blockData && blockData.background_type === 'image' ? 'selected' : ''}>이미지</option>
             </select>
         </div>
-        <div class="mb-3 edit-block-slide-color-container" id="edit_block_slide_${itemIndex}_color_container" style="${blockData && blockData.background_type === 'image' ? 'display: none;' : ''}">
+        <div class="mb-3 edit-block-slide-color-container" id="edit_block_slide_${itemIndex}_color_container" style="${blockData && (blockData.background_type === 'image' || blockData.background_type === 'gradient') ? 'display: none;' : ''}">
             <label class="form-label">배경 컬러</label>
             <input type="color" 
                    class="form-control form-control-color edit-block-slide-background-color" 
                    name="edit_block_slide[${itemIndex}][background_color]" 
                    value="${blockData ? (blockData.background_color || '#007bff') : '#007bff'}">
+        </div>
+        <div class="mb-3 edit-block-slide-gradient-container" id="edit_block_slide_${itemIndex}_gradient_container" style="${!blockData || blockData.background_type !== 'gradient' ? 'display: none;' : ''}">
+            <label class="form-label">그라데이션 설정</label>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div id="edit_block_slide_${itemIndex}_gradient_preview" 
+                     style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(${blockData ? (blockData.background_gradient_angle || 90) : 90}deg, ${blockData ? (blockData.background_gradient_start || '#ffffff') : '#ffffff'}, ${blockData ? (blockData.background_gradient_end || '#000000') : '#000000'});"
+                     onclick="openBlockGradientModal('edit_block_slide_${itemIndex}')"
+                     title="그라데이션 설정">
+                </div>
+                <input type="hidden" 
+                       class="edit-block-slide-background-gradient-start" 
+                       name="edit_block_slide[${itemIndex}][background_gradient_start]" 
+                       id="edit_block_slide_${itemIndex}_gradient_start"
+                       value="${blockData ? (blockData.background_gradient_start || '#ffffff') : '#ffffff'}">
+                <input type="hidden" 
+                       class="edit-block-slide-background-gradient-end" 
+                       name="edit_block_slide[${itemIndex}][background_gradient_end]" 
+                       id="edit_block_slide_${itemIndex}_gradient_end"
+                       value="${blockData ? (blockData.background_gradient_end || '#000000') : '#000000'}">
+                <input type="hidden" 
+                       class="edit-block-slide-background-gradient-angle" 
+                       name="edit_block_slide[${itemIndex}][background_gradient_angle]" 
+                       id="edit_block_slide_${itemIndex}_gradient_angle"
+                       value="${blockData ? (blockData.background_gradient_angle || 90) : 90}">
+            </div>
+            <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
         </div>
         <div class="mb-3">
             <label class="form-label">폰트 컬러</label>
@@ -2904,13 +2965,20 @@ function removeEditBlockSlideItem(itemIndex) {
 function handleEditBlockSlideBackgroundTypeChange(itemIndex) {
     const backgroundType = document.querySelector(`#edit_block_slide_item_${itemIndex}_body .edit-block-slide-background-type`).value;
     const colorContainer = document.getElementById(`edit_block_slide_${itemIndex}_color_container`);
+    const gradientContainer = document.getElementById(`edit_block_slide_${itemIndex}_gradient_container`);
     const imageContainer = document.getElementById(`edit_block_slide_${itemIndex}_image_container`);
     
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'block';
         if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'image') {
         if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'block';
     }
 }
@@ -5500,21 +5568,6 @@ function saveGradient() {
                                        onchange="updateSelectedGradientControl()"
                                        class="form-control form-control-color">
                             </div>
-                            <div class="mb-2">
-                                <label class="form-label small">투명도</label>
-                                <input type="range" 
-                                       class="form-range" 
-                                       id="gradient_selected_alpha" 
-                                       min="0" 
-                                       max="100" 
-                                       value="100"
-                                       onchange="updateSelectedGradientControl()">
-                                <div class="d-flex justify-content-between">
-                                    <small style="font-size: 0.7rem;">0%</small>
-                                    <small id="gradient_selected_alpha_value" style="font-size: 0.7rem;">100%</small>
-                                    <small style="font-size: 0.7rem;">100%</small>
-                                </div>
-                            </div>
                             <div class="mb-2" id="gradient_position_control" style="display: none;">
                                 <label class="form-label small">위치</label>
                                 <input type="range" 
@@ -5527,6 +5580,21 @@ function saveGradient() {
                                 <div class="d-flex justify-content-between">
                                     <small style="font-size: 0.7rem;">0%</small>
                                     <small id="gradient_selected_position_value" style="font-size: 0.7rem;">0%</small>
+                                    <small style="font-size: 0.7rem;">100%</small>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small">투명도</label>
+                                <input type="range" 
+                                       class="form-range" 
+                                       id="gradient_selected_alpha" 
+                                       min="0" 
+                                       max="100" 
+                                       value="100"
+                                       onchange="updateSelectedGradientControl()">
+                                <div class="d-flex justify-content-between">
+                                    <small style="font-size: 0.7rem;">0%</small>
+                                    <small id="gradient_selected_alpha_value" style="font-size: 0.7rem;">100%</small>
                                     <small style="font-size: 0.7rem;">100%</small>
                                 </div>
                             </div>

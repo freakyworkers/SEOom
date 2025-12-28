@@ -5193,6 +5193,9 @@ function removeSelectedGradientControl() {
 
 // 그라데이션 모달 열기
 function openGradientModal(containerId, type) {
+    // 블록 그라데이션 ID 초기화
+    currentBlockGradientId = null;
+    currentButtonGradientId = null;
     currentGradientContainerId = containerId;
     currentGradientType = type;
     
@@ -5555,21 +5558,6 @@ function saveGradient() {
                                        onchange="updateSelectedGradientControl()"
                                        class="form-control form-control-color">
                             </div>
-                            <div class="mb-2">
-                                <label class="form-label small">투명도</label>
-                                <input type="range" 
-                                       class="form-range" 
-                                       id="gradient_selected_alpha" 
-                                       min="0" 
-                                       max="100" 
-                                       value="100"
-                                       onchange="updateSelectedGradientControl()">
-                                <div class="d-flex justify-content-between">
-                                    <small style="font-size: 0.7rem;">0%</small>
-                                    <small id="gradient_selected_alpha_value" style="font-size: 0.7rem;">100%</small>
-                                    <small style="font-size: 0.7rem;">100%</small>
-                                </div>
-                            </div>
                             <div class="mb-2" id="gradient_position_control" style="display: none;">
                                 <label class="form-label small">위치</label>
                                 <input type="range" 
@@ -5582,6 +5570,21 @@ function saveGradient() {
                                 <div class="d-flex justify-content-between">
                                     <small style="font-size: 0.7rem;">0%</small>
                                     <small id="gradient_selected_position_value" style="font-size: 0.7rem;">0%</small>
+                                    <small style="font-size: 0.7rem;">100%</small>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small">투명도</label>
+                                <input type="range" 
+                                       class="form-range" 
+                                       id="gradient_selected_alpha" 
+                                       min="0" 
+                                       max="100" 
+                                       value="100"
+                                       onchange="updateSelectedGradientControl()">
+                                <div class="d-flex justify-content-between">
+                                    <small style="font-size: 0.7rem;">0%</small>
+                                    <small id="gradient_selected_alpha_value" style="font-size: 0.7rem;">100%</small>
                                     <small style="font-size: 0.7rem;">100%</small>
                                 </div>
                             </div>
