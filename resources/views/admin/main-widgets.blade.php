@@ -8141,13 +8141,7 @@ function openGradientModal(containerId, type) {
         if (typeof makeGradientControlDraggable === 'function') {
             makeGradientControlDraggable(startControl);
         }
-        startControl.addEventListener('click', function(e) {
-            if (e.target.type !== 'color') {
-                if (typeof selectGradientControl === 'function') {
-                    selectGradientControl(startControl, 'start');
-                }
-            }
-        });
+        // 클릭 이벤트는 색상 표시 영역에서 처리
     }
     if (endControl) {
         if (typeof makeGradientControlDraggable === 'function') {
@@ -8862,13 +8856,7 @@ function openBlockGradientModal(blockId) {
         if (typeof makeGradientControlDraggable === 'function') {
             makeGradientControlDraggable(startControl);
         }
-        startControl.addEventListener('click', function(e) {
-            if (e.target.type !== 'color') {
-                if (typeof selectGradientControl === 'function') {
-                    selectGradientControl(startControl, 'start');
-                }
-            }
-        });
+        // 클릭 이벤트는 색상 표시 영역에서 처리
     }
     if (endControl) {
         if (typeof makeGradientControlDraggable === 'function') {
@@ -8976,13 +8964,7 @@ function openButtonGradientModal(buttonId) {
         if (typeof makeGradientControlDraggable === 'function') {
             makeGradientControlDraggable(startControl);
         }
-        startControl.addEventListener('click', function(e) {
-            if (e.target.type !== 'color') {
-                if (typeof selectGradientControl === 'function') {
-                    selectGradientControl(startControl, 'start');
-                }
-            }
-        });
+        // 클릭 이벤트는 색상 표시 영역에서 처리
     }
     if (endControl) {
         if (typeof makeGradientControlDraggable === 'function') {
