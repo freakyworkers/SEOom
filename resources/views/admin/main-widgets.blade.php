@@ -3266,7 +3266,16 @@ function addMainWidget() {
         settings.slide_direction = slideDirection;
         
         const blockItems = [];
-        const blockSlideItems = document.querySelectorAll('.block-slide-item');
+        const itemsContainer = document.getElementById('widget_block_slide_items');
+        if (!itemsContainer) {
+            alert('블록 슬라이드 위젯에는 최소 1개 이상의 블록이 필요합니다. "블록 추가하기" 버튼을 클릭하여 블록을 추가해주세요.');
+            return;
+        }
+        const blockSlideItems = itemsContainer.querySelectorAll('.block-slide-item');
+        if (blockSlideItems.length === 0) {
+            alert('블록 슬라이드 위젯에는 최소 1개 이상의 블록이 필요합니다. "블록 추가하기" 버튼을 클릭하여 블록을 추가해주세요.');
+            return;
+        }
         blockSlideItems.forEach((item, index) => {
             const itemIndex = item.dataset.itemIndex;
             const title = item.querySelector('.block-slide-title')?.value || '';

@@ -2679,16 +2679,73 @@ function addCustomPageWidget() {
         const textAlign = formData.get('block_text_align') || 'left';
         const backgroundType = formData.get('block_background_type') || 'color';
         const paddingTop = formData.get('block_padding_top') || '20';
+        const paddingBottom = formData.get('block_padding_bottom') || '20';
         const paddingLeft = formData.get('block_padding_left') || '20';
+        const paddingRight = formData.get('block_padding_right') || '20';
+        const titleContentGap = formData.get('block_title_content_gap') || '8';
+        const buttonTopMargin = formData.get('block_button_top_margin') || '12';
         const blockLink = formData.get('block_link');
         const openNewTab = document.getElementById('widget_block_open_new_tab')?.checked || false;
         const fontColor = formData.get('block_font_color') || '#ffffff';
         const titleFontSize = formData.get('block_title_font_size') || '16';
         const contentFontSize = formData.get('block_content_font_size') || '14';
-        const showButton = document.getElementById('widget_block_show_button')?.checked || false;
-        const buttonText = formData.get('block_button_text') || '';
-        const buttonBackgroundColor = formData.get('block_button_background_color') || '#007bff';
-        const buttonTextColor = formData.get('block_button_text_color') || '#ffffff';
+        // 버튼 데이터 수집
+        const buttons = [];
+        const buttonInputs = document.querySelectorAll('.block-button-text');
+        buttonInputs.forEach((input, index) => {
+            const buttonText = input.value || '';
+            if (buttonText) {
+                const buttonCard = input.closest('.card');
+                const buttonLink = buttonCard.querySelector('.block-button-link')?.value || '';
+                const buttonOpenNewTab = buttonCard.querySelector('.block-button-open-new-tab')?.checked || false;
+                const buttonBackgroundColor = buttonCard.querySelector('.block-button-background-color')?.value || '#007bff';
+                const buttonTextColor = buttonCard.querySelector('.block-button-text-color')?.value || '#ffffff';
+                const buttonBorderColor = buttonCard.querySelector('.block-button-border-color')?.value || buttonBackgroundColor;
+                const buttonBorderWidth = buttonCard.querySelector('.block-button-border-width')?.value || '2';
+                const buttonHoverBackgroundColor = buttonCard.querySelector('.block-button-hover-background-color')?.value || '#0056b3';
+                const buttonHoverTextColor = buttonCard.querySelector('.block-button-hover-text-color')?.value || '#ffffff';
+                const buttonHoverBorderColor = buttonCard.querySelector('.block-button-hover-border-color')?.value || '#0056b3';
+                
+                // 배경 타입 및 그라데이션 설정
+                const buttonBackgroundType = buttonCard.querySelector('.block-button-background-type')?.value || 'color';
+                const buttonGradientStart = buttonCard.querySelector('.block-button-gradient-start')?.value || buttonBackgroundColor;
+                const buttonGradientEnd = buttonCard.querySelector('.block-button-gradient-end')?.value || buttonHoverBackgroundColor;
+                const buttonGradientAngle = buttonCard.querySelector('.block-button-gradient-angle')?.value || '90';
+                const buttonOpacityRaw = buttonCard.querySelector('.block-button-opacity')?.value || '100';
+                const buttonOpacity = (parseFloat(buttonOpacityRaw) / 100).toFixed(1);
+                
+                // 호버 배경 타입 및 그라데이션 설정
+                const buttonHoverBackgroundType = buttonCard.querySelector('.block-button-hover-background-type')?.value || 'color';
+                const buttonHoverGradientStart = buttonCard.querySelector('.block-button-hover-gradient-start')?.value || buttonHoverBackgroundColor;
+                const buttonHoverGradientEnd = buttonCard.querySelector('.block-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
+                const buttonHoverGradientAngle = buttonCard.querySelector('.block-button-hover-gradient-angle')?.value || '90';
+                const buttonHoverOpacityRaw = buttonCard.querySelector('.block-button-hover-opacity')?.value || '100';
+                const buttonHoverOpacity = (parseFloat(buttonHoverOpacityRaw) / 100).toFixed(1);
+                
+                buttons.push({
+                    text: buttonText,
+                    link: buttonLink,
+                    open_new_tab: buttonOpenNewTab,
+                    background_color: buttonBackgroundColor,
+                    text_color: buttonTextColor,
+                    border_color: buttonBorderColor,
+                    border_width: buttonBorderWidth,
+                    hover_background_color: buttonHoverBackgroundColor,
+                    hover_text_color: buttonHoverTextColor,
+                    hover_border_color: buttonHoverBorderColor,
+                    background_type: buttonBackgroundType,
+                    background_gradient_start: buttonGradientStart,
+                    background_gradient_end: buttonGradientEnd,
+                    background_gradient_angle: parseInt(buttonGradientAngle) || 90,
+                    opacity: parseFloat(buttonOpacity) || 1.0,
+                    hover_background_type: buttonHoverBackgroundType,
+                    hover_background_gradient_start: buttonHoverGradientStart,
+                    hover_background_gradient_end: buttonHoverGradientEnd,
+                    hover_background_gradient_angle: parseInt(buttonHoverGradientAngle) || 90,
+                    hover_opacity: parseFloat(buttonHoverOpacity) || 1.0
+                });
+            }
+        });
         
         if (blockTitle) {
             settings.block_title = blockTitle;
@@ -2701,16 +2758,20 @@ function addCustomPageWidget() {
         settings.font_color = fontColor;
         settings.title_font_size = titleFontSize;
         settings.content_font_size = contentFontSize;
-        settings.show_button = showButton;
-        if (showButton) {
-            settings.button_text = buttonText;
-            settings.button_background_color = buttonBackgroundColor;
-            settings.button_text_color = buttonTextColor;
-        }
+        settings.buttons = buttons;
+        settings.title_content_gap = parseInt(titleContentGap) || 8;
+        settings.button_top_margin = parseInt(buttonTopMargin) || 12;
         
         if (backgroundType === 'color') {
             const backgroundColor = formData.get('block_background_color') || '#007bff';
             settings.background_color = backgroundColor;
+        } else if (backgroundType === 'gradient') {
+            const gradientStart = formData.get('block_background_gradient_start') || '#ffffff';
+            const gradientEnd = formData.get('block_background_gradient_end') || '#000000';
+            const gradientAngle = formData.get('block_background_gradient_angle') || 90;
+            settings.background_gradient_start = gradientStart;
+            settings.background_gradient_end = gradientEnd;
+            settings.background_gradient_angle = parseInt(gradientAngle) || 90;
         } else if (backgroundType === 'image') {
             const imageFile = document.getElementById('widget_block_image_input')?.files[0];
             if (imageFile) {
@@ -2722,8 +2783,10 @@ function addCustomPageWidget() {
             }
         }
         
-        settings.padding_top = parseInt(paddingTop);
-        settings.padding_left = parseInt(paddingLeft);
+        settings.padding_top = parseInt(paddingTop) || 20;
+        settings.padding_bottom = parseInt(paddingBottom) || 20;
+        settings.padding_left = parseInt(paddingLeft) || 20;
+        settings.padding_right = parseInt(paddingRight) || 20;
         
         if (blockLink) {
             settings.link = blockLink;
@@ -2734,7 +2797,16 @@ function addCustomPageWidget() {
         settings.slide_direction = slideDirection;
         
         const blockItems = [];
-        const blockSlideItems = document.querySelectorAll('.block-slide-item');
+        const itemsContainer = document.getElementById('widget_block_slide_items');
+        if (!itemsContainer) {
+            alert('블록 슬라이드 위젯에는 최소 1개 이상의 블록이 필요합니다. "블록 추가하기" 버튼을 클릭하여 블록을 추가해주세요.');
+            return;
+        }
+        const blockSlideItems = itemsContainer.querySelectorAll('.block-slide-item');
+        if (blockSlideItems.length === 0) {
+            alert('블록 슬라이드 위젯에는 최소 1개 이상의 블록이 필요합니다. "블록 추가하기" 버튼을 클릭하여 블록을 추가해주세요.');
+            return;
+        }
         blockSlideItems.forEach((item, index) => {
             const itemIndex = item.dataset.itemIndex;
             const title = item.querySelector('.block-slide-title')?.value || '';
@@ -2743,30 +2815,106 @@ function addCustomPageWidget() {
             const textAlign = textAlignRadio ? textAlignRadio.value : 'left';
             const backgroundType = item.querySelector('.block-slide-background-type')?.value || 'color';
             const paddingTop = item.querySelector('.block-slide-padding-top')?.value || '20';
+            const paddingBottom = item.querySelector('.block-slide-padding-bottom')?.value || '20';
             const paddingLeft = item.querySelector('.block-slide-padding-left')?.value || '20';
+            const paddingRight = item.querySelector('.block-slide-padding-right')?.value || '20';
+            const titleContentGap = item.querySelector('.block-slide-title-content-gap')?.value || '8';
+            const buttonTopMargin = item.querySelector('.block-slide-button-top-margin')?.value || '12';
             const link = item.querySelector('.block-slide-link')?.value || '';
             const openNewTab = item.querySelector('.block-slide-open-new-tab')?.checked || false;
             const fontColor = item.querySelector('.block-slide-font-color')?.value || '#ffffff';
             const titleFontSize = item.querySelector('.block-slide-title-font-size')?.value || '16';
             const contentFontSize = item.querySelector('.block-slide-content-font-size')?.value || '14';
+            // 버튼 데이터 수집
+            const buttons = [];
+            const buttonInputs = item.querySelectorAll('.block-slide-button-text');
+            buttonInputs.forEach((input) => {
+                const buttonText = input.value || '';
+                if (buttonText) {
+                    const buttonCard = input.closest('.card');
+                    const buttonLink = buttonCard.querySelector('.block-slide-button-link')?.value || '';
+                    const buttonOpenNewTab = buttonCard.querySelector('.block-slide-button-open-new-tab')?.checked || false;
+                    const buttonBackgroundColor = buttonCard.querySelector('.block-slide-button-background-color')?.value || '#007bff';
+                    const buttonTextColor = buttonCard.querySelector('.block-slide-button-text-color')?.value || '#ffffff';
+                    const buttonBorderColor = buttonCard.querySelector('.block-slide-button-border-color')?.value || buttonBackgroundColor;
+                    const buttonBorderWidth = buttonCard.querySelector('.block-slide-button-border-width')?.value || '2';
+                    const buttonHoverBackgroundColor = buttonCard.querySelector('.block-slide-button-hover-background-color')?.value || '#0056b3';
+                    const buttonHoverTextColor = buttonCard.querySelector('.block-slide-button-hover-text-color')?.value || '#ffffff';
+                    const buttonHoverBorderColor = buttonCard.querySelector('.block-slide-button-hover-border-color')?.value || '#0056b3';
+                    
+                    // 배경 타입 및 그라데이션 설정
+                    const buttonBackgroundType = buttonCard.querySelector('.block-slide-button-background-type')?.value || 'color';
+                    const buttonGradientStart = buttonCard.querySelector('.block-slide-button-gradient-start')?.value || buttonBackgroundColor;
+                    const buttonGradientEnd = buttonCard.querySelector('.block-slide-button-gradient-end')?.value || buttonHoverBackgroundColor;
+                    const buttonGradientAngle = buttonCard.querySelector('.block-slide-button-gradient-angle')?.value || '90';
+                    const buttonOpacityRaw = buttonCard.querySelector('.block-slide-button-opacity')?.value || '100';
+                    const buttonOpacity = (parseFloat(buttonOpacityRaw) / 100).toFixed(1);
+                    
+                    // 호버 배경 타입 및 그라데이션 설정
+                    const buttonHoverBackgroundType = buttonCard.querySelector('.block-slide-button-hover-background-type')?.value || 'color';
+                    const buttonHoverGradientStart = buttonCard.querySelector('.block-slide-button-hover-gradient-start')?.value || buttonHoverBackgroundColor;
+                    const buttonHoverGradientEnd = buttonCard.querySelector('.block-slide-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
+                    const buttonHoverGradientAngle = buttonCard.querySelector('.block-slide-button-hover-gradient-angle')?.value || '90';
+                    const buttonHoverOpacityRaw = buttonCard.querySelector('.block-slide-button-hover-opacity')?.value || '100';
+                    const buttonHoverOpacity = (parseFloat(buttonHoverOpacityRaw) / 100).toFixed(1);
+                    
+                    buttons.push({
+                        text: buttonText,
+                        link: buttonLink,
+                        open_new_tab: buttonOpenNewTab,
+                        background_color: buttonBackgroundColor,
+                        text_color: buttonTextColor,
+                        border_color: buttonBorderColor,
+                        border_width: buttonBorderWidth,
+                        hover_background_color: buttonHoverBackgroundColor,
+                        hover_text_color: buttonHoverTextColor,
+                        hover_border_color: buttonHoverBorderColor,
+                        background_type: buttonBackgroundType,
+                        background_gradient_start: buttonGradientStart,
+                        background_gradient_end: buttonGradientEnd,
+                        background_gradient_angle: parseInt(buttonGradientAngle) || 90,
+                        opacity: parseFloat(buttonOpacity) || 1.0,
+                        hover_background_type: buttonHoverBackgroundType,
+                        hover_background_gradient_start: buttonHoverGradientStart,
+                        hover_background_gradient_end: buttonHoverGradientEnd,
+                        hover_background_gradient_angle: parseInt(buttonHoverGradientAngle) || 90,
+                        hover_opacity: parseFloat(buttonHoverOpacity) || 1.0
+                    });
+                }
+            });
             
             const blockItem = {
                 title: title,
                 content: content,
                 text_align: textAlign,
                 background_type: backgroundType,
-                padding_top: parseInt(paddingTop),
-                padding_left: parseInt(paddingLeft),
+                padding_top: parseInt(paddingTop) || 20,
+                padding_bottom: parseInt(paddingBottom) || 20,
+                padding_left: parseInt(paddingLeft) || 20,
+                padding_right: parseInt(paddingRight) || 20,
+                title_content_gap: parseInt(titleContentGap) || 8,
+                button_top_margin: parseInt(buttonTopMargin) || 12,
                 link: link,
                 open_new_tab: openNewTab,
                 font_color: fontColor,
                 title_font_size: titleFontSize,
-                content_font_size: contentFontSize
+                content_font_size: contentFontSize,
+                buttons: buttons
             };
             
             if (backgroundType === 'color') {
                 const backgroundColor = item.querySelector('.block-slide-background-color')?.value || '#007bff';
                 blockItem.background_color = backgroundColor;
+            } else if (backgroundType === 'gradient') {
+                const gradientStartInput = item.querySelector('.block-slide-gradient-start') || item.querySelector(`#block_slide_${itemIndex}_background_gradient_start`);
+                const gradientEndInput = item.querySelector('.block-slide-gradient-end') || item.querySelector(`#block_slide_${itemIndex}_background_gradient_end`);
+                const gradientAngleInput = item.querySelector('.block-slide-gradient-angle') || item.querySelector(`#block_slide_${itemIndex}_background_gradient_angle`);
+                const gradientStart = gradientStartInput?.value || '#ffffff';
+                const gradientEnd = gradientEndInput?.value || '#000000';
+                const gradientAngle = gradientAngleInput?.value || '90';
+                blockItem.background_gradient_start = gradientStart;
+                blockItem.background_gradient_end = gradientEnd;
+                blockItem.background_gradient_angle = parseInt(gradientAngle) || 90;
             } else if (backgroundType === 'image') {
                 const imageFile = item.querySelector(`#block_slide_${itemIndex}_image_input`)?.files[0];
                 if (imageFile) {
@@ -3307,8 +3455,20 @@ function editCustomPageWidget(widgetId) {
                 if (document.getElementById('edit_custom_page_widget_block_padding_top')) {
                     document.getElementById('edit_custom_page_widget_block_padding_top').value = settings.padding_top || 20;
                 }
+                if (document.getElementById('edit_custom_page_widget_block_padding_bottom')) {
+                    document.getElementById('edit_custom_page_widget_block_padding_bottom').value = settings.padding_bottom || 20;
+                }
                 if (document.getElementById('edit_custom_page_widget_block_padding_left')) {
                     document.getElementById('edit_custom_page_widget_block_padding_left').value = settings.padding_left || 20;
+                }
+                if (document.getElementById('edit_custom_page_widget_block_padding_right')) {
+                    document.getElementById('edit_custom_page_widget_block_padding_right').value = settings.padding_right || 20;
+                }
+                if (document.getElementById('edit_custom_page_widget_block_title_content_gap')) {
+                    document.getElementById('edit_custom_page_widget_block_title_content_gap').value = settings.title_content_gap || 8;
+                }
+                if (document.getElementById('edit_custom_page_widget_block_button_top_margin')) {
+                    document.getElementById('edit_custom_page_widget_block_button_top_margin').value = settings.button_top_margin || 12;
                 }
                 if (document.getElementById('edit_custom_page_widget_block_link')) {
                     document.getElementById('edit_custom_page_widget_block_link').value = settings.link || '';
@@ -3321,10 +3481,14 @@ function editCustomPageWidget(widgetId) {
                     document.getElementById('edit_custom_page_widget_block_font_color').value = settings.font_color || '#ffffff';
                 }
                 
-                const showButton = settings.show_button || false;
-                if (document.getElementById('edit_custom_page_widget_block_show_button')) {
-                    document.getElementById('edit_custom_page_widget_block_show_button').checked = showButton;
-                    handleEditCustomPageBlockButtonToggle();
+                // 버튼 관리 기능 로드
+                const buttons = settings.buttons || [];
+                const buttonsList = document.getElementById('edit_custom_page_widget_block_buttons_list');
+                if (buttonsList) {
+                    buttonsList.innerHTML = '';
+                    buttons.forEach((button, index) => {
+                        addEditCustomPageBlockButton(button);
+                    });
                 }
                 if (showButton) {
                     if (document.getElementById('edit_custom_page_widget_block_button_text')) {
@@ -4281,10 +4445,64 @@ function saveCustomPageWidgetSettings() {
         const fontColor = document.getElementById('edit_custom_page_widget_block_font_color')?.value || '#ffffff';
         const titleFontSize = document.getElementById('edit_custom_page_widget_block_title_font_size')?.value || '16';
         const contentFontSize = document.getElementById('edit_custom_page_widget_block_content_font_size')?.value || '14';
-        const showButton = document.getElementById('edit_custom_page_widget_block_show_button')?.checked || false;
-        const buttonText = document.getElementById('edit_custom_page_widget_block_button_text')?.value || '';
-        const buttonBackgroundColor = document.getElementById('edit_custom_page_widget_block_button_background_color')?.value || '#007bff';
-        const buttonTextColor = document.getElementById('edit_custom_page_widget_block_button_text_color')?.value || '#ffffff';
+        const buttonTopMargin = document.getElementById('edit_custom_page_widget_block_button_top_margin')?.value || '12';
+        // 버튼 데이터 수집
+        const buttons = [];
+        const buttonInputs = document.querySelectorAll('.edit-custom-page-block-button-text');
+        buttonInputs.forEach((input, index) => {
+            const buttonText = input.value || '';
+            if (buttonText) {
+                const buttonCard = input.closest('.card');
+                const buttonLink = buttonCard.querySelector('.edit-custom-page-block-button-link')?.value || '';
+                const buttonOpenNewTab = buttonCard.querySelector('.edit-custom-page-block-button-open-new-tab')?.checked || false;
+                const buttonBackgroundColor = buttonCard.querySelector('.edit-custom-page-block-button-background-color')?.value || '#007bff';
+                const buttonTextColor = buttonCard.querySelector('.edit-custom-page-block-button-text-color')?.value || '#ffffff';
+                const buttonBorderColor = buttonCard.querySelector('.edit-custom-page-block-button-border-color')?.value || buttonBackgroundColor;
+                const buttonBorderWidth = buttonCard.querySelector('.edit-custom-page-block-button-border-width')?.value || '2';
+                const buttonHoverBackgroundColor = buttonCard.querySelector('.edit-custom-page-block-button-hover-background-color')?.value || '#0056b3';
+                const buttonHoverTextColor = buttonCard.querySelector('.edit-custom-page-block-button-hover-text-color')?.value || '#ffffff';
+                const buttonHoverBorderColor = buttonCard.querySelector('.edit-custom-page-block-button-hover-border-color')?.value || '#0056b3';
+                
+                // 배경 타입 및 그라데이션 설정
+                const buttonBackgroundType = buttonCard.querySelector('.edit-custom-page-block-button-background-type')?.value || 'color';
+                const buttonGradientStart = buttonCard.querySelector('.edit-custom-page-block-button-gradient-start')?.value || buttonBackgroundColor;
+                const buttonGradientEnd = buttonCard.querySelector('.edit-custom-page-block-button-gradient-end')?.value || buttonHoverBackgroundColor;
+                const buttonGradientAngle = buttonCard.querySelector('.edit-custom-page-block-button-gradient-angle')?.value || '90';
+                const buttonOpacityRaw = buttonCard.querySelector('.edit-custom-page-block-button-opacity')?.value || '100';
+                const buttonOpacity = (parseFloat(buttonOpacityRaw) / 100).toFixed(1);
+                
+                // 호버 배경 타입 및 그라데이션 설정
+                const buttonHoverBackgroundType = buttonCard.querySelector('.edit-custom-page-block-button-hover-background-type')?.value || 'color';
+                const buttonHoverGradientStart = buttonCard.querySelector('.edit-custom-page-block-button-hover-gradient-start')?.value || buttonHoverBackgroundColor;
+                const buttonHoverGradientEnd = buttonCard.querySelector('.edit-custom-page-block-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
+                const buttonHoverGradientAngle = buttonCard.querySelector('.edit-custom-page-block-button-hover-gradient-angle')?.value || '90';
+                const buttonHoverOpacityRaw = buttonCard.querySelector('.edit-custom-page-block-button-hover-opacity')?.value || '100';
+                const buttonHoverOpacity = (parseFloat(buttonHoverOpacityRaw) / 100).toFixed(1);
+                
+                buttons.push({
+                    text: buttonText,
+                    link: buttonLink,
+                    open_new_tab: buttonOpenNewTab,
+                    background_color: buttonBackgroundColor,
+                    text_color: buttonTextColor,
+                    border_color: buttonBorderColor,
+                    border_width: buttonBorderWidth,
+                    hover_background_color: buttonHoverBackgroundColor,
+                    hover_text_color: buttonHoverTextColor,
+                    hover_border_color: buttonHoverBorderColor,
+                    background_type: buttonBackgroundType,
+                    background_gradient_start: buttonGradientStart,
+                    background_gradient_end: buttonGradientEnd,
+                    background_gradient_angle: parseInt(buttonGradientAngle) || 90,
+                    opacity: parseFloat(buttonOpacity) || 1.0,
+                    hover_background_type: buttonHoverBackgroundType,
+                    hover_background_gradient_start: buttonHoverGradientStart,
+                    hover_background_gradient_end: buttonHoverGradientEnd,
+                    hover_background_gradient_angle: parseInt(buttonHoverGradientAngle) || 90,
+                    hover_opacity: parseFloat(buttonHoverOpacity) || 1.0
+                });
+            }
+        });
         
         if (blockTitle) {
             settings.block_title = blockTitle;
@@ -4297,12 +4515,8 @@ function saveCustomPageWidgetSettings() {
         settings.font_color = fontColor;
         settings.title_font_size = titleFontSize;
         settings.content_font_size = contentFontSize;
-        settings.show_button = showButton;
-        if (showButton) {
-            settings.button_text = buttonText;
-            settings.button_background_color = buttonBackgroundColor;
-            settings.button_text_color = buttonTextColor;
-        }
+        settings.buttons = buttons;
+        settings.button_top_margin = parseInt(buttonTopMargin) || 12;
         
         if (backgroundType === 'color') {
             const backgroundColor = document.getElementById('edit_custom_page_widget_block_background_color')?.value || '#007bff';
@@ -4361,11 +4575,69 @@ function saveCustomPageWidgetSettings() {
             const paddingLeftInput = item.querySelector('.edit-custom-page-block-slide-padding-left');
             const paddingRightInput = item.querySelector('.edit-custom-page-block-slide-padding-right');
             const titleContentGapInput = item.querySelector('.edit-custom-page-block-slide-title-content-gap');
+            const buttonTopMarginInput = item.querySelector('.edit-custom-page-block-slide-button-top-margin');
             const linkInput = item.querySelector('.edit-custom-page-block-slide-link');
             const openNewTabCheckbox = item.querySelector('.edit-custom-page-block-slide-open-new-tab');
             const fontColorInput = item.querySelector('.edit-custom-page-block-slide-font-color');
             const titleFontSizeInput = item.querySelector('.edit-custom-page-block-slide-title-font-size');
             const contentFontSizeInput = item.querySelector('.edit-custom-page-block-slide-content-font-size');
+            // 버튼 데이터 수집
+            const buttons = [];
+            const buttonInputs = item.querySelectorAll('.edit-custom-page-block-slide-button-text');
+            buttonInputs.forEach((input) => {
+                const buttonText = input.value || '';
+                if (buttonText) {
+                    const buttonCard = input.closest('.card');
+                    const buttonLink = buttonCard.querySelector('.edit-custom-page-block-slide-button-link')?.value || '';
+                    const buttonOpenNewTab = buttonCard.querySelector('.edit-custom-page-block-slide-button-open-new-tab')?.checked || false;
+                    const buttonBackgroundColor = buttonCard.querySelector('.edit-custom-page-block-slide-button-background-color')?.value || '#007bff';
+                    const buttonTextColor = buttonCard.querySelector('.edit-custom-page-block-slide-button-text-color')?.value || '#ffffff';
+                    const buttonBorderColor = buttonCard.querySelector('.edit-custom-page-block-slide-button-border-color')?.value || buttonBackgroundColor;
+                    const buttonBorderWidth = buttonCard.querySelector('.edit-custom-page-block-slide-button-border-width')?.value || '2';
+                    const buttonHoverBackgroundColor = buttonCard.querySelector('.edit-custom-page-block-slide-button-hover-background-color')?.value || '#0056b3';
+                    const buttonHoverTextColor = buttonCard.querySelector('.edit-custom-page-block-slide-button-hover-text-color')?.value || '#ffffff';
+                    const buttonHoverBorderColor = buttonCard.querySelector('.edit-custom-page-block-slide-button-hover-border-color')?.value || '#0056b3';
+                    
+                    // 배경 타입 및 그라데이션 설정
+                    const buttonBackgroundType = buttonCard.querySelector('.edit-custom-page-block-slide-button-background-type')?.value || 'color';
+                    const buttonGradientStart = buttonCard.querySelector('.edit-custom-page-block-slide-button-gradient-start')?.value || buttonBackgroundColor;
+                    const buttonGradientEnd = buttonCard.querySelector('.edit-custom-page-block-slide-button-gradient-end')?.value || buttonHoverBackgroundColor;
+                    const buttonGradientAngle = buttonCard.querySelector('.edit-custom-page-block-slide-button-gradient-angle')?.value || '90';
+                    const buttonOpacityRaw = buttonCard.querySelector('.edit-custom-page-block-slide-button-opacity')?.value || '100';
+                    const buttonOpacity = (parseFloat(buttonOpacityRaw) / 100).toFixed(1);
+                    
+                    // 호버 배경 타입 및 그라데이션 설정
+                    const buttonHoverBackgroundType = buttonCard.querySelector('.edit-custom-page-block-slide-button-hover-background-type')?.value || 'color';
+                    const buttonHoverGradientStart = buttonCard.querySelector('.edit-custom-page-block-slide-button-hover-gradient-start')?.value || buttonHoverBackgroundColor;
+                    const buttonHoverGradientEnd = buttonCard.querySelector('.edit-custom-page-block-slide-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
+                    const buttonHoverGradientAngle = buttonCard.querySelector('.edit-custom-page-block-slide-button-hover-gradient-angle')?.value || '90';
+                    const buttonHoverOpacityRaw = buttonCard.querySelector('.edit-custom-page-block-slide-button-hover-opacity')?.value || '100';
+                    const buttonHoverOpacity = (parseFloat(buttonHoverOpacityRaw) / 100).toFixed(1);
+                    
+                    buttons.push({
+                        text: buttonText,
+                        link: buttonLink,
+                        open_new_tab: buttonOpenNewTab,
+                        background_color: buttonBackgroundColor,
+                        text_color: buttonTextColor,
+                        border_color: buttonBorderColor,
+                        border_width: buttonBorderWidth,
+                        hover_background_color: buttonHoverBackgroundColor,
+                        hover_text_color: buttonHoverTextColor,
+                        hover_border_color: buttonHoverBorderColor,
+                        background_type: buttonBackgroundType,
+                        background_gradient_start: buttonGradientStart,
+                        background_gradient_end: buttonGradientEnd,
+                        background_gradient_angle: parseInt(buttonGradientAngle) || 90,
+                        opacity: parseFloat(buttonOpacity) || 1.0,
+                        hover_background_type: buttonHoverBackgroundType,
+                        hover_background_gradient_start: buttonHoverGradientStart,
+                        hover_background_gradient_end: buttonHoverGradientEnd,
+                        hover_background_gradient_angle: parseInt(buttonHoverGradientAngle) || 90,
+                        hover_opacity: parseFloat(buttonHoverOpacity) || 1.0
+                    });
+                }
+            });
             
             const blockItem = {
                 title: titleInput ? titleInput.value : '',
@@ -4377,11 +4649,13 @@ function saveCustomPageWidgetSettings() {
                 padding_left: paddingLeftInput ? parseInt(paddingLeftInput.value) : 20,
                 padding_right: paddingRightInput ? parseInt(paddingRightInput.value) : 20,
                 title_content_gap: titleContentGapInput ? parseInt(titleContentGapInput.value) : 8,
+                button_top_margin: buttonTopMarginInput ? parseInt(buttonTopMarginInput.value) : 12,
                 link: linkInput ? linkInput.value : '',
                 open_new_tab: openNewTabCheckbox ? openNewTabCheckbox.checked : false,
                 font_color: fontColorInput ? fontColorInput.value : '#ffffff',
                 title_font_size: titleFontSizeInput ? titleFontSizeInput.value : '16',
-                content_font_size: contentFontSizeInput ? contentFontSizeInput.value : '14'
+                content_font_size: contentFontSizeInput ? contentFontSizeInput.value : '14',
+                buttons: buttons
             };
             
             if (blockItem.background_type === 'color') {
