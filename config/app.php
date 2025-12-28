@@ -78,6 +78,8 @@ return [
     
     'alb_dns' => env('ALB_DNS', null),
     
+    'base_domain' => env('BASE_DOMAIN', 'seoomweb.com'),
+    
     /*
     |--------------------------------------------------------------------------
     | Nameservers
