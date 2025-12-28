@@ -799,22 +799,6 @@ public function hasMainWidgetType(string $widgetType): bool
     }
 
     /**
-     * Check if plan has a specific feature.
-     */
-    public function hasFeature(string $feature): bool
-    {
-        $plan = $this->planModel();
-        if (!$plan) {
-            return false;
-        }
-        
-        $features = $plan->features ?? [];
-        $mainFeatures = $features['main_features'] ?? [];
-        
-        return in_array($feature, $mainFeatures);
-    }
-
-    /**
      * Get current usage stats for limits.
      */
     public function getLimitStats(): array
