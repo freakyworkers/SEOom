@@ -890,14 +890,14 @@
     if ($isFullHeight) {
         $cardStyle .= ($cardStyle ? ' ' : '') . 'flex: 1; display: flex; flex-direction: column; min-height: 0;';
     }
-    // 첫 번째 위젯은 상단 마진 제거
+    // 첫 번째 위젯은 상단 마진 제거 (카드 요소와 래퍼 모두)
     if ($isFirstWidget) {
-        $cardStyle .= ($cardStyle ? ' ' : '') . 'margin-top: 0 !important;';
+        $cardStyle .= ($cardStyle ? ' ' : '') . 'margin-top: 0 !important; padding-top: 0 !important;';
     }
-    // 마지막 위젯은 하단 마진 제거
+    // 마지막 위젯은 하단 마진 제거 (카드 요소와 래퍼 모두)
     $cardMarginBottom = ($isFullHeight || $isLastWidget) ? 'mb-0' : 'mb-3';
     if ($isLastWidget) {
-        $cardStyle .= ($cardStyle ? ' ' : '') . 'margin-bottom: 0 !important;';
+        $cardStyle .= ($cardStyle ? ' ' : '') . 'margin-bottom: 0 !important; padding-bottom: 0 !important;';
     }
 @endphp
 <div class="card {{ $shadowClass }} {{ $animationClass }} {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
