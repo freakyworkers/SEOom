@@ -8355,10 +8355,20 @@ function makeGradientControlDraggable(control) {
         if (e.target.type === 'color' || e.target.type === 'range' || e.target.closest('input[type="color"]') || e.target.closest('input[type="range"]')) {
             return;
         }
-        // 색상 표시 영역(파란 박스)을 클릭한 경우 드래그 시작
+        // 색상 표시 영역을 클릭한 경우 설정 패널 표시 (드래그 아님)
         const colorDisplay = e.target.closest('.gradient-color-display');
         if (colorDisplay) {
-            // 색상 표시 영역을 클릭한 경우 드래그 시작
+            // 색상 표시 영역 클릭 시 설정 패널 표시
+            const controlType = control.id === 'gradient_start_control' ? 'start' : (control.id === 'gradient_end_control' ? 'end' : 'middle');
+            if (typeof selectGradientControl === 'function') {
+                selectGradientControl(control, controlType);
+            }
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+        // handle을 클릭한 경우에만 드래그 시작
+        if (e.target.classList.contains('gradient-control-handle')) {
             isDragging = true;
             window.isDraggingControl = true; // 전역 플래그 설정
             hasMoved = false;
@@ -8369,15 +8379,6 @@ function makeGradientControlDraggable(control) {
             e.stopPropagation();
             return;
         }
-        // handle이나 컨트롤 자체를 클릭한 경우 드래그 시작
-        isDragging = true;
-        window.isDraggingControl = true; // 전역 플래그 설정
-        hasMoved = false;
-        control.style.cursor = 'grabbing';
-        startX = e.clientX;
-        startLeft = parseFloat(control.style.left) || 0;
-        e.preventDefault();
-        e.stopPropagation();
     });
     
     document.addEventListener('mousemove', function(e) {
@@ -8409,13 +8410,6 @@ function makeGradientControlDraggable(control) {
             isDragging = false;
             window.isDraggingControl = false; // 전역 플래그 해제
             control.style.cursor = 'grab';
-            // 드래그가 아닌 클릭인 경우에만 설정 패널 표시
-            if (!hasMoved) {
-                const controlType = control.id === 'gradient_start_control' ? 'start' : (control.id === 'gradient_end_control' ? 'end' : 'middle');
-                if (typeof selectGradientControl === 'function') {
-                    selectGradientControl(control, controlType);
-                }
-            }
             hasMoved = false;
             e.preventDefault();
             e.stopPropagation();
@@ -8427,24 +8421,28 @@ function makeGradientControlDraggable(control) {
         if (e.target.type === 'color' || e.target.type === 'range' || e.target.closest('input[type="color"]') || e.target.closest('input[type="range"]')) {
             return;
         }
+        // 색상 표시 영역을 탭한 경우 설정 패널 표시
         const colorDisplay = e.target.closest('.gradient-color-display');
         if (colorDisplay) {
-        isDragging = true;
-            hasMoved = false;
-        const touch = e.touches[0];
-        startX = touch.clientX;
-        startLeft = parseFloat(control.style.left) || 0;
-        e.preventDefault();
+            const controlType = control.id === 'gradient_start_control' ? 'start' : (control.id === 'gradient_end_control' ? 'end' : 'middle');
+            if (typeof selectGradientControl === 'function') {
+                selectGradientControl(control, controlType);
+            }
+            e.preventDefault();
             e.stopPropagation();
             return;
         }
-        isDragging = true;
-        hasMoved = false;
-        const touch = e.touches[0];
-        startX = touch.clientX;
-        startLeft = parseFloat(control.style.left) || 0;
-        e.preventDefault();
-        e.stopPropagation();
+        // handle을 탭한 경우에만 드래그 시작
+        if (e.target.classList.contains('gradient-control-handle')) {
+            isDragging = true;
+            hasMoved = false;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startLeft = parseFloat(control.style.left) || 0;
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
     });
     
     document.addEventListener('touchmove', function(e) {
@@ -8475,13 +8473,6 @@ function makeGradientControlDraggable(control) {
     document.addEventListener('touchend', function(e) {
         if (isDragging) {
             isDragging = false;
-            // 드래그가 아닌 탭인 경우에만 설정 패널 표시
-            if (!hasMoved) {
-                const controlType = control.id === 'gradient_start_control' ? 'start' : (control.id === 'gradient_end_control' ? 'end' : 'middle');
-                if (typeof selectGradientControl === 'function') {
-                    selectGradientControl(control, controlType);
-                }
-            }
             hasMoved = false;
             e.preventDefault();
             e.stopPropagation();
@@ -8615,6 +8606,11 @@ function updateSelectedGradientControl() {
         }
     }
     
+    // 그라데이션 미리보기 업데이트
+    if (typeof updateGradientPreview === 'function') {
+        updateGradientPreview();
+    }
+    
     // 중간 색상 아이콘 업데이트
     updateGradientMiddleIcons();
 }
@@ -8629,7 +8625,12 @@ function updateSelectedGradientControlPosition() {
     selectedGradientControl.style.left = `${position}%`;
     selectedGradientControl.setAttribute('data-position', position);
     
-    updateGradientPreview();
+    // 그라데이션 미리보기 업데이트
+    if (typeof updateGradientPreview === 'function') {
+        updateGradientPreview();
+    }
+    
+    // 중간 색상 아이콘 업데이트
     updateGradientMiddleIcons();
 }
 
@@ -9188,7 +9189,7 @@ function hexToRgb(hex) {
                             <!-- 시작 색상 컨트롤 -->
                             <div id="gradient_start_control" class="gradient-color-control" data-position="0" style="position: absolute; left: 0%; top: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: all; cursor: grab; z-index: 20;">
                                 <div class="gradient-control-handle" style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto; cursor: grab;"></div>
-                                <div class="gradient-color-display" style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px; cursor: grab;">
+                                <div class="gradient-color-display" style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px; cursor: pointer;">
                                     <div id="gradient_start_color_display" style="width: 100%; height: 100%; border-radius: 2px; background: #ffffff;"></div>
                                 </div>
                                 <input type="color" 
@@ -9205,7 +9206,7 @@ function hexToRgb(hex) {
                             <!-- 끝 색상 컨트롤 -->
                             <div id="gradient_end_control" class="gradient-color-control" data-position="100" style="position: absolute; left: 100%; top: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: all; cursor: grab; z-index: 20;">
                                 <div class="gradient-control-handle" style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #6c757d; margin: 0 auto; cursor: grab;"></div>
-                                <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px; cursor: grab;" class="gradient-color-display">
+                                <div style="width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; margin-top: -2px; padding: 2px; cursor: pointer;" class="gradient-color-display" onclick="selectGradientControl(document.getElementById('gradient_end_control'), 'end'); event.stopPropagation();">
                                     <div id="gradient_end_color_display" style="width: 100%; height: 100%; border-radius: 2px; background: #000000;"></div>
                                 </div>
                                 <input type="color" 
