@@ -3744,6 +3744,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (countdownContainer) countdownContainer.style.display = 'none';
             if (titleHelp) titleHelp.style.display = 'none';
             
+            // 블록 위젯 타입이 변경될 때 버튼 인덱스 초기화
+            if (widgetType === 'block' || widgetType === 'block_slide') {
+                blockButtonIndex = 0;
+                // 버튼 리스트 초기화
+                const buttonsList = document.getElementById('widget_block_buttons_list');
+                if (buttonsList) {
+                    buttonsList.innerHTML = '';
+                }
+            }
+            
             if (widgetType === 'popular_posts' || widgetType === 'recent_posts' || widgetType === 'weekly_popular_posts' || widgetType === 'monthly_popular_posts') {
                 if (limitContainer) limitContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'block';
@@ -4052,19 +4062,92 @@ function addBlockSlideItem() {
                 </div>
             </div>
         </div>
-        <div class="mb-3"><label class="form-label">상하 여백</label>
-            <select class="form-select block-slide-padding-top" name="block_slide[${itemIndex}][padding_top]">
-                <option value="0">0px</option><option value="10">10px</option><option value="20" selected>20px</option>
-                <option value="30">30px</option><option value="40">40px</option><option value="50">50px</option>
-            </select>
+        <div class="mb-3">
+            <label class="form-label">상단 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-padding-top" 
+                   name="block_slide[${itemIndex}][padding_top]" 
+                   value="20"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 상단 여백을 입력하세요 (0~200).</small>
         </div>
-        <div class="mb-3"><label class="form-label">좌우 여백</label>
-            <select class="form-select block-slide-padding-left" name="block_slide[${itemIndex}][padding_left]">
-                <option value="0">0px</option><option value="10">10px</option><option value="20" selected>20px</option>
-                <option value="30">30px</option><option value="40">40px</option><option value="50">50px</option>
-            </select>
+        <div class="mb-3">
+            <label class="form-label">하단 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-padding-bottom" 
+                   name="block_slide[${itemIndex}][padding_bottom]" 
+                   value="20"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 하단 여백을 입력하세요 (0~200).</small>
         </div>
-        <div class="mb-3"><label class="form-label">연결 링크 <small class="text-muted">(선택사항)</small></label>
+        <div class="mb-3">
+            <label class="form-label">좌측 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-padding-left" 
+                   name="block_slide[${itemIndex}][padding_left]" 
+                   value="20"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 좌측 여백을 입력하세요 (0~200).</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">우측 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-padding-right" 
+                   name="block_slide[${itemIndex}][padding_right]" 
+                   value="20"
+                   min="0"
+                   max="200"
+                   step="1"
+                   placeholder="20">
+            <small class="text-muted">블록 우측 여백을 입력하세요 (0~200).</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">제목-내용 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-title-content-gap" 
+                   name="block_slide[${itemIndex}][title_content_gap]" 
+                   value="8"
+                   min="0"
+                   max="100"
+                   step="1"
+                   placeholder="8">
+            <small class="text-muted">제목과 내용 사이의 여백을 입력하세요 (0~100).</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">버튼 관리</label>
+            <div class="block-slide-buttons-list" id="block_slide_${itemIndex}_buttons_list">
+                <!-- 버튼들이 여기에 동적으로 추가됨 -->
+            </div>
+            <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addCustomPageBlockSlideButton(${itemIndex})">
+                <i class="bi bi-plus-circle me-1"></i>버튼 추가
+            </button>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">버튼 상단 여백 (px)</label>
+            <input type="number" 
+                   class="form-control block-slide-button-top-margin" 
+                   name="block_slide[${itemIndex}][button_top_margin]" 
+                   value="12"
+                   min="0"
+                   max="100"
+                   step="1"
+                   placeholder="12">
+            <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
+        </div>
+        <div class="mb-3" id="block_slide_${itemIndex}_link_container">
+            <label class="form-label">
+                연결 링크 <small class="text-muted">(선택사항)</small>
+                <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="버튼이 있는 경우 버튼에 링크가 연결되고, 버튼이 없는 경우 블록 전체에 링크가 연결됩니다."></i>
+            </label>
             <input type="url" class="form-control block-slide-link" name="block_slide[${itemIndex}][link]" placeholder="https://example.com">
         </div>
         <div class="mb-3">
@@ -4099,6 +4182,248 @@ function toggleBlockSlideItem(itemIndex) {
 function removeBlockSlideItem(itemIndex) {
     const item = document.getElementById(`block_slide_item_${itemIndex}`);
     if (item) item.remove();
+}
+
+// 커스텀 페이지 블록 슬라이드 버튼 관리
+let customPageBlockSlideButtonIndices = {};
+
+function addCustomPageBlockSlideButton(itemIndex) {
+    if (!customPageBlockSlideButtonIndices[itemIndex]) {
+        customPageBlockSlideButtonIndices[itemIndex] = 0;
+    }
+    
+    const container = document.getElementById(`block_slide_${itemIndex}_buttons_list`);
+    if (!container) return;
+    
+    const buttonIndex = customPageBlockSlideButtonIndices[itemIndex];
+    const buttonId = `block_slide_${itemIndex}_button_${buttonIndex}`;
+    const buttonHtml = `
+        <div class="card mb-3" id="${buttonId}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">버튼 ${buttonIndex + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeCustomPageBlockSlideButton('${buttonId}', ${itemIndex})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 텍스트</label>
+                    <input type="text" 
+                           class="form-control block-slide-button-text" 
+                           name="block_slide[${itemIndex}][buttons][${buttonIndex}][text]" 
+                           placeholder="버튼 텍스트를 입력하세요">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 링크</label>
+                    <input type="url" 
+                           class="form-control block-slide-button-link" 
+                           name="block_slide[${itemIndex}][buttons][${buttonIndex}][link]" 
+                           placeholder="https://example.com">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input block-slide-button-open-new-tab" 
+                               type="checkbox" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][open_new_tab]" 
+                               id="block_slide_${itemIndex}_button_${buttonIndex}_open_new_tab">
+                        <label class="form-check-label" for="block_slide_${itemIndex}_button_${buttonIndex}_open_new_tab">
+                            새창에서 열기
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 배경 타입</label>
+                    <select class="form-select block-slide-button-background-type" 
+                            name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_type]"
+                            onchange="handleButtonBackgroundTypeChange(this)">
+                        <option value="color">컬러</option>
+                        <option value="gradient">그라데이션</option>
+                    </select>
+                </div>
+                <div class="row block-slide-button-color-container">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-background-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-text-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][text_color]" 
+                               value="#ffffff">
+                    </div>
+                </div>
+                <div class="row block-slide-button-gradient-container" style="display: none;">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="block_slide_${itemIndex}_button_${buttonIndex}_gradient_preview" 
+                                 class="block-slide-button-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #007bff, #0056b3);"
+                                 onclick="openButtonGradientModal('block_slide_${itemIndex}_button_${buttonIndex}')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="block-slide-button-gradient-start" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_gradient_start"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_start]" 
+                                   value="#007bff">
+                            <input type="hidden" 
+                                   class="block-slide-button-gradient-end" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_gradient_end"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_end]" 
+                                   value="#0056b3">
+                            <input type="hidden" 
+                                   class="block-slide-button-gradient-angle" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_gradient_angle"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_angle]" 
+                                   value="90">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">투명도</label>
+                    <input type="range" 
+                           class="form-range block-slide-button-opacity" 
+                           name="block_slide[${itemIndex}][buttons][${buttonIndex}][opacity]" 
+                           id="block_slide_${itemIndex}_button_${buttonIndex}_opacity"
+                           value="100" 
+                           min="0" 
+                           max="100" 
+                           step="1"
+                           onchange="document.getElementById('block_slide_${itemIndex}_button_${buttonIndex}_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="block_slide_${itemIndex}_button_${buttonIndex}_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-border-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][border_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 두께 (px)</label>
+                        <input type="number" 
+                               class="form-control block-slide-button-border-width" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][border_width]" 
+                               value="2" 
+                               min="0" 
+                               max="10" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">호버 배경 타입</label>
+                    <select class="form-select block-slide-button-hover-background-type" 
+                            name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_type]"
+                            onchange="handleButtonHoverBackgroundTypeChange(this)">
+                        <option value="color">컬러</option>
+                        <option value="gradient">그라데이션</option>
+                    </select>
+                </div>
+                <div class="row block-slide-button-hover-color-container">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-hover-background-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_color]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-hover-text-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_text_color]" 
+                               value="#ffffff">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-slide-button-hover-border-color" 
+                               name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_border_color]" 
+                               value="#0056b3">
+                    </div>
+                </div>
+                <div class="row block-slide-button-hover-gradient-container" style="display: none;">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">호버 그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_preview" 
+                                 class="block-slide-button-hover-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #0056b3, #004085);"
+                                 onclick="openButtonGradientModal('block_slide_${itemIndex}_button_${buttonIndex}_hover')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="block-slide-button-hover-gradient-start" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_start"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_start]" 
+                                   value="#0056b3">
+                            <input type="hidden" 
+                                   class="block-slide-button-hover-gradient-end" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_end"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_end]" 
+                                   value="#004085">
+                            <input type="hidden" 
+                                   class="block-slide-button-hover-gradient-angle" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_angle"
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_angle]" 
+                                   value="90">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">호버 투명도</label>
+                    <input type="range" 
+                           class="form-range block-slide-button-hover-opacity" 
+                           name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_opacity]" 
+                           id="block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity"
+                           value="100" 
+                           min="0" 
+                           max="100" 
+                           step="1"
+                           onchange="document.getElementById('block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', buttonHtml);
+    customPageBlockSlideButtonIndices[itemIndex]++;
+    
+    // 버튼이 추가되면 연결 링크 필드 숨기기
+    const linkContainer = document.getElementById(`block_slide_${itemIndex}_link_container`);
+    if (linkContainer) {
+        linkContainer.style.display = 'none';
+    }
+}
+
+function removeCustomPageBlockSlideButton(buttonId, itemIndex) {
+    const button = document.getElementById(buttonId);
+    if (button) button.remove();
+    
+    // 버튼이 없으면 연결 링크 필드 보이기
+    const container = document.getElementById(`block_slide_${itemIndex}_buttons_list`);
+    const linkContainer = document.getElementById(`block_slide_${itemIndex}_link_container`);
+    if (linkContainer && container) {
+        const buttons = container.querySelectorAll('.card');
+        if (buttons.length === 0) {
+            linkContainer.style.display = 'block';
+        }
+    }
 }
 
 function handleBlockSlideBackgroundTypeChange(itemIndex) {
@@ -5723,10 +6048,283 @@ function handleEditCustomPageBlockBackgroundTypeChange() {
 }
 
 // 커스텀 페이지 블록 위젯 버튼 관리 변수
-let editCustomPageBlockButtonIndex = 0;
+let blockButtonIndex = 0; // 새 위젯 추가용
+let editCustomPageBlockButtonIndex = 0; // 편집용
 
 function handleEditCustomPageBlockButtonToggle() {
     // 이 함수는 더 이상 사용되지 않지만 호환성을 위해 유지
+}
+
+// 새 위젯 추가용 블록 버튼 추가
+function addBlockButton() {
+    const container = document.getElementById('widget_block_buttons_list');
+    if (!container) return;
+    
+    const buttonId = `block_button_${blockButtonIndex}`;
+    const buttonHtml = `
+        <div class="card mb-3" id="${buttonId}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">버튼 ${blockButtonIndex + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeBlockButton('${buttonId}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 텍스트</label>
+                    <input type="text" 
+                           class="form-control block-button-text" 
+                           name="block_buttons[${blockButtonIndex}][text]" 
+                           placeholder="버튼 텍스트를 입력하세요">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 링크</label>
+                    <input type="url" 
+                           class="form-control block-button-link" 
+                           name="block_buttons[${blockButtonIndex}][link]" 
+                           placeholder="https://example.com">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input block-button-open-new-tab" 
+                               type="checkbox" 
+                               name="block_buttons[${blockButtonIndex}][open_new_tab]" 
+                               id="block_button_${blockButtonIndex}_open_new_tab">
+                        <label class="form-check-label" for="block_button_${blockButtonIndex}_open_new_tab">
+                            새창에서 열기
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 배경 타입</label>
+                    <select class="form-select block-button-background-type" 
+                            name="block_buttons[${blockButtonIndex}][background_type]"
+                            onchange="handleButtonBackgroundTypeChange(this)">
+                        <option value="color">컬러</option>
+                        <option value="gradient">그라데이션</option>
+                    </select>
+                </div>
+                <div class="row block-button-color-container">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-background-color" 
+                               name="block_buttons[${blockButtonIndex}][background_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-text-color" 
+                               name="block_buttons[${blockButtonIndex}][text_color]" 
+                               value="#ffffff">
+                    </div>
+                </div>
+                <div class="row block-button-gradient-container" style="display: none;">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="block_button_${blockButtonIndex}_gradient_preview" 
+                                 class="block-button-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #007bff, #0056b3);"
+                                 onclick="openButtonGradientModal('block_button_${blockButtonIndex}')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="block-button-gradient-start" 
+                                   id="block_button_${blockButtonIndex}_gradient_start"
+                                   name="block_buttons[${blockButtonIndex}][background_gradient_start]" 
+                                   value="#007bff">
+                            <input type="hidden" 
+                                   class="block-button-gradient-end" 
+                                   id="block_button_${blockButtonIndex}_gradient_end"
+                                   name="block_buttons[${blockButtonIndex}][background_gradient_end]" 
+                                   value="#0056b3">
+                            <input type="hidden" 
+                                   class="block-button-gradient-angle" 
+                                   id="block_button_${blockButtonIndex}_gradient_angle"
+                                   name="block_buttons[${blockButtonIndex}][background_gradient_angle]" 
+                                   value="90">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">투명도</label>
+                    <input type="range" 
+                           class="form-range block-button-opacity" 
+                           name="block_buttons[${blockButtonIndex}][opacity]" 
+                           id="block_button_${blockButtonIndex}_opacity"
+                           value="100" 
+                           min="0" 
+                           max="100" 
+                           step="1"
+                           onchange="document.getElementById('block_button_${blockButtonIndex}_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="block_button_${blockButtonIndex}_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-border-color" 
+                               name="block_buttons[${blockButtonIndex}][border_color]" 
+                               value="#007bff">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 두께 (px)</label>
+                        <input type="number" 
+                               class="form-control block-button-border-width" 
+                               name="block_buttons[${blockButtonIndex}][border_width]" 
+                               value="2" 
+                               min="0" 
+                               max="10" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">호버 배경 타입</label>
+                    <select class="form-select block-button-hover-background-type" 
+                            name="block_buttons[${blockButtonIndex}][hover_background_type]"
+                            onchange="handleButtonHoverBackgroundTypeChange(this)">
+                        <option value="color">컬러</option>
+                        <option value="gradient">그라데이션</option>
+                    </select>
+                </div>
+                <div class="row block-button-hover-color-container">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-hover-background-color" 
+                               name="block_buttons[${blockButtonIndex}][hover_background_color]" 
+                               value="#0056b3">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-hover-text-color" 
+                               name="block_buttons[${blockButtonIndex}][hover_text_color]" 
+                               value="#ffffff">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color block-button-hover-border-color" 
+                               name="block_buttons[${blockButtonIndex}][hover_border_color]" 
+                               value="#0056b3">
+                    </div>
+                </div>
+                <div class="row block-button-hover-gradient-container" style="display: none;">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">호버 그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="block_button_${blockButtonIndex}_hover_gradient_preview" 
+                                 class="block-button-hover-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #0056b3, #004085);"
+                                 onclick="openButtonGradientModal('block_button_${blockButtonIndex}_hover')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="block-button-hover-gradient-start" 
+                                   id="block_button_${blockButtonIndex}_hover_gradient_start"
+                                   name="block_buttons[${blockButtonIndex}][hover_background_gradient_start]" 
+                                   value="#0056b3">
+                            <input type="hidden" 
+                                   class="block-button-hover-gradient-end" 
+                                   id="block_button_${blockButtonIndex}_hover_gradient_end"
+                                   name="block_buttons[${blockButtonIndex}][hover_background_gradient_end]" 
+                                   value="#004085">
+                            <input type="hidden" 
+                                   class="block-button-hover-gradient-angle" 
+                                   id="block_button_${blockButtonIndex}_hover_gradient_angle"
+                                   name="block_buttons[${blockButtonIndex}][hover_background_gradient_angle]" 
+                                   value="90">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">호버 투명도</label>
+                    <input type="range" 
+                           class="form-range block-button-hover-opacity" 
+                           name="block_buttons[${blockButtonIndex}][hover_opacity]" 
+                           id="block_button_${blockButtonIndex}_hover_opacity"
+                           value="100" 
+                           min="0" 
+                           max="100" 
+                           step="1"
+                           onchange="document.getElementById('block_button_${blockButtonIndex}_hover_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="block_button_${blockButtonIndex}_hover_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', buttonHtml);
+    blockButtonIndex++;
+    
+    // 버튼이 추가되면 연결 링크 필드 숨기기
+    const linkContainer = document.getElementById('widget_block_link_container');
+    if (linkContainer) {
+        linkContainer.style.display = 'none';
+    }
+}
+
+// 새 위젯 추가용 블록 버튼 삭제
+function removeBlockButton(buttonId) {
+    const button = document.getElementById(buttonId);
+    if (button) button.remove();
+    
+    // 버튼이 없으면 연결 링크 필드 보이기
+    const container = document.getElementById('widget_block_buttons_list');
+    const linkContainer = document.getElementById('widget_block_link_container');
+    if (linkContainer && container) {
+        const buttons = container.querySelectorAll('.card');
+        if (buttons.length === 0) {
+            linkContainer.style.display = 'block';
+        }
+    }
+}
+
+// 버튼 배경 타입 변경 핸들러
+function handleButtonBackgroundTypeChange(selectElement) {
+    const buttonCard = selectElement.closest('.card');
+    if (!buttonCard) return;
+    
+    const backgroundType = selectElement.value;
+    const colorContainer = buttonCard.querySelector('.block-button-color-container, .block-slide-button-color-container, .edit-main-block-button-color-container');
+    const gradientContainer = buttonCard.querySelector('.block-button-gradient-container, .block-slide-button-gradient-container, .edit-main-block-button-gradient-container');
+    
+    if (backgroundType === 'color') {
+        if (colorContainer) colorContainer.style.display = 'flex';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'flex';
+    }
+}
+
+// 버튼 호버 배경 타입 변경 핸들러
+function handleButtonHoverBackgroundTypeChange(selectElement) {
+    const buttonCard = selectElement.closest('.card');
+    if (!buttonCard) return;
+    
+    const backgroundType = selectElement.value;
+    const colorContainer = buttonCard.querySelector('.block-button-hover-color-container, .block-slide-button-hover-color-container, .edit-main-block-button-hover-color-container');
+    const gradientContainer = buttonCard.querySelector('.block-button-hover-gradient-container, .block-slide-button-hover-gradient-container, .edit-main-block-button-hover-gradient-container');
+    
+    if (backgroundType === 'color') {
+        if (colorContainer) colorContainer.style.display = 'flex';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'flex';
+    }
 }
 
 // 커스텀 페이지 블록 위젯 편집용 버튼 추가
@@ -7142,6 +7740,102 @@ function removeGradientMiddleColor(button) {
     updateGradientMiddleIcons();
 }
 
+// 버튼 그라데이션 모달 열기
+function openButtonGradientModal(buttonId) {
+    // 컨테이너 그라데이션 ID 초기화
+    currentGradientContainerId = null;
+    currentGradientType = null;
+    currentBlockGradientId = null;
+    currentButtonGradientId = buttonId;
+    
+    // 현재 값 가져오기
+    const startColorValue = document.getElementById(`${buttonId}_gradient_start`)?.value || '#007bff';
+    const endColorValue = document.getElementById(`${buttonId}_gradient_end`)?.value || '#0056b3';
+    const angle = document.getElementById(`${buttonId}_gradient_angle`)?.value || 90;
+    
+    // RGBA 파싱
+    const startParsed = rgbaToHexAndAlpha(startColorValue);
+    const endParsed = rgbaToHexAndAlpha(endColorValue);
+    
+    // 모달에 값 설정 (null 체크 추가)
+    const startColorInput = document.getElementById('gradient_modal_start_color');
+    const startAlphaInput = document.getElementById('gradient_modal_start_alpha');
+    const endColorInput = document.getElementById('gradient_modal_end_color');
+    const endAlphaInput = document.getElementById('gradient_modal_end_alpha');
+    const angleInput = document.getElementById('gradient_modal_angle');
+    const angleSliderInput = document.getElementById('gradient_modal_angle_slider');
+    
+    if (startColorInput) startColorInput.value = startParsed.hex;
+    if (startAlphaInput) {
+        startAlphaInput.value = Math.round(startParsed.alpha * 100);
+        const startAlphaValueDisplay = document.getElementById('gradient_start_alpha_value');
+        if (startAlphaValueDisplay) {
+            startAlphaValueDisplay.textContent = Math.round(startParsed.alpha * 100) + '%';
+        }
+    }
+    if (endColorInput) endColorInput.value = endParsed.hex;
+    if (endAlphaInput) {
+        endAlphaInput.value = Math.round(endParsed.alpha * 100);
+        const endAlphaValueDisplay = document.getElementById('gradient_end_alpha_value');
+        if (endAlphaValueDisplay) {
+            endAlphaValueDisplay.textContent = Math.round(endParsed.alpha * 100) + '%';
+        }
+    }
+    if (angleInput) angleInput.value = angle;
+    if (angleSliderInput) angleSliderInput.value = angle;
+    
+    // 색상 컨트롤 업데이트
+    if (typeof updateGradientColorControl === 'function') {
+        updateGradientColorControl('start');
+        updateGradientColorControl('end');
+    }
+    
+    // 시작/끝 컨트롤에 드래그 기능 추가
+    const startControl = document.getElementById('gradient_start_control');
+    const endControl = document.getElementById('gradient_end_control');
+    if (startControl) {
+        if (typeof makeGradientControlDraggable === 'function') {
+            makeGradientControlDraggable(startControl);
+        }
+    }
+    if (endControl) {
+        if (typeof makeGradientControlDraggable === 'function') {
+            makeGradientControlDraggable(endControl);
+        }
+    }
+    
+    // 중간 색상 초기화
+    const middleControlsContainer = document.getElementById('gradient_middle_controls');
+    if (middleControlsContainer) {
+        middleControlsContainer.innerHTML = '';
+    }
+    
+    // 미리보기 업데이트
+    if (typeof updateGradientPreview === 'function') {
+        updateGradientPreview();
+    }
+    
+    // 설정 패널 숨기기
+    const settingsPanel = document.getElementById('gradient_selected_control_settings');
+    if (settingsPanel) {
+        settingsPanel.style.display = 'none';
+    }
+    selectedGradientControl = null;
+    selectedGradientControlType = null;
+    
+    // 모달 표시
+    const modalElement = document.getElementById('gradientModal');
+    if (modalElement) {
+        // 기존 모달 인스턴스 확인 및 제거
+        const existingModal = bootstrap.Modal.getInstance(modalElement);
+        if (existingModal) {
+            existingModal.dispose();
+        }
+        const modal = new bootstrap.Modal(modalElement, { backdrop: false });
+        modal.show();
+    }
+}
+
 // 블록 그라데이션 저장
 function saveBlockGradient() {
     if (!currentBlockGradientId) return;
@@ -7217,8 +7911,82 @@ function saveBlockGradient() {
     }
 }
 
+// 버튼 그라데이션 저장 함수
+function saveButtonGradient() {
+    if (!currentButtonGradientId) return;
+    
+    const startColorInput = document.getElementById('gradient_modal_start_color');
+    const startAlphaInput = document.getElementById('gradient_modal_start_alpha');
+    const endColorInput = document.getElementById('gradient_modal_end_color');
+    const endAlphaInput = document.getElementById('gradient_modal_end_alpha');
+    const angleInput = document.getElementById('gradient_modal_angle');
+    
+    if (!startColorInput || !startAlphaInput || !endColorInput || !endAlphaInput || !angleInput) return;
+    
+    const startColor = startColorInput.value;
+    const startAlpha = startAlphaInput.value / 100;
+    const endColor = endColorInput.value;
+    const endAlpha = endAlphaInput.value / 100;
+    const angle = angleInput.value || 90;
+    
+    // 투명도가 100%면 hex, 아니면 rgba로 저장
+    const startColorValue = startAlpha === 1 ? startColor : hexToRgba(startColor, startAlpha);
+    const endColorValue = endAlpha === 1 ? endColor : hexToRgba(endColor, endAlpha);
+    
+    // 중간 색상 수집
+    const middleColors = [];
+    const middleControls = document.querySelectorAll('.gradient-middle-control');
+    middleControls.forEach(control => {
+        const colorInput = control.querySelector('.gradient-middle-color-input');
+        const alphaInput = control.querySelector('.gradient-middle-alpha-input');
+        const position = parseFloat(control.getAttribute('data-position')) || parseFloat(control.style.left) || 50;
+        if (colorInput) {
+            const color = colorInput.value;
+            const alpha = alphaInput ? (alphaInput.value / 100) : 1;
+            const colorValue = alpha === 1 ? color : hexToRgba(color, alpha);
+            middleColors.push({ color: colorValue, position });
+        }
+    });
+    
+    // 위치 순으로 정렬
+    middleColors.sort((a, b) => a.position - b.position);
+    
+    // 그라데이션 문자열 생성
+    const startRgba = hexToRgba(startColor, startAlpha);
+    const endRgba = hexToRgba(endColor, endAlpha);
+    
+    let gradientString = `linear-gradient(${angle}deg, ${startRgba}`;
+    middleColors.forEach(mc => {
+        gradientString += `, ${mc.color} ${mc.position}%`;
+    });
+    gradientString += `, ${endRgba})`;
+    
+    // 버튼 그라데이션 값 저장
+    const startInput = document.getElementById(`${currentButtonGradientId}_gradient_start`);
+    const endInput = document.getElementById(`${currentButtonGradientId}_gradient_end`);
+    const angleInputEl = document.getElementById(`${currentButtonGradientId}_gradient_angle`);
+    const preview = document.getElementById(`${currentButtonGradientId}_gradient_preview`);
+    
+    if (startInput) startInput.value = startColorValue;
+    if (endInput) endInput.value = endColorValue;
+    if (angleInputEl) angleInputEl.value = angle;
+    if (preview) {
+        preview.style.background = gradientString;
+    }
+    
+    // 모달 닫기
+    const modal = bootstrap.Modal.getInstance(document.getElementById('gradientModal'));
+    if (modal) modal.hide();
+}
+
 // 그라데이션 저장
 function saveGradient() {
+    // 버튼 그라데이션인 경우
+    if (currentButtonGradientId) {
+        saveButtonGradient();
+        return;
+    }
+    
     // 블록 그라데이션인 경우
     if (currentBlockGradientId) {
         saveBlockGradient();

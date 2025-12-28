@@ -3366,17 +3366,8 @@ function addMainWidget() {
                 buttons: buttons,
                 font_color: fontColor,
                 title_font_size: titleFontSize,
-                content_font_size: contentFontSize,
-                show_button: showButton
+                content_font_size: contentFontSize
             };
-            
-            if (showButton) {
-                const buttonTopMargin = item.querySelector('.block-slide-button-top-margin')?.value || '12';
-                blockItem.button_text = buttonText;
-                blockItem.button_background_color = buttonBackgroundColor;
-                blockItem.button_text_color = buttonTextColor;
-                blockItem.button_top_margin = parseInt(buttonTopMargin);
-            }
             
             if (backgroundType === 'color') {
                 const backgroundColor = item.querySelector('.block-slide-background-color')?.value || '#007bff';

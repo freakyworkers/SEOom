@@ -300,70 +300,90 @@
         </div>
         <script>
         (function() {
-            const wrapper = document.querySelector('.block-slide-wrapper[data-widget-id="{{ $widget->id }}"]');
-            if (!wrapper) return;
-            
-            const container = wrapper.querySelector('.block-slide-container');
-            const items = wrapper.querySelectorAll('.block-slide-item:not(.block-slide-item-clone)');
-            const direction = wrapper.dataset.direction;
-            const totalItems = items.length;
-            
-            if (totalItems <= 1) return;
-            
-            let currentIndex = 0;
-            let isTransitioning = false;
-            
-            // 초기 위치 설정
-            function updatePosition(withoutTransition = false) {
-                if (withoutTransition) {
-                    container.style.transition = 'none';
-                } else {
-                    container.style.transition = 'transform 0.5s ease-in-out';
+            function initBlockSlide() {
+                const wrapper = document.querySelector('.block-slide-wrapper[data-widget-id="{{ $widget->id }}"]');
+                if (!wrapper) return;
+                
+                const container = wrapper.querySelector('.block-slide-container');
+                const items = wrapper.querySelectorAll('.block-slide-item:not(.block-slide-item-clone)');
+                const direction = wrapper.dataset.direction;
+                const totalItems = items.length;
+                
+                if (totalItems <= 1) return;
+                
+                let currentIndex = 0;
+                let isTransitioning = false;
+                
+                // 초기 위치 설정
+                function updatePosition(withoutTransition = false) {
+                    if (withoutTransition) {
+                        container.style.transition = 'none';
+                    } else {
+                        container.style.transition = 'transform 0.5s ease-in-out';
+                    }
+                    
+                    if (direction === 'left' || direction === 'right') {
+                        // wrapper의 너비를 기준으로 이동
+                        const wrapperWidth = wrapper.offsetWidth;
+                        if (wrapperWidth === 0) {
+                            // 너비가 0이면 다시 시도
+                            setTimeout(updatePosition, 100);
+                            return;
+                        }
+                        const translateX = -(currentIndex * wrapperWidth);
+                        container.style.transform = `translateX(${translateX}px)`;
+                    } else if (direction === 'up' || direction === 'down') {
+                        container.style.flexDirection = direction === 'up' ? 'column-reverse' : 'column';
+                        // wrapper의 높이를 기준으로 이동
+                        const wrapperHeight = wrapper.offsetHeight;
+                        if (wrapperHeight === 0) {
+                            // 높이가 0이면 다시 시도
+                            setTimeout(updatePosition, 100);
+                            return;
+                        }
+                        const translateY = -(currentIndex * wrapperHeight);
+                        container.style.transform = `translateY(${translateY}px)`;
+                    }
                 }
                 
-                if (direction === 'left' || direction === 'right') {
-                    // wrapper의 너비를 기준으로 이동
-                    const wrapperWidth = wrapper.offsetWidth;
-                    const translateX = -(currentIndex * wrapperWidth);
-                    container.style.transform = `translateX(${translateX}px)`;
-                } else if (direction === 'up' || direction === 'down') {
-                    container.style.flexDirection = direction === 'up' ? 'column-reverse' : 'column';
-                    // wrapper의 높이를 기준으로 이동
-                    const wrapperHeight = wrapper.offsetHeight;
-                    const translateY = -(currentIndex * wrapperHeight);
-                    container.style.transform = `translateY(${translateY}px)`;
-                }
-            }
-            
-            // 슬라이드 전환
-            function nextSlide() {
-                if (isTransitioning) return;
-                
-                isTransitioning = true;
-                currentIndex++;
-                updatePosition();
-                
-                // 마지막 원본 블록에 도달하면 (복제된 첫 번째 블록 위치)
-                if (currentIndex >= totalItems) {
-                    setTimeout(() => {
-                        currentIndex = 0;
-                        updatePosition(true);
+                // 슬라이드 전환
+                function nextSlide() {
+                    if (isTransitioning) return;
+                    
+                    isTransitioning = true;
+                    currentIndex++;
+                    updatePosition();
+                    
+                    // 마지막 원본 블록에 도달하면 (복제된 첫 번째 블록 위치)
+                    if (currentIndex >= totalItems) {
+                        setTimeout(() => {
+                            currentIndex = 0;
+                            updatePosition(true);
+                            setTimeout(() => {
+                                isTransitioning = false;
+                            }, 50);
+                        }, 500); // transition 시간과 동일
+                    } else {
                         setTimeout(() => {
                             isTransitioning = false;
-                        }, 50);
-                    }, 500); // transition 시간과 동일
-                } else {
-                    setTimeout(() => {
-                        isTransitioning = false;
-                    }, 500);
+                        }, 500);
+                    }
                 }
+                
+                // 초기 위치 설정 (렌더링 완료 후)
+                setTimeout(() => {
+                    updatePosition();
+                    // 3초마다 슬라이드 전환
+                    setInterval(nextSlide, 3000);
+                }, 100);
             }
             
-            // 초기 위치 설정
-            updatePosition();
-            
-            // 3초마다 슬라이드 전환
-            setInterval(nextSlide, 3000);
+            // DOMContentLoaded 또는 즉시 실행
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initBlockSlide);
+            } else {
+                initBlockSlide();
+            }
         })();
         </script>
     @endif
