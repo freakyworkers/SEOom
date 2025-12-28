@@ -904,12 +904,12 @@
     @if($hasTitle)
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
-            <div class="card-header" style="background-color: white; border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border: none !important; border-bottom: 1px solid #dee2e6 !important;">
+            <div class="card-header" style="background-color: white;{{ $isRoundTheme ? ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' : ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' }} border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; border: none !important; border-bottom: 1px solid #dee2e6 !important;">
                 <h6 class="mb-0">{{ $widget->title }}</h6>
             </div>
             @endif
         @else
-        <div class="card-header" style="background-color: white; {{ $widgetTopBorderStyle }} border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border: none !important; border-bottom: 1px solid #dee2e6 !important;">
+        <div class="card-header" style="background-color: white; {{ $widgetTopBorderStyle }}{{ $isRoundTheme ? ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' : ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' }} border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; border: none !important; border-bottom: 1px solid #dee2e6 !important;">
             <h6 class="mb-0">{{ $widget->title }}</h6>
         </div>
         @endif
