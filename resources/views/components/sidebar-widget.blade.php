@@ -1440,13 +1440,20 @@
                                     
                                     // 이미 초기화된 위젯은 건너뛰기
                                     if (wrapper.dataset.initialized === 'true') return;
-                                    wrapper.dataset.initialized = 'true';
                                     
                                     const direction = wrapper.dataset.direction || 'left';
                                     const cols = parseInt(wrapper.dataset.cols) || 3;
-                                    const totalItems = {{ $galleryPosts->count() }};
                                     
-                                    if (totalItems <= cols) return; // 슬라이드 불필요
+                                    // DOM에서 실제 아이템 개수 확인
+                                    const items = wrapper.querySelectorAll('.gallery-slide-item:not(.gallery-slide-duplicate)');
+                                    const itemCount = items.length;
+                                    
+                                    if (itemCount <= cols) {
+                                        wrapper.dataset.initialized = 'true';
+                                        return; // 슬라이드 불필요
+                                    }
+                                    
+                                    wrapper.dataset.initialized = 'true';
                                     
                                     let currentIndex = 0;
                                     let intervalId;
