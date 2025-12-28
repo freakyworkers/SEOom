@@ -8620,6 +8620,33 @@ function updateSelectedGradientControlPosition() {
     selectedGradientControl.style.left = `${position}%`;
     selectedGradientControl.setAttribute('data-position', position);
     
+    // 시작/끝 색상 아이콘도 업데이트
+    if (selectedGradientControlType === 'start') {
+        const startIcon = document.getElementById('gradient_start_icon');
+        if (startIcon) {
+            let positionLabel = startIcon.querySelector('small');
+            if (!positionLabel) {
+                positionLabel = document.createElement('small');
+                positionLabel.style.cssText = 'position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; white-space: nowrap;';
+                startIcon.style.position = 'relative';
+                startIcon.appendChild(positionLabel);
+            }
+            positionLabel.textContent = position + '%';
+        }
+    } else if (selectedGradientControlType === 'end') {
+        const endIcon = document.getElementById('gradient_end_icon');
+        if (endIcon) {
+            let positionLabel = endIcon.querySelector('small');
+            if (!positionLabel) {
+                positionLabel = document.createElement('small');
+                positionLabel.style.cssText = 'position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; white-space: nowrap;';
+                endIcon.style.position = 'relative';
+                endIcon.appendChild(positionLabel);
+            }
+            positionLabel.textContent = position + '%';
+        }
+    }
+    
     // 그라데이션 미리보기 업데이트
     if (typeof updateGradientPreview === 'function') {
         updateGradientPreview();
