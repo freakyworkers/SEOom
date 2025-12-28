@@ -1050,6 +1050,7 @@
                             <label for="edit_widget_block_background_type" class="form-label">배경</label>
                             <select class="form-select" id="edit_widget_block_background_type" name="block_background_type" onchange="handleEditBlockBackgroundTypeChange()">
                                 <option value="color">컬러</option>
+                                <option value="gradient">그라데이션</option>
                                 <option value="image">이미지</option>
                             </select>
                         </div>
@@ -1060,6 +1061,29 @@
                                    id="edit_widget_block_background_color" 
                                    name="block_background_color" 
                                    value="#007bff">
+                        </div>
+                        <div class="mb-3" id="edit_widget_block_gradient_container" style="display: none;">
+                            <label class="form-label">그라데이션 설정</label>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <div id="edit_widget_block_gradient_preview" 
+                                     style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #ffffff, #000000);"
+                                     onclick="openBlockGradientModal('edit_widget_block')"
+                                     title="그라데이션 설정">
+                                </div>
+                                <input type="hidden" 
+                                       id="edit_widget_block_gradient_start"
+                                       name="block_background_gradient_start" 
+                                       value="#ffffff">
+                                <input type="hidden" 
+                                       id="edit_widget_block_gradient_end"
+                                       name="block_background_gradient_end" 
+                                       value="#000000">
+                                <input type="hidden" 
+                                       id="edit_widget_block_gradient_angle"
+                                       name="block_background_gradient_angle" 
+                                       value="90">
+                            </div>
+                            <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
                         </div>
                         <div class="mb-3" id="edit_widget_block_image_container" style="display: none;">
                             <label class="form-label">배경 이미지</label>
@@ -2111,13 +2135,20 @@ function removeBlockImage() {
 function handleEditBlockBackgroundTypeChange() {
     const backgroundType = document.getElementById('edit_widget_block_background_type').value;
     const colorContainer = document.getElementById('edit_widget_block_color_container');
+    const gradientContainer = document.getElementById('edit_widget_block_gradient_container');
     const imageContainer = document.getElementById('edit_widget_block_image_container');
     
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'block';
         if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'image') {
         if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'block';
     }
 }
@@ -4370,6 +4401,25 @@ function saveWidgetSettings() {
                         if (backgroundType === 'color') {
                             const backgroundColor = document.getElementById('edit_widget_block_background_color').value || '#007bff';
                             settings.background_color = backgroundColor;
+                        } else if (backgroundType === 'gradient') {
+                            // 두 가지 필드명 모두 확인
+                            const gradientStartInput = document.getElementById('edit_widget_block_gradient_start') || 
+                                                     document.getElementById('edit_widget_block_background_gradient_start');
+                            const gradientEndInput = document.getElementById('edit_widget_block_gradient_end') || 
+                                                   document.getElementById('edit_widget_block_background_gradient_end');
+                            const gradientAngleInput = document.getElementById('edit_widget_block_gradient_angle') || 
+                                                     document.getElementById('edit_widget_block_background_gradient_angle');
+                            
+                            // 값이 있으면 사용, 없으면 기본값 (하지만 저장된 값이 우선)
+                            if (gradientStartInput && gradientStartInput.value) {
+                                settings.background_gradient_start = gradientStartInput.value;
+                            }
+                            if (gradientEndInput && gradientEndInput.value) {
+                                settings.background_gradient_end = gradientEndInput.value;
+                            }
+                            if (gradientAngleInput && gradientAngleInput.value) {
+                                settings.background_gradient_angle = parseInt(gradientAngleInput.value) || 90;
+                            }
                         } else if (backgroundType === 'image') {
                             const imageFile = document.getElementById('edit_widget_block_image_input').files[0];
                         if (imageFile) {
@@ -4434,6 +4484,25 @@ function saveWidgetSettings() {
                             if (backgroundType === 'color') {
                                 const backgroundColor = item.querySelector('.edit-block-slide-background-color')?.value || '#007bff';
                                 blockItem.background_color = backgroundColor;
+                            } else if (backgroundType === 'gradient') {
+                                // 두 가지 필드명 모두 확인
+                                const gradientStartInput = item.querySelector(`#edit_block_slide_${itemIndex}_gradient_start`) || 
+                                                         item.querySelector(`#edit_block_slide_${itemIndex}_background_gradient_start`);
+                                const gradientEndInput = item.querySelector(`#edit_block_slide_${itemIndex}_gradient_end`) || 
+                                                       item.querySelector(`#edit_block_slide_${itemIndex}_background_gradient_end`);
+                                const gradientAngleInput = item.querySelector(`#edit_block_slide_${itemIndex}_gradient_angle`) || 
+                                                         item.querySelector(`#edit_block_slide_${itemIndex}_background_gradient_angle`);
+                                
+                                // 값이 있으면 사용, 없으면 기본값 (하지만 저장된 값이 우선)
+                                if (gradientStartInput && gradientStartInput.value) {
+                                    blockItem.background_gradient_start = gradientStartInput.value;
+                                }
+                                if (gradientEndInput && gradientEndInput.value) {
+                                    blockItem.background_gradient_end = gradientEndInput.value;
+                                }
+                                if (gradientAngleInput && gradientAngleInput.value) {
+                                    blockItem.background_gradient_angle = parseInt(gradientAngleInput.value) || 90;
+                                }
                             } else if (backgroundType === 'image') {
                                 const imageFile = item.querySelector(`#edit_block_slide_${itemIndex}_image_input`)?.files[0];
                                 if (imageFile) {
