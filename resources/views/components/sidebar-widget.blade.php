@@ -1460,6 +1460,9 @@
                                             if (isTransitioning) return;
                                             isTransitioning = true;
                                             
+                                            const items = wrapper.querySelectorAll('.gallery-slide-item:not(.gallery-slide-duplicate)');
+                                            const itemCount = items.length;
+                                            
                                             if (direction === 'left') {
                                                 currentIndex += cols;
                                                 if (currentIndex >= itemCount) {
