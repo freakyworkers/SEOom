@@ -631,5 +631,50 @@
     </script>
     
     @stack('scripts')
+    
+    <!-- 플랜 제한 초과 모달 -->
+    <div class="modal fade" id="planLimitModal" tabindex="-1" aria-labelledby="planLimitModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="planLimitModalLabel">
+                        <i class="bi bi-exclamation-triangle me-2"></i>플랜 제한 도달
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="planLimitMessage" class="mb-3"></p>
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>업그레이드 안내:</strong> 더 많은 기능을 사용하려면 플랜을 업그레이드하세요.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <a href="{{ config('app.url') }}/store?site=master" class="btn btn-primary" target="_blank">
+                        <i class="bi bi-arrow-up-circle me-1"></i>플랜 업그레이드
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    // 플랜 제한 초과 모달 표시 함수
+    function showPlanLimitModal(message) {
+        document.getElementById('planLimitMessage').textContent = message;
+        var modal = new bootstrap.Modal(document.getElementById('planLimitModal'));
+        modal.show();
+    }
+    
+    // 전역 AJAX 에러 핸들러 - 제한 초과 응답 처리
+    window.handleLimitExceededError = function(response) {
+        if (response && response.limit_exceeded) {
+            showPlanLimitModal(response.error || '플랜 제한에 도달했습니다.');
+            return true;
+        }
+        return false;
+    };
+    </script>
 </body>
 </html>

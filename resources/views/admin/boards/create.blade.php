@@ -290,6 +290,17 @@
                         } else {
                             window.location.reload();
                         }
+                    } else if (data.limit_exceeded) {
+                        // 플랜 제한 초과 모달 표시
+                        if (typeof showPlanLimitModal === 'function') {
+                            showPlanLimitModal(data.error);
+                        } else {
+                            alert(data.error);
+                        }
+                        if (saveBtn) {
+                            saveBtn.disabled = false;
+                            saveBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>게시판 생성';
+                        }
                     } else if (data.errors) {
                         // 에러 메시지 표시
                         let errorMessages = [];
@@ -297,6 +308,12 @@
                             errorMessages.push(data.errors[field].join(', '));
                         }
                         alert('오류가 발생했습니다:\n' + errorMessages.join('\n'));
+                        if (saveBtn) {
+                            saveBtn.disabled = false;
+                            saveBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>게시판 생성';
+                        }
+                    } else if (data.error) {
+                        alert(data.error);
                         if (saveBtn) {
                             saveBtn.disabled = false;
                             saveBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>게시판 생성';

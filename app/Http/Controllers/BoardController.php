@@ -66,6 +66,25 @@ class BoardController extends Controller
             return $next($request);
         });
 
+        // 게시판 생성 제한 확인
+        if (!$site->canCreateBoard()) {
+            $limit = $site->getBoardLimit();
+            $currentCount = $site->boards()->count();
+            $errorMessage = "게시판 생성 제한에 도달했습니다. (현재 {$currentCount}개 / 최대 {$limit}개) 더 많은 게시판을 사용하려면 플랜을 업그레이드하세요.";
+            
+            if ($request->expectsJson() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => $errorMessage,
+                    'limit_exceeded' => true,
+                    'limit_type' => 'boards',
+                    'current' => $currentCount,
+                    'limit' => $limit,
+                ], 403);
+            }
+            return back()->with('error', $errorMessage);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:boards,slug,NULL,id,site_id,' . $site->id,

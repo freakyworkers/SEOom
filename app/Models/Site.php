@@ -641,6 +641,204 @@ public function hasMainWidgetType(string $widgetType): bool
     {
         return $this->hasMany(\App\Models\UserAddon::class);
     }
+
+    /**
+     * Get board limit from plan.
+     * Returns null for unlimited.
+     */
+    public function getBoardLimit(): ?int
+    {
+        $plan = $this->planModel();
+        if (!$plan) {
+            return 2; // 기본값
+        }
+        
+        $limits = $plan->limits ?? [];
+        return $limits['boards'] ?? null;
+    }
+
+    /**
+     * Get widget limit from plan.
+     * Returns null for unlimited.
+     */
+    public function getWidgetLimit(): ?int
+    {
+        $plan = $this->planModel();
+        if (!$plan) {
+            return 3; // 기본값
+        }
+        
+        $limits = $plan->limits ?? [];
+        return $limits['widgets'] ?? null;
+    }
+
+    /**
+     * Get custom page limit from plan.
+     * Returns null for unlimited.
+     */
+    public function getCustomPageLimit(): ?int
+    {
+        $plan = $this->planModel();
+        if (!$plan) {
+            return 2; // 기본값
+        }
+        
+        $limits = $plan->limits ?? [];
+        return $limits['custom_pages'] ?? null;
+    }
+
+    /**
+     * Get user limit from plan.
+     * Returns null for unlimited.
+     */
+    public function getUserLimit(): ?int
+    {
+        $plan = $this->planModel();
+        if (!$plan) {
+            return 20; // 기본값
+        }
+        
+        $limits = $plan->limits ?? [];
+        return $limits['users'] ?? null;
+    }
+
+    /**
+     * Check if can create more boards.
+     */
+    public function canCreateBoard(): bool
+    {
+        $limit = $this->getBoardLimit();
+        if ($limit === null) {
+            return true; // 무제한
+        }
+        
+        $currentCount = $this->boards()->count();
+        return $currentCount < $limit;
+    }
+
+    /**
+     * Check if can create more widgets.
+     */
+    public function canCreateWidget(): bool
+    {
+        $limit = $this->getWidgetLimit();
+        if ($limit === null) {
+            return true; // 무제한
+        }
+        
+        // 모든 위젯 카운트 (사이드바 + 메인 + 커스텀페이지)
+        $sidebarCount = \App\Models\SidebarWidget::where('site_id', $this->id)->count();
+        $mainCount = \App\Models\MainWidget::where('site_id', $this->id)->count();
+        $customPageWidgetCount = \App\Models\CustomPageWidget::where('site_id', $this->id)->count();
+        
+        $currentCount = $sidebarCount + $mainCount + $customPageWidgetCount;
+        return $currentCount < $limit;
+    }
+
+    /**
+     * Check if can create more custom pages.
+     */
+    public function canCreateCustomPage(): bool
+    {
+        $limit = $this->getCustomPageLimit();
+        if ($limit === null) {
+            return true; // 무제한
+        }
+        
+        $currentCount = \App\Models\CustomPage::where('site_id', $this->id)->count();
+        return $currentCount < $limit;
+    }
+
+    /**
+     * Get remaining board count.
+     * Returns null for unlimited.
+     */
+    public function getRemainingBoardCount(): ?int
+    {
+        $limit = $this->getBoardLimit();
+        if ($limit === null) {
+            return null; // 무제한
+        }
+        
+        $currentCount = $this->boards()->count();
+        return max(0, $limit - $currentCount);
+    }
+
+    /**
+     * Get remaining widget count.
+     * Returns null for unlimited.
+     */
+    public function getRemainingWidgetCount(): ?int
+    {
+        $limit = $this->getWidgetLimit();
+        if ($limit === null) {
+            return null; // 무제한
+        }
+        
+        $sidebarCount = \App\Models\SidebarWidget::where('site_id', $this->id)->count();
+        $mainCount = \App\Models\MainWidget::where('site_id', $this->id)->count();
+        $customPageWidgetCount = \App\Models\CustomPageWidget::where('site_id', $this->id)->count();
+        
+        $currentCount = $sidebarCount + $mainCount + $customPageWidgetCount;
+        return max(0, $limit - $currentCount);
+    }
+
+    /**
+     * Get remaining custom page count.
+     * Returns null for unlimited.
+     */
+    public function getRemainingCustomPageCount(): ?int
+    {
+        $limit = $this->getCustomPageLimit();
+        if ($limit === null) {
+            return null; // 무제한
+        }
+        
+        $currentCount = \App\Models\CustomPage::where('site_id', $this->id)->count();
+        return max(0, $limit - $currentCount);
+    }
+
+    /**
+     * Check if plan has a specific feature.
+     */
+    public function hasFeature(string $feature): bool
+    {
+        $plan = $this->planModel();
+        if (!$plan) {
+            return false;
+        }
+        
+        $features = $plan->features ?? [];
+        $mainFeatures = $features['main_features'] ?? [];
+        
+        return in_array($feature, $mainFeatures);
+    }
+
+    /**
+     * Get current usage stats for limits.
+     */
+    public function getLimitStats(): array
+    {
+        return [
+            'boards' => [
+                'current' => $this->boards()->count(),
+                'limit' => $this->getBoardLimit(),
+                'can_create' => $this->canCreateBoard(),
+            ],
+            'widgets' => [
+                'current' => \App\Models\SidebarWidget::where('site_id', $this->id)->count() 
+                           + \App\Models\MainWidget::where('site_id', $this->id)->count()
+                           + \App\Models\CustomPageWidget::where('site_id', $this->id)->count(),
+                'limit' => $this->getWidgetLimit(),
+                'can_create' => $this->canCreateWidget(),
+            ],
+            'custom_pages' => [
+                'current' => \App\Models\CustomPage::where('site_id', $this->id)->count(),
+                'limit' => $this->getCustomPageLimit(),
+                'can_create' => $this->canCreateCustomPage(),
+            ],
+        ];
+    }
 }
 
 

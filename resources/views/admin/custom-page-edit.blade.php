@@ -3075,8 +3075,15 @@ function addCustomPageWidget() {
         if (data.success) {
             hideAddWidgetForm();
             location.reload();
+        } else if (data.limit_exceeded) {
+            // 플랜 제한 초과 모달 표시
+            if (typeof showPlanLimitModal === 'function') {
+                showPlanLimitModal(data.error);
+            } else {
+                alert(data.error);
+            }
         } else {
-            alert('위젯 추가에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+            alert('위젯 추가에 실패했습니다: ' + (data.message || data.error || '알 수 없는 오류'));
         }
     })
     .catch(error => {

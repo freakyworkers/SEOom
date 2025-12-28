@@ -692,7 +692,14 @@ class AdminController extends Controller
         // 모바일 메뉴 디자인 타입 설정 로드
         $mobileMenuDesignType = $site->getSetting('mobile_menu_design_type', 'default');
 
-        return view('admin.menus', compact('site', 'menus', 'boards', 'customPages', 'mobileMenus', 'mobileMenuDesignType'));
+        // 사이트의 플랜 기능 정보 (메뉴 연결 타입 표시 조건)
+        $siteFeatures = [
+            'attendance' => $site->hasFeature('attendance'),
+            'point_exchange' => $site->hasFeature('point_exchange'),
+            'event_application' => $site->hasFeature('event_application'),
+        ];
+
+        return view('admin.menus', compact('site', 'menus', 'boards', 'customPages', 'mobileMenus', 'mobileMenuDesignType', 'siteFeatures'));
     }
 
     /**
@@ -3082,6 +3089,23 @@ class AdminController extends Controller
      */
     public function storeSidebarWidget(Site $site, Request $request)
     {
+        // 위젯 생성 제한 확인
+        if (!$site->canCreateWidget()) {
+            $limit = $site->getWidgetLimit();
+            $stats = $site->getLimitStats();
+            $currentCount = $stats['widgets']['current'];
+            $errorMessage = "위젯 생성 제한에 도달했습니다. (현재 {$currentCount}개 / 최대 {$limit}개) 더 많은 위젯을 사용하려면 플랜을 업그레이드하세요.";
+            
+            return response()->json([
+                'success' => false,
+                'error' => $errorMessage,
+                'limit_exceeded' => true,
+                'limit_type' => 'widgets',
+                'current' => $currentCount,
+                'limit' => $limit,
+            ], 403);
+        }
+
         $request->validate([
             'type' => 'required|string',
             'title' => 'nullable|string|max:255',
@@ -3631,6 +3655,23 @@ class AdminController extends Controller
     public function storeMainWidget(Site $site, Request $request)
     {
         try {
+            // 위젯 생성 제한 확인
+            if (!$site->canCreateWidget()) {
+                $limit = $site->getWidgetLimit();
+                $stats = $site->getLimitStats();
+                $currentCount = $stats['widgets']['current'];
+                $errorMessage = "위젯 생성 제한에 도달했습니다. (현재 {$currentCount}개 / 최대 {$limit}개) 더 많은 위젯을 사용하려면 플랜을 업그레이드하세요.";
+                
+                return response()->json([
+                    'success' => false,
+                    'error' => $errorMessage,
+                    'limit_exceeded' => true,
+                    'limit_type' => 'widgets',
+                    'current' => $currentCount,
+                    'limit' => $limit,
+                ], 403);
+            }
+
             $request->validate([
                 'container_id' => 'required|exists:main_widget_containers,id',
                 'column_index' => 'required|integer|min:0',
@@ -3999,6 +4040,22 @@ class AdminController extends Controller
      */
     public function storeCustomPage(Site $site, Request $request)
     {
+        // 커스텀 페이지 생성 제한 확인
+        if (!$site->canCreateCustomPage()) {
+            $limit = $site->getCustomPageLimit();
+            $currentCount = \App\Models\CustomPage::where('site_id', $site->id)->count();
+            $errorMessage = "커스텀 페이지 생성 제한에 도달했습니다. (현재 {$currentCount}개 / 최대 {$limit}개) 더 많은 페이지를 사용하려면 플랜을 업그레이드하세요.";
+            
+            return response()->json([
+                'success' => false,
+                'error' => $errorMessage,
+                'limit_exceeded' => true,
+                'limit_type' => 'custom_pages',
+                'current' => $currentCount,
+                'limit' => $limit,
+            ], 403);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:custom_pages,slug',
@@ -4358,6 +4415,23 @@ class AdminController extends Controller
         // Ensure custom page belongs to site
         if ($customPage->site_id !== $site->id) {
             abort(403);
+        }
+
+        // 위젯 생성 제한 확인
+        if (!$site->canCreateWidget()) {
+            $limit = $site->getWidgetLimit();
+            $stats = $site->getLimitStats();
+            $currentCount = $stats['widgets']['current'];
+            $errorMessage = "위젯 생성 제한에 도달했습니다. (현재 {$currentCount}개 / 최대 {$limit}개) 더 많은 위젯을 사용하려면 플랜을 업그레이드하세요.";
+            
+            return response()->json([
+                'success' => false,
+                'error' => $errorMessage,
+                'limit_exceeded' => true,
+                'limit_type' => 'widgets',
+                'current' => $currentCount,
+                'limit' => $limit,
+            ], 403);
         }
 
         $request->validate([

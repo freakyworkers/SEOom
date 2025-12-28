@@ -195,8 +195,17 @@ document.getElementById('createPageForm').addEventListener('submit', function(e)
     .then(data => {
         if (data.success) {
             location.reload();
+        } else if (data.limit_exceeded) {
+            // 플랜 제한 초과 모달 표시
+            if (typeof showPlanLimitModal === 'function') {
+                showPlanLimitModal(data.error);
+            } else {
+                alert(data.error);
+            }
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
         } else {
-            alert('페이지 생성에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+            alert('페이지 생성에 실패했습니다: ' + (data.message || data.error || '알 수 없는 오류'));
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
         }

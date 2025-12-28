@@ -82,9 +82,15 @@
                         <option value="board">게시판</option>
                         <option value="custom_page">커스텀 페이지</option>
                         <option value="external_link">외부링크</option>
+                        @if($siteFeatures['attendance'] ?? false)
                         <option value="attendance">출첵페이지</option>
+                        @endif
+                        @if($siteFeatures['point_exchange'] ?? false)
                         <option value="point_exchange">포인트교환페이지</option>
+                        @endif
+                        @if($siteFeatures['event_application'] ?? false)
                         <option value="event_application">신청형 이벤트 페이지</option>
+                        @endif
                     </select>
                 </div>
                 <div class="col-md-4">
@@ -227,9 +233,15 @@
                         <option value="board">게시판</option>
                         <option value="custom_page">커스텀 페이지</option>
                         <option value="external_link">외부링크</option>
+                        @if($siteFeatures['attendance'] ?? false)
                         <option value="attendance">출첵페이지</option>
+                        @endif
+                        @if($siteFeatures['point_exchange'] ?? false)
                         <option value="point_exchange">포인트교환페이지</option>
+                        @endif
+                        @if($siteFeatures['event_application'] ?? false)
                         <option value="event_application">신청형 이벤트 페이지</option>
+                        @endif
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -322,9 +334,15 @@
                                             <option value="board" {{ $mobileMenu->link_type === 'board' ? 'selected' : '' }}>게시판</option>
                                             <option value="custom_page" {{ $mobileMenu->link_type === 'custom_page' ? 'selected' : '' }}>커스텀 페이지</option>
                                             <option value="external_link" {{ $mobileMenu->link_type === 'external_link' ? 'selected' : '' }}>외부링크</option>
+                                            @if($siteFeatures['attendance'] ?? false)
                                             <option value="attendance" {{ $mobileMenu->link_type === 'attendance' ? 'selected' : '' }}>출첵페이지</option>
+                                            @endif
+                                            @if($siteFeatures['point_exchange'] ?? false)
                                             <option value="point_exchange" {{ $mobileMenu->link_type === 'point_exchange' ? 'selected' : '' }}>포인트교환페이지</option>
+                                            @endif
+                                            @if($siteFeatures['event_application'] ?? false)
                                             <option value="event_application" {{ $mobileMenu->link_type === 'event_application' ? 'selected' : '' }}>신청형 이벤트 페이지</option>
+                                            @endif
                                         </select>
                                     </td>
                                     <td style="text-align: center;">
@@ -398,9 +416,15 @@
                                         <option value="board" {{ $mobileMenu->link_type === 'board' ? 'selected' : '' }}>게시판</option>
                                         <option value="custom_page" {{ $mobileMenu->link_type === 'custom_page' ? 'selected' : '' }}>커스텀 페이지</option>
                                         <option value="external_link" {{ $mobileMenu->link_type === 'external_link' ? 'selected' : '' }}>외부링크</option>
+                                        @if($siteFeatures['attendance'] ?? false)
                                         <option value="attendance" {{ $mobileMenu->link_type === 'attendance' ? 'selected' : '' }}>출첵페이지</option>
+                                        @endif
+                                        @if($siteFeatures['point_exchange'] ?? false)
                                         <option value="point_exchange" {{ $mobileMenu->link_type === 'point_exchange' ? 'selected' : '' }}>포인트교환페이지</option>
+                                        @endif
+                                        @if($siteFeatures['event_application'] ?? false)
                                         <option value="event_application" {{ $mobileMenu->link_type === 'event_application' ? 'selected' : '' }}>신청형 이벤트 페이지</option>
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -674,9 +698,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <option value="board">게시판</option>
                                     <option value="custom_page">커스텀 페이지</option>
                                     <option value="external_link">외부링크</option>
+                                    @if($siteFeatures['attendance'] ?? false)
                                     <option value="attendance">출첵페이지</option>
+                                    @endif
+                                    @if($siteFeatures['point_exchange'] ?? false)
                                     <option value="point_exchange">포인트교환페이지</option>
+                                    @endif
+                                    @if($siteFeatures['event_application'] ?? false)
                                     <option value="event_application">신청형 이벤트 페이지</option>
+                                    @endif
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -718,9 +748,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <option value="board">게시판</option>
                                         <option value="custom_page">커스텀 페이지</option>
                                         <option value="external_link">외부링크</option>
+                                        @if($siteFeatures['attendance'] ?? false)
                                         <option value="attendance">출첵페이지</option>
+                                        @endif
+                                        @if($siteFeatures['point_exchange'] ?? false)
                                         <option value="point_exchange">포인트교환페이지</option>
+                                        @endif
+                                        @if($siteFeatures['event_application'] ?? false)
                                         <option value="event_application">신청형 이벤트 페이지</option>
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="col-md-4">
