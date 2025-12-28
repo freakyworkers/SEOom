@@ -715,9 +715,276 @@ Route::middleware(['block.ip', 'verify.site.user'])->group(function () {
             return app(\App\Http\Controllers\SiteSettingController::class)->uploadImage($request, $site);
         });
         
-        // 나머지 어드민 라우트는 필요시 추가
-        // 일단 주요 라우트만 정의하고, 나머지는 slug 기반 라우트로 리다이렉트하거나
-        // 필요에 따라 추가
+        // Menus
+        Route::get('/menus', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->menus($site);
+        });
+        Route::post('/menus', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->storeMenu($request, $site);
+        });
+        Route::put('/menus/order', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateMenuOrder($request, $site);
+        });
+        Route::delete('/menus/{menu}', function (Request $request, \App\Models\Menu $menu) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->deleteMenu($site, $menu);
+        });
+        
+        // Main Widgets
+        Route::match(['get', 'post'], '/main-widgets', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->mainWidgets($site, $request);
+        });
+        Route::post('/main-widgets/containers/store', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->storeMainWidgetContainer($request, $site);
+        });
+        Route::put('/main-widgets/containers/{container}', function (Request $request, \App\Models\MainWidgetContainer $container) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateMainWidgetContainer($request, $site, $container);
+        });
+        Route::delete('/main-widgets/containers/{container}', function (Request $request, \App\Models\MainWidgetContainer $container) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->deleteMainWidgetContainer($site, $container);
+        });
+        Route::post('/main-widgets/store', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->storeMainWidget($request, $site);
+        });
+        Route::put('/main-widgets/{widget}', function (Request $request, \App\Models\MainWidget $widget) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateMainWidget($site, $widget, $request);
+        });
+        Route::delete('/main-widgets/{widget}', function (Request $request, \App\Models\MainWidget $widget) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->deleteMainWidget($site, $widget);
+        });
+        Route::post('/main-widgets/containers/reorder', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->reorderMainWidgetContainers($request, $site);
+        });
+        Route::post('/main-widgets/reorder', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->reorderMainWidgets($request, $site);
+        });
+        
+        // Custom Pages
+        Route::get('/custom-pages', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->customPages($site);
+        });
+        Route::post('/custom-pages/store', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->storeCustomPage($request, $site);
+        });
+        Route::get('/custom-pages/{customPage}/edit', function (Request $request, \App\Models\CustomPage $customPage) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->editCustomPage($site, $customPage, $request);
+        });
+        Route::put('/custom-pages/{customPage}', function (Request $request, \App\Models\CustomPage $customPage) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateCustomPage($request, $site, $customPage);
+        });
+        Route::delete('/custom-pages/{customPage}', function (Request $request, \App\Models\CustomPage $customPage) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->deleteCustomPage($site, $customPage);
+        });
+        
+        // Sidebar Widgets
+        Route::get('/sidebar-widgets', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->sidebarWidgets($site);
+        });
+        Route::post('/sidebar-widgets/store', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->storeSidebarWidget($request, $site);
+        });
+        Route::put('/sidebar-widgets/{widget}', function (Request $request, \App\Models\SidebarWidget $widget) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateSidebarWidget($request, $site, $widget);
+        });
+        Route::delete('/sidebar-widgets/{widget}', function (Request $request, \App\Models\SidebarWidget $widget) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->deleteSidebarWidget($site, $widget);
+        });
+        Route::post('/sidebar-widgets/reorder', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->reorderSidebarWidgets($request, $site);
+        });
+        
+        // Banners
+        Route::get('/banners', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->banners($site);
+        });
+        Route::post('/banners', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->bannersUpdate($request, $site);
+        });
+        Route::get('/banners/{location}', function (Request $request, $location) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->bannersDetail($site, $location);
+        });
+        Route::post('/banners/store', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->bannersStore($request, $site);
+        });
+        Route::post('/banners/update-order', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->bannersUpdateOrder($request, $site);
+        });
+        Route::post('/banners/update-item', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->bannersUpdateItem($request, $site);
+        });
+        Route::post('/banners/save-all', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->bannersSaveAll($request, $site);
+        });
+        Route::delete('/banners/{banner}', function (Request $request, \App\Models\Banner $banner) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->bannersDelete($site, $banner);
+        });
+        
+        // Popups
+        Route::get('/popups', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->popups($site);
+        });
+        Route::post('/popups/store', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->popupsStore($request, $site);
+        });
+        Route::post('/popups/settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->popupsUpdateSettings($request, $site);
+        });
+        Route::post('/popups/update-order', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->popupsUpdateOrder($request, $site);
+        });
+        Route::post('/popups/{popup}/update', function (Request $request, \App\Models\Popup $popup) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->popupsUpdateItem($request, $site, $popup);
+        });
+        Route::delete('/popups/{popup}', function (Request $request, \App\Models\Popup $popup) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->popupsDelete($site, $popup);
+        });
     });
 });
 

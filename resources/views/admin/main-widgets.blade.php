@@ -8358,17 +8358,19 @@ function makeGradientControlDraggable(control) {
         const colorDisplay = e.target.closest('.gradient-color-display');
         if (colorDisplay) {
             // 색상 표시 영역을 클릭한 경우 드래그 시작
-        isDragging = true;
+            isDragging = true;
+            window.isDraggingControl = true; // 전역 플래그 설정
             hasMoved = false;
-        control.style.cursor = 'grabbing';
-        startX = e.clientX;
-        startLeft = parseFloat(control.style.left) || 0;
-        e.preventDefault();
+            control.style.cursor = 'grabbing';
+            startX = e.clientX;
+            startLeft = parseFloat(control.style.left) || 0;
+            e.preventDefault();
             e.stopPropagation();
             return;
         }
         // handle이나 컨트롤 자체를 클릭한 경우 드래그 시작
         isDragging = true;
+        window.isDraggingControl = true; // 전역 플래그 설정
         hasMoved = false;
         control.style.cursor = 'grabbing';
         startX = e.clientX;
@@ -8404,6 +8406,7 @@ function makeGradientControlDraggable(control) {
     document.addEventListener('mouseup', function(e) {
         if (isDragging) {
             isDragging = false;
+            window.isDraggingControl = false; // 전역 플래그 해제
             control.style.cursor = 'grab';
             // 드래그가 아닌 클릭인 경우에만 설정 패널 표시
             if (!hasMoved) {
@@ -8521,24 +8524,34 @@ function selectGradientControl(control, type) {
     const settingsPanel = document.getElementById('gradient_selected_control_settings');
     const removeBtn = document.getElementById('gradient_remove_selected');
     
+    const positionControl = document.getElementById('gradient_position_control');
+    
     if (type === 'start') {
         const colorInput = document.getElementById('gradient_modal_start_color');
         const alphaInput = document.getElementById('gradient_modal_start_alpha');
         if (settingsPanel && colorInput && alphaInput) {
-        document.getElementById('gradient_selected_color').value = colorInput.value;
-        document.getElementById('gradient_selected_alpha').value = alphaInput.value;
-        document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+            document.getElementById('gradient_selected_color').value = colorInput.value;
+            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+            const position = parseFloat(control.style.left || '0%').replace('%', '') || '0';
+            document.getElementById('gradient_selected_position').value = position;
+            document.getElementById('gradient_selected_position_value').textContent = position + '%';
             settingsPanel.style.display = 'block';
+            if (positionControl) positionControl.style.display = 'block';
         }
         if (removeBtn) removeBtn.style.display = 'none';
     } else if (type === 'end') {
         const colorInput = document.getElementById('gradient_modal_end_color');
         const alphaInput = document.getElementById('gradient_modal_end_alpha');
         if (settingsPanel && colorInput && alphaInput) {
-        document.getElementById('gradient_selected_color').value = colorInput.value;
-        document.getElementById('gradient_selected_alpha').value = alphaInput.value;
-        document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+            document.getElementById('gradient_selected_color').value = colorInput.value;
+            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+            const position = parseFloat(control.style.left || '100%').replace('%', '') || '100';
+            document.getElementById('gradient_selected_position').value = position;
+            document.getElementById('gradient_selected_position_value').textContent = position + '%';
             settingsPanel.style.display = 'block';
+            if (positionControl) positionControl.style.display = 'block';
         }
         if (removeBtn) removeBtn.style.display = 'none';
     } else if (type === 'middle') {
@@ -8547,13 +8560,20 @@ function selectGradientControl(control, type) {
         if (settingsPanel && colorInput) {
             document.getElementById('gradient_selected_color').value = colorInput.value;
             if (alphaInput) {
-            document.getElementById('gradient_selected_alpha').value = alphaInput.value;
-            document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
+                document.getElementById('gradient_selected_alpha').value = alphaInput.value;
+                document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
             }
+            const position = parseFloat(control.style.left || control.getAttribute('data-position') || '50').replace('%', '') || '50';
+            document.getElementById('gradient_selected_position').value = position;
+            document.getElementById('gradient_selected_position_value').textContent = position + '%';
             settingsPanel.style.display = 'block';
+            if (positionControl) positionControl.style.display = 'block';
         }
-            if (removeBtn) removeBtn.style.display = 'block';
-        }
+        if (removeBtn) removeBtn.style.display = 'block';
+    }
+    
+    // 중간 색상 아이콘 업데이트
+    updateGradientMiddleIcons();
 }
 
 // 선택된 컨트롤 업데이트
@@ -8581,6 +8601,57 @@ function updateSelectedGradientControl() {
             updateGradientMiddleColor(colorInput);
         }
     }
+    
+    // 중간 색상 아이콘 업데이트
+    updateGradientMiddleIcons();
+}
+
+// 위치 조정 슬라이더 업데이트
+function updateSelectedGradientControlPosition() {
+    if (!selectedGradientControl || !selectedGradientControlType) return;
+    
+    const position = document.getElementById('gradient_selected_position').value;
+    document.getElementById('gradient_selected_position_value').textContent = position + '%';
+    
+    selectedGradientControl.style.left = `${position}%`;
+    selectedGradientControl.setAttribute('data-position', position);
+    
+    updateGradientPreview();
+    updateGradientMiddleIcons();
+}
+
+// 중간 색상 아이콘 업데이트
+function updateGradientMiddleIcons() {
+    const middleIconsContainer = document.getElementById('gradient_middle_icons');
+    if (!middleIconsContainer) return;
+    
+    middleIconsContainer.innerHTML = '';
+    
+    const middleControls = document.querySelectorAll('.gradient-middle-control');
+    middleControls.forEach((control, index) => {
+        const colorDisplay = control.querySelector('.gradient-middle-color-display');
+        const position = parseFloat(control.style.left || control.getAttribute('data-position') || '50').replace('%', '') || '50';
+        const color = colorDisplay ? window.getComputedStyle(colorDisplay).background : 'rgba(128,128,128,1)';
+        
+        const icon = document.createElement('div');
+        icon.className = 'gradient-middle-icon gradient-control-icon';
+        icon.style.cssText = 'width: 60px; height: 40px; border: 2px solid #6c757d; border-radius: 4px; background: white; padding: 2px; cursor: pointer; position: relative;';
+        icon.setAttribute('data-control-index', index);
+        icon.onclick = function() {
+            selectGradientControl(control, 'middle');
+        };
+        
+        const iconDisplay = document.createElement('div');
+        iconDisplay.style.cssText = 'width: 100%; height: 100%; border-radius: 2px; background: ' + color + ';';
+        icon.appendChild(iconDisplay);
+        
+        const positionLabel = document.createElement('small');
+        positionLabel.style.cssText = 'position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; white-space: nowrap;';
+        positionLabel.textContent = position + '%';
+        icon.appendChild(positionLabel);
+        
+        middleIconsContainer.appendChild(icon);
+    });
 }
 
 // 선택된 컨트롤 제거
@@ -9146,6 +9217,9 @@ function hexToRgb(hex) {
                                 <div id="gradient_end_icon_display" style="width: 100%; height: 100%; border-radius: 2px; background: #000000;"></div>
                             </div>
                         </div>
+                        <!-- 중간 색상 아이콘 표시 영역 -->
+                        <div id="gradient_middle_icons" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;"></div>
+                        
                         <!-- 선택된 색상 컨트롤의 설정 -->
                         <div id="gradient_selected_control_settings" style="display: none;">
                             <div class="mb-2">
@@ -9167,6 +9241,21 @@ function hexToRgb(hex) {
                                 <div class="d-flex justify-content-between">
                                     <small style="font-size: 0.7rem;">0%</small>
                                     <small id="gradient_selected_alpha_value" style="font-size: 0.7rem;">100%</small>
+                                    <small style="font-size: 0.7rem;">100%</small>
+                                </div>
+                            </div>
+                            <div class="mb-2" id="gradient_position_control" style="display: none;">
+                                <label class="form-label small">위치</label>
+                                <input type="range" 
+                                       class="form-range" 
+                                       id="gradient_selected_position" 
+                                       min="0" 
+                                       max="100" 
+                                       value="0"
+                                       onchange="updateSelectedGradientControlPosition()">
+                                <div class="d-flex justify-content-between">
+                                    <small style="font-size: 0.7rem;">0%</small>
+                                    <small id="gradient_selected_position_value" style="font-size: 0.7rem;">0%</small>
                                     <small style="font-size: 0.7rem;">100%</small>
                                 </div>
                             </div>
