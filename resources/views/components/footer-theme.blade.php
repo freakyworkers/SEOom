@@ -69,7 +69,7 @@
                     <span style="color: {{ $footerTextColor }} !important;">|</span>
                     <a href="/sitemap.xml" style="color: {{ $footerTextColor }} !important; text-decoration: none; margin: 0 0.5rem;">사이트맵</a>
                     <span style="color: {{ $footerTextColor }} !important;">|</span>
-                    <a href="/rss.xml" style="color: {{ $footerTextColor }} !important; text-decoration: none; margin: 0 0.5rem;">RSS</a>
+                    <a href="{{ route('rss', ['site' => $site->slug]) }}" style="color: {{ $footerTextColor }} !important; text-decoration: none; margin: 0 0.5rem;">RSS</a>
                 </div>
                 
                 {{-- 회사정보 --}}
@@ -149,7 +149,7 @@
                         <span style="color: {{ $footerTextColor }} !important;">|</span>
                         <a href="/sitemap.xml" style="color: {{ $footerTextColor }} !important; text-decoration: none; margin: 0 0.5rem;">사이트맵</a>
                         <span style="color: {{ $footerTextColor }} !important;">|</span>
-                        <a href="/rss.xml" style="color: {{ $footerTextColor }} !important; text-decoration: none; margin: 0 0.5rem;">RSS</a>
+                        <a href="{{ route('rss', ['site' => $site->slug]) }}" style="color: {{ $footerTextColor }} !important; text-decoration: none; margin: 0 0.5rem;">RSS</a>
                     @if($showVisitorCount)
                     <span style="color: {{ $footerTextColor }} !important;">|</span>
                     <span style="color: {{ $footerTextColor }} !important; margin: 0 0.5rem;">
@@ -225,7 +225,7 @@
                         <span style="color: {{ $footerTextColor }} !important; margin: 0 0.25rem;">|</span>
                         <a href="/sitemap.xml" style="color: {{ $footerTextColor }} !important; text-decoration: none; margin: 0 0.25rem; white-space: nowrap;">사이트맵</a>
                         <span style="color: {{ $footerTextColor }} !important; margin: 0 0.25rem;">|</span>
-                        <a href="/rss.xml" style="color: {{ $footerTextColor }} !important; text-decoration: none; margin: 0 0.25rem; white-space: nowrap;">RSS</a>
+                        <a href="{{ route('rss', ['site' => $site->slug]) }}" style="color: {{ $footerTextColor }} !important; text-decoration: none; margin: 0 0.25rem; white-space: nowrap;">RSS</a>
                     </div>
                     @if($showVisitorCount)
                     <span style="color: {{ $footerTextColor }} !important; white-space: nowrap; margin-left: 0.25rem;">

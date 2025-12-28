@@ -442,13 +442,7 @@
                        target="_blank">
                         <i class="bi bi-box-arrow-up-right me-1"></i>사이트맵 보기
                     </a>
-                    @php
-                        $themeBottom = $site->getSetting('theme_bottom', 'theme03');
-                        $rssUrl = in_array($themeBottom, ['theme02', 'theme03', 'theme04'], true)
-                            ? url('/rss.xml')
-                            : route('rss', ['site' => $site->slug]);
-                    @endphp
-                    <a href="{{ $rssUrl }}" 
+                    <a href="{{ route('rss', ['site' => $site->slug]) }}" 
                        class="btn btn-sm btn-outline-primary" 
                        target="_blank">
                         <i class="bi bi-rss me-1"></i>RSS 피드 보기
