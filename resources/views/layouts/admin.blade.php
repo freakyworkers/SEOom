@@ -308,7 +308,7 @@
                 @if($site->hasFeature('main_widgets'))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.main-widgets') || request()->routeIs('master.admin.main-widgets') ? 'active' : '' }}" 
-                       href="{{ $site->isMasterSite() ? route('master.admin.main-widgets') : route('admin.main-widgets', ['site' => $site->slug]) }}">
+                       href="{{ $site->isMasterSite() ? url('/admin/main-widgets') : route('admin.main-widgets', ['site' => $site->slug]) }}">
                         <i class="bi bi-grid me-2"></i>메인 위젯
                     </a>
                 </li>
