@@ -196,18 +196,24 @@
                                 // 모든 위젯이 칸 영역의 가로 100%를 활용하도록 설정
                                 $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'width: 100%; max-width: 100%;';
                                 // 세로 정렬은 컬럼 레벨에서만 처리하고, 위젯 래퍼에는 flex를 적용하지 않음 (위젯 크기 보존)
-                                // 첫 번째 위젯이 아니면 상단 간격 적용, 하단 마진은 제거
-                                // 세로 정렬이 상단일 때 첫 번째 위젯의 상단 마진 제거
+                                // 첫 번째 위젯과 마지막 위젯의 마진 처리
                                 $isFirstWidget = $index === 0;
+                                $isLastWidget = $index === $columnWidgets->count() - 1;
                                 $widgetMarginClass = '';
                                 $widgetWrapperStyleMargin = '';
                                 if (!$isFullHeight) {
-                                    if (!$isFirstWidget) {
-                                        $widgetMarginClass .= $widgetSpacingTopClass;
-                                    } elseif ($isFirstWidget && $verticalAlign === 'top') {
-                                        // 첫 번째 위젯이고 세로 정렬이 상단일 때 상단 마진 제거
+                                    // 첫 번째 위젯은 상단 마진 0
+                                    if ($isFirstWidget) {
                                         $widgetMarginClass = 'mt-0';
                                         $widgetWrapperStyleMargin = 'margin-top: 0 !important;';
+                                    } else {
+                                        // 첫 번째가 아닌 위젯은 상단 간격 적용
+                                        $widgetMarginClass .= $widgetSpacingTopClass;
+                                    }
+                                    // 마지막 위젯은 하단 마진 0
+                                    if ($isLastWidget) {
+                                        $widgetMarginClass .= ($widgetMarginClass ? ' ' : '') . 'mb-0';
+                                        $widgetWrapperStyleMargin .= ($widgetWrapperStyleMargin ? ' ' : '') . 'margin-bottom: 0 !important;';
                                     }
                                 }
                                 if ($widgetWrapperStyleMargin) {

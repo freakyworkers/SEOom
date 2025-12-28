@@ -1430,28 +1430,24 @@
                         </div>
                         <script>
                             (function() {
-                                function initGallerySlide() {
-                                    const widgetId = {{ $widget->id }};
-                                    const container = document.getElementById('gallery-slider-' + widgetId);
-                                    const wrapper = document.getElementById('gallery-slide-wrapper-' + widgetId);
-                                    if (!container || !wrapper) {
-                                        setTimeout(initGallerySlide, 100);
-                                        return;
-                                    }
-                                    
-                                    // 이미 초기화된 위젯은 건너뛰기
-                                    if (wrapper.dataset.initialized === 'true') return;
-                                    wrapper.dataset.initialized = 'true';
-                                    
-                                    const direction = wrapper.dataset.direction || 'left';
-                                    const cols = parseInt(wrapper.dataset.cols) || 3;
-                                    const totalItems = {{ $galleryPosts->count() }};
-                                    
-                                    if (totalItems <= cols) return; // 슬라이드 불필요
-                                    
-                                    let currentIndex = 0;
-                                    let intervalId;
-                                    let isTransitioning = false;
+                                const widgetId = {{ $widget->id }};
+                                const container = document.getElementById('gallery-slider-' + widgetId);
+                                const wrapper = document.getElementById('gallery-slide-wrapper-' + widgetId);
+                                if (!container || !wrapper) return;
+                                
+                                // 이미 초기화된 위젯은 건너뛰기
+                                if (wrapper.dataset.initialized === 'true') return;
+                                wrapper.dataset.initialized = 'true';
+                                
+                                const direction = wrapper.dataset.direction || 'left';
+                                const cols = parseInt(wrapper.dataset.cols) || 3;
+                                const totalItems = {{ $galleryPosts->count() }};
+                                
+                                if (totalItems <= cols) return; // 슬라이드 불필요
+                                
+                                let currentIndex = 0;
+                                let intervalId;
+                                let isTransitioning = false;
                                 
                                 function slideNext() {
                                     if (isTransitioning) return;
@@ -1550,33 +1546,19 @@
                                 }
                                 
                                 // 초기 설정
-                                wrapper.style.transition = 'transform 0.5s ease';
-                                wrapper.style.transform = 'translateX(0)';
-                                
                                 if (direction === 'left' || direction === 'right') {
                                     const slideContainer = container.querySelector('.gallery-slide-container');
                                     if (slideContainer) {
                                         slideContainer.style.width = '100%';
                                     }
-                                    wrapper.style.transform = 'translateX(0)';
-                                } else if (direction === 'up' || direction === 'down') {
-                                    wrapper.style.transform = 'translateY(0)';
                                 }
                                 
-                                    // 호버 시 일시 정지
-                                    container.addEventListener('mouseenter', stopAutoSlide);
-                                    container.addEventListener('mouseleave', startAutoSlide);
-                                    
-                                    // 자동 슬라이드 시작
-                                    startAutoSlide();
-                                }
+                                // 호버 시 일시 정지
+                                container.addEventListener('mouseenter', stopAutoSlide);
+                                container.addEventListener('mouseleave', startAutoSlide);
                                 
-                                // DOMContentLoaded 또는 지연 실행
-                                if (document.readyState === 'loading') {
-                                    document.addEventListener('DOMContentLoaded', initGallerySlide);
-                                } else {
-                                    setTimeout(initGallerySlide, 500);
-                                }
+                                // 자동 슬라이드 시작
+                                startAutoSlide();
                             })();
                         </script>
                     @endif
