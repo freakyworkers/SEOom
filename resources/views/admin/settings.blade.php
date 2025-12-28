@@ -1855,10 +1855,14 @@
             }
 
             console.log('Domain update URL:', url);
+            console.log('Domain value:', formData.get('domain'));
+
+            // PUT 메서드를 POST로 변경하고 _method=PUT 추가 (Laravel에서 FormData를 제대로 파싱하기 위함)
+            formData.append('_method', 'PUT');
 
             try {
                 const response = await fetch(url, {
-                    method: 'PUT',
+                    method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': (function() { var meta = document.querySelector('meta[name="csrf-token"]'); return meta ? meta.getAttribute('content') : null; })() || '{{ csrf_token() }}',
                         'X-Requested-With': 'XMLHttpRequest',
