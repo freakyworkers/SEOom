@@ -40,7 +40,10 @@ class MasterAuthController extends Controller
 
         if ($this->authService->login($request->only('email', 'password'), $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->route('master.admin.dashboard');
+            if (\Route::has('master.admin.dashboard')) {
+                return redirect()->route('master.admin.dashboard');
+            }
+            return redirect('/admin/dashboard');
         }
 
         return back()->withErrors([
@@ -133,7 +136,10 @@ class MasterAuthController extends Controller
         auth('master')->login($masterUser, true);
         $request->session()->regenerate();
 
-        return redirect()->route('master.admin.dashboard');
+        if (\Route::has('master.admin.dashboard')) {
+            return redirect()->route('master.admin.dashboard');
+        }
+        return redirect('/admin/dashboard');
     }
 }
 
