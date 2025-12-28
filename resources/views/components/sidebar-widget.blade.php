@@ -1311,9 +1311,6 @@
                                      data-direction="{{ $slideDirection }}"
                                      data-cols="{{ $slideCols }}"
                                      style="display: flex; 
-                                            width: 100%;
-                                            min-width: 100%;
-                                            flex-shrink: 0;
                                             @if($slideDirection === 'left' || $slideDirection === 'right')
                                                 flex-direction: row; 
                                                 transition: transform 0.5s ease;
@@ -1524,32 +1521,6 @@
                                             const slideContainer = container.querySelector('.gallery-slide-container');
                                             if (slideContainer) {
                                                 slideContainer.style.width = '100%';
-                                            }
-                                            
-                                            // wrapper 너비를 container 너비와 동일하게 명시적 설정
-                                            // container 너비가 계산될 때까지 여러 번 재시도
-                                            function setWrapperWidth() {
-                                                const containerWidth = container.getBoundingClientRect().width;
-                                                if (containerWidth > 0) {
-                                                    wrapper.style.width = containerWidth + 'px';
-                                                } else {
-                                                    // container 너비가 아직 계산되지 않았으면 재시도
-                                                    requestAnimationFrame(() => {
-                                                        setTimeout(setWrapperWidth, 50);
-                                                    });
-                                                }
-                                            }
-                                            setWrapperWidth();
-                                            
-                                            // ResizeObserver로 container 너비 변경 감지
-                                            if (typeof ResizeObserver !== 'undefined') {
-                                                const resizeObserver = new ResizeObserver(() => {
-                                                    const containerWidth = container.getBoundingClientRect().width;
-                                                    if (containerWidth > 0) {
-                                                        wrapper.style.width = containerWidth + 'px';
-                                                    }
-                                                });
-                                                resizeObserver.observe(container);
                                             }
                                         }
                                         
