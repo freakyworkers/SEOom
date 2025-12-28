@@ -1608,9 +1608,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const imageSlideContainer = document.getElementById('widget_image_slide_container');
         
         if (widgetType === 'popular_posts' || widgetType === 'recent_posts' || widgetType === 'weekly_popular_posts' || widgetType === 'monthly_popular_posts') {
-            limitContainer.style.display = 'block';
-            rankingContainer.style.display = 'none';
-            boardContainer.style.display = 'none';
+            if (limitContainer) limitContainer.style.display = 'block';
+            if (rankingContainer) rankingContainer.style.display = 'none';
+            if (boardContainer) boardContainer.style.display = 'none';
             if (sortOrderContainer) sortOrderContainer.style.display = 'none';
             if (marqueeDirectionContainer) marqueeDirectionContainer.style.display = 'none';
             // 갤러리 관련 컨테이너 숨김
@@ -1634,8 +1634,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (imageSlideContainer) imageSlideContainer.style.display = 'none';
             const titleHelp = document.getElementById('widget_title_help');
             if (titleHelp) titleHelp.style.display = 'none';
-            titleContainer.style.display = 'block';
-            titleInput.required = true;
+            if (titleContainer) titleContainer.style.display = 'block';
+            if (titleInput) titleInput.required = true;
         } else if (widgetType === 'board') {
             limitContainer.style.display = 'block';
             rankingContainer.style.display = 'none';
@@ -4596,6 +4596,7 @@ function saveWidgetOrder() {
     min-height: 200px;
 }
 </style>
+<script>
 // 사이드 위젯 애니메이션 모달 열기
 function openSidebarWidgetAnimationModal(widgetId) {
     document.getElementById('sidebar_widget_animation_id').value = widgetId;

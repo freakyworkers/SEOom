@@ -63,11 +63,10 @@ class AdminController extends Controller
                 }
                 
                 // 사이트별 사용자 검증 (마스터 관리자가 아닌 경우만)
-                if ($request->route('site')) {
-                    $site = $request->route('site');
-                    if ($user->site_id !== $site->id) {
-                        abort(403, '이 사이트에 대한 접근 권한이 없습니다.');
-                    }
+                // route('site')가 존재하고 null이 아닌 경우에만 검증
+                $routeSite = $request->route('site');
+                if ($routeSite && $user->site_id !== $routeSite->id) {
+                    abort(403, '이 사이트에 대한 접근 권한이 없습니다.');
                 }
             } else {
                 // 마스터 사용자인 경우, 사용자가 없어도 통과하되 사용자가 있으면 역할 확인

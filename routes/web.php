@@ -59,326 +59,647 @@ Route::get('/robots.txt', [\App\Http\Controllers\RobotsController::class, 'index
 
 // 마스터 사이트 인증 라우트 (루트 경로)
 Route::middleware('web')->group(function () {
-    $masterSite = \App\Models\Site::getMasterSite();
-    
-    if ($masterSite) {
-        // 마스터 사이트가 있으면 루트 경로에 인증 라우트 추가
-        Route::middleware('guest')->group(function () use ($masterSite) {
-            Route::get('/login', function () use ($masterSite) {
-                return app(\App\Http\Controllers\AuthController::class)->showLoginForm($masterSite);
-            })->name('home.login');
-            
-            Route::post('/login', function (Request $request) use ($masterSite) {
-                return app(\App\Http\Controllers\AuthController::class)->login($request, $masterSite);
-            });
-            
-            Route::get('/register', function () use ($masterSite) {
-                return app(\App\Http\Controllers\AuthController::class)->showRegisterForm($masterSite);
-            })->name('home.register');
-            
-            Route::post('/register', function (Request $request) use ($masterSite) {
-                return app(\App\Http\Controllers\AuthController::class)->register($request, $masterSite);
-            });
-            
-            // Master Site Social Login Routes
-            Route::get('/auth/{provider}', function ($provider) use ($masterSite) {
-                return app(\App\Http\Controllers\SocialLoginController::class)->redirectToProvider($masterSite, $provider);
-            })->name('master.social.login');
+    // 마스터 사이트가 있으면 루트 경로에 인증 라우트 추가
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AuthController::class)->showLoginForm($masterSite);
+        })->name('home.login');
+        
+        Route::post('/login', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AuthController::class)->login($request, $masterSite);
         });
         
-        // Master Site Social Login Callback Route (guest 미들웨어 밖으로 이동 - 구글 콜백은 세션 필요)
-        Route::get('/auth/{provider}/callback', function (Request $request, $provider) use ($masterSite) {
-            return app(\App\Http\Controllers\SocialLoginController::class)->handleProviderCallback($request, $provider);
-        })->name('master.social.callback');
+        Route::get('/register', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AuthController::class)->showRegisterForm($masterSite);
+        })->name('home.register');
         
-        // Master Console SSO Token Generation (from master site)
-        Route::post('/master-console-sso-token', function (Request $request) {
-            return app(\App\Http\Controllers\Master\MasterAuthController::class)->generateSsoToken();
-        })->middleware('auth')->name('master.console.sso-token');
+        Route::post('/register', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AuthController::class)->register($request, $masterSite);
+        });
         
-        Route::post('/logout', function (Request $request) use ($masterSite) {
-            return app(\App\Http\Controllers\AuthController::class)->logout($request, $masterSite);
-        })->middleware('auth')->name('master.site.logout');
+        // Master Site Social Login Routes
+        Route::get('/auth/{provider}', function ($provider) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\SocialLoginController::class)->redirectToProvider($masterSite, $provider);
+        })->name('master.social.login');
+    });
+    
+    // Master Site Social Login Callback Route (guest 미들웨어 밖으로 이동 - 구글 콜백은 세션 필요)
+    Route::get('/auth/{provider}/callback', function (Request $request, $provider) {
+        return app(\App\Http\Controllers\SocialLoginController::class)->handleProviderCallback($request, $provider);
+    })->name('master.social.callback');
+    
+    // Master Console SSO Token Generation (from master site)
+    Route::post('/master-console-sso-token', function (Request $request) {
+        return app(\App\Http\Controllers\Master\MasterAuthController::class)->generateSsoToken();
+    })->middleware('auth')->name('master.console.sso-token');
+    
+    Route::post('/logout', function (Request $request) {
+        $masterSite = \App\Models\Site::getMasterSite();
+        if (!$masterSite) {
+            abort(404);
+        }
+        return app(\App\Http\Controllers\AuthController::class)->logout($request, $masterSite);
+    })->middleware('auth')->name('master.site.logout');
         
-        // Store Routes (스토어)
-        Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
-        Route::get('/store/plugins', [\App\Http\Controllers\StoreController::class, 'plugins'])->name('store.plugins');
-        
-        // Payment Routes (마스터 사이트용)
-        Route::get('/plans/{plan}/subscribe', [PaymentController::class, 'subscribe'])->name('payment.subscribe');
-        Route::post('/plans/{plan}/subscribe', [PaymentController::class, 'processSubscription'])->name('payment.process-subscription');
-        Route::get('/payment/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
-        Route::get('/payment/change-plan-checkout', [PaymentController::class, 'changePlanCheckout'])->name('payment.change-plan-checkout');
-        Route::post('/my-sites/{userSite}/addons/{addonProduct}/purchase', [PaymentController::class, 'processAddon'])->name('payment.process-addon');
-        Route::get('/payment/addon-checkout', [PaymentController::class, 'addonCheckout'])->name('payment.addon-checkout');
-        Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
-        Route::get('/payment/fail', [PaymentController::class, 'fail'])->name('payment.fail');
-        Route::get('/payment/success-page', [PaymentController::class, 'successPage'])->name('payment.success-page');
-        Route::get('/payment/fail-page', [PaymentController::class, 'failPage'])->name('payment.fail-page');
-        Route::get('/payment/select-server-capacity-site', [PaymentController::class, 'selectServerCapacitySite'])->name('payment.select-server-capacity-site')->middleware('auth');
-        Route::post('/payment/apply-server-capacity', [PaymentController::class, 'applyServerCapacity'])->name('payment.apply-server-capacity')->middleware('auth');
-        
-        // 마스터 사이트 관리자 페이지 라우트 (루트 경로)
-        // 모든 관리자 라우트를 마스터 사이트용으로 복제
-        Route::prefix('admin')->middleware('auth')->group(function () use ($masterSite) {
-            // Dashboard
-            Route::get('/dashboard', function () use ($masterSite) {
-                return app(\App\Http\Controllers\AdminController::class)->dashboard($masterSite);
-            })->name('master.admin.dashboard');
-            Route::get('/dashboard/chart-data', function () use ($masterSite) {
-                return app(\App\Http\Controllers\AdminController::class)->getChartData($masterSite);
-            })->name('master.admin.dashboard.chart');
+    // Store Routes (스토어)
+    Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
+    Route::get('/store/plugins', [\App\Http\Controllers\StoreController::class, 'plugins'])->name('store.plugins');
+    
+    // Payment Routes (마스터 사이트용)
+    Route::get('/plans/{plan}/subscribe', [PaymentController::class, 'subscribe'])->name('payment.subscribe');
+    Route::post('/plans/{plan}/subscribe', [PaymentController::class, 'processSubscription'])->name('payment.process-subscription');
+    Route::get('/payment/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
+    Route::get('/payment/change-plan-checkout', [PaymentController::class, 'changePlanCheckout'])->name('payment.change-plan-checkout');
+    Route::post('/my-sites/{userSite}/addons/{addonProduct}/purchase', [PaymentController::class, 'processAddon'])->name('payment.process-addon');
+    Route::get('/payment/addon-checkout', [PaymentController::class, 'addonCheckout'])->name('payment.addon-checkout');
+    Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/fail', [PaymentController::class, 'fail'])->name('payment.fail');
+    Route::get('/payment/success-page', [PaymentController::class, 'successPage'])->name('payment.success-page');
+    Route::get('/payment/fail-page', [PaymentController::class, 'failPage'])->name('payment.fail-page');
+    Route::get('/payment/select-server-capacity-site', [PaymentController::class, 'selectServerCapacitySite'])->name('payment.select-server-capacity-site')->middleware('auth');
+    Route::post('/payment/apply-server-capacity', [PaymentController::class, 'applyServerCapacity'])->name('payment.apply-server-capacity')->middleware('auth');
+    
+    // 마스터 사이트 관리자 페이지 라우트 (루트 경로)
+    // 모든 관리자 라우트를 마스터 사이트용으로 복제
+    Route::prefix('admin')->middleware('auth')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->dashboard($masterSite);
+        })->name('master.admin.dashboard');
+        Route::get('/dashboard/chart-data', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->getChartData($masterSite);
+        })->name('master.admin.dashboard.chart');
             
             // Users
-            Route::get('/users', function (Request $request) use ($masterSite) {
+            Route::get('/users', function (Request $request) {
+                $masterSite = \App\Models\Site::getMasterSite();
+                if (!$masterSite) {
+                    abort(404);
+                }
                 return app(\App\Http\Controllers\AdminController::class)->users($masterSite, $request);
             })->name('master.admin.users');
-            Route::post('/users', function (Request $request) use ($masterSite) {
+            Route::post('/users', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->storeUser($request, $masterSite);
             })->name('master.admin.users.store');
-            Route::get('/users/{user}', function (\App\Models\User $user) use ($masterSite) {
+            Route::get('/users/{user}', function (\App\Models\User $user) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->userDetail($masterSite, $user);
             })->name('master.admin.users.detail');
-            Route::put('/users/{user}', function (Request $request, \App\Models\User $user) use ($masterSite) {
+            Route::put('/users/{user}', function (Request $request, \App\Models\User $user) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateUser($request, $masterSite, $user);
             })->name('master.admin.users.update');
             
             // Registration Settings
-            Route::get('/registration-settings', function () use ($masterSite) {
+            Route::get('/registration-settings', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->registrationSettings($masterSite);
             })->name('master.admin.registration-settings');
-            Route::post('/registration-settings', function (Request $request) use ($masterSite) {
+            Route::post('/registration-settings', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateRegistrationSettings($masterSite, $request);
             })->name('master.admin.registration-settings.update');
-            Route::post('/registration-settings/test-sms', function (Request $request) use ($masterSite) {
+            Route::post('/registration-settings/test-sms', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->testSms($masterSite, $request);
             })->name('master.admin.registration-settings.test-sms');
             
             // Mail Settings
-            Route::get('/mail-settings', function () use ($masterSite) {
+            Route::get('/mail-settings', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->mailSettings($masterSite);
             })->name('master.admin.mail-settings');
-            Route::post('/mail-settings', function (Request $request) use ($masterSite) {
+            Route::post('/mail-settings', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateMailSettings($request, $masterSite);
             })->name('master.admin.mail-settings.update');
-            Route::post('/mail-settings/test', function (Request $request) use ($masterSite) {
+            Route::post('/mail-settings/test', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->testMail($request, $masterSite);
             })->name('master.admin.mail-settings.test');
             
             // Contact Forms
-            Route::get('/contact-forms', function () use ($masterSite) {
+            Route::get('/contact-forms', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->contactForms($masterSite);
             })->name('master.admin.contact-forms.index');
-            Route::post('/contact-forms', function (Request $request) use ($masterSite) {
+            Route::post('/contact-forms', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->storeContactForm($request, $masterSite);
             })->name('master.admin.contact-forms.store');
-            Route::get('/contact-forms/{contactForm}', function (\App\Models\ContactForm $contactForm) use ($masterSite) {
+            Route::get('/contact-forms/{contactForm}', function (\App\Models\ContactForm $contactForm) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->showContactForm($masterSite, $contactForm);
             })->name('master.admin.contact-forms.show');
-            Route::put('/contact-forms/{contactForm}', function (Request $request, \App\Models\ContactForm $contactForm) use ($masterSite) {
+            Route::put('/contact-forms/{contactForm}', function (Request $request, \App\Models\ContactForm $contactForm) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateContactForm($request, $masterSite, $contactForm);
             })->name('master.admin.contact-forms.update');
-            Route::delete('/contact-forms/{contactForm}', function (\App\Models\ContactForm $contactForm) use ($masterSite) {
+            Route::delete('/contact-forms/{contactForm}', function (\App\Models\ContactForm $contactForm) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->deleteContactForm($masterSite, $contactForm);
             })->name('master.admin.contact-forms.delete');
             
             // Maps
-            Route::get('/maps', function () use ($masterSite) {
+            Route::get('/maps', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->mapsIndex($masterSite);
             })->name('master.admin.maps.index');
-            Route::post('/maps', function (Request $request) use ($masterSite) {
+            Route::post('/maps', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->mapsStore($request, $masterSite);
             })->name('master.admin.maps.store');
-            Route::get('/maps/{map}/edit', function (\App\Models\Map $map) use ($masterSite) {
+            Route::get('/maps/{map}/edit', function (\App\Models\Map $map) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->mapsEdit($masterSite, $map);
             })->name('master.admin.maps.edit');
-            Route::put('/maps/{map}', function (Request $request, \App\Models\Map $map) use ($masterSite) {
+            Route::put('/maps/{map}', function (Request $request, \App\Models\Map $map) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->mapsUpdate($request, $masterSite, $map);
             })->name('master.admin.maps.update');
-            Route::delete('/maps/{map}', function (\App\Models\Map $map) use ($masterSite) {
+            Route::delete('/maps/{map}', function (\App\Models\Map $map) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->mapsDestroy($masterSite, $map);
             })->name('master.admin.maps.delete');
-            Route::post('/maps/geocode', function (Request $request) use ($masterSite) {
+            Route::post('/maps/geocode', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->mapsGeocode($request, $masterSite);
             })->name('master.admin.maps.geocode');
-            Route::post('/maps/add-default', function (Request $request) use ($masterSite) {
+            Route::post('/maps/add-default', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->mapsAddDefault($request, $masterSite);
             })->name('master.admin.maps.add-default');
             
             // User Ranks
-            Route::get('/user-ranks', function () use ($masterSite) {
+            Route::get('/user-ranks', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->userRanks($masterSite);
             })->name('master.admin.user-ranks');
-            Route::post('/user-ranks/store', function (Request $request) use ($masterSite) {
+            Route::post('/user-ranks/store', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->userRanksStore($request, $masterSite);
             })->name('master.admin.user-ranks.store');
-            Route::post('/user-ranks/update', function (Request $request) use ($masterSite) {
+            Route::post('/user-ranks/update', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->userRanksUpdate($request, $masterSite);
             })->name('master.admin.user-ranks.update');
-            Route::delete('/user-ranks/{userRank}', function (\App\Models\UserRank $userRank) use ($masterSite) {
+            Route::delete('/user-ranks/{userRank}', function (\App\Models\UserRank $userRank) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->userRanksDelete($masterSite, $userRank);
             })->name('master.admin.user-ranks.delete');
             
             // My Page Settings
-            Route::get('/my-page-settings', function () use ($masterSite) {
+            Route::get('/my-page-settings', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->myPageSettings($masterSite);
             })->name('master.admin.my-page-settings');
-            Route::put('/my-page-settings', function (Request $request) use ($masterSite) {
+            Route::put('/my-page-settings', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateMyPageSettings($masterSite, $request);
             })->name('master.admin.my-page-settings.update');
             
             // Crawlers
-            Route::get('/crawlers', function () use ($masterSite) {
+            Route::get('/crawlers', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->crawlersIndex($masterSite);
             })->name('master.admin.crawlers.index');
-            Route::post('/crawlers', function (Request $request) use ($masterSite) {
+            Route::post('/crawlers', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->crawlersStore($request, $masterSite);
             })->name('master.admin.crawlers.store');
-            Route::get('/crawlers/{crawler}/edit', function (\App\Models\Crawler $crawler) use ($masterSite) {
+            Route::get('/crawlers/{crawler}/edit', function (\App\Models\Crawler $crawler) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->crawlersEdit($masterSite, $crawler);
             })->name('master.admin.crawlers.edit');
-            Route::put('/crawlers/{crawler}', function (Request $request, \App\Models\Crawler $crawler) use ($masterSite) {
+            Route::put('/crawlers/{crawler}', function (Request $request, \App\Models\Crawler $crawler) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->crawlersUpdate($request, $masterSite, $crawler);
             })->name('master.admin.crawlers.update');
-            Route::delete('/crawlers/{crawler}', function (\App\Models\Crawler $crawler) use ($masterSite) {
+            Route::delete('/crawlers/{crawler}', function (\App\Models\Crawler $crawler) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->crawlersDestroy($masterSite, $crawler);
             })->name('master.admin.crawlers.delete');
-            Route::post('/crawlers/{crawler}/toggle-active', function (\App\Models\Crawler $crawler) use ($masterSite) {
+            Route::post('/crawlers/{crawler}/toggle-active', function (\App\Models\Crawler $crawler) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->crawlersToggleActive($masterSite, $crawler);
             })->name('master.admin.crawlers.toggle-active');
-            Route::post('/crawlers/test', function (Request $request) use ($masterSite) {
+            Route::post('/crawlers/test', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->crawlersTest($request, $masterSite);
             })->name('master.admin.crawlers.test');
-            Route::post('/crawlers/run-all', function () use ($masterSite) {
+            Route::post('/crawlers/run-all', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->crawlersRunAll($masterSite);
             })->name('master.admin.crawlers.run-all');
             
             // Boards
-            Route::get('/boards', function () use ($masterSite) {
+            Route::get('/boards', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->boards($masterSite);
             })->name('master.admin.boards');
-            Route::get('/boards/{board}/topics', function (\App\Models\Board $board) use ($masterSite) {
+            Route::get('/boards/{board}/topics', function (\App\Models\Board $board) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->getBoardTopics($masterSite, $board);
             })->name('master.admin.boards.topics');
-            Route::post('/banned-words', function (Request $request) use ($masterSite) {
+            Route::post('/banned-words', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateBannedWords($request, $masterSite);
             })->name('master.admin.banned-words.update');
             
             // Posts
-            Route::get('/posts', function (Request $request) use ($masterSite) {
+            Route::get('/posts', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->posts($masterSite, $request);
             })->name('master.admin.posts');
-            Route::put('/posts/{post}/board', function (Request $request, \App\Models\Post $post) use ($masterSite) {
+            Route::put('/posts/{post}/board', function (Request $request, \App\Models\Post $post) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updatePostBoard($request, $masterSite, $post);
             })->name('master.admin.posts.update-board');
-            Route::put('/posts/{post}/views', function (Request $request, \App\Models\Post $post) use ($masterSite) {
+            Route::put('/posts/{post}/views', function (Request $request, \App\Models\Post $post) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updatePostViews($request, $masterSite, $post);
             })->name('master.admin.posts.update-views');
             
             // Messages
-            Route::get('/messages', function (Request $request) use ($masterSite) {
+            Route::get('/messages', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->messages($masterSite, $request);
             })->name('master.admin.messages.index');
-            Route::put('/messages/settings', function (Request $request) use ($masterSite) {
+            Route::put('/messages/settings', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateMessageSettings($request, $masterSite);
             })->name('master.admin.messages.update-settings');
-            Route::put('/messages/{message}', function (Request $request, \App\Models\Message $message) use ($masterSite) {
+            Route::put('/messages/{message}', function (Request $request, \App\Models\Message $message) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateMessage($request, $masterSite, $message);
             })->name('master.admin.messages.update');
-            Route::delete('/messages/{message}', function (\App\Models\Message $message) use ($masterSite) {
+            Route::delete('/messages/{message}', function (\App\Models\Message $message) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->deleteMessage($masterSite, $message);
             })->name('master.admin.messages.delete');
             
             // Banners
-            Route::get('/banners', function () use ($masterSite) {
+            Route::get('/banners', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->bannersIndex($masterSite);
             })->name('master.admin.banners.index');
-            Route::post('/banners', function (Request $request) use ($masterSite) {
+            Route::post('/banners', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->bannersUpdate($request, $masterSite);
             })->name('master.admin.banners.update');
-            Route::get('/banners/{location}', function ($location) use ($masterSite) {
+            Route::get('/banners/{location}', function ($location) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->bannersDetail($masterSite, $location);
             })->name('master.admin.banners.detail');
-            Route::post('/banners/store', function (Request $request) use ($masterSite) {
+            Route::post('/banners/store', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->bannersStore($request, $masterSite);
             })->name('master.admin.banners.store');
-            Route::post('/banners/update-order', function (Request $request) use ($masterSite) {
+            Route::post('/banners/update-order', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->bannersUpdateOrder($request, $masterSite);
             })->name('master.admin.banners.update-order');
-            Route::post('/banners/update-item', function (Request $request) use ($masterSite) {
+            Route::post('/banners/update-item', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->bannersUpdateItem($request, $masterSite);
             })->name('master.admin.banners.update-item');
-            Route::post('/banners/save-all', function (Request $request) use ($masterSite) {
+            Route::post('/banners/save-all', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->bannersSaveAll($request, $masterSite);
             })->name('master.admin.banners.save-all');
-            Route::delete('/banners/{banner}', function (\App\Models\Banner $banner) use ($masterSite) {
+            Route::delete('/banners/{banner}', function (\App\Models\Banner $banner) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->bannersDelete($masterSite, $banner);
             })->name('master.admin.banners.delete');
             
             // Popups
-            Route::get('/popups', function () use ($masterSite) {
+            Route::get('/popups', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->popupsIndex($masterSite);
             })->name('master.admin.popups.index');
-            Route::post('/popups/store', function (Request $request) use ($masterSite) {
+            Route::post('/popups/store', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->popupsStore($request, $masterSite);
             })->name('master.admin.popups.store');
-            Route::post('/popups/settings', function (Request $request) use ($masterSite) {
+            Route::post('/popups/settings', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->popupsUpdateSettings($request, $masterSite);
             })->name('master.admin.popups.update-settings');
-            Route::post('/popups/update-order', function (Request $request) use ($masterSite) {
+            Route::post('/popups/update-order', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->popupsUpdateOrder($request, $masterSite);
             })->name('master.admin.popups.update-order');
-            Route::post('/popups/{popup}/update', function (Request $request, \App\Models\Popup $popup) use ($masterSite) {
+            Route::post('/popups/{popup}/update', function (Request $request, \App\Models\Popup $popup) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->popupsUpdateItem($request, $masterSite, $popup);
             })->name('master.admin.popups.update-item');
-            Route::delete('/popups/{popup}', function (\App\Models\Popup $popup) use ($masterSite) {
+            Route::delete('/popups/{popup}', function (\App\Models\Popup $popup) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->popupsDelete($masterSite, $popup);
             })->name('master.admin.popups.delete');
             
             // Blocked IPs
-            Route::get('/blocked-ips', function () use ($masterSite) {
+            Route::get('/blocked-ips', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->blockedIpsIndex($masterSite);
             })->name('master.admin.blocked-ips.index');
-            Route::post('/blocked-ips', function (Request $request) use ($masterSite) {
+            Route::post('/blocked-ips', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->blockedIpsStore($request, $masterSite);
             })->name('master.admin.blocked-ips.store');
-            Route::delete('/blocked-ips/{ip}', function (\App\Models\BlockedIp $ip) use ($masterSite) {
+            Route::delete('/blocked-ips/{ip}', function (\App\Models\BlockedIp $ip) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->blockedIpsDestroy($masterSite, $ip);
             })->name('master.admin.blocked-ips.destroy');
             
             // Menus
-            Route::get('/menus', function () use ($masterSite) {
+            Route::get('/menus', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->menus($masterSite);
             })->name('master.admin.menus');
-            Route::post('/menus', function (Request $request) use ($masterSite) {
+            Route::post('/menus', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->storeMenu($request, $masterSite);
             })->name('master.admin.menus.store');
-            Route::put('/menus/order', function (Request $request) use ($masterSite) {
+            Route::put('/menus/order', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateMenuOrder($request, $masterSite);
             })->name('master.admin.menus.update-order');
-            Route::delete('/menus/{menu}', function (\App\Models\Menu $menu) use ($masterSite) {
+            Route::delete('/menus/{menu}', function (\App\Models\Menu $menu) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->deleteMenu($masterSite, $menu);
             })->name('master.admin.menus.delete');
             
             // Mobile Menus
-            Route::post('/mobile-menus', function (Request $request) use ($masterSite) {
+            Route::post('/mobile-menus', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->storeMobileMenu($request, $masterSite);
             })->name('master.admin.mobile-menus.store');
-            Route::put('/mobile-menus/order', function (Request $request) use ($masterSite) {
+            Route::put('/mobile-menus/order', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateMobileMenuOrder($request, $masterSite);
             })->name('master.admin.mobile-menus.update-order');
-            Route::post('/mobile-menus/design-type', function (Request $request) use ($masterSite) {
+            Route::post('/mobile-menus/design-type', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateMobileMenuDesignType($request, $masterSite);
             })->name('master.admin.mobile-menus.design-type');
-            Route::put('/mobile-menus/{mobileMenu}', function (Request $request, \App\Models\MobileMenu $mobileMenu) use ($masterSite) {
+            Route::put('/mobile-menus/{mobileMenu}', function (Request $request, \App\Models\MobileMenu $mobileMenu) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateMobileMenu($request, $masterSite, $mobileMenu);
             })->name('master.admin.mobile-menus.update');
-            Route::delete('/mobile-menus/{mobileMenu}', function (\App\Models\MobileMenu $mobileMenu) use ($masterSite) {
+            Route::delete('/mobile-menus/{mobileMenu}', function (\App\Models\MobileMenu $mobileMenu) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->deleteMobileMenu($masterSite, $mobileMenu);
             })->name('master.admin.mobile-menus.delete');
             
             // Add Points (테스트용)
-            Route::get('/add-points/{points}', function ($points) use ($masterSite) {
+            Route::get('/add-points/{points}', function ($points) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 if (!auth()->check() || !auth()->user()->canManage()) {
                     abort(403);
                 }
@@ -388,84 +709,180 @@ Route::middleware('web')->group(function () {
             })->name('master.admin.add-points');
             
             // Attendance
-            Route::get('/attendance', function () use ($masterSite) {
+            Route::get('/attendance', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\AttendanceController::class)->index($masterSite);
             })->name('master.admin.attendance.index');
-            Route::put('/attendance', function (Request $request) use ($masterSite) {
+            Route::put('/attendance', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\AttendanceController::class)->update($request, $masterSite);
             })->name('master.admin.attendance.update');
             
             // Settings
-            Route::get('/settings', function () use ($masterSite) {
+            Route::get('/settings', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\SiteSettingController::class)->index($masterSite);
             })->name('master.admin.settings');
-            Route::put('/settings', function (Request $request) use ($masterSite) {
+            Route::put('/settings', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\SiteSettingController::class)->update($request, $masterSite);
             })->name('master.admin.settings.update');
-            Route::post('/settings/upload-image', function (Request $request) use ($masterSite) {
+            Route::post('/settings/upload-image', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\SiteSettingController::class)->uploadImage($request, $masterSite);
             })->name('master.admin.settings.upload-image');
-            Route::get('/settings/preview-header', function () use ($masterSite) {
+            Route::get('/settings/preview-header', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\SiteSettingController::class)->previewHeader($masterSite);
             })->name('master.admin.settings.preview-header');
-            Route::get('/settings/preview-mobile-header', function () use ($masterSite) {
+            Route::get('/settings/preview-mobile-header', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\SiteSettingController::class)->previewMobileHeader($masterSite);
             })->name('master.admin.settings.preview-mobile-header');
-            Route::post('/settings/increase-visitor', function (Request $request) use ($masterSite) {
+            Route::post('/settings/increase-visitor', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\SiteSettingController::class)->increaseVisitor($request, $masterSite);
             })->name('master.admin.settings.increase-visitor');
-            Route::get('/settings/terms-of-service', function () use ($masterSite) {
+            Route::get('/settings/terms-of-service', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\SiteSettingController::class)->getTermsOfService($masterSite);
             })->name('master.admin.settings.terms-of-service');
-            Route::get('/settings/privacy-policy', function () use ($masterSite) {
+            Route::get('/settings/privacy-policy', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\SiteSettingController::class)->getPrivacyPolicy($masterSite);
             })->name('master.admin.settings.privacy-policy');
             
             // Server Management
-            Route::get('/server-management', function () use ($masterSite) {
+            Route::get('/server-management', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->serverManagement($masterSite);
             })->name('master.admin.server-management');
             
             // Toggle Menus
-            Route::get('/toggle-menus', function () use ($masterSite) {
+            Route::get('/toggle-menus', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->toggleMenus($masterSite);
             })->name('master.admin.toggle-menus');
-            Route::get('/toggle-menus/list', function () use ($masterSite) {
+            Route::get('/toggle-menus/list', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->getToggleMenusList($masterSite);
             })->name('master.admin.toggle-menus.list');
-            Route::get('/toggle-menus/{toggleMenu}', function (\App\Models\ToggleMenu $toggleMenu) use ($masterSite) {
+            Route::get('/toggle-menus/{toggleMenu}', function (\App\Models\ToggleMenu $toggleMenu) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->getToggleMenu($masterSite, $toggleMenu);
             })->name('master.admin.toggle-menus.show');
-            Route::post('/toggle-menus', function (Request $request) use ($masterSite) {
+            Route::post('/toggle-menus', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->storeToggleMenu($request, $masterSite);
             })->name('master.admin.toggle-menus.store');
-            Route::put('/toggle-menus/{toggleMenu}', function (Request $request, \App\Models\ToggleMenu $toggleMenu) use ($masterSite) {
+            Route::put('/toggle-menus/{toggleMenu}', function (Request $request, \App\Models\ToggleMenu $toggleMenu) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateToggleMenu($request, $masterSite, $toggleMenu);
             })->name('master.admin.toggle-menus.update');
-            Route::delete('/toggle-menus/{toggleMenu}', function (\App\Models\ToggleMenu $toggleMenu) use ($masterSite) {
+            Route::delete('/toggle-menus/{toggleMenu}', function (\App\Models\ToggleMenu $toggleMenu) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->deleteToggleMenu($masterSite, $toggleMenu);
             })->name('master.admin.toggle-menus.delete');
-            Route::put('/toggle-menus/order', function (Request $request) use ($masterSite) {
+            Route::put('/toggle-menus/order', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateToggleMenuOrder($request, $masterSite);
             })->name('master.admin.toggle-menus.update-order');
-            Route::post('/toggle-menus/{toggleMenu}/toggle-active', function (\App\Models\ToggleMenu $toggleMenu) use ($masterSite) {
+            Route::post('/toggle-menus/{toggleMenu}/toggle-active', function (\App\Models\ToggleMenu $toggleMenu) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->toggleToggleMenuActive($masterSite, $toggleMenu);
             })->name('master.admin.toggle-menus.toggle-active');
             
             // Sidebar Widgets
-            Route::match(['get', 'post'], '/sidebar-widgets', function (Request $request) use ($masterSite) {
+            Route::match(['get', 'post'], '/sidebar-widgets', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->sidebarWidgets($masterSite, $request);
             })->name('master.admin.sidebar-widgets');
-            Route::post('/sidebar-widgets/store', function (Request $request) use ($masterSite) {
+            Route::post('/sidebar-widgets/store', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->storeSidebarWidget($request, $masterSite);
             })->name('master.admin.sidebar-widgets.store');
-            Route::put('/sidebar-widgets/{widget}', function (Request $request, \App\Models\SidebarWidget $widget) use ($masterSite) {
+            Route::put('/sidebar-widgets/{widget}', function (Request $request, \App\Models\SidebarWidget $widget) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateSidebarWidget($request, $masterSite, $widget);
             })->name('master.admin.sidebar-widgets.update');
-            Route::delete('/sidebar-widgets/{widget}', function (\App\Models\SidebarWidget $widget) use ($masterSite) {
+            Route::delete('/sidebar-widgets/{widget}', function (\App\Models\SidebarWidget $widget) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->deleteSidebarWidget($masterSite, $widget);
             })->name('master.admin.sidebar-widgets.delete');
-            Route::post('/sidebar-widgets/reorder', function (Request $request) use ($masterSite) {
+            Route::post('/sidebar-widgets/reorder', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->reorderSidebarWidgets($request, $masterSite);
             })->name('master.admin.sidebar-widgets.reorder');
             
@@ -474,154 +891,338 @@ Route::middleware('web')->group(function () {
                 $masterSite = \App\Models\Site::getMasterSite();
                 return app(\App\Http\Controllers\AdminController::class)->mainWidgets($masterSite, $request);
             })->name('master.admin.main-widgets');
-            Route::post('/main-widgets/containers/store', function (Request $request) use ($masterSite) {
+            Route::post('/main-widgets/containers/store', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->storeMainWidgetContainer($request, $masterSite);
             })->name('master.admin.main-widgets.containers.store');
-            Route::put('/main-widgets/containers/{container}', function (Request $request, \App\Models\MainWidgetContainer $container) use ($masterSite) {
+            Route::put('/main-widgets/containers/{container}', function (Request $request, \App\Models\MainWidgetContainer $container) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateMainWidgetContainer($request, $masterSite, $container);
             })->name('master.admin.main-widgets.containers.update');
-            Route::delete('/main-widgets/containers/{container}', function (\App\Models\MainWidgetContainer $container) use ($masterSite) {
+            Route::delete('/main-widgets/containers/{container}', function (\App\Models\MainWidgetContainer $container) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->deleteMainWidgetContainer($masterSite, $container);
             })->name('master.admin.main-widgets.containers.delete');
-            Route::post('/main-widgets/store', function (Request $request) use ($masterSite) {
+            Route::post('/main-widgets/store', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->storeMainWidget($request, $masterSite);
             })->name('master.admin.main-widgets.store');
-            Route::put('/main-widgets/{widget}', function (Request $request, \App\Models\MainWidget $widget) use ($masterSite) {
+            Route::put('/main-widgets/{widget}', function (Request $request, \App\Models\MainWidget $widget) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateMainWidget($masterSite, $widget, $request);
             })->name('master.admin.main-widgets.update');
-            Route::delete('/main-widgets/{widget}', function (\App\Models\MainWidget $widget) use ($masterSite) {
+            Route::delete('/main-widgets/{widget}', function (\App\Models\MainWidget $widget) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->deleteMainWidget($masterSite, $widget);
             })->name('master.admin.main-widgets.delete');
-            Route::post('/main-widgets/containers/reorder', function (Request $request) use ($masterSite) {
+            Route::post('/main-widgets/containers/reorder', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->reorderMainWidgetContainers($request, $masterSite);
             })->name('master.admin.main-widgets.containers.reorder');
-            Route::post('/main-widgets/reorder', function (Request $request) use ($masterSite) {
+            Route::post('/main-widgets/reorder', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->reorderMainWidgets($request, $masterSite);
             })->name('master.admin.main-widgets.reorder');
             
             // Custom Pages
-            Route::get('/custom-pages', function () use ($masterSite) {
+            Route::get('/custom-pages', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->customPages($masterSite);
             })->name('master.admin.custom-pages');
-            Route::post('/custom-pages/store', function (Request $request) use ($masterSite) {
+            Route::post('/custom-pages/store', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->storeCustomPage($request, $masterSite);
             })->name('master.admin.custom-pages.store');
-            Route::get('/custom-pages/{customPage}/edit', function (Request $request, \App\Models\CustomPage $customPage) use ($masterSite) {
+            Route::get('/custom-pages/{customPage}/edit', function (Request $request, \App\Models\CustomPage $customPage) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->editCustomPage($masterSite, $customPage, $request);
             })->name('master.admin.custom-pages.edit');
-            Route::put('/custom-pages/{customPage}', function (Request $request, \App\Models\CustomPage $customPage) use ($masterSite) {
+            Route::put('/custom-pages/{customPage}', function (Request $request, \App\Models\CustomPage $customPage) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateCustomPage($request, $masterSite, $customPage);
             })->name('master.admin.custom-pages.update');
-            Route::delete('/custom-pages/{customPage}', function (\App\Models\CustomPage $customPage) use ($masterSite) {
+            Route::delete('/custom-pages/{customPage}', function (\App\Models\CustomPage $customPage) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->deleteCustomPage($masterSite, $customPage);
             })->name('master.admin.custom-pages.delete');
-            Route::post('/custom-pages/{customPage}/containers/store', function (Request $request, \App\Models\CustomPage $customPage) use ($masterSite) {
+            Route::post('/custom-pages/{customPage}/containers/store', function (Request $request, \App\Models\CustomPage $customPage) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->storeCustomPageWidgetContainer($request, $masterSite, $customPage);
             })->name('master.admin.custom-pages.containers.store');
-            Route::put('/custom-pages/{customPage}/containers/{container}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidgetContainer $container) use ($masterSite) {
+            Route::put('/custom-pages/{customPage}/containers/{container}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidgetContainer $container) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateCustomPageWidgetContainer($request, $masterSite, $customPage, $container);
             })->name('master.admin.custom-pages.containers.update');
-            Route::delete('/custom-pages/{customPage}/containers/{container}', function (\App\Models\CustomPage $customPage, \App\Models\CustomPageWidgetContainer $container) use ($masterSite) {
+            Route::delete('/custom-pages/{customPage}/containers/{container}', function (\App\Models\CustomPage $customPage, \App\Models\CustomPageWidgetContainer $container) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->deleteCustomPageWidgetContainer($masterSite, $customPage, $container);
             })->name('master.admin.custom-pages.containers.delete');
-            Route::post('/custom-pages/{customPage}/widgets/store', function (Request $request, \App\Models\CustomPage $customPage) use ($masterSite) {
+            Route::post('/custom-pages/{customPage}/widgets/store', function (Request $request, \App\Models\CustomPage $customPage) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->storeCustomPageWidget($request, $masterSite, $customPage);
             })->name('master.admin.custom-pages.widgets.store');
-            Route::put('/custom-pages/{customPage}/widgets/{widget}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidget $widget) use ($masterSite) {
+            Route::put('/custom-pages/{customPage}/widgets/{widget}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidget $widget) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateCustomPageWidget($request, $masterSite, $customPage, $widget);
             })->name('master.admin.custom-pages.widgets.update');
-            Route::delete('/custom-pages/{customPage}/widgets/{widget}', function (\App\Models\CustomPage $customPage, \App\Models\CustomPageWidget $widget) use ($masterSite) {
+            Route::delete('/custom-pages/{customPage}/widgets/{widget}', function (\App\Models\CustomPage $customPage, \App\Models\CustomPageWidget $widget) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->deleteCustomPageWidget($masterSite, $customPage, $widget);
             })->name('master.admin.custom-pages.widgets.delete');
-            Route::post('/custom-pages/{customPage}/containers/reorder', function (Request $request, \App\Models\CustomPage $customPage) use ($masterSite) {
+            Route::post('/custom-pages/{customPage}/containers/reorder', function (Request $request, \App\Models\CustomPage $customPage) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgetContainers($request, $masterSite, $customPage);
             })->name('master.admin.custom-pages.containers.reorder');
-            Route::post('/custom-pages/{customPage}/widgets/reorder', function (Request $request, \App\Models\CustomPage $customPage) use ($masterSite) {
+            Route::post('/custom-pages/{customPage}/widgets/reorder', function (Request $request, \App\Models\CustomPage $customPage) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgets($request, $masterSite, $customPage);
             })->name('master.admin.custom-pages.widgets.reorder');
             
             // Chat Management
-            Route::get('/chat', function () use ($masterSite) {
+            Route::get('/chat', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminChatController::class)->index($masterSite);
             })->name('master.admin.chat.index');
-            Route::put('/chat/settings', function (Request $request) use ($masterSite) {
+            Route::put('/chat/settings', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminChatController::class)->updateSettings($masterSite, $request);
             })->name('master.admin.chat.update-settings');
-            Route::delete('/chat/messages/{message}', function (\App\Models\ChatMessage $message) use ($masterSite) {
+            Route::delete('/chat/messages/{message}', function (\App\Models\ChatMessage $message) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminChatController::class)->deleteMessage($masterSite, $message);
             })->name('master.admin.chat.delete-message');
-            Route::post('/chat/ban-user', function (Request $request) use ($masterSite) {
+            Route::post('/chat/ban-user', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminChatController::class)->banUser($masterSite, $request);
             })->name('master.admin.chat.ban-user');
             
             // Reports Management
-            Route::get('/reports', function (Request $request) use ($masterSite) {
+            Route::get('/reports', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminReportController::class)->index($masterSite, $request);
             })->name('master.admin.reports.index');
-            Route::get('/reports/{report}', function (\App\Models\Report $report) use ($masterSite) {
+            Route::get('/reports/{report}', function (\App\Models\Report $report) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminReportController::class)->show($masterSite, $report);
             })->name('master.admin.reports.show');
-            Route::put('/reports/{report}/status', function (Request $request, \App\Models\Report $report) use ($masterSite) {
+            Route::put('/reports/{report}/status', function (Request $request, \App\Models\Report $report) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminReportController::class)->updateStatus($masterSite, $report, $request);
             })->name('master.admin.reports.update-status');
-            Route::post('/reports/penalties', function (Request $request) use ($masterSite) {
+            Route::post('/reports/penalties', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminReportController::class)->issuePenalty($masterSite, $request);
             })->name('master.admin.reports.issue-penalty');
-            Route::delete('/reports/penalties/{penalty}', function (\App\Models\Penalty $penalty) use ($masterSite) {
+            Route::delete('/reports/penalties/{penalty}', function (\App\Models\Penalty $penalty) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminReportController::class)->removePenalty($masterSite, $penalty);
             })->name('master.admin.reports.remove-penalty');
             
             // Point Exchange
-            Route::get('/point-exchange', function () use ($masterSite) {
+            Route::get('/point-exchange', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\PointExchangeController::class)->index($masterSite);
             })->name('master.admin.point-exchange.index');
-            Route::put('/point-exchange/settings', function (Request $request) use ($masterSite) {
+            Route::put('/point-exchange/settings', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\PointExchangeController::class)->updateSettings($request, $masterSite);
             })->name('master.admin.point-exchange.update-settings');
-            Route::post('/point-exchange/products', function (Request $request) use ($masterSite) {
+            Route::post('/point-exchange/products', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\PointExchangeController::class)->storeProduct($request, $masterSite);
             })->name('master.admin.point-exchange.store-product');
-            Route::put('/point-exchange/products/{product}', function (Request $request, \App\Models\PointExchangeProduct $product) use ($masterSite) {
+            Route::put('/point-exchange/products/{product}', function (Request $request, \App\Models\PointExchangeProduct $product) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\PointExchangeController::class)->updateProduct($request, $masterSite, $product);
             })->name('master.admin.point-exchange.update-product');
-            Route::delete('/point-exchange/products/{product}', function (\App\Models\PointExchangeProduct $product) use ($masterSite) {
+            Route::delete('/point-exchange/products/{product}', function (\App\Models\PointExchangeProduct $product) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\PointExchangeController::class)->destroyProduct($masterSite, $product);
             })->name('master.admin.point-exchange.destroy-product');
-            Route::get('/point-exchange/products/{product}/applications', function (\App\Models\PointExchangeProduct $product) use ($masterSite) {
+            Route::get('/point-exchange/products/{product}/applications', function (\App\Models\PointExchangeProduct $product) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\PointExchangeController::class)->showApplications($masterSite, $product);
             })->name('master.admin.point-exchange.applications');
-            Route::put('/point-exchange/applications/{application}', function (Request $request, \App\Models\PointExchangeApplication $application) use ($masterSite) {
+            Route::put('/point-exchange/applications/{application}', function (Request $request, \App\Models\PointExchangeApplication $application) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\PointExchangeController::class)->updateApplication($request, $masterSite, $application);
             })->name('master.admin.point-exchange.update-application');
             
             // Event Application
-            Route::get('/event-application', function () use ($masterSite) {
+            Route::get('/event-application', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\EventApplicationController::class)->index($masterSite);
             })->name('master.admin.event-application.index');
-            Route::put('/event-application/settings', function (Request $request) use ($masterSite) {
+            Route::put('/event-application/settings', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\EventApplicationController::class)->updateSettings($request, $masterSite);
             })->name('master.admin.event-application.update-settings');
-            Route::post('/event-application/products', function (Request $request) use ($masterSite) {
+            Route::post('/event-application/products', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\EventApplicationController::class)->storeProduct($request, $masterSite);
             })->name('master.admin.event-application.store-product');
-            Route::put('/event-application/products/{product}', function (Request $request, \App\Models\EventApplicationProduct $product) use ($masterSite) {
+            Route::put('/event-application/products/{product}', function (Request $request, \App\Models\EventApplicationProduct $product) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\EventApplicationController::class)->updateProduct($request, $masterSite, $product);
             })->name('master.admin.event-application.update-product');
-            Route::delete('/event-application/products/{product}', function (\App\Models\EventApplicationProduct $product) use ($masterSite) {
+            Route::delete('/event-application/products/{product}', function (\App\Models\EventApplicationProduct $product) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\EventApplicationController::class)->destroyProduct($masterSite, $product);
             })->name('master.admin.event-application.destroy-product');
-            Route::get('/event-application/products/{product}/submissions', function (\App\Models\EventApplicationProduct $product) use ($masterSite) {
+            Route::get('/event-application/products/{product}/submissions', function (\App\Models\EventApplicationProduct $product) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\EventApplicationController::class)->showSubmissions($masterSite, $product);
             })->name('master.admin.event-application.submissions');
-            Route::put('/event-application/submissions/{submission}', function (Request $request, \App\Models\EventApplicationSubmission $submission) use ($masterSite) {
+            Route::put('/event-application/submissions/{submission}', function (Request $request, \App\Models\EventApplicationSubmission $submission) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\Admin\EventApplicationController::class)->updateSubmission($request, $masterSite, $submission);
             })->name('master.admin.event-application.update-submission');
             
             // Custom Codes
-            Route::get('/custom-codes', function () use ($masterSite) {
+            Route::get('/custom-codes', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->customCodes($masterSite);
             })->name('master.admin.custom-codes');
-            Route::post('/custom-codes', function (Request $request) use ($masterSite) {
+            Route::post('/custom-codes', function (Request $request) {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
                 return app(\App\Http\Controllers\AdminController::class)->updateCustomCodes($request, $masterSite);
             })->name('master.admin.custom-codes.update');
         });
@@ -848,12 +1449,12 @@ Route::middleware(['block.ip', 'verify.site.user'])->group(function () {
         });
         
         // Sidebar Widgets
-        Route::get('/sidebar-widgets', function (Request $request) {
+        Route::match(['get', 'post'], '/sidebar-widgets', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->sidebarWidgets($site);
+            return app(\App\Http\Controllers\AdminController::class)->sidebarWidgets($site, $request);
         });
         Route::post('/sidebar-widgets/store', function (Request $request) {
             $site = $request->attributes->get('site');
