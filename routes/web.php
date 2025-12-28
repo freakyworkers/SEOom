@@ -1226,7 +1226,6 @@ Route::middleware('web')->group(function () {
                 return app(\App\Http\Controllers\AdminController::class)->updateCustomCodes($request, $masterSite);
             })->name('master.admin.custom-codes.update');
         });
-    }
 });
 
 // 공통 소셜 로그인 콜백 라우트 (모든 사이트가 사용)
