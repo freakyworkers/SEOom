@@ -1428,129 +1428,112 @@
                                 </div>
                             </div>
                             <script>
-                            (function() {
-                                const widgetId = {{ $widget->id }};
-                                const widgetKey = 'gallery-slide-' + widgetId;
-                                
-                                // 전역 스코프에 저장하여 중복 실행 방지
-                                if (window[widgetKey + '_initialized']) return;
-                                window[widgetKey + '_initialized'] = true;
-                                
-                                function initGallerySlide() {
-                                    const container = document.getElementById('gallery-slider-' + widgetId);
-                                    const wrapper = document.getElementById('gallery-slide-wrapper-' + widgetId);
-                                    if (!container || !wrapper) {
-                                        setTimeout(initGallerySlide, 100); // Retry if elements are not found
-                                        return;
-                                    }
-                                    
-                                    // 이미 초기화된 위젯은 건너뛰기
-                                    if (wrapper.dataset.initialized === 'true') return;
-                                    wrapper.dataset.initialized = 'true';
-                                    
-                                    const direction = wrapper.dataset.direction || 'left';
-                                    const cols = parseInt(wrapper.dataset.cols) || 3;
-                                    const items = wrapper.querySelectorAll('.gallery-slide-item:not(.gallery-slide-duplicate)');
-                                    const itemCount = items.length;
-                                    
-                                    if (itemCount <= cols) return; // 슬라이드 불필요
-                                    
-                                    // 초기 transform 설정
-                                    wrapper.style.transform = 'translateX(0)';
-                                    
-                                    let currentIndex = 0;
-                                    let intervalId = null;
-                                    let isTransitioning = false;
-                                    
-                                    function slideNext() {
-                                        if (isTransitioning) return;
-                                        isTransitioning = true;
+                                (function() {
+                                    function initGallerySlide() {
+                                        const widgetId = {{ $widget->id }};
+                                        const container = document.getElementById('gallery-slider-' + widgetId);
+                                        const wrapper = document.getElementById('gallery-slide-wrapper-' + widgetId);
+                                        if (!container || !wrapper) {
+                                            setTimeout(initGallerySlide, 100); // Retry if elements are not found
+                                            return;
+                                        }
                                         
-                                        if (direction === 'left') {
-                                            currentIndex += cols;
-                                            if (currentIndex >= itemCount) {
-                                                // 마지막 위치로 이동
-                                                wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
-                                                setTimeout(() => {
-                                                    // transition 없이 처음으로 이동
-                                                    wrapper.style.transition = 'none';
-                                                    wrapper.style.transform = 'translateX(0)';
+                                        // 이미 초기화된 위젯은 건너뛰기
+                                        if (wrapper.dataset.initialized === 'true') return;
+                                        wrapper.dataset.initialized = 'true';
+                                        
+                                        const direction = wrapper.dataset.direction || 'left';
+                                        const cols = parseInt(wrapper.dataset.cols) || 3;
+                                        const items = wrapper.querySelectorAll('.gallery-slide-item:not(.gallery-slide-duplicate)');
+                                        const itemCount = items.length;
+                                        
+                                        if (itemCount <= cols) return; // 슬라이드 불필요
+                                        
+                                        let currentIndex = 0;
+                                        let intervalId;
+                                        let isTransitioning = false;
+                                        
+                                        function slideNext() {
+                                            if (isTransitioning) return;
+                                            isTransitioning = true;
+                                            
+                                            if (direction === 'left') {
+                                                currentIndex += cols;
+                                                if (currentIndex >= itemCount) {
                                                     currentIndex = 0;
+                                                    // 무한 슬라이드를 위해 transition 없이 처음으로 이동
                                                     setTimeout(() => {
-                                                        wrapper.style.transition = 'transform 0.5s ease';
-                                                        isTransitioning = false;
-                                                    }, 50);
-                                                }, 500);
-                                            } else {
-                                                wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
-                                                setTimeout(() => {
-                                                    isTransitioning = false;
-                                                }, 500);
-                                            }
-                                        } else if (direction === 'right') {
-                                            currentIndex -= cols;
-                                            if (currentIndex < 0) {
-                                                // 처음 위치로 이동
-                                                wrapper.style.transform = 'translateX(0)';
-                                                setTimeout(() => {
-                                                    // transition 없이 마지막으로 이동
-                                                    wrapper.style.transition = 'none';
-                                                    currentIndex = itemCount - cols;
+                                                        wrapper.style.transition = 'none';
+                                                        wrapper.style.transform = 'translateX(0)';
+                                                        setTimeout(() => {
+                                                            wrapper.style.transition = 'transform 0.5s ease';
+                                                            isTransitioning = false;
+                                                        }, 50);
+                                                    }, 500);
+                                                } else {
                                                     wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
                                                     setTimeout(() => {
-                                                        wrapper.style.transition = 'transform 0.5s ease';
                                                         isTransitioning = false;
-                                                    }, 50);
-                                                }, 500);
-                                            } else {
-                                                wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
-                                                setTimeout(() => {
-                                                    isTransitioning = false;
-                                                }, 500);
+                                                    }, 500);
+                                                }
+                                            } else if (direction === 'right') {
+                                                currentIndex -= cols;
+                                                if (currentIndex < 0) {
+                                                    currentIndex = itemCount - cols;
+                                                    // 무한 슬라이드를 위해 transition 없이 마지막으로 이동
+                                                    setTimeout(() => {
+                                                        wrapper.style.transition = 'none';
+                                                        wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
+                                                        setTimeout(() => {
+                                                            wrapper.style.transition = 'transform 0.5s ease';
+                                                            isTransitioning = false;
+                                                        }, 50);
+                                                    }, 500);
+                                                } else {
+                                                    wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
+                                                    setTimeout(() => {
+                                                        isTransitioning = false;
+                                                    }, 500);
+                                                }
                                             }
                                         }
-                                    }
-                                    
-                                    function startAutoSlide() {
-                                        if (intervalId) {
-                                            clearInterval(intervalId);
-                                            intervalId = null;
+                                        
+                                        function startAutoSlide() {
+                                            if (intervalId) clearInterval(intervalId);
+                                            intervalId = setInterval(slideNext, 3000);
                                         }
-                                        intervalId = setInterval(slideNext, 3000);
-                                    }
-                                    
-                                    function stopAutoSlide() {
-                                        if (intervalId) {
-                                            clearInterval(intervalId);
-                                            intervalId = null;
+                                        
+                                        function stopAutoSlide() {
+                                            if (intervalId) {
+                                                clearInterval(intervalId);
+                                                intervalId = null;
+                                            }
                                         }
-                                    }
-                                    
-                                    // 초기 설정
-                                    if (direction === 'left' || direction === 'right') {
-                                        const slideContainer = container.querySelector('.gallery-slide-container');
-                                        if (slideContainer) {
-                                            slideContainer.style.width = '100%';
+                                        
+                                        // 초기 설정
+                                        if (direction === 'left' || direction === 'right') {
+                                            const slideContainer = container.querySelector('.gallery-slide-container');
+                                            if (slideContainer) {
+                                                slideContainer.style.width = '100%';
+                                            }
                                         }
+                                        
+                                        // 호버 시 일시 정지
+                                        container.addEventListener('mouseenter', stopAutoSlide);
+                                        container.addEventListener('mouseleave', startAutoSlide);
+                                        
+                                        // 자동 슬라이드 시작
+                                        startAutoSlide();
                                     }
                                     
-                                    // 호버 시 일시 정지
-                                    container.addEventListener('mouseenter', stopAutoSlide);
-                                    container.addEventListener('mouseleave', startAutoSlide);
-                                    
-                                    // 자동 슬라이드 시작
-                                    startAutoSlide();
-                                }
-                                
-                                // 즉시 실행 시도, 실패 시 재시도
-                                if (document.readyState === 'loading') {
-                                    document.addEventListener('DOMContentLoaded', initGallerySlide);
-                                } else {
-                                    // DOM이 준비되었으면 즉시 실행
-                                    initGallerySlide();
-                                }
-                            })();
-                        </script>
+                                    // DOMContentLoaded 또는 지연 실행
+                                    if (document.readyState === 'loading') {
+                                        document.addEventListener('DOMContentLoaded', initGallerySlide);
+                                    } else {
+                                        setTimeout(initGallerySlide, 500);
+                                    }
+                                })();
+                            </script>
                         </div>
                     @endif
                 @endif
