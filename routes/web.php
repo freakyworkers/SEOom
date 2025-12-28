@@ -752,7 +752,7 @@ Route::middleware(['block.ip', 'verify.site.user'])->group(function () {
                 abort(404);
             }
             return app(\App\Http\Controllers\AdminController::class)->mainWidgets($site, $request);
-        })->name('admin.main-widgets');
+        });
         Route::post('/main-widgets/containers/store', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
@@ -787,7 +787,7 @@ Route::middleware(['block.ip', 'verify.site.user'])->group(function () {
                 abort(404);
             }
             return app(\App\Http\Controllers\AdminController::class)->updateMainWidget($site, $widget, $request);
-        })->name('admin.main-widgets.update');
+        });
         Route::delete('/main-widgets/{widget}', function (Request $request, \App\Models\MainWidget $widget) {
             $site = $request->attributes->get('site');
             if (!$site) {
