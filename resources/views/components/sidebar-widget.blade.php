@@ -1304,13 +1304,14 @@
                             $slideCols = $widgetSettings['slide_cols'] ?? 3;
                             $slideDirection = $widgetSettings['slide_direction'] ?? 'left';
                         @endphp
-                        <div class="gallery-slider position-relative" id="gallery-slider-{{ $widget->id }}" style="overflow: hidden; position: relative;">
+                        <div class="gallery-slider position-relative" id="gallery-slider-{{ $widget->id }}" style="overflow: hidden; position: relative; width: 100%;">
                             <div class="gallery-slide-container" style="overflow: hidden; position: relative; width: 100%;">
                                 <div class="gallery-slide-wrapper" 
                                      id="gallery-slide-wrapper-{{ $widget->id }}"
                                      data-direction="{{ $slideDirection }}"
                                      data-cols="{{ $slideCols }}"
                                      style="display: flex; 
+                                            width: 100%;
                                             @if($slideDirection === 'left' || $slideDirection === 'right')
                                                 flex-direction: row; 
                                                 transition: transform 0.5s ease;
@@ -1522,6 +1523,8 @@
                                             if (slideContainer) {
                                                 slideContainer.style.width = '100%';
                                             }
+                                            // wrapper 너비 명시적 설정
+                                            wrapper.style.width = '100%';
                                         }
                                         
                                         // 호버 시 일시 정지
