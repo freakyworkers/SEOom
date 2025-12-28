@@ -1429,8 +1429,14 @@
                             </div>
                             <script>
                             (function() {
+                                const widgetId = {{ $widget->id }};
+                                const widgetKey = 'gallery-slide-' + widgetId;
+                                
+                                // 전역 스코프에 저장하여 중복 실행 방지
+                                if (window[widgetKey + '_initialized']) return;
+                                window[widgetKey + '_initialized'] = true;
+                                
                                 function initGallerySlide() {
-                                    const widgetId = {{ $widget->id }};
                                     const container = document.getElementById('gallery-slider-' + widgetId);
                                     const wrapper = document.getElementById('gallery-slide-wrapper-' + widgetId);
                                     if (!container || !wrapper) {
@@ -1444,29 +1450,32 @@
                                     
                                     const direction = wrapper.dataset.direction || 'left';
                                     const cols = parseInt(wrapper.dataset.cols) || 3;
-                                    const totalItems = {{ $galleryPosts->count() }};
+                                    const items = wrapper.querySelectorAll('.gallery-slide-item:not(.gallery-slide-duplicate)');
+                                    const itemCount = items.length;
                                     
-                                    if (totalItems <= cols) return; // 슬라이드 불필요
+                                    if (itemCount <= cols) return; // 슬라이드 불필요
+                                    
+                                    // 초기 transform 설정
+                                    wrapper.style.transform = 'translateX(0)';
                                     
                                     let currentIndex = 0;
-                                    let intervalId;
+                                    let intervalId = null;
                                     let isTransitioning = false;
                                     
                                     function slideNext() {
                                         if (isTransitioning) return;
                                         isTransitioning = true;
                                         
-                                        const items = wrapper.querySelectorAll('.gallery-slide-item:not(.gallery-slide-duplicate)');
-                                        const itemCount = items.length;
-                                        
                                         if (direction === 'left') {
                                             currentIndex += cols;
                                             if (currentIndex >= itemCount) {
-                                                currentIndex = 0;
-                                                // 무한 슬라이드를 위해 transition 없이 처음으로 이동
+                                                // 마지막 위치로 이동
+                                                wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
                                                 setTimeout(() => {
+                                                    // transition 없이 처음으로 이동
                                                     wrapper.style.transition = 'none';
                                                     wrapper.style.transform = 'translateX(0)';
+                                                    currentIndex = 0;
                                                     setTimeout(() => {
                                                         wrapper.style.transition = 'transform 0.5s ease';
                                                         isTransitioning = false;
@@ -1481,10 +1490,12 @@
                                         } else if (direction === 'right') {
                                             currentIndex -= cols;
                                             if (currentIndex < 0) {
-                                                currentIndex = itemCount - cols;
-                                                // 무한 슬라이드를 위해 transition 없이 마지막으로 이동
+                                                // 처음 위치로 이동
+                                                wrapper.style.transform = 'translateX(0)';
                                                 setTimeout(() => {
+                                                    // transition 없이 마지막으로 이동
                                                     wrapper.style.transition = 'none';
+                                                    currentIndex = itemCount - cols;
                                                     wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
                                                     setTimeout(() => {
                                                         wrapper.style.transition = 'transform 0.5s ease';
@@ -1501,7 +1512,10 @@
                                     }
                                     
                                     function startAutoSlide() {
-                                        if (intervalId) clearInterval(intervalId);
+                                        if (intervalId) {
+                                            clearInterval(intervalId);
+                                            intervalId = null;
+                                        }
                                         intervalId = setInterval(slideNext, 3000);
                                     }
                                     
