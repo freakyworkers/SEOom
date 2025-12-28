@@ -1520,12 +1520,29 @@
                                             }
                                             
                                             // wrapper 너비를 container 너비와 동일하게 설정
+                                            // 실제로 보이는 container 찾기 (부모 요소들 중에서)
+                                            function findVisibleContainer(element) {
+                                                let current = element;
+                                                while (current && current !== document.body) {
+                                                    const rect = current.getBoundingClientRect();
+                                                    const style = window.getComputedStyle(current);
+                                                    if (rect.width > 0 && style.display !== 'none' && style.visibility !== 'hidden') {
+                                                        return current;
+                                                    }
+                                                    current = current.parentElement;
+                                                }
+                                                return null;
+                                            }
+                                            
                                             // 여러 번 재시도하여 container 너비가 계산될 때까지 대기
                                             let retryCount = 0;
-                                            const maxRetries = 20;
+                                            const maxRetries = 30;
                                             
                                             function setWrapperWidth() {
-                                                const containerWidth = container.getBoundingClientRect().width;
+                                                // 실제로 보이는 container 찾기
+                                                const visibleContainer = findVisibleContainer(container) || container;
+                                                const containerWidth = visibleContainer.getBoundingClientRect().width;
+                                                
                                                 if (containerWidth > 0) {
                                                     wrapper.style.width = containerWidth + 'px';
                                                     wrapper.style.minWidth = containerWidth + 'px';
@@ -1538,7 +1555,7 @@
                                             }
                                             
                                             // 초기 지연 후 시작
-                                            setTimeout(setWrapperWidth, 200);
+                                            setTimeout(setWrapperWidth, 300);
                                         }
                                         
                                         // 호버 시 일시 정지
