@@ -169,7 +169,7 @@
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
                         if (in_array($slideDirection, ['left', 'right'])) {
-                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: 100%; flex-shrink: 0;";
                         } else {
                             $blockStyle .= " width: 100%; height: 100%; flex-shrink: 0;";
                         }
@@ -251,7 +251,7 @@
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
                         if (in_array($slideDirection, ['left', 'right'])) {
-                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: 100%; flex-shrink: 0;";
                         } else {
                             $blockStyle .= " width: 100%; height: 100%; flex-shrink: 0;";
                         }
