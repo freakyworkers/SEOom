@@ -1525,8 +1525,19 @@
                                             if (slideContainer) {
                                                 slideContainer.style.width = '100%';
                                             }
-                                            // wrapper 너비 명시적 설정
-                                            wrapper.style.width = '100%';
+                                            // wrapper 너비를 container 너비와 동일하게 명시적 설정
+                                            const containerWidth = container.getBoundingClientRect().width;
+                                            if (containerWidth > 0) {
+                                                wrapper.style.width = containerWidth + 'px';
+                                            } else {
+                                                // container 너비가 아직 계산되지 않았으면 재시도
+                                                setTimeout(() => {
+                                                    const retryWidth = container.getBoundingClientRect().width;
+                                                    if (retryWidth > 0) {
+                                                        wrapper.style.width = retryWidth + 'px';
+                                                    }
+                                                }, 100);
+                                            }
                                         }
                                         
                                         // 호버 시 일시 정지
