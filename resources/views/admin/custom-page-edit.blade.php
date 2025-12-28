@@ -275,6 +275,19 @@
                                                                     </button>
                                                                 </div>
                                                             @endif
+                                                            <div style="display: flex; align-items: center; gap: 4px; margin-left: 8px;">
+                                                                <label class="mb-0 small">투명도:</label>
+                                                                <input type="range" 
+                                                                       class="form-range" 
+                                                                       id="container_background_image_alpha_{{ $container->id }}"
+                                                                       min="0" 
+                                                                       max="100" 
+                                                                       value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}"
+                                                                       style="width: 80px;"
+                                                                       onchange="updateContainerBackgroundImageAlpha({{ $container->id }}, this.value)"
+                                                                       title="투명도">
+                                                                <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_image_alpha_value_{{ $container->id }}">{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}%</small>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="d-flex align-items-center gap-2">
@@ -1957,6 +1970,30 @@ function handleContainerBackgroundImageUpload(containerId, fileInput) {
                         img.src = data.background_image_url;
                     }
                 }
+                
+                // 투명도 슬라이더 표시 (이미 있으면 업데이트, 없으면 추가)
+                const imageContainer = document.getElementById(`container_background_image_${containerId}`);
+                if (imageContainer) {
+                    let alphaDiv = imageContainer.querySelector('[id^="container_background_image_alpha"]')?.parentElement;
+                    if (!alphaDiv) {
+                        alphaDiv = document.createElement('div');
+                        alphaDiv.style.cssText = 'display: flex; align-items: center; gap: 4px; margin-left: 8px;';
+                        alphaDiv.innerHTML = `
+                            <label class="mb-0 small">투명도:</label>
+                            <input type="range" 
+                                   class="form-range" 
+                                   id="container_background_image_alpha_${containerId}"
+                                   min="0" 
+                                   max="100" 
+                                   value="100"
+                                   style="width: 80px;"
+                                   onchange="updateContainerBackgroundImageAlpha(${containerId}, this.value)"
+                                   title="투명도">
+                            <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_image_alpha_value_${containerId}">100%</small>
+                        `;
+                        imageContainer.appendChild(alphaDiv);
+                    }
+                }
             }
         } else {
             alert('이미지 업로드에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
@@ -1965,6 +2002,69 @@ function handleContainerBackgroundImageUpload(containerId, fileInput) {
     .catch(error => {
         console.error('Error:', error);
         alert('이미지 업로드 중 오류가 발생했습니다.');
+    });
+}
+
+// 컨테이너 배경 이미지 투명도 업데이트
+function updateContainerBackgroundImageAlpha(containerId, alpha) {
+    const alphaValueDisplay = document.getElementById(`container_background_image_alpha_value_${containerId}`);
+    if (alphaValueDisplay) {
+        alphaValueDisplay.textContent = alpha + '%';
+    }
+    
+    const formData = new FormData();
+    formData.append('background_type', 'image');
+    formData.append('background_image_alpha', alpha);
+    formData.append('_method', 'PUT');
+    
+    // 현재 컨테이너 설정 유지
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (containerItem) {
+        const columnsSelect = containerItem.querySelector('select[onchange*="updateContainerColumns"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        }
+        const verticalAlignSelect = containerItem.querySelector('select[onchange*="updateContainerVerticalAlign"]');
+        if (verticalAlignSelect) {
+            formData.append('vertical_align', verticalAlignSelect.value);
+        }
+        const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
+        if (widgetSpacingSelect) {
+            formData.append('widget_spacing', widgetSpacingSelect.value);
+        }
+    }
+    
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    if (fullWidthCheckbox) {
+        formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+    }
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
+    
+    const imageUrlInput = document.getElementById(`container_background_image_url_${containerId}`);
+    if (imageUrlInput && imageUrlInput.value) {
+        formData.append('background_image_url', imageUrlInput.value);
+    }
+    
+    fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            alert('투명도 설정 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('투명도 설정 업데이트 중 오류가 발생했습니다.');
     });
 }
 
@@ -4180,9 +4280,13 @@ function saveCustomPageWidgetSettings() {
             settings.background_color = backgroundColor;
             settings.background_color_alpha = parseInt(backgroundColorAlpha) || 100;
         } else if (backgroundType === 'gradient') {
-            const gradientStart = document.getElementById('edit_custom_page_widget_block_gradient_start')?.value || '#ffffff';
-            const gradientEnd = document.getElementById('edit_custom_page_widget_block_gradient_end')?.value || '#000000';
-            const gradientAngle = document.getElementById('edit_custom_page_widget_block_gradient_angle')?.value || '90';
+            // 두 가지 필드명 모두 확인
+            const gradientStart = document.getElementById('edit_custom_page_widget_block_gradient_start')?.value || 
+                                document.getElementById('edit_custom_page_widget_block_background_gradient_start')?.value || '#ffffff';
+            const gradientEnd = document.getElementById('edit_custom_page_widget_block_gradient_end')?.value || 
+                              document.getElementById('edit_custom_page_widget_block_background_gradient_end')?.value || '#000000';
+            const gradientAngle = document.getElementById('edit_custom_page_widget_block_gradient_angle')?.value || 
+                                document.getElementById('edit_custom_page_widget_block_background_gradient_angle')?.value || '90';
             settings.background_gradient_start = gradientStart;
             settings.background_gradient_end = gradientEnd;
             settings.background_gradient_angle = parseInt(gradientAngle);
@@ -4256,9 +4360,16 @@ function saveCustomPageWidgetSettings() {
                 blockItem.background_color = backgroundColorInput ? backgroundColorInput.value : '#007bff';
                 blockItem.background_color_alpha = backgroundColorAlphaInput ? parseInt(backgroundColorAlphaInput.value) || 100 : 100;
             } else if (blockItem.background_type === 'gradient') {
-                const gradientStartInput = item.querySelector(`#edit_custom_page_block_slide_${itemIndex}_gradient_start`);
-                const gradientEndInput = item.querySelector(`#edit_custom_page_block_slide_${itemIndex}_gradient_end`);
-                const gradientAngleInput = item.querySelector(`#edit_custom_page_block_slide_${itemIndex}_gradient_angle`);
+                // 두 가지 필드명 모두 확인
+                const gradientStartInput = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_gradient_start`) || 
+                                        document.getElementById(`edit_custom_page_block_slide_${itemIndex}_background_gradient_start`) ||
+                                        item.querySelector(`#edit_custom_page_block_slide_${itemIndex}_gradient_start`);
+                const gradientEndInput = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_gradient_end`) || 
+                                       document.getElementById(`edit_custom_page_block_slide_${itemIndex}_background_gradient_end`) ||
+                                       item.querySelector(`#edit_custom_page_block_slide_${itemIndex}_gradient_end`);
+                const gradientAngleInput = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_gradient_angle`) || 
+                                          document.getElementById(`edit_custom_page_block_slide_${itemIndex}_background_gradient_angle`) ||
+                                          item.querySelector(`#edit_custom_page_block_slide_${itemIndex}_gradient_angle`);
                 blockItem.background_gradient_start = gradientStartInput ? gradientStartInput.value : '#ffffff';
                 blockItem.background_gradient_end = gradientEndInput ? gradientEndInput.value : '#000000';
                 blockItem.background_gradient_angle = gradientAngleInput ? parseInt(gradientAngleInput.value) : 90;
@@ -5982,6 +6093,13 @@ function openGradientModal(containerId, type) {
         console.error('그라데이션 모달을 찾을 수 없습니다.');
         return;
     }
+    
+    // 기존 모달 인스턴스 확인 및 제거
+    const existingModal = bootstrap.Modal.getInstance(modalElement);
+    if (existingModal) {
+        existingModal.dispose();
+    }
+    
     const modal = new bootstrap.Modal(modalElement);
     modal.show();
     

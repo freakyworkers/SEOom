@@ -3320,9 +3320,13 @@ function addWidget() {
             const backgroundColor = formData.get('block_background_color') || '#007bff';
             settings.background_color = backgroundColor;
         } else if (backgroundType === 'gradient') {
-            const gradientStart = document.getElementById('widget_block_gradient_start')?.value || '#ffffff';
-            const gradientEnd = document.getElementById('widget_block_gradient_end')?.value || '#000000';
-            const gradientAngle = document.getElementById('widget_block_gradient_angle')?.value || 90;
+            // 두 가지 필드명 모두 확인
+            const gradientStart = document.getElementById('widget_block_gradient_start')?.value || 
+                                document.getElementById('widget_block_background_gradient_start')?.value || '#ffffff';
+            const gradientEnd = document.getElementById('widget_block_gradient_end')?.value || 
+                              document.getElementById('widget_block_background_gradient_end')?.value || '#000000';
+            const gradientAngle = document.getElementById('widget_block_gradient_angle')?.value || 
+                                document.getElementById('widget_block_background_gradient_angle')?.value || 90;
             settings.background_gradient_start = gradientStart;
             settings.background_gradient_end = gradientEnd;
             settings.background_gradient_angle = parseInt(gradientAngle);
@@ -3409,6 +3413,17 @@ function addWidget() {
             if (backgroundType === 'color') {
                 const backgroundColor = item.querySelector('.block-slide-background-color')?.value || '#007bff';
                 blockItem.background_color = backgroundColor;
+            } else if (backgroundType === 'gradient') {
+                // hidden input에서 그라데이션 값 가져오기 (두 가지 필드명 모두 확인)
+                const gradientStartInput = document.getElementById(`block_slide_${itemIndex}_gradient_start`) || 
+                                         document.getElementById(`block_slide_${itemIndex}_background_gradient_start`);
+                const gradientEndInput = document.getElementById(`block_slide_${itemIndex}_gradient_end`) || 
+                                       document.getElementById(`block_slide_${itemIndex}_background_gradient_end`);
+                const gradientAngleInput = document.getElementById(`block_slide_${itemIndex}_gradient_angle`) || 
+                                          document.getElementById(`block_slide_${itemIndex}_background_gradient_angle`);
+                blockItem.background_gradient_start = gradientStartInput ? gradientStartInput.value : '#ffffff';
+                blockItem.background_gradient_end = gradientEndInput ? gradientEndInput.value : '#000000';
+                blockItem.background_gradient_angle = gradientAngleInput ? parseInt(gradientAngleInput.value) || 90 : 90;
             } else if (backgroundType === 'image') {
                 const imageFile = item.querySelector(`#block_slide_${itemIndex}_image_input`)?.files[0];
                 if (imageFile) {

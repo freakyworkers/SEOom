@@ -6032,7 +6032,16 @@ function saveMainWidgetSettings() {
         
         if (backgroundType === 'color') {
             const backgroundColor = document.getElementById('edit_main_widget_block_background_color')?.value || '#007bff';
+            const backgroundColorAlpha = document.getElementById('edit_main_widget_block_background_color_alpha')?.value || '100';
             settings.background_color = backgroundColor;
+            settings.background_color_alpha = parseInt(backgroundColorAlpha) || 100;
+        } else if (backgroundType === 'gradient') {
+            const gradientStart = document.getElementById('edit_main_widget_block_gradient_start')?.value || '#ffffff';
+            const gradientEnd = document.getElementById('edit_main_widget_block_gradient_end')?.value || '#000000';
+            const gradientAngle = document.getElementById('edit_main_widget_block_gradient_angle')?.value || '90';
+            settings.background_gradient_start = gradientStart;
+            settings.background_gradient_end = gradientEnd;
+            settings.background_gradient_angle = parseInt(gradientAngle) || 90;
         } else if (backgroundType === 'image') {
             const imageFile = document.getElementById('edit_main_widget_block_image_input')?.files[0];
             if (imageFile) {
@@ -6042,6 +6051,8 @@ function saveMainWidgetSettings() {
             if (imageUrl) {
                 settings.background_image_url = imageUrl;
             }
+            const imageAlpha = document.getElementById('edit_main_widget_block_background_image_alpha')?.value || '100';
+            settings.background_image_alpha = parseInt(imageAlpha) || 100;
         }
         
         settings.padding_top = parseInt(paddingTop) || 20;
@@ -6129,9 +6140,16 @@ function saveMainWidgetSettings() {
                 blockItem.background_color = backgroundColorInput ? backgroundColorInput.value : '#007bff';
                 blockItem.background_color_alpha = backgroundColorAlphaInput ? parseInt(backgroundColorAlphaInput.value) || 100 : 100;
             } else if (blockItem.background_type === 'gradient') {
-                const gradientStartInput = item.querySelector('.edit-main-block-slide-background-gradient-start');
-                const gradientEndInput = item.querySelector('.edit-main-block-slide-background-gradient-end');
-                const gradientAngleInput = item.querySelector('.edit-main-block-slide-background-gradient-angle');
+                // hidden input에서 그라데이션 값 가져오기 (두 가지 필드명 모두 확인)
+                const gradientStartInput = document.getElementById(`edit_main_block_slide_${itemIndex}_gradient_start`) || 
+                                         document.getElementById(`edit_main_block_slide_${itemIndex}_background_gradient_start`) ||
+                                         item.querySelector('.edit-main-block-slide-background-gradient-start');
+                const gradientEndInput = document.getElementById(`edit_main_block_slide_${itemIndex}_gradient_end`) || 
+                                       document.getElementById(`edit_main_block_slide_${itemIndex}_background_gradient_end`) ||
+                                       item.querySelector('.edit-main-block-slide-background-gradient-end');
+                const gradientAngleInput = document.getElementById(`edit_main_block_slide_${itemIndex}_gradient_angle`) || 
+                                          document.getElementById(`edit_main_block_slide_${itemIndex}_background_gradient_angle`) ||
+                                          item.querySelector('.edit-main-block-slide-background-gradient-angle');
                 blockItem.background_gradient_start = gradientStartInput ? gradientStartInput.value : '#ffffff';
                 blockItem.background_gradient_end = gradientEndInput ? gradientEndInput.value : '#000000';
                 blockItem.background_gradient_angle = gradientAngleInput ? parseInt(gradientAngleInput.value) || 90 : 90;
@@ -6679,26 +6697,30 @@ function addEditMainBlockSlideItem(blockData = null) {
             </div>
         </div>
         <div class="mb-3 edit-main-block-slide-gradient-container" id="edit_main_block_slide_${itemIndex}_gradient_container" style="${!blockData || blockData.background_type !== 'gradient' ? 'display: none;' : ''}">
-            <label class="form-label">시작 색상</label>
-            <input type="color" 
-                   class="form-control form-control-color mb-2 edit-main-block-slide-background-gradient-start" 
-                   name="edit_main_block_slide[${itemIndex}][background_gradient_start]" 
-                   value="${blockData ? (blockData.background_gradient_start || '#ffffff') : '#ffffff'}">
-            <label class="form-label">끝 색상</label>
-            <input type="color" 
-                   class="form-control form-control-color mb-2 edit-main-block-slide-background-gradient-end" 
-                   name="edit_main_block_slide[${itemIndex}][background_gradient_end]" 
-                   value="${blockData ? (blockData.background_gradient_end || '#000000') : '#000000'}">
-            <label class="form-label">각도 <i class="bi bi-compass" style="font-size: 0.9rem;" title="각도"></i></label>
-            <input type="number" 
-                   class="form-control edit-main-block-slide-background-gradient-angle" 
-                   name="edit_main_block_slide[${itemIndex}][background_gradient_angle]" 
-                   value="${blockData ? (blockData.background_gradient_angle || 90) : 90}"
-                   min="0"
-                   max="360"
-                   step="1"
-                   placeholder="90">
-            <small class="text-muted">0도: 좌→우, 90도: 상→하, 180도: 우→좌, 270도: 하→상</small>
+            <label class="form-label">그라데이션 설정</label>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div id="edit_main_block_slide_${itemIndex}_gradient_preview" 
+                     style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(${blockData ? (blockData.background_gradient_angle || 90) : 90}deg, ${blockData ? (blockData.background_gradient_start || '#ffffff') : '#ffffff'}, ${blockData ? (blockData.background_gradient_end || '#000000') : '#000000'});"
+                     onclick="openBlockGradientModal('edit_main_block_slide_${itemIndex}')"
+                     title="그라데이션 설정">
+                </div>
+                <input type="hidden" 
+                       class="edit-main-block-slide-background-gradient-start" 
+                       name="edit_main_block_slide[${itemIndex}][background_gradient_start]" 
+                       id="edit_main_block_slide_${itemIndex}_gradient_start"
+                       value="${blockData ? (blockData.background_gradient_start || '#ffffff') : '#ffffff'}">
+                <input type="hidden" 
+                       class="edit-main-block-slide-background-gradient-end" 
+                       name="edit_main_block_slide[${itemIndex}][background_gradient_end]" 
+                       id="edit_main_block_slide_${itemIndex}_gradient_end"
+                       value="${blockData ? (blockData.background_gradient_end || '#000000') : '#000000'}">
+                <input type="hidden" 
+                       class="edit-main-block-slide-background-gradient-angle" 
+                       name="edit_main_block_slide[${itemIndex}][background_gradient_angle]" 
+                       id="edit_main_block_slide_${itemIndex}_gradient_angle"
+                       value="${blockData ? (blockData.background_gradient_angle || 90) : 90}">
+            </div>
+            <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
         </div>
         <div class="mb-3">
             <label class="form-label">폰트 컬러</label>
