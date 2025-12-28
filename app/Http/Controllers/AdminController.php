@@ -3580,10 +3580,10 @@ class AdminController extends Controller
                     $container->background_image_url = $request->background_image_url;
                 }
                 
-                // 투명도 설정
-                if ($request->has('background_image_alpha')) {
-                    $container->background_image_alpha = $request->background_image_alpha;
-                }
+                // 투명도 설정 (현재 데이터베이스에 컬럼이 없으므로 주석 처리)
+                // if ($request->has('background_image_alpha')) {
+                //     $container->background_image_alpha = $request->background_image_alpha;
+                // }
             } else {
                 // none
                 $container->background_color = null;
@@ -4179,6 +4179,7 @@ class AdminController extends Controller
             'background_gradient_end' => 'nullable|string|max:7',
             'background_gradient_angle' => 'nullable|integer|min:0|max:360',
             'background_image_url' => 'nullable|string|max:500',
+            'background_image_file' => 'nullable|image|max:5120',
         ]);
 
         $oldColumns = $container->columns;
@@ -4276,7 +4277,23 @@ class AdminController extends Controller
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
                 $container->background_gradient_angle = null;
-                $container->background_image_url = $request->background_image_url ?? null;
+                
+                // 이미지 파일 업로드 처리
+                if ($request->hasFile('background_image_file')) {
+                    // 기존 이미지 삭제
+                    if ($container->background_image_url) {
+                        $oldPath = str_replace('/storage/', '', parse_url($container->background_image_url, PHP_URL_PATH));
+                        if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                            Storage::disk('public')->delete($oldPath);
+                        }
+                    }
+                    
+                    // 새 이미지 업로드
+                    $result = $this->fileUploadService->upload($request->file('background_image_file'), 'container-backgrounds');
+                    $container->background_image_url = asset('storage/' . $result['file_path']);
+                } elseif ($request->has('background_image_url')) {
+                    $container->background_image_url = $request->background_image_url;
+                }
             } else {
                 // none
                 $container->background_color = null;

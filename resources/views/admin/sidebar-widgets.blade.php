@@ -5565,16 +5565,33 @@ function saveBlockGradient() {
     const modalElement = document.getElementById('gradientModal');
     const modal = bootstrap.Modal.getInstance(modalElement);
     if (modal) {
+        // 모달이 닫히기 전에 backdrop을 미리 찾아둠
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        const gradientBackdrop = backdrops.length > 0 ? backdrops[backdrops.length - 1] : null;
+        
         modal.hide();
+        
         // 모달이 완전히 닫힌 후 backdrop 제거
         modalElement.addEventListener('hidden.bs.modal', function() {
             // 그라데이션 모달의 backdrop만 제거 (위젯 설정 모달의 backdrop은 유지)
-            const backdrops = document.querySelectorAll('.modal-backdrop');
-            if (backdrops.length > 1) {
-                // 마지막 backdrop(그라데이션 모달의 backdrop) 제거
-                backdrops[backdrops.length - 1].remove();
+            if (gradientBackdrop && gradientBackdrop.parentNode) {
+                gradientBackdrop.remove();
+            } else {
+                // fallback: 모든 backdrop 중 마지막 것 제거
+                const currentBackdrops = document.querySelectorAll('.modal-backdrop');
+                if (currentBackdrops.length > 1) {
+                    currentBackdrops[currentBackdrops.length - 1].remove();
+                } else if (currentBackdrops.length === 1) {
+                    // backdrop이 하나만 있지만 위젯 설정 모달이 열려있지 않다면 제거
+                    const widgetModal = document.getElementById('widgetSettingsModal');
+                    if (!widgetModal || !widgetModal.classList.contains('show')) {
+                        currentBackdrops[0].remove();
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                        document.body.style.paddingRight = '';
+                    }
+                }
             }
-            // body 클래스에서 modal-open 제거하지 않음 (위젯 설정 모달이 아직 열려있을 수 있음)
         }, { once: true });
     }
 }

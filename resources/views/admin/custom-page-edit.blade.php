@@ -219,14 +219,32 @@
                                                                id="container_background_gradient_angle_{{ $container->id }}"
                                                                value="{{ $container->background_gradient_angle ?? 90 }}">
                                                     </div>
-                                                    <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-block' : 'none' }}; margin-left: 8px;">
-                                                        <input type="text" 
-                                                               class="form-control form-control-sm" 
+                                                    <div id="container_background_image_{{ $container->id }}" style="display: {{ ($container->background_type ?? 'none') == 'image' ? 'inline-flex' : 'none' }}; align-items: center; gap: 4px; margin-left: 8px; flex-wrap: wrap;">
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-outline-secondary" 
+                                                                onclick="document.getElementById('container_background_image_file_{{ $container->id }}').click()"
+                                                                style="white-space: nowrap;">
+                                                            <i class="bi bi-image"></i> 이미지 선택
+                                                        </button>
+                                                        <input type="file" 
+                                                               id="container_background_image_file_{{ $container->id }}"
+                                                               accept="image/*" 
+                                                               style="display: none;"
+                                                               onchange="handleContainerBackgroundImageUpload({{ $container->id }}, this)">
+                                                        <input type="hidden" 
                                                                id="container_background_image_url_{{ $container->id }}"
-                                                               value="{{ $container->background_image_url ?? '' }}"
-                                                               placeholder="이미지 URL"
-                                                               style="width: 200px;"
-                                                               onchange="updateContainerBackground({{ $container->id }}, 'image', this.value)">
+                                                               value="{{ $container->background_image_url ?? '' }}">
+                                                        @if($container->background_image_url)
+                                                            <div id="container_background_image_preview_{{ $container->id }}" style="display: inline-block;">
+                                                                <img src="{{ $container->background_image_url }}" alt="미리보기" style="max-width: 60px; max-height: 60px; object-fit: cover; border-radius: 4px;">
+                                                                <button type="button" 
+                                                                        class="btn btn-sm btn-danger ms-1" 
+                                                                        onclick="removeContainerBackgroundImage({{ $container->id }})"
+                                                                        title="이미지 제거">
+                                                                    <i class="bi bi-x"></i>
+                                                                </button>
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 <div class="d-flex align-items-center gap-2">
@@ -823,7 +841,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="edit_custom_page_widget_block_background_type" class="form-label">배경</label>
-                            <select class="form-select" id="edit_custom_page_widget_block_background_type" name="block_background_type" onchange="handleEditMainBlockBackgroundTypeChange()">
+                            <select class="form-select" id="edit_custom_page_widget_block_background_type" name="block_background_type" onchange="handleEditCustomPageBlockBackgroundTypeChange()">
                                 <option value="color">컬러</option>
                                 <option value="gradient">그라데이션</option>
                                 <option value="image">이미지</option>
@@ -1612,6 +1630,172 @@ function updateContainerBackground(containerId, backgroundType, value) {
     .catch(error => {
         console.error('Error:', error);
         alert('배경 설정 업데이트 중 오류가 발생했습니다.');
+    });
+}
+
+// 컨테이너 배경 이미지 업로드 처리
+function handleContainerBackgroundImageUpload(containerId, fileInput) {
+    if (!fileInput.files || !fileInput.files[0]) return;
+    
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('background_type', 'image');
+    formData.append('background_image_file', file);
+    
+    const alphaInput = document.getElementById(`container_background_image_alpha_${containerId}`);
+    const alpha = alphaInput ? alphaInput.value : 100;
+    formData.append('background_image_alpha', alpha);
+    formData.append('_method', 'PUT');
+    
+    // 현재 컨테이너 설정 유지
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (containerItem) {
+        const columnsSelect = containerItem.querySelector('select[onchange*="updateContainerColumns"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        }
+        const verticalAlignSelect = containerItem.querySelector('select[onchange*="updateContainerVerticalAlign"]');
+        if (verticalAlignSelect) {
+            formData.append('vertical_align', verticalAlignSelect.value);
+        }
+        const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
+        if (widgetSpacingSelect) {
+            formData.append('widget_spacing', widgetSpacingSelect.value);
+        }
+    }
+    
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    if (fullWidthCheckbox) {
+        formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+    }
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
+    
+    fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 이미지 URL 업데이트
+            const imageUrlInput = document.getElementById(`container_background_image_url_${containerId}`);
+            if (imageUrlInput && data.background_image_url) {
+                imageUrlInput.value = data.background_image_url;
+            }
+            
+            // 미리보기 업데이트
+            const previewDiv = document.getElementById(`container_background_image_preview_${containerId}`);
+            if (data.background_image_url) {
+                if (!previewDiv) {
+                    const imageContainer = document.getElementById(`container_background_image_${containerId}`);
+                    if (imageContainer) {
+                        const newPreview = document.createElement('div');
+                        newPreview.id = `container_background_image_preview_${containerId}`;
+                        newPreview.style.display = 'inline-block';
+                        newPreview.innerHTML = `
+                            <img src="${data.background_image_url}" alt="미리보기" style="max-width: 60px; max-height: 60px; object-fit: cover; border-radius: 4px;">
+                            <button type="button" 
+                                    class="btn btn-sm btn-danger ms-1" 
+                                    onclick="removeContainerBackgroundImage(${containerId})"
+                                    title="이미지 제거">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        `;
+                        imageContainer.appendChild(newPreview);
+                    }
+                } else {
+                    const img = previewDiv.querySelector('img');
+                    if (img) {
+                        img.src = data.background_image_url;
+                    }
+                }
+            }
+        } else {
+            alert('이미지 업로드에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('이미지 업로드 중 오류가 발생했습니다.');
+    });
+}
+
+// 컨테이너 배경 이미지 제거
+function removeContainerBackgroundImage(containerId) {
+    const formData = new FormData();
+    formData.append('background_type', 'none');
+    formData.append('background_image_url', '');
+    formData.append('_method', 'PUT');
+    
+    // 현재 컨테이너 설정 유지
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (containerItem) {
+        const columnsSelect = containerItem.querySelector('select[onchange*="updateContainerColumns"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        }
+        const verticalAlignSelect = containerItem.querySelector('select[onchange*="updateContainerVerticalAlign"]');
+        if (verticalAlignSelect) {
+            formData.append('vertical_align', verticalAlignSelect.value);
+        }
+        const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
+        if (widgetSpacingSelect) {
+            formData.append('widget_spacing', widgetSpacingSelect.value);
+        }
+    }
+    
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    if (fullWidthCheckbox) {
+        formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+    }
+    const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+    if (fullHeightCheckbox) {
+        formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
+    
+    fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 이미지 URL 초기화
+            const imageUrlInput = document.getElementById(`container_background_image_url_${containerId}`);
+            if (imageUrlInput) {
+                imageUrlInput.value = '';
+            }
+            
+            // 미리보기 제거
+            const previewDiv = document.getElementById(`container_background_image_preview_${containerId}`);
+            if (previewDiv) {
+                previewDiv.remove();
+            }
+            
+            // 배경 타입을 'none'으로 변경
+            const backgroundTypeSelect = document.getElementById(`container_background_type_${containerId}`);
+            if (backgroundTypeSelect) {
+                backgroundTypeSelect.value = 'none';
+                handleContainerBackgroundTypeChange(containerId, 'none', 'desktop');
+            }
+        } else {
+            alert('이미지 제거에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('이미지 제거 중 오류가 발생했습니다.');
     });
 }
 
@@ -3160,13 +3344,20 @@ function handleGalleryDisplayTypeChange() {
 function handleBlockBackgroundTypeChange() {
     const backgroundType = document.getElementById('widget_block_background_type')?.value;
     const colorContainer = document.getElementById('widget_block_color_container');
+    const gradientContainer = document.getElementById('widget_block_gradient_container');
     const imageContainer = document.getElementById('widget_block_image_container');
     
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'block';
         if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'image') {
         if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'block';
     }
 }
@@ -3297,12 +3488,39 @@ function addBlockSlideItem() {
         <div class="mb-3"><label class="form-label">배경</label>
             <select class="form-select block-slide-background-type" name="block_slide[${itemIndex}][background_type]" onchange="handleBlockSlideBackgroundTypeChange(${itemIndex})">
                 <option value="color">컬러</option>
+                <option value="gradient">그라데이션</option>
                 <option value="image">이미지</option>
             </select>
         </div>
         <div class="mb-3 block-slide-color-container" id="block_slide_${itemIndex}_color_container">
             <label class="form-label">배경 컬러</label>
             <input type="color" class="form-control form-control-color block-slide-background-color" name="block_slide[${itemIndex}][background_color]" value="#007bff">
+        </div>
+        <div class="mb-3 block-slide-gradient-container" id="block_slide_${itemIndex}_gradient_container" style="display: none;">
+            <label class="form-label">그라데이션 설정</label>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div id="block_slide_${itemIndex}_gradient_preview" 
+                     style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #ffffff, #000000);"
+                     onclick="openBlockGradientModal('block_slide_${itemIndex}')"
+                     title="그라데이션 설정">
+                </div>
+                <input type="hidden" 
+                       class="block-slide-background-gradient-start" 
+                       name="block_slide[${itemIndex}][background_gradient_start]" 
+                       id="block_slide_${itemIndex}_gradient_start"
+                       value="#ffffff">
+                <input type="hidden" 
+                       class="block-slide-background-gradient-end" 
+                       name="block_slide[${itemIndex}][background_gradient_end]" 
+                       id="block_slide_${itemIndex}_gradient_end"
+                       value="#000000">
+                <input type="hidden" 
+                       class="block-slide-background-gradient-angle" 
+                       name="block_slide[${itemIndex}][background_gradient_angle]" 
+                       id="block_slide_${itemIndex}_gradient_angle"
+                       value="90">
+            </div>
+            <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
         </div>
         <div class="mb-3"><label class="form-label">폰트 컬러</label>
             <input type="color" class="form-control form-control-color block-slide-font-color" name="block_slide[${itemIndex}][font_color]" value="#ffffff">
@@ -3371,12 +3589,19 @@ function removeBlockSlideItem(itemIndex) {
 function handleBlockSlideBackgroundTypeChange(itemIndex) {
     const backgroundType = document.querySelector(`#block_slide_item_${itemIndex}_body .block-slide-background-type`)?.value;
     const colorContainer = document.getElementById(`block_slide_${itemIndex}_color_container`);
+    const gradientContainer = document.getElementById(`block_slide_${itemIndex}_gradient_container`);
     const imageContainer = document.getElementById(`block_slide_${itemIndex}_image_container`);
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'gradient') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'block';
         if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'image') {
         if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'block';
     }
 }
@@ -5272,6 +5497,119 @@ function removeSelectedGradientControl() {
 }
 
 // 그라데이션 모달 열기
+// 블록 그라데이션 모달 열기
+function openBlockGradientModal(blockId) {
+    // 컨테이너 그라데이션 ID 초기화
+    currentGradientContainerId = null;
+    currentGradientType = null;
+    currentBlockGradientId = blockId;
+    
+    // 현재 값 가져오기
+    const startColorValue = document.getElementById(`${blockId}_gradient_start`)?.value || 
+                           document.getElementById(`${blockId}_background_gradient_start`)?.value || '#ffffff';
+    const endColorValue = document.getElementById(`${blockId}_gradient_end`)?.value || 
+                         document.getElementById(`${blockId}_background_gradient_end`)?.value || '#000000';
+    const angle = document.getElementById(`${blockId}_gradient_angle`)?.value || 
+                  document.getElementById(`${blockId}_background_gradient_angle`)?.value || 90;
+    
+    // RGBA 파싱
+    const startParsed = rgbaToHexAndAlpha(startColorValue);
+    const endParsed = rgbaToHexAndAlpha(endColorValue);
+    
+    // 모달에 값 설정
+    const startColorInput = document.getElementById('gradient_modal_start_color');
+    const startAlphaInput = document.getElementById('gradient_modal_start_alpha');
+    const endColorInput = document.getElementById('gradient_modal_end_color');
+    const endAlphaInput = document.getElementById('gradient_modal_end_alpha');
+    const angleInput = document.getElementById('gradient_modal_angle');
+    const angleSliderInput = document.getElementById('gradient_modal_angle_slider');
+    
+    if (startColorInput) startColorInput.value = startParsed.hex;
+    if (startAlphaInput) {
+        startAlphaInput.value = Math.round(startParsed.alpha * 100);
+        const startAlphaValueDisplay = document.getElementById('gradient_start_alpha_value');
+        if (startAlphaValueDisplay) {
+            startAlphaValueDisplay.textContent = Math.round(startParsed.alpha * 100) + '%';
+        }
+    }
+    if (endColorInput) endColorInput.value = endParsed.hex;
+    if (endAlphaInput) {
+        endAlphaInput.value = Math.round(endParsed.alpha * 100);
+        const endAlphaValueDisplay = document.getElementById('gradient_end_alpha_value');
+        if (endAlphaValueDisplay) {
+            endAlphaValueDisplay.textContent = Math.round(endParsed.alpha * 100) + '%';
+        }
+    }
+    if (angleInput) angleInput.value = angle;
+    if (angleSliderInput) angleSliderInput.value = angle;
+    
+    // 색상 컨트롤 업데이트
+    if (typeof updateGradientColorControl === 'function') {
+        updateGradientColorControl('start');
+        updateGradientColorControl('end');
+    }
+    
+    // 시작/끝 컨트롤에 드래그 기능 추가
+    const startControl = document.getElementById('gradient_start_control');
+    const endControl = document.getElementById('gradient_end_control');
+    if (startControl) {
+        if (typeof makeGradientControlDraggable === 'function') {
+            makeGradientControlDraggable(startControl);
+        }
+    }
+    if (endControl) {
+        if (typeof makeGradientControlDraggable === 'function') {
+            makeGradientControlDraggable(endControl);
+        }
+    }
+    
+    // 중간 색상 초기화
+    const middleControlsContainer = document.getElementById('gradient_middle_controls');
+    if (middleControlsContainer) {
+        middleControlsContainer.innerHTML = '';
+    }
+    
+    // 미리보기 업데이트
+    if (typeof updateGradientPreview === 'function') {
+        updateGradientPreview();
+    }
+    
+    // 설정 패널 숨기기
+    const settingsPanel = document.getElementById('gradient_selected_control_settings');
+    if (settingsPanel) {
+        settingsPanel.style.display = 'none';
+    }
+    selectedGradientControl = null;
+    selectedGradientControlType = null;
+    
+    // 모달 표시
+    const modalElement = document.getElementById('gradientModal');
+    if (!modalElement) {
+        console.error('그라데이션 모달을 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 기존 모달 인스턴스 확인 및 제거
+    const existingModal = bootstrap.Modal.getInstance(modalElement);
+    if (existingModal) {
+        existingModal.dispose();
+    }
+    
+    // 새 모달 인스턴스 생성 및 표시
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+    
+    // 모달이 완전히 표시된 후 추가 업데이트
+    setTimeout(() => {
+        if (typeof updateGradientPreview === 'function') {
+            updateGradientPreview();
+        }
+        if (typeof updateGradientMiddleIcons === 'function') {
+            updateGradientMiddleIcons();
+        }
+    }, 100);
+}
+
 function openGradientModal(containerId, type) {
     // 블록 그라데이션 ID 설정 (블록/블록슬라이드인 경우)
     if (containerId && (containerId.startsWith('edit_custom_page_widget_block') || containerId.startsWith('edit_custom_page_block_slide'))) {
