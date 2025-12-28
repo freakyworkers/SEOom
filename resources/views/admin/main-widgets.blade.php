@@ -8519,7 +8519,7 @@ function selectGradientControl(control, type) {
             document.getElementById('gradient_selected_color').value = colorInput.value;
             document.getElementById('gradient_selected_alpha').value = alphaInput.value;
             document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
-            const position = parseFloat(control.style.left || '0%').replace('%', '') || '0';
+            const position = parseFloat((control.style.left || '0%').replace('%', '')) || 0;
             document.getElementById('gradient_selected_position').value = position;
             document.getElementById('gradient_selected_position_value').textContent = position + '%';
             settingsPanel.style.display = 'block';
@@ -8537,7 +8537,7 @@ function selectGradientControl(control, type) {
             document.getElementById('gradient_selected_color').value = colorInput.value;
             document.getElementById('gradient_selected_alpha').value = alphaInput.value;
             document.getElementById('gradient_selected_alpha_value').textContent = alphaInput.value + '%';
-            const position = parseFloat(control.style.left || '100%').replace('%', '') || '100';
+            const position = parseFloat((control.style.left || '100%').replace('%', '')) || 100;
             document.getElementById('gradient_selected_position').value = position;
             document.getElementById('gradient_selected_position_value').textContent = position + '%';
             settingsPanel.style.display = 'block';
