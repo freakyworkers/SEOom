@@ -1536,9 +1536,9 @@
                                                 
                                                 // 원본 아이템의 끝에 도달했을 때 (복제 아이템 앞의 개수 + 원본 아이템 개수)
                                                 if (currentIndex >= cols + itemCount) {
-                                                    // 복제 아이템의 시작 위치로 transition 없이 이동 (translateX(0))
+                                                    // 복제 아이템의 시작 위치로 transition 없이 이동 (원본 아이템의 시작 위치)
                                                     wrapper.style.transition = 'none';
-                                                    wrapper.style.transform = 'translateX(0)';
+                                                    wrapper.style.transform = `translateX(-${cols * (100 / cols)}%)`;
                                                     
                                                     // 다음 프레임에서 계속 슬라이드
                                                     requestAnimationFrame(() => {
@@ -1586,11 +1586,11 @@
                                             }
                                         }
                                         
-                                        // 초기 위치를 복제 아이템의 시작 위치로 설정 (translateX(0))
+                                        // 초기 위치를 원본 아이템의 시작 위치로 설정 (복제 아이템 뒤)
                                         // wrapper 너비 설정 후 초기 위치 설정
                                         setTimeout(() => {
-                                            wrapper.style.transform = 'translateX(0)';
-                                            currentIndex = 0;
+                                            wrapper.style.transform = `translateX(-${cols * (100 / cols)}%)`;
+                                            currentIndex = cols;
                                         }, 350);
                                         
                                         function startAutoSlide() {
