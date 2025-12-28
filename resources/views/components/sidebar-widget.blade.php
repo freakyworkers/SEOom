@@ -1528,8 +1528,8 @@
                                             if (isTransitioning) return;
                                             isTransitioning = true;
                                             
-                                            const items = wrapper.querySelectorAll('.gallery-slide-item:not(.gallery-slide-duplicate)');
-                                            const itemCount = items.length;
+                                            // 서버 사이드 아이템 개수 사용 (totalItems)
+                                            const itemCount = totalItems;
                                             
                                             if (direction === 'left') {
                                                 currentIndex += cols;
@@ -1587,8 +1587,11 @@
                                         }
                                         
                                         // 초기 위치를 원본 아이템의 시작 위치로 설정 (복제 아이템 뒤)
-                                        wrapper.style.transform = `translateX(-${cols * (100 / cols)}%)`;
-                                        currentIndex = cols;
+                                        // wrapper 너비 설정 후 초기 위치 설정
+                                        setTimeout(() => {
+                                            wrapper.style.transform = `translateX(-${cols * (100 / cols)}%)`;
+                                            currentIndex = cols;
+                                        }, 350);
                                         
                                         function startAutoSlide() {
                                             if (intervalId) clearInterval(intervalId);

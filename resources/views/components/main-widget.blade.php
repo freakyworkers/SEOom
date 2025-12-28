@@ -1738,8 +1738,8 @@
                                             if (isTransitioning) return;
                                             isTransitioning = true;
                                             
-                                            const items = wrapper.querySelectorAll('.gallery-slide-item:not(.gallery-slide-duplicate)');
-                                            const itemCount = items.length;
+                                            // 서버 사이드 아이템 개수 사용 (totalItems)
+                                            const itemCount = totalItems;
                                             
                                             if (direction === 'left') {
                                                 currentIndex += cols;
