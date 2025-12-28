@@ -100,7 +100,7 @@
         <h5 class="mb-0"><i class="bi bi-sliders me-2"></i>신고 처리</h5>
     </div>
     <div class="card-body">
-        <form method="POST" action="{{ $site->isMasterSite() ? route('master.admin.reports.update-status', $report->id) : route('admin.reports.update-status', ['site' => $site->slug, 'report' => $report->id]) }}">
+        <form method="POST" action="{{ $site->isMasterSite() ? url('/admin/reports/' . $report->id . '/status') : route('admin.reports.update-status', ['site' => $site->slug, 'report' => $report->id]) }}">
             @csrf
             @method('PUT')
             <div class="mb-3">
@@ -129,7 +129,7 @@
                 <h5 class="modal-title">패널티 부여</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="{{ $site->isMasterSite() ? route('master.admin.reports.issue-penalty') : route('admin.reports.issue-penalty', ['site' => $site->slug]) }}" id="penaltyForm">
+            <form method="POST" action="{{ $site->isMasterSite() ? url('reports/issue-penalty') : route('admin.reports.issue-penalty', ['site' => $site->slug]) }}" id="penaltyForm">
                 @csrf
                 <input type="hidden" name="report_id" value="{{ $report->id }}">
                 <input type="hidden" name="user_id" id="penalty_user_id">

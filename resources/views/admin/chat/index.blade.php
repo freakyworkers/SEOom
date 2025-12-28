@@ -11,7 +11,7 @@
         <h5 class="mb-0"><i class="bi bi-gear me-2"></i>채팅 설정</h5>
     </div>
     <div class="card-body">
-        <form method="POST" action="{{ $site->isMasterSite() ? route('master.admin.chat.update-settings') : route('admin.chat.update-settings', ['site' => $site->slug]) }}">
+        <form method="POST" action="{{ $site->isMasterSite() ? url('chat/update-settings') : route('admin.chat.update-settings', ['site' => $site->slug]) }}">
             @csrf
             @method('PUT')
             
@@ -122,7 +122,7 @@
                                 <small>{{ $message->created_at->format('Y-m-d H:i') }}</small>
                             </td>
                             <td>
-                                <form action="{{ $site->isMasterSite() ? route('master.admin.chat.delete-message', $message->id) : route('admin.chat.delete-message', ['site' => $site->slug, 'message' => $message->id]) }}" 
+                                <form action="{{ $site->isMasterSite() ? url('/admin/chat/messages/' . $message->id) : route('admin.chat.delete-message', ['site' => $site->slug, 'message' => $message->id]) }}" 
                                       method="POST" 
                                       class="d-inline"
                                       onsubmit="return confirm('정말 삭제하시겠습니까?');">

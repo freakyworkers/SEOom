@@ -12,7 +12,7 @@
                 <h5 class="mb-0"><i class="bi bi-person-plus me-2"></i>회원가입 설정</h5>
             </div>
             <div class="card-body">
-                <form id="registrationSettingsForm" method="POST" action="{{ $site->isMasterSite() ? route('master.admin.registration-settings.update') : route('admin.registration-settings.update', ['site' => $site->slug]) }}">
+                <form id="registrationSettingsForm" method="POST" action="{{ $site->isMasterSite() ? url('registration-settings/update') : route('admin.registration-settings.update', ['site' => $site->slug]) }}">
                     @csrf
                     
                     <div class="mb-4">

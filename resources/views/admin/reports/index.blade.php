@@ -20,7 +20,7 @@
     
     <!-- 검색 및 필터 폼 -->
     <div class="card-body border-bottom">
-        <form method="GET" action="{{ $site->isMasterSite() ? route('master.admin.reports.index') : route('admin.reports.index', ['site' => $site->slug]) }}" class="mb-3">
+        <form method="GET" action="{{ $site->isMasterSite() ? url('reports') : route('admin.reports.index', ['site' => $site->slug]) }}" class="mb-3">
             <div class="row g-2 align-items-end">
                 <div class="col-md-3 col-12">
                     <label for="search_type" class="form-label small mb-1">검색 조건</label>
@@ -63,7 +63,7 @@
                             <i class="bi bi-search"></i>
                         </button>
                         @if(request('search') || request('status') || request('report_type'))
-                            <a href="{{ $site->isMasterSite() ? route('master.admin.reports.index') : route('admin.reports.index', ['site' => $site->slug]) }}" 
+                            <a href="{{ $site->isMasterSite() ? url('reports') : route('admin.reports.index', ['site' => $site->slug]) }}" 
                                class="btn btn-outline-secondary">
                                 <i class="bi bi-x-lg"></i>
                             </a>
@@ -163,7 +163,7 @@
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="{{ $site->isMasterSite() ? route('master.admin.reports.show', $report->id) : route('admin.reports.show', ['site' => $site->slug, 'report' => $report->id]) }}" 
+                                    <a href="{{ $site->isMasterSite() ? url('/admin/reports/' . $report->id) : route('admin.reports.show', ['site' => $site->slug, 'report' => $report->id]) }}" 
                                        class="btn btn-outline-primary" title="상세보기">
                                         <i class="bi bi-eye"></i>
                                     </a>
@@ -252,7 +252,7 @@
                         </div>
 
                         <div class="d-grid">
-                            <a href="{{ $site->isMasterSite() ? route('master.admin.reports.show', $report->id) : route('admin.reports.show', ['site' => $site->slug, 'report' => $report->id]) }}" 
+                            <a href="{{ $site->isMasterSite() ? url('/admin/reports/' . $report->id) : route('admin.reports.show', ['site' => $site->slug, 'report' => $report->id]) }}" 
                                class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-eye me-1"></i>상세보기
                             </a>
@@ -286,7 +286,7 @@
     
     <!-- 검색 및 필터 폼 -->
     <div class="card-body border-bottom">
-        <form method="GET" action="{{ $site->isMasterSite() ? route('master.admin.reports.index') : route('admin.reports.index', ['site' => $site->slug]) }}" class="mb-3">
+        <form method="GET" action="{{ $site->isMasterSite() ? url('reports') : route('admin.reports.index', ['site' => $site->slug]) }}" class="mb-3">
             <div class="row g-2 align-items-end">
                 <div class="col-md-3 col-12">
                     <label for="penalty_search_type" class="form-label small mb-1">검색 조건</label>
@@ -318,7 +318,7 @@
                             <i class="bi bi-search"></i>
                         </button>
                         @if(request('penalty_search') || request('penalty_type'))
-                            <a href="{{ $site->isMasterSite() ? route('master.admin.reports.index') : route('admin.reports.index', ['site' => $site->slug]) }}" 
+                            <a href="{{ $site->isMasterSite() ? url('reports') : route('admin.reports.index', ['site' => $site->slug]) }}" 
                                class="btn btn-outline-secondary">
                                 <i class="bi bi-x-lg"></i>
                             </a>
@@ -404,7 +404,7 @@
                             </td>
                             <td>
                                 @if($penalty->is_active)
-                                    <form action="{{ $site->isMasterSite() ? route('master.admin.reports.remove-penalty', $penalty->id) : route('admin.reports.remove-penalty', ['site' => $site->slug, 'penalty' => $penalty->id]) }}" 
+                                    <form action="{{ $site->isMasterSite() ? url('/admin/reports/penalties/' . $penalty->id) : route('admin.reports.remove-penalty', ['site' => $site->slug, 'penalty' => $penalty->id]) }}" 
                                           method="POST" 
                                           class="d-inline"
                                           onsubmit="return confirm('패널티를 해제하시겠습니까?');">
@@ -484,7 +484,7 @@
 
                         @if($penalty->is_active)
                             <div class="d-grid">
-                                <form action="{{ $site->isMasterSite() ? route('master.admin.reports.remove-penalty', $penalty->id) : route('admin.reports.remove-penalty', ['site' => $site->slug, 'penalty' => $penalty->id]) }}" 
+                                <form action="{{ $site->isMasterSite() ? url('/admin/reports/penalties/' . $penalty->id) : route('admin.reports.remove-penalty', ['site' => $site->slug, 'penalty' => $penalty->id]) }}" 
                                       method="POST" 
                                       onsubmit="return confirm('패널티를 해제하시겠습니까?');">
                                     @csrf

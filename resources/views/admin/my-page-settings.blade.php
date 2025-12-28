@@ -11,7 +11,7 @@
                     <h4 class="mb-0"><i class="bi bi-person-circle me-2"></i>마이페이지 설정</h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ $site->isMasterSite() ? route('master.admin.my-page-settings.update') : route('admin.my-page-settings.update', ['site' => $site->slug]) }}">
+                    <form method="POST" action="{{ $site->isMasterSite() ? url('my-page-settings/update') : route('admin.my-page-settings.update', ['site' => $site->slug]) }}">
                         @csrf
                         @method('PUT')
 

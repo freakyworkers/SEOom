@@ -849,7 +849,7 @@
 </div>
 
 <!-- 위젯 설정 모달 -->
-<div class="modal fade" id="mainWidgetSettingsModal" tabindex="-1" data-update-route="{{ $site->isMasterSite() ? route('master.admin.main-widgets.update', ['widget' => ':id']) : route('admin.main-widgets.update', ['site' => $site->slug, 'widget' => ':id']) }}">
+<div class="modal fade" id="mainWidgetSettingsModal" tabindex="-1" data-update-route="{{ $site->isMasterSite() ? url('/admin/main-widgets/:id') : route('admin.main-widgets.update', ['site' => $site->slug, 'widget' => ':id']) }}">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
