@@ -8150,20 +8150,7 @@ function openGradientModal(containerId, type) {
         // 클릭 이벤트는 makeGradientControlDraggable에서 처리
     }
     
-    // 그라데이션 바 클릭 이벤트 (새 중간 색상 추가)
-    const preview = document.getElementById('gradient_modal_preview');
-    if (preview) {
-        preview.addEventListener('click', function(e) {
-            if (e.target === preview || e.target.closest('#gradient_color_controls') === null) {
-                if (typeof addGradientMiddleColor === 'function') {
-                    const rect = preview.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
-                    addGradientMiddleColor(percent);
-                }
-            }
-        });
-    }
+    // 그라데이션 바 클릭 이벤트 제거 (아이콘 방식으로 변경)
     
     // 중간 색상 초기화
     const middleControlsContainer = document.getElementById('gradient_middle_controls');
@@ -8260,7 +8247,8 @@ function updateGradientPreview() {
     middleControls.forEach((control) => {
         const colorInput = control.querySelector('.gradient-middle-color-input');
         const alphaInput = control.querySelector('.gradient-middle-alpha-input');
-        const position = parseFloat(control.getAttribute('data-position')) || parseFloat(control.style.left) || 50;
+        const positionStr = control.style.left || control.getAttribute('data-position') || '50';
+        const position = parseFloat(positionStr.toString().replace('%', '')) || 50;
         if (colorInput) {
             const hex = colorInput.value;
             const alpha = alphaInput ? (alphaInput.value / 100) : 1;
@@ -8868,20 +8856,7 @@ function openBlockGradientModal(blockId) {
         // 클릭 이벤트는 makeGradientControlDraggable에서 처리
     }
     
-    // 그라데이션 바 클릭 이벤트 (새 중간 색상 추가)
-    const preview = document.getElementById('gradient_modal_preview');
-    if (preview) {
-        preview.addEventListener('click', function(e) {
-            if (e.target === preview || e.target.closest('#gradient_color_controls') === null) {
-                if (typeof addGradientMiddleColor === 'function') {
-                    const rect = preview.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
-                    addGradientMiddleColor(percent);
-                }
-            }
-        });
-    }
+    // 그라데이션 바 클릭 이벤트 제거 (아이콘 방식으로 변경)
     
     // 중간 색상 초기화
     const middleControlsContainer = document.getElementById('gradient_middle_controls');
@@ -8976,20 +8951,7 @@ function openButtonGradientModal(buttonId) {
         // 클릭 이벤트는 makeGradientControlDraggable에서 처리
     }
     
-    // 그라데이션 바 클릭 이벤트 (새 중간 색상 추가)
-    const preview = document.getElementById('gradient_modal_preview');
-    if (preview) {
-        preview.addEventListener('click', function(e) {
-            if (e.target === preview || e.target.closest('#gradient_color_controls') === null) {
-                if (typeof addGradientMiddleColor === 'function') {
-                    const rect = preview.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
-                    addGradientMiddleColor(percent);
-                }
-            }
-        });
-    }
+    // 그라데이션 바 클릭 이벤트 제거 (아이콘 방식으로 변경)
     
     // 중간 색상 초기화
     const middleControlsContainer = document.getElementById('gradient_middle_controls');
