@@ -792,21 +792,13 @@ class SiteSettingController extends Controller
     {
         try {
             $customRobotsTxt = $settings['robots_txt'] ?? '';
-            $sitemapUrl = route('sitemap', ['site' => $site->slug]);
-            
             // 사용자가 커스텀 robots.txt를 입력한 경우 사용
             if (!empty($customRobotsTxt)) {
                 $content = $customRobotsTxt;
-                
-                // 사이트맵 URL이 포함되어 있지 않으면 추가
-                if (stripos($content, 'Sitemap:') === false) {
-                    $content .= "\n\nSitemap: {$sitemapUrl}\n";
-                }
             } else {
                 // 기본값 생성
                 $content = "User-agent: *\n";
-                $content .= "Allow: /\n\n";
-                $content .= "Sitemap: {$sitemapUrl}\n";
+                $content .= "Allow: /\n";
             }
             
             // public 폴더에 robots.txt 파일 저장

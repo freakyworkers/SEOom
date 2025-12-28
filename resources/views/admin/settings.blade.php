@@ -416,7 +416,7 @@
             <div class="mb-3">
                 <label for="robots_txt" class="form-label">robots.txt 내용</label>
                 @php
-                    $defaultRobotsTxt = "User-agent: *\nAllow: /\n\nSitemap: " . route('sitemap', ['site' => $site->slug]);
+                    $defaultRobotsTxt = "User-agent: *\nAllow: /\n";
                     $robotsTxtValue = old('robots_txt', $settings['robots_txt'] ?? $defaultRobotsTxt);
                 @endphp
                 <textarea class="form-control @error('robots_txt') is-invalid @enderror" 
@@ -442,7 +442,13 @@
                        target="_blank">
                         <i class="bi bi-box-arrow-up-right me-1"></i>사이트맵 보기
                     </a>
-                    <a href="{{ route('rss', ['site' => $site->slug]) }}" 
+                    @php
+                        $themeBottom = $site->getSetting('theme_bottom', 'theme03');
+                        $rssUrl = in_array($themeBottom, ['theme02', 'theme03', 'theme04'], true)
+                            ? url('/rss.xml')
+                            : route('rss', ['site' => $site->slug]);
+                    @endphp
+                    <a href="{{ $rssUrl }}" 
                        class="btn btn-sm btn-outline-primary" 
                        target="_blank">
                         <i class="bi bi-rss me-1"></i>RSS 피드 보기

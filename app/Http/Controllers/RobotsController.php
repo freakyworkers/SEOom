@@ -24,22 +24,13 @@ class RobotsController extends Controller
         
         $customRobotsTxt = $site->getSetting('robots_txt', '');
         
-        // 사이트맵 URL 생성
-        $sitemapUrl = $this->getSitemapUrl($site);
-        
         // 사용자가 커스텀 robots.txt를 입력한 경우 사용
         if (!empty($customRobotsTxt)) {
             $content = $customRobotsTxt;
-            
-            // 사이트맵 URL이 포함되어 있지 않으면 추가
-            if (stripos($content, 'Sitemap:') === false) {
-                $content .= "\n\nSitemap: {$sitemapUrl}\n";
-            }
         } else {
             // 기본값 생성
             $content = "User-agent: *\n";
-            $content .= "Allow: /\n\n";
-            $content .= "Sitemap: {$sitemapUrl}\n";
+            $content .= "Allow: /\n";
         }
         
         return response($content, 200)
@@ -61,22 +52,13 @@ class RobotsController extends Controller
         
         $customRobotsTxt = $site->getSetting('robots_txt', '');
         
-        // 사이트맵 URL 생성
-        $sitemapUrl = $this->getSitemapUrl($site);
-        
         // 사용자가 커스텀 robots.txt를 입력한 경우 사용
         if (!empty($customRobotsTxt)) {
             $content = $customRobotsTxt;
-            
-            // 사이트맵 URL이 포함되어 있지 않으면 추가
-            if (stripos($content, 'Sitemap:') === false) {
-                $content .= "\n\nSitemap: {$sitemapUrl}\n";
-            }
         } else {
             // 기본값 생성
             $content = "User-agent: *\n";
-            $content .= "Allow: /\n\n";
-            $content .= "Sitemap: {$sitemapUrl}\n";
+            $content .= "Allow: /\n";
         }
         
         return response()->streamDownload(function () use ($content) {
@@ -109,4 +91,3 @@ class RobotsController extends Controller
         return 'https://' . $site->slug . '.' . $baseHost . '/sitemap.xml';
     }
 }
-
