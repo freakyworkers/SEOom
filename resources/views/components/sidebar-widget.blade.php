@@ -1478,17 +1478,24 @@
                                             
                                             if (direction === 'left') {
                                                 currentIndex += cols;
-                                                if (currentIndex >= itemCount) {
-                                                    currentIndex = 0;
-                                                    // 무한 슬라이드를 위해 transition 없이 처음으로 이동
-                                                    setTimeout(() => {
-                                                        wrapper.style.transition = 'none';
-                                                        wrapper.style.transform = 'translateX(0)';
+                                                const maxIndex = itemCount;
+                                                
+                                                if (currentIndex >= maxIndex) {
+                                                    // 복제 아이템의 시작 위치로 transition 없이 이동
+                                                    wrapper.style.transition = 'none';
+                                                    wrapper.style.transform = `translateX(-${itemCount * (100 / cols)}%)`;
+                                                    
+                                                    // 다음 프레임에서 원래 위치로 이동
+                                                    requestAnimationFrame(() => {
                                                         setTimeout(() => {
                                                             wrapper.style.transition = 'transform 0.5s ease';
-                                                            isTransitioning = false;
-                                                        }, 50);
-                                                    }, 500);
+                                                            currentIndex = cols;
+                                                            wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
+                                                            setTimeout(() => {
+                                                                isTransitioning = false;
+                                                            }, 500);
+                                                        }, 10);
+                                                    });
                                                 } else {
                                                     wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
                                                     setTimeout(() => {
@@ -1497,17 +1504,23 @@
                                                 }
                                             } else if (direction === 'right') {
                                                 currentIndex -= cols;
+                                                
                                                 if (currentIndex < 0) {
-                                                    currentIndex = itemCount - cols;
-                                                    // 무한 슬라이드를 위해 transition 없이 마지막으로 이동
-                                                    setTimeout(() => {
-                                                        wrapper.style.transition = 'none';
-                                                        wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
+                                                    // 복제 아이템의 끝 위치로 transition 없이 이동
+                                                    wrapper.style.transition = 'none';
+                                                    wrapper.style.transform = `translateX(-${itemCount * (100 / cols)}%)`;
+                                                    
+                                                    // 다음 프레임에서 원래 위치로 이동
+                                                    requestAnimationFrame(() => {
                                                         setTimeout(() => {
                                                             wrapper.style.transition = 'transform 0.5s ease';
-                                                            isTransitioning = false;
-                                                        }, 50);
-                                                    }, 500);
+                                                            currentIndex = itemCount - cols;
+                                                            wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
+                                                            setTimeout(() => {
+                                                                isTransitioning = false;
+                                                            }, 500);
+                                                        }, 10);
+                                                    });
                                                 } else {
                                                     wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
                                                     setTimeout(() => {
