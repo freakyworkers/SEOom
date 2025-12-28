@@ -5483,22 +5483,17 @@ function openBlockGradientModal(blockId) {
         
         // z-index를 높게 설정하여 다른 모달 위에 표시
         modalElement.style.zIndex = '1060';
-        const backdrop = document.querySelector('.modal-backdrop:last-of-type');
-        if (backdrop) {
-            backdrop.style.zIndex = '1059';
-        }
         
-        // 새 모달 인스턴스 생성 및 표시
-        const modal = new bootstrap.Modal(modalElement);
+        // 새 모달 인스턴스 생성 및 표시 (backdrop 없이)
+        // 위젯 설정 모달이 이미 열려있으므로 backdrop을 생성하지 않음
+        const modal = new bootstrap.Modal(modalElement, {
+            backdrop: false
+        });
         modal.show();
         
         // 모달이 완전히 표시된 후 z-index 재설정
         modalElement.addEventListener('shown.bs.modal', function() {
             modalElement.style.zIndex = '1060';
-            const backdrops = document.querySelectorAll('.modal-backdrop');
-            if (backdrops.length > 1) {
-                backdrops[backdrops.length - 1].style.zIndex = '1059';
-            }
         }, { once: true });
     }
 }
@@ -5565,34 +5560,8 @@ function saveBlockGradient() {
     const modalElement = document.getElementById('gradientModal');
     const modal = bootstrap.Modal.getInstance(modalElement);
     if (modal) {
-        // 모달이 닫히기 전에 backdrop을 미리 찾아둠
-        const backdrops = document.querySelectorAll('.modal-backdrop');
-        const gradientBackdrop = backdrops.length > 0 ? backdrops[backdrops.length - 1] : null;
-        
+        // backdrop 없이 모달을 열었으므로 backdrop 제거 로직 불필요
         modal.hide();
-        
-        // 모달이 완전히 닫힌 후 backdrop 제거
-        modalElement.addEventListener('hidden.bs.modal', function() {
-            // 그라데이션 모달의 backdrop만 제거 (위젯 설정 모달의 backdrop은 유지)
-            if (gradientBackdrop && gradientBackdrop.parentNode) {
-                gradientBackdrop.remove();
-            } else {
-                // fallback: 모든 backdrop 중 마지막 것 제거
-                const currentBackdrops = document.querySelectorAll('.modal-backdrop');
-                if (currentBackdrops.length > 1) {
-                    currentBackdrops[currentBackdrops.length - 1].remove();
-                } else if (currentBackdrops.length === 1) {
-                    // backdrop이 하나만 있지만 위젯 설정 모달이 열려있지 않다면 제거
-                    const widgetModal = document.getElementById('widgetSettingsModal');
-                    if (!widgetModal || !widgetModal.classList.contains('show')) {
-                        currentBackdrops[0].remove();
-                        document.body.classList.remove('modal-open');
-                        document.body.style.overflow = '';
-                        document.body.style.paddingRight = '';
-                    }
-                }
-            }
-        }, { once: true });
     }
 }
 
