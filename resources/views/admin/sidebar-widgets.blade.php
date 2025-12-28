@@ -5457,29 +5457,46 @@ function openBlockGradientModal(blockId) {
         middleControlsContainer.innerHTML = '';
     }
     
+    // 설정 패널 숨기기
+    const settingsPanel = document.getElementById('gradient_selected_control_settings');
+    if (settingsPanel) {
+        settingsPanel.style.display = 'none';
+    }
+    selectedGradientControl = null;
+    selectedGradientControlType = null;
+    
+    // 미리보기 업데이트 (모달 열기 전에 완료)
+    if (typeof updateGradientPreview === 'function') {
+        updateGradientPreview();
+    }
+    
+    // 중간 색상 아이콘 업데이트 (모달 열기 전에 완료)
+    if (typeof updateGradientMiddleIcons === 'function') {
+        updateGradientMiddleIcons();
+    }
+    
     // 모달 표시
     const modalElement = document.getElementById('gradientModal');
     if (!modalElement) {
         console.error('그라데이션 모달을 찾을 수 없습니다.');
         return;
     }
+    
+    // 기존 모달 인스턴스 확인 및 제거
+    const existingModal = bootstrap.Modal.getInstance(modalElement);
+    if (existingModal) {
+        existingModal.dispose();
+    }
+    
+    // 새 모달 인스턴스 생성 및 표시
     const modal = new bootstrap.Modal(modalElement);
     modal.show();
     
-    // 모달이 표시된 후 값 설정
+    // 모달이 완전히 표시된 후 추가 업데이트
     setTimeout(() => {
         if (typeof updateGradientPreview === 'function') {
             updateGradientPreview();
         }
-        
-        const settingsPanel = document.getElementById('gradient_selected_control_settings');
-        if (settingsPanel) {
-            settingsPanel.style.display = 'none';
-        }
-        selectedGradientControl = null;
-        selectedGradientControlType = null;
-        
-        // 중간 색상 아이콘 업데이트
         if (typeof updateGradientMiddleIcons === 'function') {
             updateGradientMiddleIcons();
         }
