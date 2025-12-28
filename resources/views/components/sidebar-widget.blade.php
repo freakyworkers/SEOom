@@ -251,7 +251,7 @@
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
                         if (in_array($slideDirection, ['left', 'right'])) {
-                            $blockStyle .= " width: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; flex-shrink: 0;";
                         } else {
                             $blockStyle .= " width: 100%; height: 100%; flex-shrink: 0;";
                         }
@@ -322,10 +322,16 @@
                 }
                 
                 if (direction === 'left' || direction === 'right') {
-                    container.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    // wrapper의 너비를 기준으로 이동
+                    const wrapperWidth = wrapper.offsetWidth;
+                    const translateX = -(currentIndex * wrapperWidth);
+                    container.style.transform = `translateX(${translateX}px)`;
                 } else if (direction === 'up' || direction === 'down') {
                     container.style.flexDirection = direction === 'up' ? 'column-reverse' : 'column';
-                    container.style.transform = `translateY(-${currentIndex * 100}%)`;
+                    // wrapper의 높이를 기준으로 이동
+                    const wrapperHeight = wrapper.offsetHeight;
+                    const translateY = -(currentIndex * wrapperHeight);
+                    container.style.transform = `translateY(${translateY}px)`;
                 }
             }
             
