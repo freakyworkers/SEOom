@@ -119,6 +119,16 @@
             $blockStyle .= " flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center;";
         }
         
+        // 첫 번째 위젯은 상단 마진 제거
+        if ($isFirstWidget) {
+            $blockStyle .= " margin-top: 0 !important;";
+        }
+        
+        // 마지막 위젯은 하단 마진 제거
+        if ($isLastWidget) {
+            $blockStyle .= " margin-bottom: 0 !important;";
+        }
+        
         // 위젯 자체의 하단 마진 제거 (래퍼에서 마진 관리)
         $blockMarginBottom = 'mb-0';
     @endphp
