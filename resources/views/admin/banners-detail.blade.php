@@ -491,6 +491,24 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // 데스크탑과 모바일 위치 입력 필드 동기화
+    document.querySelectorAll('.banner-pinned-position-input').forEach(function(input) {
+        const bannerId = input.getAttribute('data-banner-id');
+        if (!bannerId) return;
+        
+        const desktopInput = document.getElementById(`pinned_position_${bannerId}`);
+        const mobileInput = document.getElementById(`pinned_position_mobile_${bannerId}`);
+        
+        if (desktopInput && mobileInput) {
+            desktopInput.addEventListener('input', function() {
+                mobileInput.value = this.value;
+            });
+            mobileInput.addEventListener('input', function() {
+                desktopInput.value = this.value;
+            });
+        }
+    });
     
     // 삭제 버튼
     document.querySelectorAll('.delete-banner-btn').forEach(function(btn) {

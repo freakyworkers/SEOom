@@ -1,0 +1,18 @@
+[33m52dd806[m Fix sidebar widget spacing and gallery slide issues
+[33me4cc3f8[m 가로 100% 컨테이너 상단 여백 제거 - main 태그 my-4 클래스 제거 추가
+[33m941c3ca[m 다크 모드 라운드 스타일 추가 개선 - 카드, 카드 헤더/바디 라운드 적용
+[33m02e878f[m 다크 모드 스타일 개선 및 breadcrumb 제거 - 라운드 스타일 개선, 테이블 텍스트 색상 수정, 포인트 교환/신청형 이벤트 페이지 breadcrumb 제거
+[33m4bfad45[m 포인트 교환/신청형 이벤트 게시글 다크 모드 스타일 개선 및 포인트 컬러 적용 - 테이블 다크 모드 스타일 적용, 내 신청 버튼 및 출석체크 포인트 안내 버튼에 포인트 컬러 적용
+[33maeeaba3[m 다크 모드 게시판 스타일 개선 및 breadcrumb 제거 - 게시판 요소 배경색 rgb(43,43,43) 적용, 포인트 컬러 화이트일 때 버튼 텍스트 자동 조정, breadcrumb 제거
+[33m2e4c4a0[m 다크 모드에서 다크 모드 로고 이미지 자동 적용 - 테마 설정이 다크 모드일 때 site_logo_dark 사용
+[33mdaafb7c[m 위젯 애니메이션 기능 추가 - 메인/사이드/커스텀 페이지 위젯에 애니메이션 설정 버튼 및 모달 추가, 스크롤/새로고침 시 애니메이션 트리거
+[33m9c8f498[m 위젯 그림자 시각적 통일성 개선 - 그림자 값을 조정하여 배경색 차이 보완
+[33m79af7eb[m 블록 위젯 그림자 CSS 선택자 개선 - 모든 shadow-sm 클래스 조합에 그림자 적용
+[33me0ffa53[m 위젯 그림자 개선 - 그림자 OFF 시 라운드 유지, 그림자 opacity 통일 및 조정 (이미지 슬라이드보다 옅게)
+[33m15b58ef[m Fix mobile full-width container border-radius, transparent header top position, and hide sidebar login widget on mobile
+[33m076c6dd[m Add glassmorphism for mobile transparent header scroll and remove border-radius for full-width containers on mobile
+[33ma11620c[m Fix transparent header + top header overlap issue
+[33m47b62e2[m Dynamic main container margin based on first container full height
+[33me478a98[m Remove top margin when first container is full height
+[33m89b311a[m Fix header sticky/transparent checkbox save issue and master.admin.dashboard route error
+[33m44e93c6[m Fix PHP syntax error in comment - remove @if reference from both occurrences
