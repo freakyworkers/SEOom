@@ -63,6 +63,8 @@ return [
     
     'server_ip' => env('SERVER_IP', null),
     
+    'force_https' => env('FORCE_HTTPS', false),
+    
     /*
     |--------------------------------------------------------------------------
     | ALB DNS Name
