@@ -1496,21 +1496,21 @@
                                 <div class="{{ $colClass }}">
                                     <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
                                        class="text-decoration-none d-block">
-                                        <div class="position-relative" style="aspect-ratio: 1; overflow: hidden; background-color: #f8f9fa;">
+                                        <div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">
                                             @if($thumbnail)
                                                 @if(str_starts_with($thumbnail, 'http'))
                                                     <img src="{{ $thumbnail }}" 
                                                          alt="{{ $post->title }}" 
-                                                         class="w-100 h-100" 
-                                                         style="object-fit: cover;">
+                                                         class="w-100" 
+                                                         style="width: 100%; height: auto; display: block;">
                                                 @else
                                                     <img src="{{ asset('storage/' . $thumbnail) }}" 
                                                          alt="{{ $post->title }}" 
-                                                         class="w-100 h-100" 
-                                                         style="object-fit: cover;">
+                                                         class="w-100" 
+                                                         style="width: 100%; height: auto; display: block;">
                                                 @endif
                                             @else
-                                                <div class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                                <div class="w-100 d-flex align-items-center justify-content-center" style="min-height: 100px;">
                                                     <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
                                                 </div>
                                             @endif
@@ -1569,21 +1569,21 @@
                                                     @endif">
                                             <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
                                                class="text-decoration-none d-block">
-                                                <div class="position-relative" style="aspect-ratio: 1; overflow: hidden; background-color: #f8f9fa;">
+                                                <div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">
                                                     @if($thumbnail)
                                                         @if(str_starts_with($thumbnail, 'http'))
                                                             <img src="{{ $thumbnail }}" 
                                                                  alt="{{ $post->title }}" 
-                                                                 class="w-100 h-100" 
-                                                                 style="object-fit: cover;">
+                                                                 class="w-100" 
+                                                                 style="width: 100%; height: auto; display: block;">
                                                         @else
                                                             <img src="{{ asset('storage/' . $thumbnail) }}" 
                                                                  alt="{{ $post->title }}" 
-                                                                 class="w-100 h-100" 
-                                                                 style="object-fit: cover;">
+                                                                 class="w-100" 
+                                                                 style="width: 100%; height: auto; display: block;">
                                                         @endif
                                                     @else
-                                                        <div class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                                        <div class="w-100 d-flex align-items-center justify-content-center" style="min-height: 100px;">
                                                             <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
                                                         </div>
                                                     @endif
@@ -1623,21 +1623,21 @@
                                                     @endif">
                                             <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
                                                class="text-decoration-none d-block">
-                                                <div class="position-relative" style="aspect-ratio: 1; overflow: hidden; background-color: #f8f9fa;">
+                                                <div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">
                                                     @if($thumbnail)
                                                         @if(str_starts_with($thumbnail, 'http'))
                                                             <img src="{{ $thumbnail }}" 
                                                                  alt="{{ $post->title }}" 
-                                                                 class="w-100 h-100" 
-                                                                 style="object-fit: cover;">
+                                                                 class="w-100" 
+                                                                 style="width: 100%; height: auto; display: block;">
                                                         @else
                                                             <img src="{{ asset('storage/' . $thumbnail) }}" 
                                                                  alt="{{ $post->title }}" 
-                                                                 class="w-100 h-100" 
-                                                                 style="object-fit: cover;">
+                                                                 class="w-100" 
+                                                                 style="width: 100%; height: auto; display: block;">
                                                         @endif
                                                     @else
-                                                        <div class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                                        <div class="w-100 d-flex align-items-center justify-content-center" style="min-height: 100px;">
                                                             <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
                                                         </div>
                                                     @endif
