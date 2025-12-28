@@ -4871,6 +4871,10 @@ function saveCustomPageWidgetAnimation() {
 // 그라데이션 모달 관련 변수
 let currentGradientContainerId = null;
 let currentGradientType = null; // 'main' or 'custom'
+// 블록 그라데이션 모달 열기
+let currentBlockGradientId = null;
+// 버튼 그라데이션 모달 열기
+let currentButtonGradientId = null;
 
 // Hex를 RGBA로 변환
 function hexToRgba(hex, alpha = 1) {
@@ -4878,6 +4882,14 @@ function hexToRgba(hex, alpha = 1) {
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+// Hex를 RGB로 변환 (r, g, b 형태로 반환)
+function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `${r}, ${g}, ${b}`;
 }
 
 // RGBA를 Hex와 Alpha로 분리
@@ -5261,19 +5273,37 @@ function removeSelectedGradientControl() {
 
 // 그라데이션 모달 열기
 function openGradientModal(containerId, type) {
-    // 블록 그라데이션 ID 초기화
-    currentBlockGradientId = null;
+    // 블록 그라데이션 ID 설정 (블록/블록슬라이드인 경우)
+    if (containerId && (containerId.startsWith('edit_custom_page_widget_block') || containerId.startsWith('edit_custom_page_block_slide'))) {
+        currentBlockGradientId = containerId;
+        currentGradientContainerId = null;
+    } else {
+        currentBlockGradientId = null;
+        currentGradientContainerId = containerId;
+    }
     currentButtonGradientId = null;
-    currentGradientContainerId = containerId;
     currentGradientType = type;
     
     // 현재 값 가져오기
-    const startColorValue = document.getElementById(`container_background_gradient_start_${containerId}`)?.value || 
-                           document.getElementById(`container_background_gradient_start_mobile_${containerId}`)?.value || '#ffffff';
-    const endColorValue = document.getElementById(`container_background_gradient_end_${containerId}`)?.value || 
-                         document.getElementById(`container_background_gradient_end_mobile_${containerId}`)?.value || '#000000';
-    const angle = document.getElementById(`container_background_gradient_angle_${containerId}`)?.value || 
-                  document.getElementById(`container_background_gradient_angle_mobile_${containerId}`)?.value || 90;
+    let startColorValue, endColorValue, angle;
+    
+    if (currentBlockGradientId) {
+        // 블록/블록슬라이드의 경우
+        startColorValue = document.getElementById(`${containerId}_gradient_start`)?.value || 
+                         document.getElementById(`${containerId}_background_gradient_start`)?.value || '#ffffff';
+        endColorValue = document.getElementById(`${containerId}_gradient_end`)?.value || 
+                       document.getElementById(`${containerId}_background_gradient_end`)?.value || '#000000';
+        angle = document.getElementById(`${containerId}_gradient_angle`)?.value || 
+                document.getElementById(`${containerId}_background_gradient_angle`)?.value || 90;
+    } else {
+        // 컨테이너의 경우
+        startColorValue = document.getElementById(`container_background_gradient_start_${containerId}`)?.value || 
+                         document.getElementById(`container_background_gradient_start_mobile_${containerId}`)?.value || '#ffffff';
+        endColorValue = document.getElementById(`container_background_gradient_end_${containerId}`)?.value || 
+                       document.getElementById(`container_background_gradient_end_mobile_${containerId}`)?.value || '#000000';
+        angle = document.getElementById(`container_background_gradient_angle_${containerId}`)?.value || 
+                document.getElementById(`container_background_gradient_angle_mobile_${containerId}`)?.value || 90;
+    }
     
     // 모달 표시
     const modalElement = document.getElementById('gradientModal');
@@ -5509,8 +5539,89 @@ function removeGradientMiddleColor(button) {
     updateGradientMiddleIcons();
 }
 
+// 블록 그라데이션 저장
+function saveBlockGradient() {
+    if (!currentBlockGradientId) return;
+    
+    const startColor = document.getElementById('gradient_modal_start_color').value;
+    const startAlpha = document.getElementById('gradient_modal_start_alpha').value;
+    const endColor = document.getElementById('gradient_modal_end_color').value;
+    const endAlpha = document.getElementById('gradient_modal_end_alpha').value;
+    const angle = document.getElementById('gradient_modal_angle').value;
+    
+    const middleColors = [];
+    const middleControls = document.querySelectorAll('.gradient-middle-control');
+    middleControls.forEach(control => {
+        const colorInput = control.querySelector('.gradient-middle-color-input');
+        const alphaInput = control.querySelector('.gradient-middle-alpha-input');
+        const position = parseFloat(control.getAttribute('data-position')) || parseFloat(control.style.left) || 50;
+        if (colorInput) {
+            const color = colorInput.value;
+            const alpha = alphaInput ? (alphaInput.value / 100) : 1;
+            middleColors.push({ color, alpha, position });
+        }
+    });
+    
+    middleColors.sort((a, b) => a.position - b.position);
+    
+    let gradientString = '';
+    if (middleColors.length === 0) {
+        gradientString = `linear-gradient(${angle}deg, rgba(${hexToRgb(startColor)}, ${startAlpha / 100}), rgba(${hexToRgb(endColor)}, ${endAlpha / 100}))`;
+    } else {
+        const colors = [
+            `rgba(${hexToRgb(startColor)}, ${startAlpha / 100}) 0%`,
+            ...middleColors.map(m => `rgba(${hexToRgb(m.color)}, ${m.alpha / 100}) ${m.position}%`),
+            `rgba(${hexToRgb(endColor)}, ${endAlpha / 100}) 100%`
+        ];
+        gradientString = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
+    }
+    
+    // 블록 그라데이션 값 저장 - 두 가지 필드명 모두 확인
+    const startInput = document.getElementById(`${currentBlockGradientId}_gradient_start`) || 
+                      document.getElementById(`${currentBlockGradientId}_background_gradient_start`);
+    const endInput = document.getElementById(`${currentBlockGradientId}_gradient_end`) || 
+                    document.getElementById(`${currentBlockGradientId}_background_gradient_end`);
+    const angleInput = document.getElementById(`${currentBlockGradientId}_gradient_angle`) || 
+                      document.getElementById(`${currentBlockGradientId}_background_gradient_angle`);
+    const preview = document.getElementById(`${currentBlockGradientId}_gradient_preview`) ||
+                   document.getElementById(`${currentBlockGradientId}_background_gradient_preview`);
+    
+    // RGBA 형식으로 저장 (alpha 포함)
+    const startRgba = hexToRgba(startColor, startAlpha / 100);
+    const endRgba = hexToRgba(endColor, endAlpha / 100);
+    
+    if (startInput) startInput.value = startRgba;
+    if (endInput) endInput.value = endRgba;
+    if (angleInput) angleInput.value = angle;
+    if (preview) {
+        preview.style.background = gradientString;
+    }
+    
+    // 모달 닫기 - backdrop 명시적으로 제거
+    const modalElement = document.getElementById('gradientModal');
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+        modal.hide();
+        // 모달이 완전히 닫힌 후 backdrop 제거
+        modalElement.addEventListener('hidden.bs.modal', function() {
+            // 그라데이션 모달의 backdrop만 제거 (다른 모달의 backdrop은 유지)
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 1) {
+                // 마지막 backdrop(그라데이션 모달의 backdrop) 제거
+                backdrops[backdrops.length - 1].remove();
+            }
+        }, { once: true });
+    }
+}
+
 // 그라데이션 저장
 function saveGradient() {
+    // 블록 그라데이션인 경우
+    if (currentBlockGradientId) {
+        saveBlockGradient();
+        return;
+    }
+    
     if (!currentGradientContainerId) return;
     
     const startColor = document.getElementById('gradient_modal_start_color').value;
@@ -5593,9 +5704,21 @@ function saveGradient() {
     // 서버에 저장
     updateContainerBackgroundGradient(currentGradientContainerId);
     
-    // 모달 닫기
-    const modal = bootstrap.Modal.getInstance(document.getElementById('gradientModal'));
-    modal.hide();
+    // 모달 닫기 - backdrop 명시적으로 제거
+    const modalElement = document.getElementById('gradientModal');
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+        modal.hide();
+        // 모달이 완전히 닫힌 후 backdrop 제거
+        modalElement.addEventListener('hidden.bs.modal', function() {
+            // 그라데이션 모달의 backdrop만 제거 (다른 모달의 backdrop은 유지)
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 1) {
+                // 마지막 backdrop(그라데이션 모달의 backdrop) 제거
+                backdrops[backdrops.length - 1].remove();
+            }
+        }, { once: true });
+    }
 }
 </script>
 @endpush

@@ -9072,16 +9072,32 @@ function saveBlockGradient() {
     const preview = document.getElementById(`${currentBlockGradientId}_gradient_preview`) ||
                    document.getElementById(`${currentBlockGradientId}_background_gradient_preview`);
     
-    if (startInput) startInput.value = startColor;
-    if (endInput) endInput.value = endColor;
+    // RGBA 형식으로 저장 (alpha 포함)
+    const startRgba = hexToRgba(startColor, startAlpha / 100);
+    const endRgba = hexToRgba(endColor, endAlpha / 100);
+    
+    if (startInput) startInput.value = startRgba;
+    if (endInput) endInput.value = endRgba;
     if (angleInput) angleInput.value = angle;
     if (preview) {
         preview.style.background = gradientString;
     }
     
-    // 모달 닫기
-    const modal = bootstrap.Modal.getInstance(document.getElementById('gradientModal'));
-    if (modal) modal.hide();
+    // 모달 닫기 - backdrop 명시적으로 제거
+    const modalElement = document.getElementById('gradientModal');
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+        modal.hide();
+        // 모달이 완전히 닫힌 후 backdrop 제거
+        modalElement.addEventListener('hidden.bs.modal', function() {
+            // 그라데이션 모달의 backdrop만 제거 (다른 모달의 backdrop은 유지)
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 1) {
+                // 마지막 backdrop(그라데이션 모달의 backdrop) 제거
+                backdrops[backdrops.length - 1].remove();
+            }
+        }, { once: true });
+    }
 }
 
 // 버튼 그라데이션 저장 함수

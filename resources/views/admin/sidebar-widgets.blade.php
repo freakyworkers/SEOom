@@ -5540,20 +5540,43 @@ function saveBlockGradient() {
         gradientString = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
     }
     
-    const startInput = document.getElementById(`${currentBlockGradientId}_gradient_start`);
-    const endInput = document.getElementById(`${currentBlockGradientId}_gradient_end`);
-    const angleInput = document.getElementById(`${currentBlockGradientId}_gradient_angle`);
-    const preview = document.getElementById(`${currentBlockGradientId}_gradient_preview`);
+    // 블록 그라데이션 값 저장 - 두 가지 필드명 모두 확인
+    const startInput = document.getElementById(`${currentBlockGradientId}_gradient_start`) || 
+                      document.getElementById(`${currentBlockGradientId}_background_gradient_start`);
+    const endInput = document.getElementById(`${currentBlockGradientId}_gradient_end`) || 
+                    document.getElementById(`${currentBlockGradientId}_background_gradient_end`);
+    const angleInput = document.getElementById(`${currentBlockGradientId}_gradient_angle`) || 
+                      document.getElementById(`${currentBlockGradientId}_background_gradient_angle`);
+    const preview = document.getElementById(`${currentBlockGradientId}_gradient_preview`) ||
+                   document.getElementById(`${currentBlockGradientId}_background_gradient_preview`);
     
-    if (startInput) startInput.value = startColor;
-    if (endInput) endInput.value = endColor;
+    // RGBA 형식으로 저장 (alpha 포함)
+    const startRgba = hexToRgba(startColor, startAlpha / 100);
+    const endRgba = hexToRgba(endColor, endAlpha / 100);
+    
+    if (startInput) startInput.value = startRgba;
+    if (endInput) endInput.value = endRgba;
     if (angleInput) angleInput.value = angle;
     if (preview) {
         preview.style.background = gradientString;
     }
     
-    const modal = bootstrap.Modal.getInstance(document.getElementById('gradientModal'));
-    if (modal) modal.hide();
+    // 모달 닫기 - backdrop 명시적으로 제거
+    const modalElement = document.getElementById('gradientModal');
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+        modal.hide();
+        // 모달이 완전히 닫힌 후 backdrop 제거
+        modalElement.addEventListener('hidden.bs.modal', function() {
+            // 그라데이션 모달의 backdrop만 제거 (위젯 설정 모달의 backdrop은 유지)
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 1) {
+                // 마지막 backdrop(그라데이션 모달의 backdrop) 제거
+                backdrops[backdrops.length - 1].remove();
+            }
+            // body 클래스에서 modal-open 제거하지 않음 (위젯 설정 모달이 아직 열려있을 수 있음)
+        }, { once: true });
+    }
 }
 
 // 그라데이션 저장
