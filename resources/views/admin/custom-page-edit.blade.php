@@ -1043,44 +1043,28 @@
                             <small class="text-muted">제목과 내용 사이의 여백을 입력하세요 (0~100).</small>
                         </div>
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" 
-                                       type="checkbox" 
-                                       id="edit_custom_page_widget_block_show_button" 
-                                       name="block_show_button"
-                                       onchange="handleEditCustomPageBlockButtonToggle()">
-                                <label class="form-check-label" for="edit_custom_page_widget_block_show_button">
-                                    버튼 추가
-                                </label>
+                            <label class="form-label">버튼 관리</label>
+                            <div id="edit_custom_page_widget_block_buttons_list">
+                                <!-- 버튼들이 여기에 동적으로 추가됨 -->
                             </div>
-                        </div>
-                        <div class="mb-3" id="edit_custom_page_widget_block_button_container" style="display: none;">
-                            <div class="mb-3">
-                                <label for="edit_custom_page_widget_block_button_text" class="form-label">버튼 텍스트</label>
-                                <input type="text" 
-                                       class="form-control" 
-                                       id="edit_custom_page_widget_block_button_text" 
-                                       name="block_button_text" 
-                                       placeholder="버튼 텍스트를 입력하세요">
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_custom_page_widget_block_button_background_color" class="form-label">버튼 배경 컬러</label>
-                                <input type="color" 
-                                       class="form-control form-control-color" 
-                                       id="edit_custom_page_widget_block_button_background_color" 
-                                       name="block_button_background_color" 
-                                       value="#007bff">
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_custom_page_widget_block_button_text_color" class="form-label">버튼 텍스트 컬러</label>
-                                <input type="color" 
-                                       class="form-control form-control-color" 
-                                       id="edit_custom_page_widget_block_button_text_color" 
-                                       name="block_button_text_color" 
-                                       value="#ffffff">
-                            </div>
+                            <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addEditCustomPageBlockButton()">
+                                <i class="bi bi-plus-circle me-1"></i>버튼 추가
+                            </button>
                         </div>
                         <div class="mb-3">
+                            <label for="edit_custom_page_widget_block_button_top_margin" class="form-label">버튼 상단 여백 (px)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_custom_page_widget_block_button_top_margin" 
+                                   name="block_button_top_margin" 
+                                   value="12"
+                                   min="0"
+                                   max="100"
+                                   step="1"
+                                   placeholder="12">
+                            <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
+                        </div>
+                        <div class="mb-3" id="edit_custom_page_widget_block_link_container">
                             <label for="edit_custom_page_widget_block_link" class="form-label">
                                 연결 링크 <small class="text-muted">(선택사항)</small>
                                 <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="버튼이 있는 경우 버튼에 링크가 연결되고, 버튼이 없는 경우 블록 전체에 링크가 연결됩니다."></i>
@@ -3486,19 +3470,15 @@ function editCustomPageWidget(widgetId) {
                 const buttonsList = document.getElementById('edit_custom_page_widget_block_buttons_list');
                 if (buttonsList) {
                     buttonsList.innerHTML = '';
+                    editCustomPageBlockButtonIndex = 0;
                     buttons.forEach((button, index) => {
                         addEditCustomPageBlockButton(button);
                     });
-                }
-                if (showButton) {
-                    if (document.getElementById('edit_custom_page_widget_block_button_text')) {
-                        document.getElementById('edit_custom_page_widget_block_button_text').value = settings.button_text || '';
-                    }
-                    if (document.getElementById('edit_custom_page_widget_block_button_background_color')) {
-                        document.getElementById('edit_custom_page_widget_block_button_background_color').value = settings.button_background_color || '#007bff';
-                    }
-                    if (document.getElementById('edit_custom_page_widget_block_button_text_color')) {
-                        document.getElementById('edit_custom_page_widget_block_button_text_color').value = settings.button_text_color || '#ffffff';
+                    
+                    // 버튼이 있으면 연결 링크 필드 숨기기
+                    const linkContainer = document.getElementById('edit_custom_page_widget_block_link_container');
+                    if (linkContainer) {
+                        linkContainer.style.display = buttons.length > 0 ? 'none' : 'block';
                     }
                 }
             } else if (widgetType === 'block_slide') {
@@ -5189,7 +5169,30 @@ function addEditMainBlockSlideItem(blockData = null) {
             <small class="text-muted">제목과 내용 사이의 여백을 입력하세요 (0~100).</small>
         </div>
         <div class="mb-3">
-            <label class="form-label">연결 링크 <small class="text-muted">(선택사항)</small></label>
+            <label class="form-label">버튼 관리</label>
+            <div class="edit-custom-page-block-slide-buttons-list" id="edit_custom_page_block_slide_${itemIndex}_buttons_list">
+                <!-- 버튼들이 여기에 동적으로 추가됨 -->
+            </div>
+            <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addEditCustomPageBlockSlideButton(${itemIndex})">
+                <i class="bi bi-plus-circle me-1"></i>버튼 추가
+            </button>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">버튼 상단 여백 (px)</label>
+            <input type="number" 
+                   class="form-control edit-custom-page-block-slide-button-top-margin" 
+                   name="edit_main_block_slide[${itemIndex}][button_top_margin]" 
+                   value="${blockData ? (blockData.button_top_margin || '12') : '12'}"
+                   min="0"
+                   max="100"
+                   step="1"
+                   placeholder="12">
+            <small class="text-muted">버튼과 위 요소 사이의 여백을 입력하세요 (0~100).</small>
+        </div>
+        <div class="mb-3" id="edit_custom_page_block_slide_${itemIndex}_link_container">
+            <label class="form-label">연결 링크 <small class="text-muted">(선택사항)</small>
+                <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="버튼이 있는 경우 버튼에 링크가 연결되고, 버튼이 없는 경우 블록 전체에 링크가 연결됩니다."></i>
+            </label>
             <input type="url" 
                    class="form-control edit-custom-page-block-slide-link" 
                    name="edit_main_block_slide[${itemIndex}][link]" 
@@ -5216,6 +5219,275 @@ function addEditMainBlockSlideItem(blockData = null) {
     item.appendChild(header);
     item.appendChild(body);
     container.appendChild(item);
+    
+    // 버튼 데이터 로드
+    if (blockData && blockData.buttons && Array.isArray(blockData.buttons)) {
+        const buttonsList = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_buttons_list`);
+        if (buttonsList) {
+            if (!editCustomPageBlockSlideButtonIndices) {
+                editCustomPageBlockSlideButtonIndices = {};
+            }
+            if (!editCustomPageBlockSlideButtonIndices[itemIndex]) {
+                editCustomPageBlockSlideButtonIndices[itemIndex] = 0;
+            }
+            blockData.buttons.forEach((button) => {
+                addEditCustomPageBlockSlideButton(itemIndex, button);
+            });
+            
+            // 버튼이 있으면 연결 링크 필드 숨기기
+            const linkContainer = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_link_container`);
+            if (linkContainer) {
+                linkContainer.style.display = blockData.buttons.length > 0 ? 'none' : 'block';
+            }
+        }
+    }
+}
+
+// 커스텀 페이지 블록 슬라이드 버튼 관리 변수
+let editCustomPageBlockSlideButtonIndices = {};
+
+// 커스텀 페이지 블록 슬라이드 버튼 추가
+function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
+    if (!editCustomPageBlockSlideButtonIndices[itemIndex]) {
+        editCustomPageBlockSlideButtonIndices[itemIndex] = 0;
+    }
+    
+    const container = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_buttons_list`);
+    if (!container) return;
+    
+    const buttonIndex = editCustomPageBlockSlideButtonIndices[itemIndex];
+    const buttonId = `edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}`;
+    const buttonHtml = `
+        <div class="card mb-3" id="${buttonId}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">버튼 ${buttonIndex + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeEditCustomPageBlockSlideButton('${buttonId}', ${itemIndex})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 텍스트</label>
+                    <input type="text" 
+                           class="form-control edit-custom-page-block-slide-button-text" 
+                           name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][text]" 
+                           placeholder="버튼 텍스트를 입력하세요"
+                           value="${buttonData ? (buttonData.text || '') : ''}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 링크</label>
+                    <input type="url" 
+                           class="form-control edit-custom-page-block-slide-button-link" 
+                           name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][link]" 
+                           placeholder="https://example.com"
+                           value="${buttonData ? (buttonData.link || '') : ''}">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input edit-custom-page-block-slide-button-open-new-tab" 
+                               type="checkbox" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][open_new_tab]" 
+                               id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_open_new_tab"
+                               ${buttonData && buttonData.open_new_tab ? 'checked' : ''}>
+                        <label class="form-check-label" for="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_open_new_tab">
+                            새창에서 열기
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 배경 타입</label>
+                    <select class="form-select edit-custom-page-block-slide-button-background-type" 
+                            name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][background_type]"
+                            onchange="handleButtonBackgroundTypeChange(this)">
+                        <option value="color" ${buttonData && buttonData.background_type === 'gradient' ? '' : 'selected'}>컬러</option>
+                        <option value="gradient" ${buttonData && buttonData.background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
+                    </select>
+                </div>
+                <div class="row edit-custom-page-block-slide-button-color-container">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-slide-button-background-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][background_color]" 
+                               value="${buttonData ? (buttonData.background_color || '#007bff') : '#007bff'}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-slide-button-text-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][text_color]" 
+                               value="${buttonData ? (buttonData.text_color || '#ffffff') : '#ffffff'}">
+                    </div>
+                </div>
+                <div class="row edit-custom-page-block-slide-button-gradient-container" style="display: ${buttonData && buttonData.background_type === 'gradient' ? 'block' : 'none'};">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_gradient_preview" 
+                                 class="edit-custom-page-block-slide-button-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, ${buttonData ? (buttonData.background_gradient_start || '#007bff') : '#007bff'}, ${buttonData ? (buttonData.background_gradient_end || '#0056b3') : '#0056b3'});"
+                                 onclick="openButtonGradientModal('edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-slide-button-gradient-start" 
+                                   id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_gradient_start"
+                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_start]" 
+                                   value="${buttonData ? (buttonData.background_gradient_start || '#007bff') : '#007bff'}">
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-slide-button-gradient-end" 
+                                   id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_gradient_end"
+                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_end]" 
+                                   value="${buttonData ? (buttonData.background_gradient_end || '#0056b3') : '#0056b3'}">
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-slide-button-gradient-angle" 
+                                   id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_gradient_angle"
+                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_angle]" 
+                                   value="${buttonData ? (buttonData.background_gradient_angle || '90') : '90'}">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">투명도</label>
+                    <input type="range" 
+                           class="form-range edit-custom-page-block-slide-button-opacity" 
+                           name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][opacity]" 
+                           id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_opacity"
+                           value="${buttonData ? (Math.round((buttonData.opacity || 1.0) * 100)) : '100'}" 
+                           min="0" 
+                           max="100" 
+                           step="1"
+                           onchange="document.getElementById('edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_opacity_value" style="font-size: 0.7rem;">${buttonData ? (Math.round((buttonData.opacity || 1.0) * 100)) : '100'}%</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-slide-button-border-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][border_color]" 
+                               value="${buttonData ? (buttonData.border_color || '#007bff') : '#007bff'}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 두께 (px)</label>
+                        <input type="number" 
+                               class="form-control edit-custom-page-block-slide-button-border-width" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][border_width]" 
+                               value="${buttonData ? (buttonData.border_width || '2') : '2'}" 
+                               min="0" 
+                               max="10" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">호버 배경 타입</label>
+                    <select class="form-select edit-custom-page-block-slide-button-hover-background-type" 
+                            name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_type]"
+                            onchange="handleButtonHoverBackgroundTypeChange(this)">
+                        <option value="color" ${buttonData && buttonData.hover_background_type === 'gradient' ? '' : 'selected'}>컬러</option>
+                        <option value="gradient" ${buttonData && buttonData.hover_background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
+                    </select>
+                </div>
+                <div class="row edit-custom-page-block-slide-button-hover-color-container">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-slide-button-hover-background-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_color]" 
+                               value="${buttonData ? (buttonData.hover_background_color || '#0056b3') : '#0056b3'}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-slide-button-hover-text-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_text_color]" 
+                               value="${buttonData ? (buttonData.hover_text_color || '#ffffff') : '#ffffff'}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-slide-button-hover-border-color" 
+                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_border_color]" 
+                               value="${buttonData ? (buttonData.hover_border_color || '#0056b3') : '#0056b3'}">
+                    </div>
+                </div>
+                <div class="row edit-custom-page-block-slide-button-hover-gradient-container" style="display: ${buttonData && buttonData.hover_background_type === 'gradient' ? 'block' : 'none'};">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">호버 그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_preview" 
+                                 class="edit-custom-page-block-slide-button-hover-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, ${buttonData ? (buttonData.hover_background_gradient_start || '#0056b3') : '#0056b3'}, ${buttonData ? (buttonData.hover_background_gradient_end || '#004085') : '#004085'});"
+                                 onclick="openButtonGradientModal('edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-slide-button-hover-gradient-start" 
+                                   id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_start"
+                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_start]" 
+                                   value="${buttonData ? (buttonData.hover_background_gradient_start || '#0056b3') : '#0056b3'}">
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-slide-button-hover-gradient-end" 
+                                   id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_end"
+                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_end]" 
+                                   value="${buttonData ? (buttonData.hover_background_gradient_end || '#004085') : '#004085'}">
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-slide-button-hover-gradient-angle" 
+                                   id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_angle"
+                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_angle]" 
+                                   value="${buttonData ? (buttonData.hover_background_gradient_angle || '90') : '90'}">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">호버 투명도</label>
+                    <input type="range" 
+                           class="form-range edit-custom-page-block-slide-button-hover-opacity" 
+                           name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_opacity]" 
+                           id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity"
+                           value="${buttonData ? (Math.round((buttonData.hover_opacity || 1.0) * 100)) : '100'}" 
+                           min="0" 
+                           max="100" 
+                           step="1"
+                           onchange="document.getElementById('edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value" style="font-size: 0.7rem;">${buttonData ? (Math.round((buttonData.hover_opacity || 1.0) * 100)) : '100'}%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', buttonHtml);
+    editCustomPageBlockSlideButtonIndices[itemIndex]++;
+    
+    // 버튼이 추가되면 연결 링크 필드 숨기기
+    const linkContainer = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_link_container`);
+    if (linkContainer) {
+        linkContainer.style.display = 'none';
+    }
+}
+
+// 커스텀 페이지 블록 슬라이드 버튼 삭제
+function removeEditCustomPageBlockSlideButton(buttonId, itemIndex) {
+    const button = document.getElementById(buttonId);
+    if (button) button.remove();
+    
+    // 버튼이 없으면 연결 링크 필드 보이기
+    const container = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_buttons_list`);
+    const linkContainer = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_link_container`);
+    if (linkContainer && container) {
+        const buttons = container.querySelectorAll('.card');
+        if (buttons.length === 0) {
+            linkContainer.style.display = 'block';
+        }
+    }
 }
 
 function toggleEditMainBlockSlideItem(itemIndex) {
@@ -5450,11 +5722,249 @@ function handleEditCustomPageBlockBackgroundTypeChange() {
     }
 }
 
+// 커스텀 페이지 블록 위젯 버튼 관리 변수
+let editCustomPageBlockButtonIndex = 0;
+
 function handleEditCustomPageBlockButtonToggle() {
-    const showButton = document.getElementById('edit_custom_page_widget_block_show_button')?.checked;
-    const buttonContainer = document.getElementById('edit_custom_page_widget_block_button_container');
-    if (buttonContainer) {
-        buttonContainer.style.display = showButton ? 'block' : 'none';
+    // 이 함수는 더 이상 사용되지 않지만 호환성을 위해 유지
+}
+
+// 커스텀 페이지 블록 위젯 편집용 버튼 추가
+function addEditCustomPageBlockButton(buttonData = null) {
+    const container = document.getElementById('edit_custom_page_widget_block_buttons_list');
+    if (!container) return;
+    
+    const buttonId = `edit_custom_page_block_button_${editCustomPageBlockButtonIndex}`;
+    const buttonHtml = `
+        <div class="card mb-3" id="${buttonId}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">버튼 ${editCustomPageBlockButtonIndex + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeEditCustomPageBlockButton('${buttonId}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 텍스트</label>
+                    <input type="text" 
+                           class="form-control edit-custom-page-block-button-text" 
+                           name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][text]" 
+                           placeholder="버튼 텍스트를 입력하세요"
+                           value="${buttonData ? (buttonData.text || '') : ''}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 링크</label>
+                    <input type="url" 
+                           class="form-control edit-custom-page-block-button-link" 
+                           name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][link]" 
+                           placeholder="https://example.com"
+                           value="${buttonData ? (buttonData.link || '') : ''}">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input edit-custom-page-block-button-open-new-tab" 
+                               type="checkbox" 
+                               name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][open_new_tab]" 
+                               id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_open_new_tab"
+                               ${buttonData && buttonData.open_new_tab ? 'checked' : ''}>
+                        <label class="form-check-label" for="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_open_new_tab">
+                            새창에서 열기
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 배경 타입</label>
+                    <select class="form-select edit-custom-page-block-button-background-type" 
+                            name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][background_type]"
+                            onchange="handleButtonBackgroundTypeChange(this)">
+                        <option value="color" ${buttonData && buttonData.background_type === 'gradient' ? '' : 'selected'}>컬러</option>
+                        <option value="gradient" ${buttonData && buttonData.background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
+                    </select>
+                </div>
+                <div class="row edit-custom-page-block-button-color-container">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-button-background-color" 
+                               name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][background_color]" 
+                               value="${buttonData ? (buttonData.background_color || '#007bff') : '#007bff'}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-button-text-color" 
+                               name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][text_color]" 
+                               value="${buttonData ? (buttonData.text_color || '#ffffff') : '#ffffff'}">
+                    </div>
+                </div>
+                <div class="row edit-custom-page-block-button-gradient-container" style="display: ${buttonData && buttonData.background_type === 'gradient' ? 'block' : 'none'};">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_gradient_preview" 
+                                 class="edit-custom-page-block-button-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, ${buttonData ? (buttonData.background_gradient_start || '#007bff') : '#007bff'}, ${buttonData ? (buttonData.background_gradient_end || '#0056b3') : '#0056b3'});"
+                                 onclick="openButtonGradientModal('edit_custom_page_block_button_${editCustomPageBlockButtonIndex}')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-button-gradient-start" 
+                                   id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_gradient_start"
+                                   name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][background_gradient_start]" 
+                                   value="${buttonData ? (buttonData.background_gradient_start || '#007bff') : '#007bff'}">
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-button-gradient-end" 
+                                   id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_gradient_end"
+                                   name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][background_gradient_end]" 
+                                   value="${buttonData ? (buttonData.background_gradient_end || '#0056b3') : '#0056b3'}">
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-button-gradient-angle" 
+                                   id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_gradient_angle"
+                                   name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][background_gradient_angle]" 
+                                   value="${buttonData ? (buttonData.background_gradient_angle || '90') : '90'}">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">투명도</label>
+                    <input type="range" 
+                           class="form-range edit-custom-page-block-button-opacity" 
+                           name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][opacity]" 
+                           id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_opacity"
+                           value="${buttonData ? (Math.round((buttonData.opacity || 1.0) * 100)) : '100'}" 
+                           min="0" 
+                           max="100" 
+                           step="1"
+                           onchange="document.getElementById('edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_opacity_value" style="font-size: 0.7rem;">${buttonData ? (Math.round((buttonData.opacity || 1.0) * 100)) : '100'}%</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-button-border-color" 
+                               name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][border_color]" 
+                               value="${buttonData ? (buttonData.border_color || '#007bff') : '#007bff'}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">버튼 테두리 두께 (px)</label>
+                        <input type="number" 
+                               class="form-control edit-custom-page-block-button-border-width" 
+                               name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][border_width]" 
+                               value="${buttonData ? (buttonData.border_width || '2') : '2'}" 
+                               min="0" 
+                               max="10" 
+                               step="1">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">호버 배경 타입</label>
+                    <select class="form-select edit-custom-page-block-button-hover-background-type" 
+                            name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][hover_background_type]"
+                            onchange="handleButtonHoverBackgroundTypeChange(this)">
+                        <option value="color" ${buttonData && buttonData.hover_background_type === 'gradient' ? '' : 'selected'}>컬러</option>
+                        <option value="gradient" ${buttonData && buttonData.hover_background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
+                    </select>
+                </div>
+                <div class="row edit-custom-page-block-button-hover-color-container">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 배경 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-button-hover-background-color" 
+                               name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][hover_background_color]" 
+                               value="${buttonData ? (buttonData.hover_background_color || '#0056b3') : '#0056b3'}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 텍스트 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-button-hover-text-color" 
+                               name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][hover_text_color]" 
+                               value="${buttonData ? (buttonData.hover_text_color || '#ffffff') : '#ffffff'}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">호버 테두리 컬러</label>
+                        <input type="color" 
+                               class="form-control form-control-color edit-custom-page-block-button-hover-border-color" 
+                               name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][hover_border_color]" 
+                               value="${buttonData ? (buttonData.hover_border_color || '#0056b3') : '#0056b3'}">
+                    </div>
+                </div>
+                <div class="row edit-custom-page-block-button-hover-gradient-container" style="display: ${buttonData && buttonData.hover_background_type === 'gradient' ? 'block' : 'none'};">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">호버 그라데이션 설정</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_gradient_preview" 
+                                 class="edit-custom-page-block-button-hover-gradient-preview"
+                                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, ${buttonData ? (buttonData.hover_background_gradient_start || '#0056b3') : '#0056b3'}, ${buttonData ? (buttonData.hover_background_gradient_end || '#004085') : '#004085'});"
+                                 onclick="openButtonGradientModal('edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover')"
+                                 title="그라데이션 설정">
+                            </div>
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-button-hover-gradient-start" 
+                                   id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_gradient_start"
+                                   name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][hover_background_gradient_start]" 
+                                   value="${buttonData ? (buttonData.hover_background_gradient_start || '#0056b3') : '#0056b3'}">
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-button-hover-gradient-end" 
+                                   id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_gradient_end"
+                                   name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][hover_background_gradient_end]" 
+                                   value="${buttonData ? (buttonData.hover_background_gradient_end || '#004085') : '#004085'}">
+                            <input type="hidden" 
+                                   class="edit-custom-page-block-button-hover-gradient-angle" 
+                                   id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_gradient_angle"
+                                   name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][hover_background_gradient_angle]" 
+                                   value="${buttonData ? (buttonData.hover_background_gradient_angle || '90') : '90'}">
+                        </div>
+                        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">호버 투명도</label>
+                    <input type="range" 
+                           class="form-range edit-custom-page-block-button-hover-opacity" 
+                           name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][hover_opacity]" 
+                           id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_opacity"
+                           value="${buttonData ? (Math.round((buttonData.hover_opacity || 1.0) * 100)) : '100'}" 
+                           min="0" 
+                           max="100" 
+                           step="1"
+                           onchange="document.getElementById('edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-muted" id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_opacity_value" style="font-size: 0.7rem;">${buttonData ? (Math.round((buttonData.hover_opacity || 1.0) * 100)) : '100'}%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', buttonHtml);
+    editCustomPageBlockButtonIndex++;
+    
+    // 버튼이 추가되면 연결 링크 필드 숨기기
+    const linkContainer = document.getElementById('edit_custom_page_widget_block_link_container');
+    if (linkContainer) {
+        linkContainer.style.display = 'none';
+    }
+}
+
+// 커스텀 페이지 블록 위젯 편집용 버튼 삭제
+function removeEditCustomPageBlockButton(buttonId) {
+    const button = document.getElementById(buttonId);
+    if (button) button.remove();
+    
+    // 버튼이 없으면 연결 링크 필드 보이기
+    const container = document.getElementById('edit_custom_page_widget_block_buttons_list');
+    const linkContainer = document.getElementById('edit_custom_page_widget_block_link_container');
+    if (linkContainer && container) {
+        const buttons = container.querySelectorAll('.card');
+        if (buttons.length === 0) {
+            linkContainer.style.display = 'block';
+        }
     }
 }
 
