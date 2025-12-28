@@ -3519,9 +3519,16 @@ class AdminController extends Controller
             $container->full_height = false;
         }
         
-        // widget_spacing 처리
+        // widget_spacing 처리 (컬럼이 존재하는 경우에만)
         if ($request->has('widget_spacing')) {
-            $container->widget_spacing = $request->widget_spacing;
+            try {
+                // 컬럼이 존재하는지 확인
+                if (Schema::hasColumn('custom_page_widget_containers', 'widget_spacing')) {
+                    $container->widget_spacing = $request->widget_spacing;
+                }
+            } catch (\Exception $e) {
+                // widget_spacing 컬럼이 없는 경우 무시
+            }
         }
         
         // column_merges 처리
@@ -4239,9 +4246,16 @@ class AdminController extends Controller
             $container->full_height = false;
         }
         
-        // widget_spacing 처리
+        // widget_spacing 처리 (컬럼이 존재하는 경우에만)
         if ($request->has('widget_spacing')) {
-            $container->widget_spacing = $request->widget_spacing;
+            try {
+                // 컬럼이 존재하는지 확인
+                if (Schema::hasColumn('custom_page_widget_containers', 'widget_spacing')) {
+                    $container->widget_spacing = $request->widget_spacing;
+                }
+            } catch (\Exception $e) {
+                // widget_spacing 컬럼이 없는 경우 무시
+            }
         }
         
         // column_merges 처리
