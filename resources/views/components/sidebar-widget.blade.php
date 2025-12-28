@@ -1318,6 +1318,61 @@
                                                 flex-direction: column; 
                                                 transition: transform 0.5s ease;
                                             @endif">
+                                    {{-- 무한 슬라이드를 위한 복제 아이템 (앞에 추가) --}}
+                                    @foreach($galleryPosts->take($slideCols) as $index => $post)
+                                        @php
+                                            $thumbnail = $post->thumbnail_path;
+                                            if (!$thumbnail && $post->attachments->count() > 0) {
+                                                $imageAttachment = $post->attachments->firstWhere('mime_type', 'like', 'image/%');
+                                                if ($imageAttachment) {
+                                                    $thumbnail = $imageAttachment->file_path;
+                                                }
+                                            }
+                                            if (!$thumbnail) {
+                                                preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $post->content ?? '', $matches);
+                                                $thumbnail = $matches[1] ?? null;
+                                            }
+                                        @endphp
+                                        <div class="gallery-slide-item gallery-slide-duplicate gallery-slide-duplicate-start" 
+                                             style="@if($slideDirection === 'left' || $slideDirection === 'right')
+                                                        flex: 0 0 {{ 100 / $slideCols }}%; 
+                                                        padding: 0 4px;
+                                                    @else
+                                                        width: 100%;
+                                                        padding: 4px 0;
+                                                    @endif">
+                                            <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
+                                               class="text-decoration-none d-block">
+                                                <div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">
+                                                    @if($thumbnail)
+                                                        @if(str_starts_with($thumbnail, 'http'))
+                                                            <img src="{{ $thumbnail }}" 
+                                                                 alt="{{ $post->title }}" 
+                                                                 class="w-100" 
+                                                                 style="width: 100%; height: auto; display: block;">
+                                                        @else
+                                                            <img src="{{ asset('storage/' . $thumbnail) }}" 
+                                                                 alt="{{ $post->title }}" 
+                                                                 class="w-100" 
+                                                                 style="width: 100%; height: auto; display: block;">
+                                                        @endif
+                                                    @else
+                                                        <div class="w-100 d-flex align-items-center justify-content-center" style="min-height: 100px;">
+                                                            <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                @if($showTitle)
+                                                    <div class="mt-1 text-center">
+                                                        <small class="text-muted text-truncate d-block" style="font-size: 0.75rem;">
+                                                            {{ Str::limit($post->title, 20, '...') }}
+                                                        </small>
+                                                    </div>
+                                                @endif
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                    {{-- 원본 아이템 --}}
                                     @foreach($galleryPosts as $index => $post)
                                         @php
                                             $thumbnail = $post->thumbnail_path;
@@ -1371,7 +1426,7 @@
                                             </a>
                                         </div>
                                     @endforeach
-                                    {{-- 무한 슬라이드를 위한 복제 아이템 --}}
+                                    {{-- 무한 슬라이드를 위한 복제 아이템 (뒤에 추가) --}}
                                     @foreach($galleryPosts->take($slideCols) as $index => $post)
                                         @php
                                             $thumbnail = $post->thumbnail_path;
@@ -1386,7 +1441,7 @@
                                                 $thumbnail = $matches[1] ?? null;
                                             }
                                         @endphp
-                                        <div class="gallery-slide-item gallery-slide-duplicate" 
+                                        <div class="gallery-slide-item gallery-slide-duplicate gallery-slide-duplicate-end" 
                                              style="@if($slideDirection === 'left' || $slideDirection === 'right')
                                                         flex: 0 0 {{ 100 / $slideCols }}%; 
                                                         padding: 0 4px;
@@ -1478,18 +1533,18 @@
                                             
                                             if (direction === 'left') {
                                                 currentIndex += cols;
-                                                const maxIndex = itemCount;
                                                 
-                                                if (currentIndex >= maxIndex) {
-                                                    // 복제 아이템의 시작 위치로 transition 없이 이동
+                                                // 원본 아이템의 끝에 도달했을 때 (복제 아이템 앞의 개수 + 원본 아이템 개수)
+                                                if (currentIndex >= cols + itemCount) {
+                                                    // 복제 아이템의 시작 위치로 transition 없이 이동 (원본 아이템의 시작 위치)
                                                     wrapper.style.transition = 'none';
-                                                    wrapper.style.transform = `translateX(-${itemCount * (100 / cols)}%)`;
+                                                    wrapper.style.transform = `translateX(-${cols * (100 / cols)}%)`;
                                                     
-                                                    // 다음 프레임에서 원래 위치로 이동
+                                                    // 다음 프레임에서 계속 슬라이드
                                                     requestAnimationFrame(() => {
                                                         setTimeout(() => {
                                                             wrapper.style.transition = 'transform 0.5s ease';
-                                                            currentIndex = cols;
+                                                            currentIndex = cols + cols;
                                                             wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
                                                             setTimeout(() => {
                                                                 isTransitioning = false;
@@ -1505,16 +1560,17 @@
                                             } else if (direction === 'right') {
                                                 currentIndex -= cols;
                                                 
-                                                if (currentIndex < 0) {
-                                                    // 복제 아이템의 끝 위치로 transition 없이 이동
+                                                // 원본 아이템의 시작에 도달했을 때 (복제 아이템 앞의 개수보다 작을 때)
+                                                if (currentIndex < cols) {
+                                                    // 복제 아이템의 끝 위치로 transition 없이 이동 (원본 아이템의 끝 위치)
                                                     wrapper.style.transition = 'none';
-                                                    wrapper.style.transform = `translateX(-${itemCount * (100 / cols)}%)`;
+                                                    wrapper.style.transform = `translateX(-${(cols + itemCount) * (100 / cols)}%)`;
                                                     
-                                                    // 다음 프레임에서 원래 위치로 이동
+                                                    // 다음 프레임에서 계속 슬라이드
                                                     requestAnimationFrame(() => {
                                                         setTimeout(() => {
                                                             wrapper.style.transition = 'transform 0.5s ease';
-                                                            currentIndex = itemCount - cols;
+                                                            currentIndex = cols + itemCount - cols;
                                                             wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
                                                             setTimeout(() => {
                                                                 isTransitioning = false;
@@ -1529,6 +1585,10 @@
                                                 }
                                             }
                                         }
+                                        
+                                        // 초기 위치를 원본 아이템의 시작 위치로 설정 (복제 아이템 뒤)
+                                        wrapper.style.transform = `translateX(-${cols * (100 / cols)}%)`;
+                                        currentIndex = cols;
                                         
                                         function startAutoSlide() {
                                             if (intervalId) clearInterval(intervalId);
