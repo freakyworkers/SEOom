@@ -275,19 +275,19 @@
                                                                     </button>
                                                                 </div>
                                                             @endif
-                                                            <div style="display: flex; align-items: center; gap: 4px; margin-left: 8px;">
-                                                                <label class="mb-0 small">투명도:</label>
-                                                                <input type="range" 
-                                                                       class="form-range" 
-                                                                       id="container_background_image_alpha_{{ $container->id }}"
-                                                                       min="0" 
-                                                                       max="100" 
-                                                                       value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}"
-                                                                       style="width: 80px;"
-                                                                       onchange="updateContainerBackgroundImageAlpha({{ $container->id }}, this.value)"
-                                                                       title="투명도">
-                                                                <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_image_alpha_value_{{ $container->id }}">{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}%</small>
-                                                            </div>
+                                                            <input type="range" 
+                                                                   class="form-range" 
+                                                                   id="container_background_image_alpha_{{ $container->id }}"
+                                                                   min="0" 
+                                                                   max="100" 
+                                                                   value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}"
+                                                                   style="width: 80px;"
+                                                                   onchange="updateContainerBackgroundImageAlpha({{ $container->id }}, this.value)"
+                                                                   title="투명도">
+                                                            <small class="text-muted" style="font-size: 0.75rem; min-width: 35px;" id="container_background_image_alpha_value_{{ $container->id }}">{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}%</small>
+                                                            <input type="hidden" 
+                                                                   id="container_background_image_alpha_hidden_{{ $container->id }}"
+                                                                   value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}">
                                                         </div>
                                                     </div>
                                                     <div class="d-flex align-items-center gap-2">
