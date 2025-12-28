@@ -904,12 +904,12 @@
     @if($hasTitle)
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
-            <div class="card-header" style="background-color: white;{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' }} border: none !important; border-bottom: 1px solid #dee2e6 !important;">
+            <div class="card-header" style="background-color: white; border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border: none !important; border-bottom: 1px solid #dee2e6 !important;">
                 <h6 class="mb-0">{{ $widget->title }}</h6>
             </div>
             @endif
         @else
-        <div class="card-header" style="background-color: white; {{ $widgetTopBorderStyle }}{{ !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' }} border: none !important; border-bottom: 1px solid #dee2e6 !important;">
+        <div class="card-header" style="background-color: white; {{ $widgetTopBorderStyle }} border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border: none !important; border-bottom: 1px solid #dee2e6 !important;">
             <h6 class="mb-0">{{ $widget->title }}</h6>
         </div>
         @endif
@@ -2240,35 +2240,94 @@
                 @else
                     @if($showTabs)
                         {{-- 탭 형태로 표시 --}}
-                        <ul class="nav nav-tabs mb-3 sidebar-tab-menu" role="tablist" style="border-bottom: 1px solid #dee2e6; display: flex; width: 100%;">
-                            @if($enableRankRanking)
-                                <li class="nav-item" role="presentation" style="flex: 1 1 0; min-width: 0;">
-                                    <button class="nav-link sidebar-tab-btn active" 
-                                            id="ranking-tab-{{ $widget->id }}-rank" 
-                                            data-bs-toggle="tab" 
-                                            data-bs-target="#ranking-{{ $widget->id }}-rank" 
-                                            type="button" 
-                                            role="tab"
-                                            style="width: 100%; text-align: center;">
-                                        등급 랭킹
-                                    </button>
-                                </li>
-                            @endif
-                            @if($enablePointRanking)
-                                <li class="nav-item" role="presentation" style="flex: 1 1 0; min-width: 0;">
-                                    <button class="nav-link sidebar-tab-btn {{ !$enableRankRanking ? 'active' : '' }}" 
-                                            id="ranking-tab-{{ $widget->id }}-point" 
-                                            data-bs-toggle="tab" 
-                                            data-bs-target="#ranking-{{ $widget->id }}-point" 
-                                            type="button" 
-                                            role="tab"
-                                            style="width: 100%; text-align: center;">
-                                        포인트 랭킹
-                                    </button>
-                                </li>
-                            @endif
-                        </ul>
-                        <div class="tab-content">
+                        <div class="sidebar-tab-wrapper" style="overflow: hidden;">
+                            <ul class="nav nav-tabs mb-0 sidebar-tab-menu" 
+                                role="tablist" 
+                                style="display: flex; width: 100%; flex-wrap: nowrap;">
+                                @if($enableRankRanking)
+                                    <li class="nav-item" role="presentation" style="flex: 1 1 0; min-width: 0;">
+                                        <button class="nav-link sidebar-tab-btn active" 
+                                                id="ranking-tab-{{ $widget->id }}-rank" 
+                                                data-bs-toggle="tab" 
+                                                data-bs-target="#ranking-{{ $widget->id }}-rank" 
+                                                type="button" 
+                                                role="tab"
+                                                style="width: 100%; text-align: center; white-space: nowrap;">
+                                            등급 랭킹
+                                        </button>
+                                    </li>
+                                @endif
+                                @if($enablePointRanking)
+                                    <li class="nav-item" role="presentation" style="flex: 1 1 0; min-width: 0;">
+                                        <button class="nav-link sidebar-tab-btn {{ !$enableRankRanking ? 'active' : '' }}" 
+                                                id="ranking-tab-{{ $widget->id }}-point" 
+                                                data-bs-toggle="tab" 
+                                                data-bs-target="#ranking-{{ $widget->id }}-point" 
+                                                type="button" 
+                                                role="tab"
+                                                style="width: 100%; text-align: center; white-space: nowrap;">
+                                            포인트 랭킹
+                                        </button>
+                                    </li>
+                                @endif
+                            </ul>
+                        </div>
+                        <style>
+                            .sidebar-tab-menu {
+                                border: none !important;
+                                border-bottom: 1px solid #dee2e6 !important;
+                            }
+                            .sidebar-tab-menu .nav-item {
+                                min-width: 0 !important;
+                            }
+                            .sidebar-tab-menu .sidebar-tab-btn {
+                                width: 100% !important;
+                                text-align: center !important;
+                            }
+                            .sidebar-tab-menu .sidebar-tab-btn {
+                                border: none !important;
+                                background-color: transparent !important;
+                                color: #6c757d !important;
+                                padding: 0.5rem 1rem !important;
+                                margin-bottom: -1px !important;
+                                border-bottom: 2px solid transparent !important;
+                                border-radius: 0 !important;
+                                height: 39.1875px !important;
+                                min-height: 39.1875px !important;
+                                max-height: 39.1875px !important;
+                                display: flex !important;
+                                align-items: center !important;
+                                justify-content: center !important;
+                                line-height: 1.2 !important;
+                            }
+                            .sidebar-tab-menu .sidebar-tab-btn.active {
+                                border-bottom: 2px solid #0d6efd !important;
+                                border-radius: 0 !important;
+                                color: #0d6efd !important;
+                                font-weight: 600 !important;
+                                background-color: transparent !important;
+                            }
+                            .sidebar-tab-menu .sidebar-tab-btn:not(.active):hover {
+                                color: #495057 !important;
+                            }
+                            .sidebar-tab-wrapper {
+                                width: 100%;
+                            }
+                            .sidebar-tab-wrapper::-webkit-scrollbar {
+                                height: 4px;
+                            }
+                            .sidebar-tab-wrapper::-webkit-scrollbar-track {
+                                background: #f1f1f1;
+                            }
+                            .sidebar-tab-wrapper::-webkit-scrollbar-thumb {
+                                background: #888;
+                                border-radius: 2px;
+                            }
+                            .sidebar-tab-wrapper::-webkit-scrollbar-thumb:hover {
+                                background: #555;
+                            }
+                        </style>
+                        <div class="tab-content" style="margin-top: 0.75rem;">
                             @if($enableRankRanking)
                                 <div class="tab-pane fade show active" id="ranking-{{ $widget->id }}-rank" role="tabpanel">
                                     @php
