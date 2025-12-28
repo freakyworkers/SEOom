@@ -1299,7 +1299,7 @@
                                 </div>
                             @endforeach
                         </div>
-                    @else
+                    @elseif($displayType === 'slide')
                         @php
                             $slideCols = $widgetSettings['slide_cols'] ?? 3;
                             $slideDirection = $widgetSettings['slide_direction'] ?? 'left';
