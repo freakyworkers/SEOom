@@ -796,6 +796,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const processedFields = new Set();
         
         // 1단계: ID가 있는 visible input 우선 처리 (사용자가 입력한 값)
+        // ID로 특정 input을 찾아서 정확한 값을 가져옴
         form.querySelectorAll('input[id], select[id], textarea[id]').forEach(input => {
             if (input.type === 'checkbox' && !input.checked) return;
             if (input.type === 'radio' && !input.checked) return;
@@ -804,8 +805,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // ID가 있고 visible인 경우 우선 사용 (사용자가 입력한 값)
             if (input.id && input.type !== 'hidden' && !input.disabled) {
-                formData.append(input.name, input.value);
-                processedFields.add(input.name);
+                // 같은 name을 가진 다른 input이 있어도 ID로 특정한 input의 값만 사용
+                const fieldKey = input.name;
+                if (!processedFields.has(fieldKey)) {
+                    formData.append(fieldKey, input.value);
+                    processedFields.add(fieldKey);
+                }
             }
         });
         
