@@ -780,28 +780,59 @@ document.addEventListener('DOMContentLoaded', function() {
             hiddenInput.value = input.value;
         });
         
-        // FormData 생성 및 중복 필드 제거 (마지막 값만 사용)
+        // FormData 생성 및 중복 필드 제거 (visible input 우선)
         const formData = new FormData();
         const seenFields = new Map();
         
-        // 모든 form 요소를 순회하면서 마지막 값만 저장
-        const allInputs = form.querySelectorAll('input, select, textarea');
-        allInputs.forEach(input => {
+        // 1단계: 먼저 visible이고 disabled가 아닌 input들을 처리 (우선순위 높음)
+        const visibleInputs = form.querySelectorAll('input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled)');
+        visibleInputs.forEach(input => {
             if (input.type === 'checkbox' && !input.checked) {
-                return; // 체크되지 않은 체크박스는 제외
+                return;
             }
             if (input.type === 'radio' && !input.checked) {
-                return; // 선택되지 않은 라디오는 제외
-            }
-            if (input.disabled && !input.classList.contains('banner-hidden-input')) {
-                return; // disabled 필드는 제외 (hidden input은 포함)
+                return;
             }
             
             const name = input.name;
             if (!name) return;
             
-            // 같은 이름의 필드가 여러 개 있을 경우 마지막 값만 사용
+            // visible input은 항상 우선
             seenFields.set(name, input.value);
+        });
+        
+        // 2단계: hidden input과 disabled input 처리 (visible input이 없을 때만)
+        const hiddenAndDisabledInputs = form.querySelectorAll('input[type="hidden"], input:disabled.banner-hidden-input');
+        hiddenAndDisabledInputs.forEach(input => {
+            const name = input.name;
+            if (!name) return;
+            
+            // visible input이 없을 때만 추가
+            if (!seenFields.has(name)) {
+                seenFields.set(name, input.value);
+            }
+        });
+        
+        // 3단계: 나머지 input 처리
+        const allInputs = form.querySelectorAll('input, select, textarea');
+        allInputs.forEach(input => {
+            if (input.type === 'checkbox' && !input.checked) {
+                return;
+            }
+            if (input.type === 'radio' && !input.checked) {
+                return;
+            }
+            if (input.type === 'hidden' || (input.disabled && !input.classList.contains('banner-hidden-input'))) {
+                return;
+            }
+            
+            const name = input.name;
+            if (!name) return;
+            
+            // 이미 처리된 필드는 건너뛰기
+            if (!seenFields.has(name)) {
+                seenFields.set(name, input.value);
+            }
         });
         
         // Map의 모든 항목을 FormData에 추가
