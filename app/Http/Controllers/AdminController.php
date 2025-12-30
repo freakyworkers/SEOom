@@ -1747,30 +1747,49 @@ class AdminController extends Controller
         ];
 
         foreach ($bannerLocations as $location) {
-            if ($request->has("banner_{$location}_exposure_type")) {
-                $site->setSetting("banner_{$location}_exposure_type", $request->input("banner_{$location}_exposure_type"));
+            // exposure_type 저장
+            $exposureType = $request->input("banner_{$location}_exposure_type");
+            if ($exposureType !== null) {
+                $site->setSetting("banner_{$location}_exposure_type", $exposureType);
             }
-            if ($request->has("banner_{$location}_sort")) {
-                $site->setSetting("banner_{$location}_sort", $request->input("banner_{$location}_sort"));
+            
+            // sort 저장
+            $sort = $request->input("banner_{$location}_sort");
+            if ($sort !== null) {
+                $site->setSetting("banner_{$location}_sort", $sort);
             }
-            // 숫자 필드는 null이 아닌 경우에만 저장 (0도 유효한 값)
-            if ($request->has("banner_{$location}_desktop_per_line") && $request->input("banner_{$location}_desktop_per_line") !== null) {
-                $site->setSetting("banner_{$location}_desktop_per_line", $request->input("banner_{$location}_desktop_per_line"));
+            
+            // 숫자 필드는 null이 아닌 경우에만 저장 (0도 유효한 값, 빈 문자열도 저장)
+            $desktopPerLine = $request->input("banner_{$location}_desktop_per_line");
+            if ($desktopPerLine !== null) {
+                $site->setSetting("banner_{$location}_desktop_per_line", $desktopPerLine);
             }
-            if ($request->has("banner_{$location}_mobile_per_line") && $request->input("banner_{$location}_mobile_per_line") !== null) {
-                $site->setSetting("banner_{$location}_mobile_per_line", $request->input("banner_{$location}_mobile_per_line"));
+            
+            $mobilePerLine = $request->input("banner_{$location}_mobile_per_line");
+            if ($mobilePerLine !== null) {
+                $site->setSetting("banner_{$location}_mobile_per_line", $mobilePerLine);
             }
-            if ($request->has("banner_{$location}_desktop_rows") && $request->input("banner_{$location}_desktop_rows") !== null) {
-                $site->setSetting("banner_{$location}_desktop_rows", $request->input("banner_{$location}_desktop_rows"));
+            
+            $desktopRows = $request->input("banner_{$location}_desktop_rows");
+            if ($desktopRows !== null) {
+                $site->setSetting("banner_{$location}_desktop_rows", $desktopRows);
             }
-            if ($request->has("banner_{$location}_mobile_rows") && $request->input("banner_{$location}_mobile_rows") !== null) {
-                $site->setSetting("banner_{$location}_mobile_rows", $request->input("banner_{$location}_mobile_rows"));
+            
+            $mobileRows = $request->input("banner_{$location}_mobile_rows");
+            if ($mobileRows !== null) {
+                $site->setSetting("banner_{$location}_mobile_rows", $mobileRows);
             }
-            if ($request->has("banner_{$location}_slide_interval")) {
-                $site->setSetting("banner_{$location}_slide_interval", $request->input("banner_{$location}_slide_interval"));
+            
+            // slide_interval 저장
+            $slideInterval = $request->input("banner_{$location}_slide_interval");
+            if ($slideInterval !== null) {
+                $site->setSetting("banner_{$location}_slide_interval", $slideInterval);
             }
-            if ($request->has("banner_{$location}_slide_direction")) {
-                $site->setSetting("banner_{$location}_slide_direction", $request->input("banner_{$location}_slide_direction"));
+            
+            // slide_direction 저장
+            $slideDirection = $request->input("banner_{$location}_slide_direction");
+            if ($slideDirection !== null) {
+                $site->setSetting("banner_{$location}_slide_direction", $slideDirection);
             }
         }
         
