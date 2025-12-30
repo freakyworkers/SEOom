@@ -1746,76 +1746,47 @@ class AdminController extends Controller
             'mobile_menu_top', 'mobile_menu_bottom'
         ];
 
-        // 모든 입력값 가져오기 (중복 필드 처리)
-        // Laravel의 all()은 중복 필드에서 첫 번째 값만 반환하므로 $_POST 직접 사용
-        $postData = $_POST ?? [];
-        
         foreach ($bannerLocations as $location) {
             // 모든 필드를 항상 저장
-            // 같은 이름의 필드가 여러 개 있을 수 있으므로 배열로 받아서 마지막 값 사용
-            $exposureType = $postData["banner_{$location}_exposure_type"] ?? null;
+            // request()->input()을 사용하여 값 가져오기
+            $exposureType = $request->input("banner_{$location}_exposure_type");
             if ($exposureType !== null) {
-                // 배열인 경우 마지막 값 사용
-                if (is_array($exposureType)) {
-                    $exposureType = end($exposureType);
-                }
                 $site->setSetting("banner_{$location}_exposure_type", $exposureType);
             }
             
-            $sort = $postData["banner_{$location}_sort"] ?? null;
+            $sort = $request->input("banner_{$location}_sort");
             if ($sort !== null) {
-                if (is_array($sort)) {
-                    $sort = end($sort);
-                }
                 $site->setSetting("banner_{$location}_sort", $sort);
             }
             
             // 숫자 필드는 항상 저장
-            $desktopPerLine = $postData["banner_{$location}_desktop_per_line"] ?? null;
-            if ($desktopPerLine !== null) {
-                if (is_array($desktopPerLine)) {
-                    $desktopPerLine = end($desktopPerLine);
-                }
+            $desktopPerLine = $request->input("banner_{$location}_desktop_per_line");
+            if ($desktopPerLine !== null && $desktopPerLine !== '') {
                 $site->setSetting("banner_{$location}_desktop_per_line", $desktopPerLine);
             }
             
-            $mobilePerLine = $postData["banner_{$location}_mobile_per_line"] ?? null;
-            if ($mobilePerLine !== null) {
-                if (is_array($mobilePerLine)) {
-                    $mobilePerLine = end($mobilePerLine);
-                }
+            $mobilePerLine = $request->input("banner_{$location}_mobile_per_line");
+            if ($mobilePerLine !== null && $mobilePerLine !== '') {
                 $site->setSetting("banner_{$location}_mobile_per_line", $mobilePerLine);
             }
             
-            $desktopRows = $postData["banner_{$location}_desktop_rows"] ?? null;
-            if ($desktopRows !== null) {
-                if (is_array($desktopRows)) {
-                    $desktopRows = end($desktopRows);
-                }
+            $desktopRows = $request->input("banner_{$location}_desktop_rows");
+            if ($desktopRows !== null && $desktopRows !== '') {
                 $site->setSetting("banner_{$location}_desktop_rows", $desktopRows);
             }
             
-            $mobileRows = $postData["banner_{$location}_mobile_rows"] ?? null;
-            if ($mobileRows !== null) {
-                if (is_array($mobileRows)) {
-                    $mobileRows = end($mobileRows);
-                }
+            $mobileRows = $request->input("banner_{$location}_mobile_rows");
+            if ($mobileRows !== null && $mobileRows !== '') {
                 $site->setSetting("banner_{$location}_mobile_rows", $mobileRows);
             }
             
-            $slideInterval = $postData["banner_{$location}_slide_interval"] ?? null;
+            $slideInterval = $request->input("banner_{$location}_slide_interval");
             if ($slideInterval !== null) {
-                if (is_array($slideInterval)) {
-                    $slideInterval = end($slideInterval);
-                }
                 $site->setSetting("banner_{$location}_slide_interval", $slideInterval);
             }
             
-            $slideDirection = $postData["banner_{$location}_slide_direction"] ?? null;
+            $slideDirection = $request->input("banner_{$location}_slide_direction");
             if ($slideDirection !== null) {
-                if (is_array($slideDirection)) {
-                    $slideDirection = end($slideDirection);
-                }
                 $site->setSetting("banner_{$location}_slide_direction", $slideDirection);
             }
         }

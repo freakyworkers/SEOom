@@ -780,7 +780,34 @@ document.addEventListener('DOMContentLoaded', function() {
             hiddenInput.value = input.value;
         });
         
-        const formData = new FormData(this);
+        // FormData 생성 및 중복 필드 제거 (마지막 값만 사용)
+        const formData = new FormData();
+        const seenFields = new Map();
+        
+        // 모든 form 요소를 순회하면서 마지막 값만 저장
+        const allInputs = form.querySelectorAll('input, select, textarea');
+        allInputs.forEach(input => {
+            if (input.type === 'checkbox' && !input.checked) {
+                return; // 체크되지 않은 체크박스는 제외
+            }
+            if (input.type === 'radio' && !input.checked) {
+                return; // 선택되지 않은 라디오는 제외
+            }
+            if (input.disabled && !input.classList.contains('banner-hidden-input')) {
+                return; // disabled 필드는 제외 (hidden input은 포함)
+            }
+            
+            const name = input.name;
+            if (!name) return;
+            
+            // 같은 이름의 필드가 여러 개 있을 경우 마지막 값만 사용
+            seenFields.set(name, input.value);
+        });
+        
+        // Map의 모든 항목을 FormData에 추가
+        seenFields.forEach((value, name) => {
+            formData.append(name, value);
+        });
         
         fetch('{{ route("admin.banners.update", ["site" => $site->slug]) }}', {
             method: 'POST',
