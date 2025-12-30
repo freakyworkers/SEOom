@@ -823,7 +823,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 'Accept': 'application/json'
             },
-            body: cleanFormData
+            body: formData
         })
         .then(response => {
             console.log('서버 응답 상태:', response.status);
