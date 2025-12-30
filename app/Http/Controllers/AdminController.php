@@ -1759,9 +1759,15 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_sort", $sort);
             }
             
-            // 숫자 필드는 null이 아닌 경우에만 저장 (0도 유효한 값, 빈 문자열도 저장)
+            // 숫자 필드는 항상 저장 (null이 아닌 경우)
             $desktopPerLine = $request->input("banner_{$location}_desktop_per_line");
             if ($desktopPerLine !== null) {
+                \Log::info("배너 설정 저장", [
+                    'location' => $location,
+                    'field' => 'desktop_per_line',
+                    'value' => $desktopPerLine,
+                    'site_id' => $site->id
+                ]);
                 $site->setSetting("banner_{$location}_desktop_per_line", $desktopPerLine);
             }
             
@@ -1772,6 +1778,12 @@ class AdminController extends Controller
             
             $desktopRows = $request->input("banner_{$location}_desktop_rows");
             if ($desktopRows !== null) {
+                \Log::info("배너 설정 저장", [
+                    'location' => $location,
+                    'field' => 'desktop_rows',
+                    'value' => $desktopRows,
+                    'site_id' => $site->id
+                ]);
                 $site->setSetting("banner_{$location}_desktop_rows", $desktopRows);
             }
             
