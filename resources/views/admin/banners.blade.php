@@ -780,30 +780,51 @@ document.addEventListener('DOMContentLoaded', function() {
             hiddenInput.value = input.value;
         });
         
-        // FormData 생성 - disabled 필드는 일시적으로 활성화
-        const disabledInputs = [];
+        // FormData 생성 - 수동으로 모든 필드 수집
+        const formData = new FormData();
+        const fieldValues = new Map();
         
-        // disabled 필드를 일시적으로 활성화
-        form.querySelectorAll('input:disabled, select:disabled, textarea:disabled').forEach(input => {
-            if (!input.classList.contains('banner-hidden-input')) {
-                disabledInputs.push(input);
-                input.disabled = false;
+        // 1단계: visible이고 disabled가 아닌 input 우선 수집
+        form.querySelectorAll('input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled)').forEach(input => {
+            if (input.type === 'checkbox' && !input.checked) return;
+            if (input.type === 'radio' && !input.checked) return;
+            if (!input.name) return;
+            
+            // visible input은 항상 우선
+            fieldValues.set(input.name, input.value);
+        });
+        
+        // 2단계: hidden input과 disabled input 수집 (visible input이 없을 때만)
+        form.querySelectorAll('input[type="hidden"], input:disabled.banner-hidden-input').forEach(input => {
+            if (!input.name) return;
+            if (!fieldValues.has(input.name)) {
+                fieldValues.set(input.name, input.value);
             }
         });
         
-        // FormData 생성 - form에서 직접 생성 (브라우저가 자동으로 처리)
-        const formData = new FormData(form);
+        // 3단계: 나머지 필드 수집
+        form.querySelectorAll('input, select, textarea').forEach(input => {
+            if (input.type === 'checkbox' && !input.checked) return;
+            if (input.type === 'radio' && !input.checked) return;
+            if (input.type === 'hidden' && !input.classList.contains('banner-hidden-input')) return;
+            if (input.disabled && !input.classList.contains('banner-hidden-input')) return;
+            if (!input.name) return;
+            
+            if (!fieldValues.has(input.name)) {
+                fieldValues.set(input.name, input.value);
+            }
+        });
+        
+        // FormData에 추가
+        fieldValues.forEach((value, name) => {
+            formData.append(name, value);
+        });
         
         // 디버깅: 전송되는 값 확인
         const mainBottomEntries = Array.from(formData.entries()).filter(e => 
             e[0].includes('main_bottom') && (e[0].includes('desktop_per_line') || e[0].includes('desktop_rows'))
         );
         console.log('전송되는 main_bottom 값:', mainBottomEntries);
-        
-        // disabled 필드 복원
-        disabledInputs.forEach(input => {
-            input.disabled = true;
-        });
         
         fetch('{{ route("admin.banners.update", ["site" => $site->slug]) }}', {
             method: 'POST',
