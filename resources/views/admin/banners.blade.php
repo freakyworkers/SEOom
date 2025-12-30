@@ -780,8 +780,7 @@ document.addEventListener('DOMContentLoaded', function() {
             hiddenInput.value = input.value;
         });
         
-        // FormData 생성 - 간단하게 form에서 직접 생성하되, disabled 필드는 일시적으로 활성화
-        const formData = new FormData();
+        // FormData 생성 - disabled 필드는 일시적으로 활성화
         const disabledInputs = [];
         
         // disabled 필드를 일시적으로 활성화
@@ -792,26 +791,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // FormData 생성
-        const allInputs = form.querySelectorAll('input, select, textarea');
-        const fieldMap = new Map();
+        // FormData 생성 - form에서 직접 생성 (브라우저가 자동으로 처리)
+        const formData = new FormData(form);
         
-        // 모든 input을 순회하면서 마지막 값을 저장 (같은 이름의 필드가 여러 개 있을 경우)
-        allInputs.forEach(input => {
-            if (input.type === 'checkbox' && !input.checked) return;
-            if (input.type === 'radio' && !input.checked) return;
-            
-            const name = input.name;
-            if (!name) return;
-            
-            // 같은 이름의 필드가 여러 개 있을 경우 마지막 값 사용
-            fieldMap.set(name, input.value);
-        });
-        
-        // Map의 모든 항목을 FormData에 추가
-        fieldMap.forEach((value, name) => {
-            formData.append(name, value);
-        });
+        // 디버깅: 전송되는 값 확인
+        const mainBottomEntries = Array.from(formData.entries()).filter(e => 
+            e[0].includes('main_bottom') && (e[0].includes('desktop_per_line') || e[0].includes('desktop_rows'))
+        );
+        console.log('전송되는 main_bottom 값:', mainBottomEntries);
         
         // disabled 필드 복원
         disabledInputs.forEach(input => {
