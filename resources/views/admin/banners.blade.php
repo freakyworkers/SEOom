@@ -780,44 +780,46 @@ document.addEventListener('DOMContentLoaded', function() {
             hiddenInput.value = input.value;
         });
         
-        // FormData 생성 - 수동으로 모든 필드 수집
+        // FormData 생성 - ID를 기준으로 특정 input 찾기
         const formData = new FormData();
-        const fieldValues = new Map();
         
-        // 1단계: visible이고 disabled가 아닌 input 우선 수집
-        form.querySelectorAll('input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled)').forEach(input => {
+        // 모든 input, select, textarea를 순회하면서 값 수집
+        // 같은 이름의 필드가 여러 개 있을 경우, visible이고 disabled가 아닌 것을 우선 사용
+        const processedFields = new Set();
+        
+        // 1단계: ID가 있는 visible input 우선 처리 (가장 확실한 방법)
+        form.querySelectorAll('input[id], select[id], textarea[id]').forEach(input => {
             if (input.type === 'checkbox' && !input.checked) return;
             if (input.type === 'radio' && !input.checked) return;
             if (!input.name) return;
+            if (input.disabled && !input.classList.contains('banner-hidden-input')) return;
             
-            // visible input은 항상 우선
-            fieldValues.set(input.name, input.value);
-        });
-        
-        // 2단계: hidden input과 disabled input 수집 (visible input이 없을 때만)
-        form.querySelectorAll('input[type="hidden"], input:disabled.banner-hidden-input').forEach(input => {
-            if (!input.name) return;
-            if (!fieldValues.has(input.name)) {
-                fieldValues.set(input.name, input.value);
+            // ID가 있고 visible인 경우 우선 사용
+            if (input.id && input.type !== 'hidden' && !input.disabled) {
+                formData.append(input.name, input.value);
+                processedFields.add(input.name);
             }
         });
         
-        // 3단계: 나머지 필드 수집
+        // 2단계: 나머지 필드 처리 (ID가 없거나 이미 처리되지 않은 필드)
         form.querySelectorAll('input, select, textarea').forEach(input => {
             if (input.type === 'checkbox' && !input.checked) return;
             if (input.type === 'radio' && !input.checked) return;
-            if (input.type === 'hidden' && !input.classList.contains('banner-hidden-input')) return;
-            if (input.disabled && !input.classList.contains('banner-hidden-input')) return;
             if (!input.name) return;
+            if (processedFields.has(input.name)) return; // 이미 처리된 필드는 건너뛰기
             
-            if (!fieldValues.has(input.name)) {
-                fieldValues.set(input.name, input.value);
+            // hidden input은 disabled가 아닌 경우만
+            if (input.type === 'hidden' && !input.classList.contains('banner-hidden-input')) {
+                return;
             }
-        });
-        
-        // FormData에 추가
-        fieldValues.forEach((value, name) => {
-            formData.append(name, value);
+            
+            // disabled input은 banner-hidden-input 클래스가 있는 경우만
+            if (input.disabled && !input.classList.contains('banner-hidden-input')) {
+                return;
+            }
+            
+            formData.append(input.name, input.value);
+            processedFields.add(input.name);
         });
         
         // 디버깅: 전송되는 값 확인
@@ -837,7 +839,17 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // 저장된 값으로 DOM 업데이트 (페이지 새로고침 대신)
+                if (data.settings) {
+                    Object.keys(data.settings).forEach(key => {
+                        const input = form.querySelector(`input[name="${key}"], select[name="${key}"], textarea[name="${key}"]`);
+                        if (input && input.type !== 'hidden' && !input.disabled) {
+                            input.value = data.settings[key];
+                        }
+                    });
+                }
                 alert('배너 설정이 저장되었습니다.');
+                // 페이지 새로고침
                 location.reload();
             } else {
                 alert('오류가 발생했습니다: ' + (data.message || '알 수 없는 오류'));

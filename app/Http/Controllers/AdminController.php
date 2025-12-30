@@ -1826,9 +1826,19 @@ class AdminController extends Controller
         }
 
         if ($request->expectsJson()) {
+            // 저장된 설정값 반환
+            $savedSettings = [];
+            foreach ($bannerLocations as $location) {
+                $savedSettings["banner_{$location}_desktop_per_line"] = $site->getSetting("banner_{$location}_desktop_per_line", '3');
+                $savedSettings["banner_{$location}_desktop_rows"] = $site->getSetting("banner_{$location}_desktop_rows", '0');
+                $savedSettings["banner_{$location}_mobile_per_line"] = $site->getSetting("banner_{$location}_mobile_per_line", '1');
+                $savedSettings["banner_{$location}_mobile_rows"] = $site->getSetting("banner_{$location}_mobile_rows", '0');
+            }
+            
             return response()->json([
                 'success' => true,
                 'message' => '배너 설정이 저장되었습니다.',
+                'settings' => $savedSettings,
             ]);
         }
 
