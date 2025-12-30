@@ -810,16 +810,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // 2단계: 나머지 필드 처리 (ID가 없거나 이미 처리되지 않은 필드)
-        form.querySelectorAll('input, select, textarea').forEach(input => {
+        // 단, hidden input은 완전히 제외 (이미 1단계에서 ID가 있는 visible input을 처리했으므로)
+        form.querySelectorAll('input:not([type="hidden"]), select, textarea').forEach(input => {
             if (input.type === 'checkbox' && !input.checked) return;
             if (input.type === 'radio' && !input.checked) return;
             if (!input.name) return;
             if (processedFields.has(input.name)) return; // 이미 처리된 필드는 건너뛰기
-            
-            // hidden input은 banner-hidden-input 클래스가 있는 경우만
-            if (input.type === 'hidden' && !input.classList.contains('banner-hidden-input')) {
-                return;
-            }
             
             // disabled input은 banner-hidden-input 클래스가 있는 경우만
             if (input.disabled && !input.classList.contains('banner-hidden-input')) {
