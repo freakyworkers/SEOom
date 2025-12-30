@@ -1746,10 +1746,13 @@ class AdminController extends Controller
             'mobile_menu_top', 'mobile_menu_bottom'
         ];
 
+        // 모든 입력값 가져오기 (중복 필드 처리)
+        $allInputs = $request->all();
+        
         foreach ($bannerLocations as $location) {
             // 모든 필드를 항상 저장
             // 같은 이름의 필드가 여러 개 있을 수 있으므로 배열로 받아서 마지막 값 사용
-            $exposureType = $request->input("banner_{$location}_exposure_type");
+            $exposureType = $allInputs["banner_{$location}_exposure_type"] ?? null;
             if ($exposureType !== null) {
                 // 배열인 경우 마지막 값 사용
                 if (is_array($exposureType)) {
@@ -1758,7 +1761,7 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_exposure_type", $exposureType);
             }
             
-            $sort = $request->input("banner_{$location}_sort");
+            $sort = $allInputs["banner_{$location}_sort"] ?? null;
             if ($sort !== null) {
                 if (is_array($sort)) {
                     $sort = end($sort);
@@ -1767,7 +1770,7 @@ class AdminController extends Controller
             }
             
             // 숫자 필드는 항상 저장
-            $desktopPerLine = $request->input("banner_{$location}_desktop_per_line");
+            $desktopPerLine = $allInputs["banner_{$location}_desktop_per_line"] ?? null;
             if ($desktopPerLine !== null) {
                 if (is_array($desktopPerLine)) {
                     $desktopPerLine = end($desktopPerLine);
@@ -1775,7 +1778,7 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_desktop_per_line", $desktopPerLine);
             }
             
-            $mobilePerLine = $request->input("banner_{$location}_mobile_per_line");
+            $mobilePerLine = $allInputs["banner_{$location}_mobile_per_line"] ?? null;
             if ($mobilePerLine !== null) {
                 if (is_array($mobilePerLine)) {
                     $mobilePerLine = end($mobilePerLine);
@@ -1783,7 +1786,7 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_mobile_per_line", $mobilePerLine);
             }
             
-            $desktopRows = $request->input("banner_{$location}_desktop_rows");
+            $desktopRows = $allInputs["banner_{$location}_desktop_rows"] ?? null;
             if ($desktopRows !== null) {
                 if (is_array($desktopRows)) {
                     $desktopRows = end($desktopRows);
@@ -1791,7 +1794,7 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_desktop_rows", $desktopRows);
             }
             
-            $mobileRows = $request->input("banner_{$location}_mobile_rows");
+            $mobileRows = $allInputs["banner_{$location}_mobile_rows"] ?? null;
             if ($mobileRows !== null) {
                 if (is_array($mobileRows)) {
                     $mobileRows = end($mobileRows);
@@ -1799,7 +1802,7 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_mobile_rows", $mobileRows);
             }
             
-            $slideInterval = $request->input("banner_{$location}_slide_interval");
+            $slideInterval = $allInputs["banner_{$location}_slide_interval"] ?? null;
             if ($slideInterval !== null) {
                 if (is_array($slideInterval)) {
                     $slideInterval = end($slideInterval);
@@ -1807,7 +1810,7 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_slide_interval", $slideInterval);
             }
             
-            $slideDirection = $request->input("banner_{$location}_slide_direction");
+            $slideDirection = $allInputs["banner_{$location}_slide_direction"] ?? null;
             if ($slideDirection !== null) {
                 if (is_array($slideDirection)) {
                     $slideDirection = end($slideDirection);
