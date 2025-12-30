@@ -1746,62 +1746,61 @@ class AdminController extends Controller
             'mobile_menu_top', 'mobile_menu_bottom'
         ];
 
+        // 요청 데이터 로깅
+        \Log::info("배너 설정 저장 요청", [
+            'site_id' => $site->id,
+            'all_inputs' => $request->all(),
+            'main_bottom_desktop_per_line' => $request->input('banner_main_bottom_desktop_per_line'),
+            'main_bottom_desktop_rows' => $request->input('banner_main_bottom_desktop_rows'),
+        ]);
+        
         foreach ($bannerLocations as $location) {
-            // exposure_type 저장
-            $exposureType = $request->input("banner_{$location}_exposure_type");
-            if ($exposureType !== null) {
-                $site->setSetting("banner_{$location}_exposure_type", $exposureType);
+            // 모든 필드를 항상 저장 (요청에 포함된 경우)
+            if ($request->has("banner_{$location}_exposure_type")) {
+                $site->setSetting("banner_{$location}_exposure_type", $request->input("banner_{$location}_exposure_type"));
             }
             
-            // sort 저장
-            $sort = $request->input("banner_{$location}_sort");
-            if ($sort !== null) {
-                $site->setSetting("banner_{$location}_sort", $sort);
+            if ($request->has("banner_{$location}_sort")) {
+                $site->setSetting("banner_{$location}_sort", $request->input("banner_{$location}_sort"));
             }
             
-            // 숫자 필드는 항상 저장 (null이 아닌 경우)
-            $desktopPerLine = $request->input("banner_{$location}_desktop_per_line");
-            if ($desktopPerLine !== null) {
+            // 숫자 필드는 항상 저장 (요청에 포함된 경우)
+            if ($request->has("banner_{$location}_desktop_per_line")) {
+                $value = $request->input("banner_{$location}_desktop_per_line");
                 \Log::info("배너 설정 저장", [
                     'location' => $location,
                     'field' => 'desktop_per_line',
-                    'value' => $desktopPerLine,
+                    'value' => $value,
                     'site_id' => $site->id
                 ]);
-                $site->setSetting("banner_{$location}_desktop_per_line", $desktopPerLine);
+                $site->setSetting("banner_{$location}_desktop_per_line", $value);
             }
             
-            $mobilePerLine = $request->input("banner_{$location}_mobile_per_line");
-            if ($mobilePerLine !== null) {
-                $site->setSetting("banner_{$location}_mobile_per_line", $mobilePerLine);
+            if ($request->has("banner_{$location}_mobile_per_line")) {
+                $site->setSetting("banner_{$location}_mobile_per_line", $request->input("banner_{$location}_mobile_per_line"));
             }
             
-            $desktopRows = $request->input("banner_{$location}_desktop_rows");
-            if ($desktopRows !== null) {
+            if ($request->has("banner_{$location}_desktop_rows")) {
+                $value = $request->input("banner_{$location}_desktop_rows");
                 \Log::info("배너 설정 저장", [
                     'location' => $location,
                     'field' => 'desktop_rows',
-                    'value' => $desktopRows,
+                    'value' => $value,
                     'site_id' => $site->id
                 ]);
-                $site->setSetting("banner_{$location}_desktop_rows", $desktopRows);
+                $site->setSetting("banner_{$location}_desktop_rows", $value);
             }
             
-            $mobileRows = $request->input("banner_{$location}_mobile_rows");
-            if ($mobileRows !== null) {
-                $site->setSetting("banner_{$location}_mobile_rows", $mobileRows);
+            if ($request->has("banner_{$location}_mobile_rows")) {
+                $site->setSetting("banner_{$location}_mobile_rows", $request->input("banner_{$location}_mobile_rows"));
             }
             
-            // slide_interval 저장
-            $slideInterval = $request->input("banner_{$location}_slide_interval");
-            if ($slideInterval !== null) {
-                $site->setSetting("banner_{$location}_slide_interval", $slideInterval);
+            if ($request->has("banner_{$location}_slide_interval")) {
+                $site->setSetting("banner_{$location}_slide_interval", $request->input("banner_{$location}_slide_interval"));
             }
             
-            // slide_direction 저장
-            $slideDirection = $request->input("banner_{$location}_slide_direction");
-            if ($slideDirection !== null) {
-                $site->setSetting("banner_{$location}_slide_direction", $slideDirection);
+            if ($request->has("banner_{$location}_slide_direction")) {
+                $site->setSetting("banner_{$location}_slide_direction", $request->input("banner_{$location}_slide_direction"));
             }
         }
         
