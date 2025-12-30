@@ -780,46 +780,37 @@ document.addEventListener('DOMContentLoaded', function() {
             hiddenInput.value = input.value;
         });
         
-        // FormData 생성 - ID를 기준으로 특정 input 찾기
+        // FormData 생성 - 간단하고 확실한 방법
         const formData = new FormData();
         
-        // 모든 input, select, textarea를 순회하면서 값 수집
-        // 같은 이름의 필드가 여러 개 있을 경우, visible이고 disabled가 아닌 것을 우선 사용
-        const processedFields = new Set();
+        // 모든 필드를 순회하면서 값 수집
+        // 같은 이름의 필드가 여러 개 있을 경우, 마지막에 나오는 visible input의 값을 사용
+        const fieldMap = new Map();
         
-        // 1단계: ID가 있는 visible input 우선 처리 (가장 확실한 방법)
-        form.querySelectorAll('input[id], select[id], textarea[id]').forEach(input => {
-            if (input.type === 'checkbox' && !input.checked) return;
-            if (input.type === 'radio' && !input.checked) return;
-            if (!input.name) return;
-            if (input.disabled && !input.classList.contains('banner-hidden-input')) return;
-            
-            // ID가 있고 visible인 경우 우선 사용
-            if (input.id && input.type !== 'hidden' && !input.disabled) {
-                formData.append(input.name, input.value);
-                processedFields.add(input.name);
-            }
-        });
-        
-        // 2단계: 나머지 필드 처리 (ID가 없거나 이미 처리되지 않은 필드)
+        // 모든 input, select, textarea를 순회 (DOM 순서대로)
         form.querySelectorAll('input, select, textarea').forEach(input => {
             if (input.type === 'checkbox' && !input.checked) return;
             if (input.type === 'radio' && !input.checked) return;
             if (!input.name) return;
-            if (processedFields.has(input.name)) return; // 이미 처리된 필드는 건너뛰기
             
-            // hidden input은 disabled가 아닌 경우만
-            if (input.type === 'hidden' && !input.classList.contains('banner-hidden-input')) {
-                return;
-            }
-            
-            // disabled input은 banner-hidden-input 클래스가 있는 경우만
+            // disabled 필드는 제외 (단, banner-hidden-input 클래스가 있는 경우는 포함)
             if (input.disabled && !input.classList.contains('banner-hidden-input')) {
                 return;
             }
             
-            formData.append(input.name, input.value);
-            processedFields.add(input.name);
+            // hidden input은 banner-hidden-input 클래스가 있는 경우만 포함
+            if (input.type === 'hidden' && !input.classList.contains('banner-hidden-input')) {
+                return;
+            }
+            
+            // 같은 이름의 필드가 여러 개 있을 경우, 나중에 나오는 것이 이전 것을 덮어씀
+            // visible input이 나중에 나오면 그 값이 사용됨
+            fieldMap.set(input.name, input.value);
+        });
+        
+        // Map의 모든 항목을 FormData에 추가
+        fieldMap.forEach((value, name) => {
+            formData.append(name, value);
         });
         
         // 디버깅: 전송되는 값 확인
