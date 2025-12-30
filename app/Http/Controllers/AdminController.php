@@ -1831,16 +1831,23 @@ class AdminController extends Controller
             // 저장된 설정값 반환 (문자열로 변환하여 반환)
             $savedSettings = [];
             foreach ($bannerLocations as $location) {
+                $savedSettings["banner_{$location}_exposure_type"] = (string)$site->getSetting("banner_{$location}_exposure_type", 'basic');
+                $savedSettings["banner_{$location}_sort"] = (string)$site->getSetting("banner_{$location}_sort", 'created');
                 $savedSettings["banner_{$location}_desktop_per_line"] = (string)$site->getSetting("banner_{$location}_desktop_per_line", '3');
                 $savedSettings["banner_{$location}_desktop_rows"] = (string)$site->getSetting("banner_{$location}_desktop_rows", '0');
                 $savedSettings["banner_{$location}_mobile_per_line"] = (string)$site->getSetting("banner_{$location}_mobile_per_line", '1');
                 $savedSettings["banner_{$location}_mobile_rows"] = (string)$site->getSetting("banner_{$location}_mobile_rows", '0');
+                $savedSettings["banner_{$location}_slide_interval"] = (string)$site->getSetting("banner_{$location}_slide_interval", '3');
+                $savedSettings["banner_{$location}_slide_direction"] = (string)$site->getSetting("banner_{$location}_slide_direction", '');
             }
+            $savedSettings['banner_desktop_gap'] = (string)$site->getSetting('banner_desktop_gap', '16');
+            $savedSettings['banner_mobile_gap'] = (string)$site->getSetting('banner_mobile_gap', '8');
             
             \Log::info('배너 설정 저장 후 응답', [
                 'site_id' => $site->id,
                 'main_bottom_desktop_per_line' => $savedSettings['banner_main_bottom_desktop_per_line'] ?? '없음',
                 'main_bottom_desktop_rows' => $savedSettings['banner_main_bottom_desktop_rows'] ?? '없음',
+                'all_settings_keys' => array_keys($savedSettings),
             ]);
             
             return response()->json([
