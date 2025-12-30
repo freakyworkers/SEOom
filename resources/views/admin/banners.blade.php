@@ -780,64 +780,42 @@ document.addEventListener('DOMContentLoaded', function() {
             hiddenInput.value = input.value;
         });
         
-        // FormData 생성 및 중복 필드 제거 (visible input 우선)
+        // FormData 생성 - 간단하게 form에서 직접 생성하되, disabled 필드는 일시적으로 활성화
         const formData = new FormData();
-        const seenFields = new Map();
+        const disabledInputs = [];
         
-        // 1단계: 먼저 visible이고 disabled가 아닌 input들을 처리 (우선순위 높음)
-        const visibleInputs = form.querySelectorAll('input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled)');
-        visibleInputs.forEach(input => {
-            if (input.type === 'checkbox' && !input.checked) {
-                return;
-            }
-            if (input.type === 'radio' && !input.checked) {
-                return;
-            }
-            
-            const name = input.name;
-            if (!name) return;
-            
-            // visible input은 항상 우선
-            seenFields.set(name, input.value);
-        });
-        
-        // 2단계: hidden input과 disabled input 처리 (visible input이 없을 때만)
-        const hiddenAndDisabledInputs = form.querySelectorAll('input[type="hidden"], input:disabled.banner-hidden-input');
-        hiddenAndDisabledInputs.forEach(input => {
-            const name = input.name;
-            if (!name) return;
-            
-            // visible input이 없을 때만 추가
-            if (!seenFields.has(name)) {
-                seenFields.set(name, input.value);
+        // disabled 필드를 일시적으로 활성화
+        form.querySelectorAll('input:disabled, select:disabled, textarea:disabled').forEach(input => {
+            if (!input.classList.contains('banner-hidden-input')) {
+                disabledInputs.push(input);
+                input.disabled = false;
             }
         });
         
-        // 3단계: 나머지 input 처리
+        // FormData 생성
         const allInputs = form.querySelectorAll('input, select, textarea');
+        const fieldMap = new Map();
+        
+        // 모든 input을 순회하면서 마지막 값을 저장 (같은 이름의 필드가 여러 개 있을 경우)
         allInputs.forEach(input => {
-            if (input.type === 'checkbox' && !input.checked) {
-                return;
-            }
-            if (input.type === 'radio' && !input.checked) {
-                return;
-            }
-            if (input.type === 'hidden' || (input.disabled && !input.classList.contains('banner-hidden-input'))) {
-                return;
-            }
+            if (input.type === 'checkbox' && !input.checked) return;
+            if (input.type === 'radio' && !input.checked) return;
             
             const name = input.name;
             if (!name) return;
             
-            // 이미 처리된 필드는 건너뛰기
-            if (!seenFields.has(name)) {
-                seenFields.set(name, input.value);
-            }
+            // 같은 이름의 필드가 여러 개 있을 경우 마지막 값 사용
+            fieldMap.set(name, input.value);
         });
         
         // Map의 모든 항목을 FormData에 추가
-        seenFields.forEach((value, name) => {
+        fieldMap.forEach((value, name) => {
             formData.append(name, value);
+        });
+        
+        // disabled 필드 복원
+        disabledInputs.forEach(input => {
+            input.disabled = true;
         });
         
         fetch('{{ route("admin.banners.update", ["site" => $site->slug]) }}', {
