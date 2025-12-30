@@ -1746,9 +1746,16 @@ class AdminController extends Controller
             'mobile_menu_top', 'mobile_menu_bottom'
         ];
 
+        // 디버깅: 요청 데이터 로깅
+        \Log::info('배너 설정 업데이트 요청', [
+            'site_id' => $site->id,
+            'main_bottom_desktop_per_line' => $request->input('banner_main_bottom_desktop_per_line'),
+            'main_bottom_desktop_rows' => $request->input('banner_main_bottom_desktop_rows'),
+            'all_inputs' => $request->all()
+        ]);
+
         foreach ($bannerLocations as $location) {
             // 모든 필드를 항상 저장
-            // request()->input()을 사용하여 값 가져오기
             $exposureType = $request->input("banner_{$location}_exposure_type");
             if ($exposureType !== null) {
                 $site->setSetting("banner_{$location}_exposure_type", $exposureType);
@@ -1759,24 +1766,36 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_sort", $sort);
             }
             
-            // 숫자 필드는 항상 저장
+            // 숫자 필드는 항상 저장 (빈 문자열도 저장)
             $desktopPerLine = $request->input("banner_{$location}_desktop_per_line");
-            if ($desktopPerLine !== null && $desktopPerLine !== '') {
+            if ($desktopPerLine !== null) {
+                \Log::info("배너 설정 저장", [
+                    'location' => $location,
+                    'field' => 'desktop_per_line',
+                    'value' => $desktopPerLine,
+                    'site_id' => $site->id
+                ]);
                 $site->setSetting("banner_{$location}_desktop_per_line", $desktopPerLine);
             }
             
             $mobilePerLine = $request->input("banner_{$location}_mobile_per_line");
-            if ($mobilePerLine !== null && $mobilePerLine !== '') {
+            if ($mobilePerLine !== null) {
                 $site->setSetting("banner_{$location}_mobile_per_line", $mobilePerLine);
             }
             
             $desktopRows = $request->input("banner_{$location}_desktop_rows");
-            if ($desktopRows !== null && $desktopRows !== '') {
+            if ($desktopRows !== null) {
+                \Log::info("배너 설정 저장", [
+                    'location' => $location,
+                    'field' => 'desktop_rows',
+                    'value' => $desktopRows,
+                    'site_id' => $site->id
+                ]);
                 $site->setSetting("banner_{$location}_desktop_rows", $desktopRows);
             }
             
             $mobileRows = $request->input("banner_{$location}_mobile_rows");
-            if ($mobileRows !== null && $mobileRows !== '') {
+            if ($mobileRows !== null) {
                 $site->setSetting("banner_{$location}_mobile_rows", $mobileRows);
             }
             
@@ -1790,6 +1809,13 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_slide_direction", $slideDirection);
             }
         }
+        
+        // 저장 후 확인
+        \Log::info('배너 설정 저장 후 확인', [
+            'site_id' => $site->id,
+            'main_bottom_desktop_per_line' => $site->getSetting('banner_main_bottom_desktop_per_line'),
+            'main_bottom_desktop_rows' => $site->getSetting('banner_main_bottom_desktop_rows'),
+        ]);
         
         // 통일된 여백 설정 저장
         if ($request->has('banner_desktop_gap')) {
