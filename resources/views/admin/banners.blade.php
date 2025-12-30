@@ -780,37 +780,35 @@ document.addEventListener('DOMContentLoaded', function() {
             hiddenInput.value = input.value;
         });
         
-        // FormData 생성 - 간단하고 확실한 방법
-        const formData = new FormData();
+        // FormData 생성 - disabled 필드를 일시적으로 활성화하여 모든 값 수집
+        const disabledInputs = [];
         
-        // 모든 필드를 순회하면서 값 수집
-        // 같은 이름의 필드가 여러 개 있을 경우, 마지막에 나오는 visible input의 값을 사용
-        const fieldMap = new Map();
-        
-        // 모든 input, select, textarea를 순회 (DOM 순서대로)
-        form.querySelectorAll('input, select, textarea').forEach(input => {
-            if (input.type === 'checkbox' && !input.checked) return;
-            if (input.type === 'radio' && !input.checked) return;
-            if (!input.name) return;
-            
-            // disabled 필드는 제외 (단, banner-hidden-input 클래스가 있는 경우는 포함)
-            if (input.disabled && !input.classList.contains('banner-hidden-input')) {
-                return;
+        // disabled 필드를 일시적으로 활성화
+        form.querySelectorAll('input:disabled, select:disabled, textarea:disabled').forEach(input => {
+            if (!input.classList.contains('banner-hidden-input')) {
+                disabledInputs.push(input);
+                input.disabled = false;
             }
-            
-            // hidden input은 banner-hidden-input 클래스가 있는 경우만 포함
-            if (input.type === 'hidden' && !input.classList.contains('banner-hidden-input')) {
-                return;
-            }
-            
-            // 같은 이름의 필드가 여러 개 있을 경우, 나중에 나오는 것이 이전 것을 덮어씀
-            // visible input이 나중에 나오면 그 값이 사용됨
-            fieldMap.set(input.name, input.value);
         });
         
-        // Map의 모든 항목을 FormData에 추가
+        // FormData 생성 - form에서 직접 생성 (브라우저가 자동으로 처리)
+        const tempFormData = new FormData(form);
+        
+        // 같은 이름의 필드가 여러 개 있을 경우, 마지막 값만 사용하도록 처리
+        const fieldMap = new Map();
+        for (let pair of tempFormData.entries()) {
+            fieldMap.set(pair[0], pair[1]); // 같은 키가 여러 번 나와도 마지막 값이 저장됨
+        }
+        
+        // 새로운 FormData 생성 (중복 제거)
+        const formData = new FormData();
         fieldMap.forEach((value, name) => {
             formData.append(name, value);
+        });
+        
+        // disabled 필드 복원
+        disabledInputs.forEach(input => {
+            input.disabled = true;
         });
         
         // 디버깅: 전송되는 값 확인
@@ -825,16 +823,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 'Accept': 'application/json'
             },
-            body: formData
+            body: cleanFormData
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('서버 응답 상태:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('서버 응답 데이터:', data);
             if (data.success) {
-                // 저장된 값으로 DOM 업데이트 (페이지 새로고침 대신)
+                // 저장된 값으로 DOM 업데이트
                 if (data.settings) {
+                    console.log('저장된 설정값:', data.settings);
                     Object.keys(data.settings).forEach(key => {
-                        const input = form.querySelector(`input[name="${key}"], select[name="${key}"], textarea[name="${key}"]`);
-                        if (input && input.type !== 'hidden' && !input.disabled) {
+                        // ID로 특정 input 찾기
+                        const inputId = key.replace('banner_', '').replace(/_/g, '_');
+                        let input = document.getElementById(key.replace('banner_', 'banner_').replace(/_/g, '_'));
+                        
+                        // ID로 찾지 못하면 name으로 찾기
+                        if (!input) {
+                            const inputs = form.querySelectorAll(`input[name="${key}"], select[name="${key}"], textarea[name="${key}"]`);
+                            // visible input 우선
+                            input = Array.from(inputs).find(i => i.type !== 'hidden' && !i.disabled) || inputs[0];
+                        }
+                        
+                        if (input && input.type !== 'hidden') {
                             input.value = data.settings[key];
                         }
                     });
