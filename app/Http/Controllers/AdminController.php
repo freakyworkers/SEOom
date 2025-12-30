@@ -1766,16 +1766,17 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_sort", $sort);
             }
             
-            // 숫자 필드는 항상 저장 (빈 문자열도 저장)
+            // 숫자 필드는 항상 저장 (null이 아닌 경우)
             $desktopPerLine = $request->input("banner_{$location}_desktop_per_line");
-            if ($desktopPerLine !== null) {
+            if ($desktopPerLine !== null && $desktopPerLine !== '') {
                 \Log::info("배너 설정 저장", [
                     'location' => $location,
                     'field' => 'desktop_per_line',
                     'value' => $desktopPerLine,
-                    'site_id' => $site->id
+                    'site_id' => $site->id,
+                    'raw_input' => $request->all()["banner_{$location}_desktop_per_line"] ?? '없음'
                 ]);
-                $site->setSetting("banner_{$location}_desktop_per_line", $desktopPerLine);
+                $site->setSetting("banner_{$location}_desktop_per_line", (int)$desktopPerLine);
             }
             
             $mobilePerLine = $request->input("banner_{$location}_mobile_per_line");
@@ -1784,14 +1785,15 @@ class AdminController extends Controller
             }
             
             $desktopRows = $request->input("banner_{$location}_desktop_rows");
-            if ($desktopRows !== null) {
+            if ($desktopRows !== null && $desktopRows !== '') {
                 \Log::info("배너 설정 저장", [
                     'location' => $location,
                     'field' => 'desktop_rows',
                     'value' => $desktopRows,
-                    'site_id' => $site->id
+                    'site_id' => $site->id,
+                    'raw_input' => $request->all()["banner_{$location}_desktop_rows"] ?? '없음'
                 ]);
-                $site->setSetting("banner_{$location}_desktop_rows", $desktopRows);
+                $site->setSetting("banner_{$location}_desktop_rows", (int)$desktopRows);
             }
             
             $mobileRows = $request->input("banner_{$location}_mobile_rows");
