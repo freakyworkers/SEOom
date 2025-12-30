@@ -1766,9 +1766,9 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_sort", $sort);
             }
             
-            // 숫자 필드는 항상 저장 (요청에 포함된 경우)
-            if ($request->has("banner_{$location}_desktop_per_line")) {
-                $desktopPerLine = $request->input("banner_{$location}_desktop_per_line");
+            // 숫자 필드는 항상 저장 (요청에 포함되고 값이 있는 경우, 0도 저장 가능)
+            $desktopPerLine = $request->input("banner_{$location}_desktop_per_line");
+            if ($desktopPerLine !== null) {
                 \Log::info("배너 설정 저장", [
                     'location' => $location,
                     'field' => 'desktop_per_line',
@@ -1779,13 +1779,13 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_desktop_per_line", (int)$desktopPerLine);
             }
             
-            if ($request->has("banner_{$location}_mobile_per_line")) {
-                $mobilePerLine = $request->input("banner_{$location}_mobile_per_line");
+            $mobilePerLine = $request->input("banner_{$location}_mobile_per_line");
+            if ($mobilePerLine !== null) {
                 $site->setSetting("banner_{$location}_mobile_per_line", (int)$mobilePerLine);
             }
             
-            if ($request->has("banner_{$location}_desktop_rows")) {
-                $desktopRows = $request->input("banner_{$location}_desktop_rows");
+            $desktopRows = $request->input("banner_{$location}_desktop_rows");
+            if ($desktopRows !== null) {
                 \Log::info("배너 설정 저장", [
                     'location' => $location,
                     'field' => 'desktop_rows',
@@ -1796,8 +1796,8 @@ class AdminController extends Controller
                 $site->setSetting("banner_{$location}_desktop_rows", (int)$desktopRows);
             }
             
-            if ($request->has("banner_{$location}_mobile_rows")) {
-                $mobileRows = $request->input("banner_{$location}_mobile_rows");
+            $mobileRows = $request->input("banner_{$location}_mobile_rows");
+            if ($mobileRows !== null) {
                 $site->setSetting("banner_{$location}_mobile_rows", (int)$mobileRows);
             }
             
