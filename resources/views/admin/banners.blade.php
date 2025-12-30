@@ -140,6 +140,11 @@
                                                value="{{ $settings['desktop_per_line'] }}" 
                                                min="1"
                                                {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                        @if($settings['exposure_type'] == 'slide')
+                                            <input type="hidden" 
+                                                   name="banner_{{ $key }}_desktop_per_line" 
+                                                   value="{{ $settings['desktop_per_line'] }}">
+                                        @endif
                                     @endif
                                 </td>
                                 <td style="text-align: center; vertical-align: middle;">
@@ -151,6 +156,11 @@
                                            value="{{ $settings['mobile_per_line'] }}" 
                                            min="1"
                                            {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                    @if($settings['exposure_type'] == 'slide')
+                                        <input type="hidden" 
+                                               name="banner_{{ $key }}_mobile_per_line" 
+                                               value="{{ $settings['mobile_per_line'] }}">
+                                    @endif
                                 </td>
                                 <td style="text-align: center; vertical-align: middle;">
                                     @if(in_array($key, ['mobile_menu_top', 'mobile_menu_bottom']))
@@ -167,6 +177,11 @@
                                                value="{{ $settings['desktop_rows'] }}" 
                                                min="0"
                                                {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                        @if($settings['exposure_type'] == 'slide')
+                                            <input type="hidden" 
+                                                   name="banner_{{ $key }}_desktop_rows" 
+                                                   value="{{ $settings['desktop_rows'] }}">
+                                        @endif
                                     @endif
                                 </td>
                                 <td style="text-align: center; vertical-align: middle;">
@@ -178,6 +193,11 @@
                                            value="{{ $settings['mobile_rows'] }}" 
                                            min="0"
                                            {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                    @if($settings['exposure_type'] == 'slide')
+                                        <input type="hidden" 
+                                               name="banner_{{ $key }}_mobile_rows" 
+                                               value="{{ $settings['mobile_rows'] }}">
+                                    @endif
                                 </td>
                                 <td style="text-align: center; vertical-align: middle;">
                                     <a href="{{ route('admin.banners.detail', ['site' => $site->slug, 'location' => $key]) }}" 
@@ -332,6 +352,14 @@
                                                    value="{{ $settings['desktop_per_line'] }}" 
                                                    min="1"
                                                    {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                            @if($settings['exposure_type'] == 'slide')
+                                                <input type="hidden" 
+                                                       name="banner_{{ $key }}_desktop_per_line" 
+                                                       class="banner-hidden-input"
+                                                       data-location="{{ $key }}"
+                                                       data-field="desktop_per_line"
+                                                       value="{{ $settings['desktop_per_line'] }}">
+                                            @endif
                                         </div>
                                     @else
                                         <input type="hidden" 
@@ -348,6 +376,14 @@
                                                value="{{ $settings['mobile_per_line'] }}" 
                                                min="1"
                                                {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                        @if($settings['exposure_type'] == 'slide')
+                                            <input type="hidden" 
+                                                   name="banner_{{ $key }}_mobile_per_line" 
+                                                   class="banner-hidden-input"
+                                                   data-location="{{ $key }}"
+                                                   data-field="mobile_per_line"
+                                                   value="{{ $settings['mobile_per_line'] }}">
+                                        @endif
                                     </div>
                                     @if(!in_array($key, ['mobile_menu_top', 'mobile_menu_bottom']))
                                         <div class="col-6">
@@ -360,6 +396,14 @@
                                                    value="{{ $settings['desktop_rows'] }}" 
                                                    min="0"
                                                    {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                            @if($settings['exposure_type'] == 'slide')
+                                                <input type="hidden" 
+                                                       name="banner_{{ $key }}_desktop_rows" 
+                                                       class="banner-hidden-input"
+                                                       data-location="{{ $key }}"
+                                                       data-field="desktop_rows"
+                                                       value="{{ $settings['desktop_rows'] }}">
+                                            @endif
                                         </div>
                                     @else
                                         <input type="hidden" 
@@ -376,6 +420,14 @@
                                                value="{{ $settings['mobile_rows'] }}" 
                                                min="0"
                                                {{ $settings['exposure_type'] == 'slide' ? 'disabled' : '' }}>
+                                        @if($settings['exposure_type'] == 'slide')
+                                            <input type="hidden" 
+                                                   name="banner_{{ $key }}_mobile_rows" 
+                                                   class="banner-hidden-input"
+                                                   data-location="{{ $key }}"
+                                                   data-field="mobile_rows"
+                                                   value="{{ $settings['mobile_rows'] }}">
+                                        @endif
                                     </div>
                                     {{-- 슬라이드 설정 (슬라이드 타입일 때만 표시) --}}
                                     <div class="col-12 banner-slide-settings-mobile" data-location="{{ $key }}" style="display: {{ $settings['exposure_type'] == 'slide' ? 'block' : 'none' }};">
@@ -561,9 +613,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (isSlide) {
                     input.style.opacity = '0.5';
                     input.style.cursor = 'not-allowed';
+                    // hidden input 생성 또는 업데이트
+                    const fieldName = input.name.replace('banner_' + location + '_', '');
+                    let hiddenInput = form.querySelector(`input[type="hidden"][name="${input.name}"].banner-hidden-input[data-location="${location}"][data-field="${fieldName}"]`);
+                    if (!hiddenInput) {
+                        hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = input.name;
+                        hiddenInput.className = 'banner-hidden-input';
+                        hiddenInput.setAttribute('data-location', location);
+                        hiddenInput.setAttribute('data-field', fieldName);
+                        input.parentNode.appendChild(hiddenInput);
+                    }
+                    hiddenInput.value = input.value;
                 } else {
                     input.style.opacity = '1';
                     input.style.cursor = 'default';
+                    // hidden input 제거
+                    const fieldName = input.name.replace('banner_' + location + '_', '');
+                    const hiddenInput = form.querySelector(`input[type="hidden"][name="${input.name}"].banner-hidden-input[data-location="${location}"][data-field="${fieldName}"]`);
+                    if (hiddenInput) {
+                        hiddenInput.remove();
+                    }
                 }
             });
             
@@ -572,9 +643,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (isSlide) {
                     input.style.opacity = '0.5';
                     input.style.cursor = 'not-allowed';
+                    // hidden input 생성 또는 업데이트
+                    const fieldName = input.name.replace('banner_' + location + '_', '');
+                    let hiddenInput = form.querySelector(`input[type="hidden"][name="${input.name}"].banner-hidden-input[data-location="${location}"][data-field="${fieldName}"]`);
+                    if (!hiddenInput) {
+                        hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = input.name;
+                        hiddenInput.className = 'banner-hidden-input';
+                        hiddenInput.setAttribute('data-location', location);
+                        hiddenInput.setAttribute('data-field', fieldName);
+                        input.parentNode.appendChild(hiddenInput);
+                    }
+                    hiddenInput.value = input.value;
                 } else {
                     input.style.opacity = '1';
                     input.style.cursor = 'default';
+                    // hidden input 제거
+                    const fieldName = input.name.replace('banner_' + location + '_', '');
+                    const hiddenInput = form.querySelector(`input[type="hidden"][name="${input.name}"].banner-hidden-input[data-location="${location}"][data-field="${fieldName}"]`);
+                    if (hiddenInput) {
+                        hiddenInput.remove();
+                    }
                 }
             });
             
@@ -673,21 +763,24 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // disabled 상태인 모든 input 필드를 일시적으로 활성화하여 FormData에 포함되도록 함
-        const disabledInputs = form.querySelectorAll('input:disabled, select:disabled');
-        const disabledInputsArray = Array.from(disabledInputs);
-        
-        // disabled 필드들을 일시적으로 활성화
-        disabledInputsArray.forEach(input => {
-            input.disabled = false;
+        // 슬라이드 타입일 때 disabled 필드의 값을 hidden input에 동기화
+        document.querySelectorAll('input:disabled.banner-per-line-input, input:disabled.banner-rows-input').forEach(input => {
+            const fieldName = input.name.replace(/^banner_\w+_/, '');
+            const location = input.getAttribute('data-location');
+            let hiddenInput = form.querySelector(`input[type="hidden"][name="${input.name}"].banner-hidden-input[data-location="${location}"][data-field="${fieldName}"]`);
+            if (!hiddenInput) {
+                hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = input.name;
+                hiddenInput.className = 'banner-hidden-input';
+                hiddenInput.setAttribute('data-location', location);
+                hiddenInput.setAttribute('data-field', fieldName);
+                input.parentNode.appendChild(hiddenInput);
+            }
+            hiddenInput.value = input.value;
         });
         
         const formData = new FormData(this);
-        
-        // 원래 상태로 복원
-        disabledInputsArray.forEach(input => {
-            input.disabled = true;
-        });
         
         fetch('{{ route("admin.banners.update", ["site" => $site->slug]) }}', {
             method: 'POST',
