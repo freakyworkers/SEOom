@@ -1753,16 +1753,17 @@ class AdminController extends Controller
             if ($request->has("banner_{$location}_sort")) {
                 $site->setSetting("banner_{$location}_sort", $request->input("banner_{$location}_sort"));
             }
-            if ($request->has("banner_{$location}_desktop_per_line")) {
+            // 숫자 필드는 null이 아닌 경우에만 저장 (0도 유효한 값)
+            if ($request->has("banner_{$location}_desktop_per_line") && $request->input("banner_{$location}_desktop_per_line") !== null) {
                 $site->setSetting("banner_{$location}_desktop_per_line", $request->input("banner_{$location}_desktop_per_line"));
             }
-            if ($request->has("banner_{$location}_mobile_per_line")) {
+            if ($request->has("banner_{$location}_mobile_per_line") && $request->input("banner_{$location}_mobile_per_line") !== null) {
                 $site->setSetting("banner_{$location}_mobile_per_line", $request->input("banner_{$location}_mobile_per_line"));
             }
-            if ($request->has("banner_{$location}_desktop_rows")) {
+            if ($request->has("banner_{$location}_desktop_rows") && $request->input("banner_{$location}_desktop_rows") !== null) {
                 $site->setSetting("banner_{$location}_desktop_rows", $request->input("banner_{$location}_desktop_rows"));
             }
-            if ($request->has("banner_{$location}_mobile_rows")) {
+            if ($request->has("banner_{$location}_mobile_rows") && $request->input("banner_{$location}_mobile_rows") !== null) {
                 $site->setSetting("banner_{$location}_mobile_rows", $request->input("banner_{$location}_mobile_rows"));
             }
             if ($request->has("banner_{$location}_slide_interval")) {

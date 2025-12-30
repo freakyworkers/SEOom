@@ -673,7 +673,21 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // disabled 상태인 모든 input 필드를 일시적으로 활성화하여 FormData에 포함되도록 함
+        const disabledInputs = form.querySelectorAll('input:disabled, select:disabled');
+        const disabledInputsArray = Array.from(disabledInputs);
+        
+        // disabled 필드들을 일시적으로 활성화
+        disabledInputsArray.forEach(input => {
+            input.disabled = false;
+        });
+        
         const formData = new FormData(this);
+        
+        // 원래 상태로 복원
+        disabledInputsArray.forEach(input => {
+            input.disabled = true;
+        });
         
         fetch('{{ route("admin.banners.update", ["site" => $site->slug]) }}', {
             method: 'POST',
