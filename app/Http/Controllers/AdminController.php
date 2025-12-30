@@ -1828,14 +1828,20 @@ class AdminController extends Controller
         }
 
         if ($request->expectsJson()) {
-            // 저장된 설정값 반환
+            // 저장된 설정값 반환 (문자열로 변환하여 반환)
             $savedSettings = [];
             foreach ($bannerLocations as $location) {
-                $savedSettings["banner_{$location}_desktop_per_line"] = $site->getSetting("banner_{$location}_desktop_per_line", '3');
-                $savedSettings["banner_{$location}_desktop_rows"] = $site->getSetting("banner_{$location}_desktop_rows", '0');
-                $savedSettings["banner_{$location}_mobile_per_line"] = $site->getSetting("banner_{$location}_mobile_per_line", '1');
-                $savedSettings["banner_{$location}_mobile_rows"] = $site->getSetting("banner_{$location}_mobile_rows", '0');
+                $savedSettings["banner_{$location}_desktop_per_line"] = (string)$site->getSetting("banner_{$location}_desktop_per_line", '3');
+                $savedSettings["banner_{$location}_desktop_rows"] = (string)$site->getSetting("banner_{$location}_desktop_rows", '0');
+                $savedSettings["banner_{$location}_mobile_per_line"] = (string)$site->getSetting("banner_{$location}_mobile_per_line", '1');
+                $savedSettings["banner_{$location}_mobile_rows"] = (string)$site->getSetting("banner_{$location}_mobile_rows", '0');
             }
+            
+            \Log::info('배너 설정 저장 후 응답', [
+                'site_id' => $site->id,
+                'main_bottom_desktop_per_line' => $savedSettings['banner_main_bottom_desktop_per_line'] ?? '없음',
+                'main_bottom_desktop_rows' => $savedSettings['banner_main_bottom_desktop_rows'] ?? '없음',
+            ]);
             
             return response()->json([
                 'success' => true,
