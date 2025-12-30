@@ -1746,14 +1746,6 @@ class AdminController extends Controller
             'mobile_menu_top', 'mobile_menu_bottom'
         ];
 
-        // 요청 데이터 로깅
-        \Log::info("배너 설정 저장 요청", [
-            'site_id' => $site->id,
-            'all_inputs' => $request->all(),
-            'main_bottom_desktop_per_line' => $request->input('banner_main_bottom_desktop_per_line'),
-            'main_bottom_desktop_rows' => $request->input('banner_main_bottom_desktop_rows'),
-        ]);
-        
         foreach ($bannerLocations as $location) {
             // 모든 필드를 항상 저장 (요청에 포함된 경우)
             if ($request->has("banner_{$location}_exposure_type")) {
@@ -1765,34 +1757,25 @@ class AdminController extends Controller
             }
             
             // 숫자 필드는 항상 저장 (요청에 포함된 경우)
-            if ($request->has("banner_{$location}_desktop_per_line")) {
-                $value = $request->input("banner_{$location}_desktop_per_line");
-                \Log::info("배너 설정 저장", [
-                    'location' => $location,
-                    'field' => 'desktop_per_line',
-                    'value' => $value,
-                    'site_id' => $site->id
-                ]);
-                $site->setSetting("banner_{$location}_desktop_per_line", $value);
+            // has() 대신 input()을 사용하여 null이 아닌 경우에만 저장
+            $desktopPerLine = $request->input("banner_{$location}_desktop_per_line");
+            if ($desktopPerLine !== null) {
+                $site->setSetting("banner_{$location}_desktop_per_line", $desktopPerLine);
             }
             
-            if ($request->has("banner_{$location}_mobile_per_line")) {
-                $site->setSetting("banner_{$location}_mobile_per_line", $request->input("banner_{$location}_mobile_per_line"));
+            $mobilePerLine = $request->input("banner_{$location}_mobile_per_line");
+            if ($mobilePerLine !== null) {
+                $site->setSetting("banner_{$location}_mobile_per_line", $mobilePerLine);
             }
             
-            if ($request->has("banner_{$location}_desktop_rows")) {
-                $value = $request->input("banner_{$location}_desktop_rows");
-                \Log::info("배너 설정 저장", [
-                    'location' => $location,
-                    'field' => 'desktop_rows',
-                    'value' => $value,
-                    'site_id' => $site->id
-                ]);
-                $site->setSetting("banner_{$location}_desktop_rows", $value);
+            $desktopRows = $request->input("banner_{$location}_desktop_rows");
+            if ($desktopRows !== null) {
+                $site->setSetting("banner_{$location}_desktop_rows", $desktopRows);
             }
             
-            if ($request->has("banner_{$location}_mobile_rows")) {
-                $site->setSetting("banner_{$location}_mobile_rows", $request->input("banner_{$location}_mobile_rows"));
+            $mobileRows = $request->input("banner_{$location}_mobile_rows");
+            if ($mobileRows !== null) {
+                $site->setSetting("banner_{$location}_mobile_rows", $mobileRows);
             }
             
             if ($request->has("banner_{$location}_slide_interval")) {
