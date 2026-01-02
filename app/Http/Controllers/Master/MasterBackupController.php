@@ -22,8 +22,30 @@ class MasterBackupController extends Controller
     {
         // Get backup files
         $backups = $this->getBackupFiles();
+        
+        // Get auto backup setting
+        $masterSite = Site::getMasterSite();
+        $autoBackupEnabled = $masterSite ? $masterSite->getSetting('auto_backup_enabled', '1') : '1';
 
-        return view('master.backup', compact('backups'));
+        return view('master.backup', compact('backups', 'autoBackupEnabled'));
+    }
+    
+    /**
+     * Toggle auto backup.
+     */
+    public function toggleAutoBackup(Request $request)
+    {
+        $masterSite = Site::getMasterSite();
+        
+        if (!$masterSite) {
+            return back()->with('error', '마스터 사이트를 찾을 수 없습니다.');
+        }
+        
+        $enabled = $request->input('enabled', '0');
+        $masterSite->setSetting('auto_backup_enabled', $enabled);
+        
+        $status = $enabled === '1' ? '활성화' : '비활성화';
+        return back()->with('success', "자동 백업이 {$status}되었습니다.");
     }
 
     /**

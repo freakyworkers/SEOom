@@ -61,6 +61,7 @@ Route::middleware(['web', 'auth:master'])->group(function () {
     Route::prefix('backup')->group(function () {
         Route::get('/', [MasterBackupController::class, 'index'])->name('master.backup.index');
         Route::post('/', [MasterBackupController::class, 'create'])->name('master.backup.create');
+        Route::post('/toggle-auto-backup', [MasterBackupController::class, 'toggleAutoBackup'])->name('master.backup.toggle-auto-backup');
         Route::get('/download/{filename}', [MasterBackupController::class, 'download'])->name('master.backup.download');
         Route::delete('/{filename}', [MasterBackupController::class, 'destroy'])->name('master.backup.destroy');
     });

@@ -33,8 +33,12 @@ class Kernel extends ConsoleKernel
         // 매일 새벽 3시에 모든 사이트의 저장 용량 재계산 (정확도 보장)
         $schedule->command('sites:calculate-storage-usage')->dailyAt('03:00');
         
-        // 매일 0시에 전체 데이터베이스 백업 생성
-        $schedule->command('backup:run')->dailyAt('00:00');
+        // 매일 0시에 전체 데이터베이스 백업 생성 (자동 백업 활성화 시에만)
+        $schedule->command('backup:run')
+            ->dailyAt('00:00')
+            ->when(function () {
+                return \App\Models\Site::getMasterSite()?->getSetting('auto_backup_enabled', '1') === '1';
+            });
         
         // 매일 0시 30분에 1주일 이상 된 백업 파일 삭제
         $schedule->command('backup:cleanup --days=7')->dailyAt('00:30');

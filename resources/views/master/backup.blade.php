@@ -19,6 +19,25 @@
                     <li><i class="bi bi-check-circle text-success me-2"></i>백업 보관 기간: 7일</li>
                     <li><i class="bi bi-check-circle text-success me-2"></i>오래된 백업 자동 삭제: 매일 0시 30분</li>
                 </ul>
+                <div class="mt-3">
+                    <form method="POST" action="{{ route('master.backup.toggle-auto-backup') }}" class="d-inline">
+                        @csrf
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="autoBackupToggle" 
+                                   {{ $autoBackupEnabled === '1' ? 'checked' : '' }}
+                                   onchange="this.form.submit()">
+                            <input type="hidden" name="enabled" id="autoBackupEnabled" value="{{ $autoBackupEnabled === '1' ? '1' : '0' }}">
+                            <label class="form-check-label" for="autoBackupToggle">
+                                <strong>자동 백업 {{ $autoBackupEnabled === '1' ? '활성화' : '비활성화' }}</strong>
+                            </label>
+                        </div>
+                    </form>
+                    <script>
+                        document.getElementById('autoBackupToggle').addEventListener('change', function() {
+                            document.getElementById('autoBackupEnabled').value = this.checked ? '1' : '0';
+                        });
+                    </script>
+                </div>
             </div>
             <div class="col-md-6">
                 <h6 class="fw-bold mb-3">백업에 포함되는 데이터</h6>
@@ -36,7 +55,7 @@
                     <li><i class="bi bi-dot me-2"></i>구독, 결제, 플랜 정보</li>
                     <li><i class="bi bi-dot me-2"></i>마스터 관리자 정보</li>
                 </ul>
-                <small class="text-muted">※ 파일 업로드(storage/app/public)는 별도로 백업해야 합니다.</small>
+                <small class="text-muted">※ 파일 업로드(storage/app/public)도 자동으로 백업됩니다.</small>
             </div>
         </div>
     </div>
