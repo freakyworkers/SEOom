@@ -254,6 +254,7 @@
     <div class="mb-3">
         <label for="widget_block_background_type" class="form-label">배경</label>
         <select class="form-select" id="widget_block_background_type" name="block_background_type" onchange="handleBlockBackgroundTypeChange()">
+            <option value="none">배경 없음</option>
             <option value="color">컬러</option>
             <option value="gradient">그라데이션</option>
             <option value="image">이미지</option>

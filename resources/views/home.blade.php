@@ -186,8 +186,12 @@
                         <div class="col-md-{{ $colWidth }} {{ $colMarginBottom }}" style="{{ $colFlexStyle }}">
                         @foreach($columnWidgets as $index => $widget)
                             @php
-                                // 모든 위젯이 칸 영역을 꽉 차게 하기 위해 flex: 1 적용
-                                $widgetWrapperStyle = 'flex: 1; display: flex; flex-direction: column; width: 100%; max-width: 100%; margin-top: 0 !important; margin-bottom: 0 !important;';
+                                // 세로 정렬이 상단/하단일 때는 flex: 1을 적용하지 않음
+                                $widgetWrapperStyle = 'display: flex; flex-direction: column; width: 100%; max-width: 100%; margin-top: 0 !important; margin-bottom: 0 !important;';
+                                if ($verticalAlign === 'center' || $isFullHeight) {
+                                    // 중앙 정렬이거나 세로 100%일 때만 flex: 1 적용
+                                    $widgetWrapperStyle .= ' flex: 1;';
+                                }
                                 $isFirstWidget = $index === 0;
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
                             @endphp

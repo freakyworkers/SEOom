@@ -3901,7 +3901,11 @@ function handleBlockBackgroundTypeChange() {
     const gradientContainer = document.getElementById('widget_block_gradient_container');
     const imageContainer = document.getElementById('widget_block_image_container');
     
-    if (backgroundType === 'color') {
+    if (backgroundType === 'none') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'none';
@@ -6061,7 +6065,11 @@ function handleEditCustomPageBlockBackgroundTypeChange() {
     const gradientContainer = document.getElementById('edit_custom_page_widget_block_gradient_container');
     const imageContainer = document.getElementById('edit_custom_page_widget_block_image_container');
     
-    if (backgroundType === 'image') {
+    if (backgroundType === 'none') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'image') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'block';

@@ -378,6 +378,7 @@
                                             <div class="mb-3">
                                                 <label for="widget_block_background_type" class="form-label">배경</label>
                                                 <select class="form-select" id="widget_block_background_type" name="block_background_type" onchange="handleBlockBackgroundTypeChange()">
+                                                    <option value="none">배경 없음</option>
                                                     <option value="color">컬러</option>
                                                     <option value="gradient">그라데이션</option>
                                                     <option value="image">이미지</option>
@@ -1071,6 +1072,7 @@
                         <div class="mb-3">
                             <label for="edit_widget_block_background_type" class="form-label">배경</label>
                             <select class="form-select" id="edit_widget_block_background_type" name="block_background_type" onchange="handleEditBlockBackgroundTypeChange()">
+                                <option value="none">배경 없음</option>
                                 <option value="color">컬러</option>
                                 <option value="gradient">그라데이션</option>
                                 <option value="image">이미지</option>
@@ -2112,7 +2114,11 @@ function handleBlockBackgroundTypeChange() {
     const gradientContainer = document.getElementById('widget_block_gradient_container');
     const imageContainer = document.getElementById('widget_block_image_container');
     
-    if (backgroundType === 'color') {
+    if (backgroundType === 'none') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'none';
@@ -2160,7 +2166,11 @@ function handleEditBlockBackgroundTypeChange() {
     const gradientContainer = document.getElementById('edit_widget_block_gradient_container');
     const imageContainer = document.getElementById('edit_widget_block_image_container');
     
-    if (backgroundType === 'color') {
+    if (backgroundType === 'none') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'none';

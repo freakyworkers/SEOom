@@ -3163,7 +3163,7 @@ function addMainWidget() {
         const blockTitle = formData.get('block_title');
         const blockContent = formData.get('block_content');
         const textAlign = formData.get('block_text_align') || 'left';
-        const backgroundType = formData.get('block_background_type') || 'color';
+        const backgroundType = formData.get('block_background_type') || 'none';
         const paddingTop = formData.get('block_padding_top') || '20';
         const paddingBottom = formData.get('block_padding_bottom') || '20';
         const paddingLeft = formData.get('block_padding_left') || '20';
@@ -3269,6 +3269,10 @@ function addMainWidget() {
         settings.padding_bottom = parseInt(paddingBottom) || 20;
         settings.padding_left = parseInt(paddingLeft) || 20;
         settings.padding_right = parseInt(paddingRight) || 20;
+        const titleContentGap = formData.get('block_title_content_gap') || '8';
+        settings.title_content_gap = parseInt(titleContentGap) || 8;
+        const buttonTopMargin = formData.get('block_button_top_margin') || '12';
+        settings.button_top_margin = parseInt(buttonTopMargin) || 12;
         
         if (blockLink) {
             settings.link = blockLink;
@@ -4771,7 +4775,11 @@ function handleBlockBackgroundTypeChange() {
     const gradientContainer = document.getElementById('widget_block_gradient_container');
     const imageContainer = document.getElementById('widget_block_image_container');
     
-    if (backgroundType === 'color') {
+    if (backgroundType === 'none') {
+        if (colorContainer) colorContainer.style.display = 'none';
+        if (gradientContainer) gradientContainer.style.display = 'none';
+        if (imageContainer) imageContainer.style.display = 'none';
+    } else if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
         if (imageContainer) imageContainer.style.display = 'none';
