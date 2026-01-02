@@ -186,10 +186,11 @@
                         <div class="col-md-{{ $colWidth }} {{ $colMarginBottom }}" style="{{ $colFlexStyle }}">
                         @foreach($columnWidgets as $index => $widget)
                             @php
-                                // 세로 정렬이 상단/하단일 때는 flex: 1을 적용하지 않음 (단, full_height일 때는 항상 적용)
+                                // 블록 위젯인 경우 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1 적용
+                                $isBlockWidget = $widget->type === 'block';
                                 $widgetWrapperStyle = 'display: flex; flex-direction: column; width: 100%; max-width: 100%; margin-top: 0 !important; margin-bottom: 0 !important;';
-                                if ($isFullHeight) {
-                                    // 세로 100%일 때는 항상 flex: 1 적용하여 위젯이 높이를 꽉 채우도록
+                                if ($isFullHeight || $isBlockWidget) {
+                                    // 세로 100%이거나 블록 위젯일 때는 항상 flex: 1 적용하여 위젯이 높이를 꽉 채우도록
                                     $widgetWrapperStyle .= ' flex: 1;';
                                 } elseif ($verticalAlign === 'center') {
                                     // 중앙 정렬일 때만 flex: 1 적용
