@@ -33,6 +33,9 @@ class SiteSettingController extends Controller
         // 최신 데이터를 가져오기 위해 사이트 객체 새로고침
         $site->refresh();
         
+        // subscription과 plan 관계 로드
+        $site->load('subscription.plan');
+        
         $settings = $this->settingService->getSettingsBySite($site->id);
         
         // 미리보기용 데이터 준비
