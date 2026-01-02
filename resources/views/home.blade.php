@@ -176,51 +176,26 @@
                     @endphp
                     @if(!$isHidden)
                         @php
-                            // 세로 정렬을 위해 컬럼을 flex 컨테이너로 만들기
+                            // 위젯들이 상하를 꽉 차게 하기 위해 컬럼을 항상 flex 컨테이너로 만들기
                             $colFlexStyle = $colStyle;
-                            if ($verticalAlign === 'center' || $verticalAlign === 'bottom' || $verticalAlign === 'top') {
-                                $colFlexStyle .= ($colFlexStyle ? ' ' : '') . 'display: flex; flex-direction: column;';
-                                if ($verticalAlign === 'center') {
-                                    $colFlexStyle .= ' justify-content: center;';
-                                } elseif ($verticalAlign === 'bottom') {
-                                    $colFlexStyle .= ' justify-content: flex-end;';
-                                } elseif ($verticalAlign === 'top') {
-                                    $colFlexStyle .= ' justify-content: flex-start;';
-                                }
+                            $colFlexStyle .= ($colFlexStyle ? ' ' : '') . 'display: flex; flex-direction: column;';
+                            if ($verticalAlign === 'center') {
+                                $colFlexStyle .= ' justify-content: center;';
+                            } elseif ($verticalAlign === 'bottom') {
+                                $colFlexStyle .= ' justify-content: flex-end;';
+                            } elseif ($verticalAlign === 'top') {
+                                $colFlexStyle .= ' justify-content: flex-start;';
                             }
                         @endphp
                         <div class="col-md-{{ $colWidth }} {{ $colMarginBottom }}" style="{{ $colFlexStyle }}">
                         @foreach($columnWidgets as $index => $widget)
                             @php
-                                $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
-                                // 모든 위젯이 칸 영역의 가로 100%를 활용하도록 설정
-                                $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'width: 100%; max-width: 100%;';
-                                // 세로 정렬은 컬럼 레벨에서만 처리하고, 위젯 래퍼에는 flex를 적용하지 않음 (위젯 크기 보존)
-                                // 첫 번째 위젯과 마지막 위젯의 마진 처리
+                                // 모든 위젯이 칸 영역을 꽉 차게 하기 위해 flex: 1 적용
+                                $widgetWrapperStyle = 'flex: 1; display: flex; flex-direction: column; width: 100%; max-width: 100%; margin-top: 0 !important; margin-bottom: 0 !important;';
                                 $isFirstWidget = $index === 0;
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
-                                $widgetMarginClass = '';
-                                $widgetWrapperStyleMargin = '';
-                                if (!$isFullHeight) {
-                                    // 첫 번째 위젯은 상단 마진 0
-                                    if ($isFirstWidget) {
-                                        $widgetMarginClass = 'mt-0';
-                                        $widgetWrapperStyleMargin = 'margin-top: 0 !important;';
-                                    } else {
-                                        // 첫 번째가 아닌 위젯은 상단 간격 적용
-                                        $widgetMarginClass .= $widgetSpacingTopClass;
-                                    }
-                                    // 마지막 위젯은 하단 마진 0
-                                    if ($isLastWidget) {
-                                        $widgetMarginClass .= ($widgetMarginClass ? ' ' : '') . 'mb-0';
-                                        $widgetWrapperStyleMargin .= ($widgetWrapperStyleMargin ? ' ' : '') . 'margin-bottom: 0 !important;';
-                                    }
-                                }
-                                if ($widgetWrapperStyleMargin) {
-                                    $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . $widgetWrapperStyleMargin;
-                                }
                             @endphp
-                            <div class="{{ $widgetMarginClass }}" style="{{ $widgetWrapperStyle }}">
+                            <div style="{{ $widgetWrapperStyle }}">
                                 <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" :isFirstWidget="$isFirstWidget" :isLastWidget="$isLastWidget" />
                             </div>
                         @endforeach

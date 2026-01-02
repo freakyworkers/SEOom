@@ -114,22 +114,10 @@
             $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
         }
         
-        // 세로 100%일 때 위젯이 전체 높이를 차지하도록
-        if ($isFullHeight) {
-            $blockStyle .= " flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center;";
-        }
+        // 모든 위젯이 상하 영역을 꽉 차게 하기 위해 flex 적용
+        $blockStyle .= " flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column; justify-content: center; margin-top: 0 !important; margin-bottom: 0 !important;";
         
-        // 첫 번째 위젯은 상단 마진 제거
-        if ($isFirstWidget) {
-            $blockStyle .= " margin-top: 0 !important;";
-        }
-        
-        // 마지막 위젯은 하단 마진 제거
-        if ($isLastWidget) {
-            $blockStyle .= " margin-bottom: 0 !important;";
-        }
-        
-        // 위젯 자체의 하단 마진 제거 (래퍼에서 마진 관리)
+        // 위젯 자체의 하단 마진 제거
         $blockMarginBottom = 'mb-0';
     @endphp
     <div class="{{ $blockMarginBottom }} {{ $shadowClass }} {{ $animationClass }}" style="{{ $blockStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
@@ -887,18 +875,9 @@
     if ($isFullWidth) {
         $cardStyle .= ($cardStyle ? ' ' : '') . 'border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important;';
     }
-    if ($isFullHeight) {
-        $cardStyle .= ($cardStyle ? ' ' : '') . 'flex: 1; display: flex; flex-direction: column; min-height: 0;';
-    }
-    // 첫 번째 위젯은 상단 마진 제거 (카드 요소와 래퍼 모두)
-    if ($isFirstWidget) {
-        $cardStyle .= ($cardStyle ? ' ' : '') . 'margin-top: 0 !important; padding-top: 0 !important;';
-    }
-    // 마지막 위젯은 하단 마진 제거 (카드 요소와 래퍼 모두)
-    $cardMarginBottom = ($isFullHeight || $isLastWidget) ? 'mb-0' : 'mb-3';
-    if ($isLastWidget) {
-        $cardStyle .= ($cardStyle ? ' ' : '') . 'margin-bottom: 0 !important; padding-bottom: 0 !important;';
-    }
+    // 모든 위젯이 상하 영역을 꽉 차게 하기 위해 flex 적용
+    $cardStyle .= ($cardStyle ? ' ' : '') . 'flex: 1; display: flex; flex-direction: column; min-height: 0; height: 100%; margin-top: 0 !important; margin-bottom: 0 !important;';
+    $cardMarginBottom = 'mb-0';
 @endphp
 <div class="card {{ $shadowClass }} {{ $animationClass }} {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
     @if($hasTitle)
