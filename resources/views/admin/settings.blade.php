@@ -1723,15 +1723,23 @@
     // 기본값을 사용하지 않음 - 실제 네임서버가 있을 때만 표시
 @endphp
 
-@if($canUseDomain)
+{{-- 도메인 연결 섹션 (항상 표시, 무료 플랜은 입력 불가) --}}
 <div class="card shadow-sm settings-section">
     <div class="card-header bg-white">
-        <h5 class="mb-0"><i class="bi bi-globe me-2"></i>도메인 연결</h5>
+        <h5 class="mb-0">
+            <i class="bi bi-globe me-2"></i>도메인 연결
+            @if(!$canUseDomain)
+                <span class="badge bg-secondary ms-2">유료 플랜 전용</span>
+            @endif
+        </h5>
     </div>
     <div class="card-body">
         <div class="alert alert-info">
             <i class="bi bi-info-circle me-2"></i>
             <strong>도메인 연결 안내:</strong> 커스텀 도메인을 연결하려면 도메인 제공업체에서 네임서버를 변경해야 합니다.
+            @if(!$canUseDomain)
+                <br><strong class="text-danger">도메인 연결 기능은 유료 플랜에서만 사용할 수 있습니다.</strong>
+            @endif
         </div>
         
         @php
@@ -1759,15 +1767,16 @@
         <form method="POST" action="{{ $updateDomainUrlAbsolute }}" id="domainForm" class="mb-4" data-action-url="{{ $updateDomainUrlAbsolute }}">
             @csrf
             @method('PUT')
-            <label class="form-label fw-bold">도메인 설정</label>
+            <label class="form-label fw-bold {{ !$canUseDomain ? 'text-muted' : '' }}">도메인 설정</label>
             <div class="input-group mb-2">
                 <input type="text" 
-                       class="form-control @error('domain') is-invalid @enderror" 
+                       class="form-control @error('domain') is-invalid @enderror {{ !$canUseDomain ? 'text-muted' : '' }}" 
                        name="domain" 
                        id="domain"
                        value="{{ old('domain', $site->domain) }}"
-                       placeholder="예: example.com">
-                <button type="submit" class="btn btn-primary" id="domainSubmitBtn">
+                       placeholder="예: example.com"
+                       {{ !$canUseDomain ? 'disabled' : '' }}>
+                <button type="submit" class="btn btn-primary" id="domainSubmitBtn" {{ !$canUseDomain ? 'disabled' : '' }}>
                     <i class="bi bi-check-circle me-1"></i>저장
                 </button>
             </div>
@@ -1849,7 +1858,6 @@
         </div>
     </div>
 </div>
-@endif
 
 @endsection
 
