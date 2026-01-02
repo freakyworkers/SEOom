@@ -20,23 +20,18 @@
                     <li><i class="bi bi-check-circle text-success me-2"></i>오래된 백업 자동 삭제: 매일 0시 30분</li>
                 </ul>
                 <div class="mt-3">
-                    <form method="POST" action="{{ route('master.backup.toggle-auto-backup') }}" class="d-inline">
+                    <form method="POST" action="{{ route('master.backup.toggle-auto-backup') }}" class="d-inline" id="autoBackupForm">
                         @csrf
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="autoBackupToggle" 
-                                   {{ $autoBackupEnabled === '1' ? 'checked' : '' }}
-                                   onchange="this.form.submit()">
-                            <input type="hidden" name="enabled" id="autoBackupEnabled" value="{{ $autoBackupEnabled === '1' ? '1' : '0' }}">
+                                   {{ ($autoBackupEnabled ?? '1') === '1' ? 'checked' : '' }}
+                                   onchange="document.getElementById('autoBackupEnabled').value = this.checked ? '1' : '0'; this.form.submit();">
+                            <input type="hidden" name="enabled" id="autoBackupEnabled" value="{{ ($autoBackupEnabled ?? '1') === '1' ? '1' : '0' }}">
                             <label class="form-check-label" for="autoBackupToggle">
-                                <strong>자동 백업 {{ $autoBackupEnabled === '1' ? '활성화' : '비활성화' }}</strong>
+                                <strong>자동 백업 {{ ($autoBackupEnabled ?? '1') === '1' ? '활성화' : '비활성화' }}</strong>
                             </label>
                         </div>
                     </form>
-                    <script>
-                        document.getElementById('autoBackupToggle').addEventListener('change', function() {
-                            document.getElementById('autoBackupEnabled').value = this.checked ? '1' : '0';
-                        });
-                    </script>
                 </div>
             </div>
             <div class="col-md-6">
