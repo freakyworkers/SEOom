@@ -164,15 +164,17 @@
                         // 위젯 간격 설정 (컨테이너별)
                         $widgetSpacing = $container->widget_spacing ?? 3;
                         $widgetSpacingValue = min(max($widgetSpacing, 0), 5);
-                        // 첫 번째 위젯이 아닐 때만 상단 마진 적용, 하단 마진은 제거
-                        $widgetSpacingClass = $isFullHeight ? 'mb-0 mt-0' : 'mb-0';
-                        $widgetSpacingTopClass = $isFullHeight ? 'mt-0' : 'mt-' . $widgetSpacingValue;
+                        // Bootstrap spacing 값을 px로 변환 (0=0px, 1=0.25rem=4px, 2=0.5rem=8px, 3=1rem=16px, 4=1.5rem=24px, 5=3rem=48px)
+                        $spacingMap = [0 => '0px', 1 => '4px', 2 => '8px', 3 => '16px', 4 => '24px', 5 => '48px'];
+                        $widgetGap = $spacingMap[$widgetSpacingValue] ?? '16px';
                     @endphp
                     @if(!$isHidden)
                         @php
                             // 위젯들이 상하를 꽉 차게 하기 위해 컬럼을 항상 flex 컨테이너로 만들기
                             $colFlexStyle = $colStyle;
                             $colFlexStyle .= ($colFlexStyle ? ' ' : '') . 'display: flex; flex-direction: column;';
+                            // 위젯들 사이에 여백 추가
+                            $colFlexStyle .= ' gap: ' . $widgetGap . ';';
                             if ($verticalAlign === 'center') {
                                 $colFlexStyle .= ' justify-content: center;';
                             } elseif ($verticalAlign === 'bottom') {
