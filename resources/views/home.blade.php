@@ -72,14 +72,8 @@
     @foreach($mainWidgetContainers as $index => $container)
         @php
             $verticalAlign = $container->vertical_align ?? 'top';
-            $alignClass = '';
-            if ($verticalAlign === 'center') {
-                $alignClass = 'align-items-center';
-            } elseif ($verticalAlign === 'bottom') {
-                $alignClass = 'align-items-end';
-            } else {
-                $alignClass = 'align-items-start';
-            }
+            // 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 stretch 사용
+            $alignClass = 'align-items-stretch';
             
             // 가로 100% 설정 확인 (사이드바가 없을 때만 적용)
             $isFullWidth = ($container->full_width ?? false) && ($themeSidebar === 'none');

@@ -563,15 +563,17 @@
         $imageUrl = $imageSettings['image_url'] ?? '';
         $link = $imageSettings['link'] ?? '';
         $openNewTab = $imageSettings['open_new_tab'] ?? false;
+        // 이미지 위젯도 같은 높이를 가지도록 flex 적용
+        $imageWidgetStyle = 'flex: 1; display: flex; flex-direction: column; min-height: 0; height: 100%; margin-top: 0 !important; margin-bottom: 0 !important;';
     @endphp
     @if($imageUrl)
-        <div class="mb-0 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; max-width: 100%;" data-widget-id="{{ $widget->id }}">
+        <div class="mb-0 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; max-width: 100%; {{ $imageWidgetStyle }}" data-widget-id="{{ $widget->id }}">
             @if($link)
                 <a href="{{ $link }}" 
                    @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
                    style="{{ $isRoundTheme ? 'display: block; border-radius: 0.5rem; overflow: hidden; width: 100%;' : 'display: block; width: 100%;' }}">
             @endif
-            <img src="{{ $imageUrl }}" alt="이미지" style="width: 100%; height: auto; display: block;{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }}">
+            <img src="{{ $imageUrl }}" alt="이미지" style="width: 100%; height: 100%; object-fit: cover; display: block;{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }}">
             @if($link)
                 </a>
             @endif
