@@ -206,6 +206,7 @@ class SiteSettingController extends Controller
             'show_visitor_count' => 'nullable|in:0,1',
             'email_notification' => 'nullable|in:0,1',
             'general_login' => 'nullable|in:0,1',
+            'hide_powered_by' => 'nullable|in:0,1',
             // 이용약관 & 개인정보처리방침
             'terms_of_service' => 'nullable|string',
             'privacy_policy' => 'nullable|string',
@@ -330,7 +331,8 @@ class SiteSettingController extends Controller
                 'mobile_menu_login_widget',
                 'mobile_header_transparent',
                 'enable_point_message',
-                'theme_full_width'
+                'theme_full_width',
+                'hide_powered_by'
             ])) {
                 $newSettings[$key] = ($value == '1') ? '1' : '0';
             }

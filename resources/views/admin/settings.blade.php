@@ -956,26 +956,15 @@
                         </select>
                         
                         {{-- Powered by SEOom Builder 해제 체크박스 --}}
-                        @php
-                            $isPaidPlan = $site->plan && $site->plan !== 'free' && $site->plan !== 'Free';
-                            $plan = $site->planModel();
-                            if ($plan) {
-                                $isPaidPlan = $plan->price > 0;
-                            }
-                        @endphp
                         <div class="form-check mt-3">
                             <input class="form-check-input" 
                                    type="checkbox" 
                                    name="hide_powered_by" 
                                    id="hide_powered_by" 
                                    value="1"
-                                   {{ ($settings['hide_powered_by'] ?? '0') == '1' ? 'checked' : '' }}
-                                   {{ !$isPaidPlan ? 'disabled' : '' }}>
-                            <label class="form-check-label {{ !$isPaidPlan ? 'text-muted' : '' }}" for="hide_powered_by">
+                                   {{ ($settings['hide_powered_by'] ?? '0') == '1' ? 'checked' : '' }}>
+                            <label class="form-check-label" for="hide_powered_by">
                                 Powered by SEOom Builder 해제
-                                @if(!$isPaidPlan)
-                                    <span class="badge bg-secondary ms-1">유료 플랜 전용</span>
-                                @endif
                             </label>
                         </div>
                     </div>
@@ -3005,6 +2994,13 @@ $(document).ready(function() {
             $('#header_border').attr('name', 'header_border_disabled');
         }
         $(this).append('<input type="hidden" name="header_border" value="' + headerBorder + '">');
+        
+        // hide_powered_by 체크박스 처리
+        const hidePoweredBy = $('#hide_powered_by').is(':checked') ? '1' : '0';
+        if (! $('#hide_powered_by').is(':checked')) {
+            $('#hide_powered_by').attr('name', 'hide_powered_by_disabled');
+        }
+        $(this).append('<input type="hidden" name="hide_powered_by" value="' + hidePoweredBy + '">');
     });
 
     // 게시판 form 제출 시 체크박스 처리
