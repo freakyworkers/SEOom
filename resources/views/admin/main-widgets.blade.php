@@ -3926,6 +3926,9 @@ function editMainWidget(widgetId) {
                 if (document.getElementById('edit_main_widget_block_padding_right')) {
                     document.getElementById('edit_main_widget_block_padding_right').value = settings.padding_right || 20;
                 }
+                if (document.getElementById('edit_main_widget_block_title_content_gap')) {
+                    document.getElementById('edit_main_widget_block_title_content_gap').value = settings.title_content_gap || 8;
+                }
                 if (document.getElementById('edit_main_widget_block_link')) {
                     document.getElementById('edit_main_widget_block_link').value = settings.link || '';
                 }
