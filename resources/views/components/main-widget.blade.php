@@ -36,7 +36,11 @@
     $isLastWidget = $isLastWidget ?? false;
     
     // 컨테이너 정렬 설정 확인
-    $verticalAlign = $verticalAlign ?? 'top';
+    // verticalAlign이 전달되지 않았을 경우 기본값 'top' 사용
+    // null 체크를 포함하여 제대로 처리
+    if (!isset($verticalAlign) || $verticalAlign === null || $verticalAlign === '') {
+        $verticalAlign = 'top';
+    }
     
     // 가로 100%일 때는 라운드 제거 (버튼 제외)
     if ($isFullWidth) {
@@ -120,10 +124,12 @@
         // 모든 위젯이 상하 영역을 꽉 차게 하기 위해 flex 적용
         // 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1 적용
         // 컨테이너 정렬에 따라 justify-content 설정 (isFullHeight 여부와 관계없이)
+        // verticalAlign 변수 확인 (디버깅용 - 나중에 제거 가능)
+        $actualVerticalAlign = $verticalAlign ?? 'top';
         $justifyContent = 'center';
-        if ($verticalAlign === 'top') {
+        if ($actualVerticalAlign === 'top') {
             $justifyContent = 'flex-start';
-        } elseif ($verticalAlign === 'bottom') {
+        } elseif ($actualVerticalAlign === 'bottom') {
             $justifyContent = 'flex-end';
         } else {
             $justifyContent = 'center';
