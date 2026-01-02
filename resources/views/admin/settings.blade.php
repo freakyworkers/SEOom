@@ -956,15 +956,31 @@
                         </select>
                         
                         {{-- Powered by SEOom Builder 해제 체크박스 --}}
+                        @php
+                            // 유료 플랜 체크
+                            $isPaidPlan = false;
+                            $plan = $site->planModel();
+                            if ($plan) {
+                                // billing_type이 free가 아니고, price가 0보다 큰 경우 유료 플랜
+                                $isPaidPlan = $plan->billing_type !== 'free' && $plan->price > 0;
+                            } else {
+                                // planModel이 없으면 site의 plan 필드로 체크
+                                $isPaidPlan = $site->plan && $site->plan !== 'free' && $site->plan !== 'Free';
+                            }
+                        @endphp
                         <div class="form-check mt-3">
                             <input class="form-check-input" 
                                    type="checkbox" 
                                    name="hide_powered_by" 
                                    id="hide_powered_by" 
                                    value="1"
-                                   {{ ($settings['hide_powered_by'] ?? '0') == '1' ? 'checked' : '' }}>
-                            <label class="form-check-label" for="hide_powered_by">
+                                   {{ ($settings['hide_powered_by'] ?? '0') == '1' ? 'checked' : '' }}
+                                   {{ !$isPaidPlan ? 'disabled' : '' }}>
+                            <label class="form-check-label {{ !$isPaidPlan ? 'text-muted' : '' }}" for="hide_powered_by">
                                 Powered by SEOom Builder 해제
+                                @if(!$isPaidPlan)
+                                    <span class="badge bg-secondary ms-1">유료 플랜 전용</span>
+                                @endif
                             </label>
                         </div>
                     </div>
