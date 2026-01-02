@@ -320,11 +320,23 @@
                         } else {
                             $blockStyle .= " width: 100%; height: 100%; flex-shrink: 0;";
                         }
+                        
+                        // 컨테이너 정렬에 따라 justify-content 설정 (블록슬라이드 아이템 내부 정렬)
+                        $justifyContent = 'center';
+                        if ($verticalAlign === 'top') {
+                            $justifyContent = 'flex-start';
+                        } elseif ($verticalAlign === 'bottom') {
+                            $justifyContent = 'flex-end';
+                        } else {
+                            $justifyContent = 'center';
+                        }
+                        // 블록슬라이드 아이템을 flex 컨테이너로 만들어서 내부 컨텐츠 정렬
+                        $blockStyle .= " display: flex; flex-direction: column; justify-content: {$justifyContent};";
                     @endphp
                     <div class="block-slide-item" style="{{ $blockStyle }}" data-index="{{ $index }}">
                         @if($link && !$hasButtons)
                             <a href="{{ $link }}" 
-                               style="color: {{ $fontColor }}; text-decoration: none; display: block;"
+                               style="color: {{ $fontColor }}; text-decoration: none; display: flex; flex-direction: column; flex: 1; height: 100%;"
                                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
                         @endif
                         @if($blockTitle)

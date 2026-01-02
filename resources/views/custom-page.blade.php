@@ -116,10 +116,16 @@
                                     'is_active' => $widget->is_active,
                                     'order' => $widget->order,
                                 ];
-                                $widgetWrapperStyle = $isFullHeight ? 'flex: 1; display: flex; flex-direction: column;' : '';
-                                // 모든 위젯이 칸 영역의 가로 100%를 활용하도록 설정
-                                $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . 'width: 100%; max-width: 100%;';
-                                // 세로 정렬은 컬럼 레벨에서만 처리하고, 위젯 래퍼에는 flex를 적용하지 않음 (위젯 크기 보존)
+                                // 블록 위젯인 경우 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1 적용
+                                $isBlockWidget = $widget->type === 'block';
+                                $widgetWrapperStyle = 'display: flex; flex-direction: column; width: 100%; max-width: 100%; margin-top: 0 !important; margin-bottom: 0 !important;';
+                                if ($isFullHeight || $isBlockWidget) {
+                                    // 세로 100%이거나 블록 위젯일 때는 항상 flex: 1 적용하여 위젯이 높이를 꽉 채우도록
+                                    $widgetWrapperStyle .= ' flex: 1;';
+                                } elseif ($verticalAlign === 'center') {
+                                    // 중앙 정렬일 때만 flex: 1 적용
+                                    $widgetWrapperStyle .= ' flex: 1;';
+                                }
                                 // 첫 번째 위젯과 마지막 위젯의 마진 처리
                                 $isFirstWidget = $index === 0;
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
@@ -145,7 +151,7 @@
                                 }
                             @endphp
                             <div class="{{ $widgetMarginClass }}" style="{{ $widgetWrapperStyle }}">
-                                <x-main-widget :widget="$widgetData" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" :isFirstWidget="$isFirstWidget" :isLastWidget="$isLastWidget" />
+                                <x-main-widget :widget="$widgetData" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" :isFirstWidget="$isFirstWidget" :isLastWidget="$isLastWidget" :verticalAlign="$verticalAlign" />
                             </div>
                         @endforeach
                         </div>
