@@ -119,16 +119,14 @@
         
         // 모든 위젯이 상하 영역을 꽉 차게 하기 위해 flex 적용
         // 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1 적용
+        // 컨테이너 정렬에 따라 justify-content 설정 (isFullHeight 여부와 관계없이)
         $justifyContent = 'center';
-        if ($isFullHeight) {
-            // 세로 100%일 때는 컨테이너 정렬에 따라 justify-content 설정
-            if ($verticalAlign === 'top') {
-                $justifyContent = 'flex-start';
-            } elseif ($verticalAlign === 'bottom') {
-                $justifyContent = 'flex-end';
-            } else {
-                $justifyContent = 'center';
-            }
+        if ($verticalAlign === 'top') {
+            $justifyContent = 'flex-start';
+        } elseif ($verticalAlign === 'bottom') {
+            $justifyContent = 'flex-end';
+        } else {
+            $justifyContent = 'center';
         }
         // 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1과 height: 100% 적용
         $blockStyle .= " flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column; justify-content: {$justifyContent}; margin-top: 0 !important; margin-bottom: 0 !important;";
@@ -2745,14 +2743,18 @@
                     }
                     
                     // 세로 100%일 때 위젯이 전체 높이를 차지하도록
+                    // 컨테이너 정렬에 따라 justify-content 설정 (isFullHeight 여부와 관계없이)
+                    $justifyContent = 'center';
+                    if ($verticalAlign === 'top') {
+                        $justifyContent = 'flex-start';
+                    } elseif ($verticalAlign === 'bottom') {
+                        $justifyContent = 'flex-end';
+                    }
                     if ($isFullHeight) {
-                        $justifyContent = 'center';
-                        if ($verticalAlign === 'top') {
-                            $justifyContent = 'flex-start';
-                        } elseif ($verticalAlign === 'bottom') {
-                            $justifyContent = 'flex-end';
-                        }
                         $blockStyle .= " flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: {$justifyContent};";
+                    } else {
+                        // isFullHeight가 아니어도 컨테이너 정렬에 따라 justify-content 적용
+                        $blockStyle .= " display: flex; flex-direction: column; justify-content: {$justifyContent};";
                     }
                 @endphp
                 <div style="{{ $blockStyle }}">
