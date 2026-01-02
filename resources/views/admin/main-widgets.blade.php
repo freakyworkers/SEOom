@@ -3163,7 +3163,7 @@ function addMainWidget() {
         const blockTitle = formData.get('block_title');
         const blockContent = formData.get('block_content');
         const textAlign = formData.get('block_text_align') || 'left';
-        const backgroundType = formData.get('block_background_type') || 'none';
+        const backgroundType = formData.get('block_background_type') || 'color';
         const paddingTop = formData.get('block_padding_top') || '20';
         const paddingBottom = formData.get('block_padding_bottom') || '20';
         const paddingLeft = formData.get('block_padding_left') || '20';
