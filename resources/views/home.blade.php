@@ -199,7 +199,7 @@
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
                             @endphp
                             <div style="{{ $widgetWrapperStyle }}">
-                                <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" :isFirstWidget="$isFirstWidget" :isLastWidget="$isLastWidget" />
+                                <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" :isFirstWidget="$isFirstWidget" :isLastWidget="$isLastWidget" :verticalAlign="$verticalAlign" />
                             </div>
                         @endforeach
                         </div>

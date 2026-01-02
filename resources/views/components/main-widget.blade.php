@@ -35,6 +35,9 @@
     // 마지막 위젯 여부 확인
     $isLastWidget = $isLastWidget ?? false;
     
+    // 컨테이너 정렬 설정 확인
+    $verticalAlign = $verticalAlign ?? 'top';
+    
     // 가로 100%일 때는 라운드 제거 (버튼 제외)
     if ($isFullWidth) {
         $isRoundTheme = false;
@@ -115,7 +118,18 @@
         }
         
         // 모든 위젯이 상하 영역을 꽉 차게 하기 위해 flex 적용
-        $blockStyle .= " flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column; justify-content: center; margin-top: 0 !important; margin-bottom: 0 !important;";
+        $justifyContent = 'center';
+        if ($isFullHeight) {
+            // 세로 100%일 때는 컨테이너 정렬에 따라 justify-content 설정
+            if ($verticalAlign === 'top') {
+                $justifyContent = 'flex-start';
+            } elseif ($verticalAlign === 'bottom') {
+                $justifyContent = 'flex-end';
+            } else {
+                $justifyContent = 'center';
+            }
+        }
+        $blockStyle .= " flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column; justify-content: {$justifyContent}; margin-top: 0 !important; margin-bottom: 0 !important;";
         
         // 위젯 자체의 하단 마진 제거
         $blockMarginBottom = 'mb-0';
@@ -2730,7 +2744,13 @@
                     
                     // 세로 100%일 때 위젯이 전체 높이를 차지하도록
                     if ($isFullHeight) {
-                        $blockStyle .= " flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center;";
+                        $justifyContent = 'center';
+                        if ($verticalAlign === 'top') {
+                            $justifyContent = 'flex-start';
+                        } elseif ($verticalAlign === 'bottom') {
+                            $justifyContent = 'flex-end';
+                        }
+                        $blockStyle .= " flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: {$justifyContent};";
                     }
                 @endphp
                 <div style="{{ $blockStyle }}">
