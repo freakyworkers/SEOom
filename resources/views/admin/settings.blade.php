@@ -962,17 +962,19 @@
                             
                             // subscription 확인
                             $hasSubscription = $site->subscription;
-                            $isActive = $hasSubscription && $site->subscription->status === 'active';
                             $plan = $site->planModel();
                             
-                            if ($plan) {
-                                // subscription이 있고 active 상태이며, billing_type이 free가 아니고, price가 0보다 큰 경우 유료 플랜
-                                if ($hasSubscription && $isActive) {
-                                    $isPaidPlan = $plan->billing_type !== 'free' && $plan->price > 0;
-                                } else {
-                                    // subscription이 없거나 비활성화 상태면 무료 플랜으로 간주
-                                    $isPaidPlan = false;
+                            if ($hasSubscription && $plan) {
+                                // subscription이 있고 plan이 있는 경우
+                                $subscriptionStatus = $site->subscription->status;
+                                // active 또는 trial 상태이고, billing_type이 free가 아니면 유료 플랜
+                                if (in_array($subscriptionStatus, ['active', 'trial'])) {
+                                    $isPaidPlan = $plan->billing_type !== 'free';
                                 }
+                            } elseif ($plan) {
+                                // subscription은 없지만 plan이 있는 경우 (하위 호환성)
+                                // billing_type이 free가 아니고 price가 0보다 크면 유료 플랜
+                                $isPaidPlan = $plan->billing_type !== 'free' && $plan->price > 0;
                             } else {
                                 // planModel이 없으면 site의 plan 필드로 체크 (하위 호환성)
                                 $isPaidPlan = $site->plan && $site->plan !== 'free' && $site->plan !== 'Free';
