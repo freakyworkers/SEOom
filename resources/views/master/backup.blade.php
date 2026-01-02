@@ -23,12 +23,15 @@
                     <form method="POST" action="{{ route('master.backup.toggle-auto-backup') }}" class="d-inline" id="autoBackupForm">
                         @csrf
                         <div class="form-check form-switch">
+                            @php
+                                $isEnabled = ($autoBackupEnabled ?? '1') === '1' || ($autoBackupEnabled ?? '1') === 1;
+                            @endphp
                             <input class="form-check-input" type="checkbox" role="switch" id="autoBackupToggle" 
-                                   {{ ($autoBackupEnabled ?? '1') === '1' ? 'checked' : '' }}
+                                   {{ $isEnabled ? 'checked' : '' }}
                                    onchange="document.getElementById('autoBackupEnabled').value = this.checked ? '1' : '0'; this.form.submit();">
-                            <input type="hidden" name="enabled" id="autoBackupEnabled" value="{{ ($autoBackupEnabled ?? '1') === '1' ? '1' : '0' }}">
+                            <input type="hidden" name="enabled" id="autoBackupEnabled" value="{{ $isEnabled ? '1' : '0' }}">
                             <label class="form-check-label" for="autoBackupToggle">
-                                <strong>자동 백업 {{ ($autoBackupEnabled ?? '1') === '1' ? '활성화' : '비활성화' }}</strong>
+                                <strong>자동 백업</strong> <span id="autoBackupStatus">{{ $isEnabled ? '활성화' : '비활성화' }}</span>
                             </label>
                         </div>
                     </form>

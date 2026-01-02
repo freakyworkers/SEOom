@@ -25,7 +25,12 @@ class MasterBackupController extends Controller
         
         // Get auto backup setting
         $masterSite = Site::getMasterSite();
-        $autoBackupEnabled = $masterSite ? $masterSite->getSetting('auto_backup_enabled', '1') : '1';
+        $autoBackupEnabled = '1'; // 기본값
+        if ($masterSite) {
+            $settingValue = $masterSite->getSetting('auto_backup_enabled', '1');
+            // 값이 문자열 '1' 또는 숫자 1이면 활성화
+            $autoBackupEnabled = ($settingValue === '1' || $settingValue === 1) ? '1' : '0';
+        }
 
         return view('master.backup', compact('backups', 'autoBackupEnabled'));
     }
@@ -42,7 +47,19 @@ class MasterBackupController extends Controller
         }
         
         $enabled = $request->input('enabled', '0');
-        $masterSite->setSetting('auto_backup_enabled', $enabled);
+        // 문자열 '1' 또는 '0'으로 명확하게 저장
+        $enabled = ($enabled === '1' || $enabled === 1) ? '1' : '0';
+        
+        // updateOrCreate를 사용하여 확실하게 저장
+        \App\Models\SiteSetting::updateOrCreate(
+            [
+                'site_id' => $masterSite->id,
+                'key' => 'auto_backup_enabled',
+            ],
+            [
+                'value' => $enabled,
+            ]
+        );
         
         $status = $enabled === '1' ? '활성화' : '비활성화';
         return back()->with('success', "자동 백업이 {$status}되었습니다.");
