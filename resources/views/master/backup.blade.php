@@ -5,6 +5,43 @@
 @section('page-subtitle', '데이터베이스 백업을 생성하고 관리할 수 있습니다')
 
 @section('content')
+<!-- Backup Information -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>백업 정보</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="fw-bold mb-3">자동 백업 스케줄</h6>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check-circle text-success me-2"></i>백업 생성: 매일 0시 (자정)</li>
+                    <li><i class="bi bi-check-circle text-success me-2"></i>백업 보관 기간: 7일</li>
+                    <li><i class="bi bi-check-circle text-success me-2"></i>오래된 백업 자동 삭제: 매일 0시 30분</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold mb-3">백업에 포함되는 데이터</h6>
+                <ul class="list-unstyled small">
+                    <li><i class="bi bi-dot me-2"></i>사이트 정보 및 설정</li>
+                    <li><i class="bi bi-dot me-2"></i>회원 정보 (이메일, 전화번호, 포인트 등)</li>
+                    <li><i class="bi bi-dot me-2"></i>게시판 및 게시글</li>
+                    <li><i class="bi bi-dot me-2"></i>댓글 및 좋아요</li>
+                    <li><i class="bi bi-dot me-2"></i>메인 위젯 및 커스텀 페이지</li>
+                    <li><i class="bi bi-dot me-2"></i>사이드바 위젯 및 메뉴</li>
+                    <li><i class="bi bi-dot me-2"></i>배너, 팝업, 문의 양식</li>
+                    <li><i class="bi bi-dot me-2"></i>알림, 쪽지, 채팅</li>
+                    <li><i class="bi bi-dot me-2"></i>출석, 포인트 교환, 이벤트</li>
+                    <li><i class="bi bi-dot me-2"></i>신고, 제재, 차단 사용자</li>
+                    <li><i class="bi bi-dot me-2"></i>구독, 결제, 플랜 정보</li>
+                    <li><i class="bi bi-dot me-2"></i>마스터 관리자 정보</li>
+                </ul>
+                <small class="text-muted">※ 파일 업로드(storage/app/public)는 별도로 백업해야 합니다.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Create Backup -->
 <div class="card mb-4">
     <div class="card-header">
