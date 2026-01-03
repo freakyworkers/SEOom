@@ -3196,7 +3196,7 @@ function addMainWidget() {
                 const buttonGradientEnd = buttonCard.querySelector('.block-button-gradient-end')?.value || buttonHoverBackgroundColor;
                 const buttonGradientAngle = buttonCard.querySelector('.block-button-gradient-angle')?.value || '90';
                 const buttonOpacityRaw = buttonCard.querySelector('.block-button-opacity')?.value || '100';
-                const buttonOpacity = (parseFloat(buttonOpacityRaw) / 100).toFixed(1);
+                const buttonOpacity = parseFloat(buttonOpacityRaw) / 100;
                 
                 // 호버 배경 타입 및 그라데이션 설정
                 const buttonHoverBackgroundType = buttonCard.querySelector('.block-button-hover-background-type')?.value || 'color';
@@ -3204,7 +3204,7 @@ function addMainWidget() {
                 const buttonHoverGradientEnd = buttonCard.querySelector('.block-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
                 const buttonHoverGradientAngle = buttonCard.querySelector('.block-button-hover-gradient-angle')?.value || '90';
                 const buttonHoverOpacityRaw = buttonCard.querySelector('.block-button-hover-opacity')?.value || '100';
-                const buttonHoverOpacity = (parseFloat(buttonHoverOpacityRaw) / 100).toFixed(1);
+                const buttonHoverOpacity = parseFloat(buttonHoverOpacityRaw) / 100;
                 
                 buttons.push({
                     text: buttonText,
@@ -3221,12 +3221,12 @@ function addMainWidget() {
                     background_gradient_start: buttonGradientStart,
                     background_gradient_end: buttonGradientEnd,
                     background_gradient_angle: parseInt(buttonGradientAngle) || 90,
-                    opacity: parseFloat(buttonOpacity) || 1.0,
+                    opacity: buttonOpacity,
                     hover_background_type: buttonHoverBackgroundType,
                     hover_background_gradient_start: buttonHoverGradientStart,
                     hover_background_gradient_end: buttonHoverGradientEnd,
                     hover_background_gradient_angle: parseInt(buttonHoverGradientAngle) || 90,
-                    hover_opacity: parseFloat(buttonHoverOpacity) || 1.0
+                    hover_opacity: buttonHoverOpacity
                 });
             }
         });
@@ -3333,7 +3333,7 @@ function addMainWidget() {
                     const buttonGradientEnd = buttonCard.querySelector('.block-slide-button-gradient-end')?.value || buttonHoverBackgroundColor;
                     const buttonGradientAngle = buttonCard.querySelector('.block-slide-button-gradient-angle')?.value || '90';
                     const buttonOpacityRaw = buttonCard.querySelector('.block-slide-button-opacity')?.value || '100';
-                    const buttonOpacity = (parseFloat(buttonOpacityRaw) / 100).toFixed(1);
+                    const buttonOpacity = parseFloat(buttonOpacityRaw) / 100;
                     
                     // 호버 배경 타입 및 그라데이션 설정
                     const buttonHoverBackgroundType = buttonCard.querySelector('.block-slide-button-hover-background-type')?.value || 'color';
@@ -3341,7 +3341,7 @@ function addMainWidget() {
                     const buttonHoverGradientEnd = buttonCard.querySelector('.block-slide-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
                     const buttonHoverGradientAngle = buttonCard.querySelector('.block-slide-button-hover-gradient-angle')?.value || '90';
                     const buttonHoverOpacityRaw = buttonCard.querySelector('.block-slide-button-hover-opacity')?.value || '100';
-                    const buttonHoverOpacity = (parseFloat(buttonHoverOpacityRaw) / 100).toFixed(1);
+                    const buttonHoverOpacity = parseFloat(buttonHoverOpacityRaw) / 100;
                     
                     buttons.push({
                         text: buttonText,
@@ -3358,12 +3358,12 @@ function addMainWidget() {
                         background_gradient_start: buttonGradientStart,
                         background_gradient_end: buttonGradientEnd,
                         background_gradient_angle: parseInt(buttonGradientAngle) || 90,
-                        opacity: parseFloat(buttonOpacity) || 1.0,
+                        opacity: buttonOpacity,
                         hover_background_type: buttonHoverBackgroundType,
                         hover_background_gradient_start: buttonHoverGradientStart,
                         hover_background_gradient_end: buttonHoverGradientEnd,
                         hover_background_gradient_angle: parseInt(buttonHoverGradientAngle) || 90,
-                        hover_opacity: parseFloat(buttonHoverOpacity) || 1.0
+                        hover_opacity: buttonHoverOpacity
                     });
                 }
             });
@@ -6039,7 +6039,7 @@ function saveMainWidgetSettings() {
                 const buttonGradientEnd = buttonCard.querySelector('.edit-main-block-button-gradient-end')?.value || buttonHoverBackgroundColor;
                 const buttonGradientAngle = buttonCard.querySelector('.edit-main-block-button-gradient-angle')?.value || '90';
                 const buttonOpacityRaw = buttonCard.querySelector('.edit-main-block-button-opacity')?.value || '100';
-                const buttonOpacity = (parseFloat(buttonOpacityRaw) / 100).toFixed(1);
+                const buttonOpacity = parseFloat(buttonOpacityRaw) / 100;
                 
                 // 호버 배경 타입 및 그라데이션 설정
                 const buttonHoverBackgroundType = buttonCard.querySelector('.edit-main-block-button-hover-background-type')?.value || 'color';
@@ -6047,7 +6047,7 @@ function saveMainWidgetSettings() {
                 const buttonHoverGradientEnd = buttonCard.querySelector('.edit-main-block-button-hover-gradient-end')?.value || buttonHoverBackgroundColor;
                 const buttonHoverGradientAngle = buttonCard.querySelector('.edit-main-block-button-hover-gradient-angle')?.value || '90';
                 const buttonHoverOpacityRaw = buttonCard.querySelector('.edit-main-block-button-hover-opacity')?.value || '100';
-                const buttonHoverOpacity = (parseFloat(buttonHoverOpacityRaw) / 100).toFixed(1);
+                const buttonHoverOpacity = parseFloat(buttonHoverOpacityRaw) / 100;
                 
                 buttons.push({
                     text: buttonText,
@@ -6064,12 +6064,12 @@ function saveMainWidgetSettings() {
                     background_gradient_start: buttonGradientStart,
                     background_gradient_end: buttonGradientEnd,
                     background_gradient_angle: parseInt(buttonGradientAngle) || 90,
-                    opacity: parseFloat(buttonOpacity) || 1.0,
+                    opacity: buttonOpacity,
                     hover_background_type: buttonHoverBackgroundType,
                     hover_background_gradient_start: buttonHoverGradientStart,
                     hover_background_gradient_end: buttonHoverGradientEnd,
                     hover_background_gradient_angle: parseInt(buttonHoverGradientAngle) || 90,
-                    hover_opacity: parseFloat(buttonHoverOpacity) || 1.0
+                    hover_opacity: buttonHoverOpacity
                 });
             }
         });
