@@ -3988,8 +3988,8 @@ class AdminController extends Controller
             'container_id' => 'required|integer',
             'column_index' => 'required|integer',
             'widgets' => 'required|array',
-            'widgets.*.id' => 'required|integer',
-            'widgets.*.order' => 'required|integer',
+            'widgets.*.id' => 'required_with:widgets|integer',
+            'widgets.*.order' => 'required_with:widgets|integer',
             'widgets.*.container_id' => 'nullable|integer', // 이동된 위젯의 새 컨테이너 ID
             'widgets.*.column_index' => 'nullable|integer', // 이동된 위젯의 새 컬럼 인덱스
         ]);
@@ -4699,8 +4699,8 @@ class AdminController extends Controller
             'container_id' => 'required|integer',
             'column_index' => 'required|integer',
             'widgets' => 'required|array',
-            'widgets.*.id' => 'required|integer',
-            'widgets.*.order' => 'required|integer',
+            'widgets.*.id' => 'required_with:widgets|integer',
+            'widgets.*.order' => 'required_with:widgets|integer',
             'widgets.*.container_id' => 'nullable|integer', // 이동된 위젯의 새 컨테이너 ID
             'widgets.*.column_index' => 'nullable|integer', // 이동된 위젯의 새 컬럼 인덱스
         ]);

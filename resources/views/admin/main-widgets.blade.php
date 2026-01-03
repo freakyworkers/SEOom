@@ -4348,65 +4348,70 @@ function moveMainWidgetDown(widgetId, containerId, columnIndex) {
 
 // 위젯 순서 저장
 function saveMainWidgetOrder(containerId, columnIndex, movedWidget = null) {
-    const widgetList = document.querySelector(`.widget-list-in-column[data-container-id="${containerId}"][data-column-index="${columnIndex}"]`);
-    if (!widgetList) return;
-    
-    const widgets = Array.from(widgetList.querySelectorAll('.widget-item'));
-    const widgetData = widgets.map((item, index) => {
-        const widgetId = parseInt(item.dataset.widgetId);
-        const itemContainerId = parseInt(item.dataset.containerId);
-        const itemColumnIndex = parseInt(item.dataset.columnIndex);
+    // DOM 업데이트를 기다리기 위해 약간의 지연
+    setTimeout(() => {
+        const widgetList = document.querySelector(`.widget-list-in-column[data-container-id="${containerId}"][data-column-index="${columnIndex}"]`);
         
-        const data = {
-            id: widgetId,
-            order: index + 1
-        };
-        
-        // 위젯이 다른 컨테이너로 이동한 경우
-        if (movedWidget && movedWidget.id === widgetId && 
-            (itemContainerId !== containerId || itemColumnIndex !== columnIndex)) {
-            data.container_id = containerId;
-            data.column_index = columnIndex;
+        let widgetData = [];
+        if (widgetList) {
+            const widgets = Array.from(widgetList.querySelectorAll('.widget-item'));
+            widgetData = widgets.map((item, index) => {
+                const widgetId = parseInt(item.dataset.widgetId);
+                const itemContainerId = parseInt(item.dataset.containerId);
+                const itemColumnIndex = parseInt(item.dataset.columnIndex);
+                
+                const data = {
+                    id: widgetId,
+                    order: index + 1
+                };
+                
+                // 위젯이 다른 컨테이너로 이동한 경우
+                if (movedWidget && movedWidget.id === widgetId && 
+                    (itemContainerId !== containerId || itemColumnIndex !== columnIndex)) {
+                    data.container_id = containerId;
+                    data.column_index = columnIndex;
+                }
+                
+                return data;
+            });
         }
         
-        return data;
-    });
-    
-    fetch('{{ route("admin.main-widgets.reorder", ["site" => $site->slug]) }}', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-            container_id: containerId,
-            column_index: columnIndex,
-            widgets: widgetData 
+        fetch('{{ route("admin.main-widgets.reorder", ["site" => $site->slug]) }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                container_id: containerId,
+                column_index: columnIndex,
+                widgets: widgetData 
+            })
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (!data.success) {
-            console.error('순서 저장 실패:', data.message);
-            alert('위젯 순서 저장에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
-            location.reload(); // 실패 시 새로고침
-        } else {
-            // 위젯이 이동한 경우 데이터 속성 업데이트
-            if (movedWidget) {
-                const movedElement = document.querySelector(`.widget-item[data-widget-id="${movedWidget.id}"]`);
-                if (movedElement) {
-                    movedElement.dataset.containerId = containerId;
-                    movedElement.dataset.columnIndex = columnIndex;
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('순서 저장 실패:', data.message);
+                alert('위젯 순서 저장에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                location.reload(); // 실패 시 새로고침
+            } else {
+                // 위젯이 이동한 경우 데이터 속성 업데이트
+                if (movedWidget) {
+                    const movedElement = document.querySelector(`.widget-item[data-widget-id="${movedWidget.id}"]`);
+                    if (movedElement) {
+                        movedElement.dataset.containerId = containerId;
+                        movedElement.dataset.columnIndex = columnIndex;
+                    }
                 }
             }
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('위젯 순서 저장 중 오류가 발생했습니다.');
-        location.reload(); // 오류 시 새로고침
-    });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('위젯 순서 저장 중 오류가 발생했습니다.');
+            location.reload(); // 오류 시 새로고침
+        });
+    }, 100); // DOM 업데이트를 위한 100ms 지연
 }
 
 // 위젯 삭제
