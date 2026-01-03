@@ -9,7 +9,10 @@ use App\Models\MasterUser;
 use App\Services\SiteProvisionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class MasterSiteController extends Controller
 {
@@ -46,10 +49,12 @@ class MasterSiteController extends Controller
 
         $sites = $query->orderBy('created_at', 'desc')->paginate(20);
 
-        // 각 사이트의 플랜 정보 로드
+        // 각 사이트의 플랜 정보 로드 및 백업 파일 목록 추가
         $sites->getCollection()->transform(function ($site) {
             $plan = Plan::where('slug', $site->plan)->first();
             $site->planModel = $plan;
+            // 해당 사이트의 백업 파일 목록 가져오기
+            $site->backupFiles = $this->getSiteBackupFiles($site);
             return $site;
         });
 
@@ -472,6 +477,168 @@ class MasterSiteController extends Controller
             'token' => $token,
             'url' => route('master.sites.sso', ['site' => $site->id, 'token' => $token]),
         ]);
+    }
+
+    /**
+     * Get backup files for a specific site.
+     */
+    public function getBackupFiles(Site $site)
+    {
+        $backupFiles = $this->getSiteBackupFiles($site);
+        
+        return response()->json([
+            'success' => true,
+            'files' => $backupFiles,
+        ]);
+    }
+
+    /**
+     * Restore a site from backup.
+     */
+    public function restoreFromBackup(Site $site, Request $request)
+    {
+        $request->validate([
+            'backup_file' => 'required|string',
+        ]);
+
+        $filename = $request->input('backup_file');
+        $backupPath = storage_path('app/backups/' . $filename);
+
+        // 백업 파일이 존재하는지 확인
+        if (!file_exists($backupPath)) {
+            return back()->with('error', '백업 파일을 찾을 수 없습니다.');
+        }
+
+        // 파일명에서 사이트 슬러그 확인
+        if (!str_contains($filename, "backup_site_{$site->slug}")) {
+            return back()->with('error', '이 백업 파일은 해당 사이트의 백업이 아닙니다.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // SQL 파일인 경우 데이터베이스 복원
+            if (str_ends_with($filename, '.sql')) {
+                $this->restoreDatabase($backupPath, $site);
+            }
+
+            // 파일 백업이 있는 경우 복원
+            $filesBackupPath = str_replace('.sql', '_files.tar.gz', $backupPath);
+            if (file_exists($filesBackupPath)) {
+                $this->restoreFiles($filesBackupPath, $site);
+            }
+
+            DB::commit();
+
+            return back()->with('success', '백업이 성공적으로 복원되었습니다.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', '백업 복원 중 오류가 발생했습니다: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get backup files for a specific site.
+     */
+    protected function getSiteBackupFiles(Site $site)
+    {
+        $files = Storage::files('backups');
+        $backupFiles = [];
+
+        foreach ($files as $file) {
+            $filename = basename($file);
+            // 사이트별 백업 파일만 필터링 (backup_site_{slug}_)
+            if (str_starts_with($filename, "backup_site_{$site->slug}_") && str_ends_with($filename, '.sql')) {
+                $backupFiles[] = [
+                    'name' => $filename,
+                    'size' => Storage::size($file),
+                    'created_at' => Storage::lastModified($file),
+                    'date' => date('Y-m-d H:i:s', Storage::lastModified($file)),
+                ];
+            }
+        }
+
+        // 생성일 기준 내림차순 정렬
+        usort($backupFiles, function($a, $b) {
+            return $b['created_at'] - $a['created_at'];
+        });
+
+        return $backupFiles;
+    }
+
+    /**
+     * Restore database from SQL file.
+     */
+    protected function restoreDatabase($sqlPath, Site $site)
+    {
+        $sql = file_get_contents($sqlPath);
+        
+        if (empty($sql)) {
+            throw new \Exception('백업 파일이 비어있습니다.');
+        }
+
+        // 사이트별 백업 파일은 DELETE와 INSERT 문으로 구성됨
+        // 한 줄씩 읽어서 실행하는 것이 더 안전함
+        
+        $lines = explode("\n", $sql);
+        $currentStatement = '';
+        
+        foreach ($lines as $line) {
+            $line = trim($line);
+            
+            // 주석이나 빈 줄은 건너뛰기
+            if (empty($line) || str_starts_with($line, '--')) {
+                continue;
+            }
+            
+            $currentStatement .= $line . ' ';
+            
+            // 세미콜론으로 문장 종료 확인
+            if (str_ends_with($line, ';')) {
+                $statement = trim($currentStatement);
+                if (!empty($statement)) {
+                    try {
+                        DB::statement($statement);
+                    } catch (\Exception $e) {
+                        // 일부 오류는 무시 (예: 외래 키 제약 조건 등)
+                        // 하지만 중요한 오류는 로그에 기록
+                        if (str_contains($e->getMessage(), 'Duplicate entry') || 
+                            str_contains($e->getMessage(), 'foreign key constraint')) {
+                            \Log::warning('SQL 실행 중 오류 (무시됨): ' . $e->getMessage());
+                        } else {
+                            throw $e;
+                        }
+                    }
+                }
+                $currentStatement = '';
+            }
+        }
+    }
+
+    /**
+     * Restore files from tar.gz archive.
+     */
+    protected function restoreFiles($tarPath, Site $site)
+    {
+        $siteStoragePath = storage_path("app/public/sites/{$site->slug}");
+        
+        // 사이트 디렉토리가 없으면 생성
+        if (!file_exists($siteStoragePath)) {
+            mkdir($siteStoragePath, 0755, true);
+        }
+
+        // tar.gz 파일 압축 해제
+        $command = sprintf(
+            'tar -xzf %s -C %s 2>&1',
+            escapeshellarg($tarPath),
+            escapeshellarg($siteStoragePath)
+        );
+
+        exec($command, $output, $returnVar);
+
+        if ($returnVar !== 0) {
+            throw new \Exception('파일 복원 중 오류가 발생했습니다: ' . implode("\n", $output));
+        }
     }
 }
 

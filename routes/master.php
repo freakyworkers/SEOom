@@ -49,6 +49,8 @@ Route::middleware(['web', 'auth:master'])->group(function () {
         Route::get('/{site}/edit', [MasterSiteController::class, 'edit'])->name('master.sites.edit');
         Route::put('/{site}', [MasterSiteController::class, 'update'])->name('master.sites.update');
         Route::delete('/{site}', [MasterSiteController::class, 'destroy'])->name('master.sites.destroy');
+        Route::get('/{site}/backup-files', [MasterSiteController::class, 'getBackupFiles'])->name('master.sites.backup-files');
+        Route::post('/{site}/restore-backup', [MasterSiteController::class, 'restoreFromBackup'])->name('master.sites.restore-backup');
         Route::post('/{site}/suspend', [MasterSiteController::class, 'suspend'])->name('master.sites.suspend');
         Route::post('/{site}/activate', [MasterSiteController::class, 'activate'])->name('master.sites.activate');
         Route::post('/{site}/sso-token', [MasterSiteController::class, 'generateSsoToken'])->name('master.sites.sso-token');

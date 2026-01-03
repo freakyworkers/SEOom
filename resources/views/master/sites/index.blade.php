@@ -52,6 +52,7 @@
                         <th style="width: 100px;">요금제</th>
                         <th style="width: 100px;">상태</th>
                         <th style="width: 150px;">생성일</th>
+                        <th style="width: 250px;">백업 복원</th>
                         <th style="width: 200px;">작업</th>
                     </tr>
                 </thead>
@@ -99,6 +100,31 @@
                             </td>
                             <td>
                                 <small class="text-muted">{{ $site->created_at->format('Y-m-d') }}</small>
+                            </td>
+                            <td>
+                                @php
+                                    $backupFiles = $site->backupFiles ?? [];
+                                @endphp
+                                @if(count($backupFiles) > 0)
+                                    <form method="POST" action="{{ route('master.sites.restore-backup', $site->id) }}" 
+                                          class="d-flex gap-2 align-items-center"
+                                          onsubmit="return confirm('정말 이 백업으로 복원하시겠습니까? 현재 데이터는 덮어씌워집니다.');">
+                                        @csrf
+                                        <select name="backup_file" class="form-select form-select-sm" style="min-width: 200px;" required>
+                                            <option value="">백업 파일 선택</option>
+                                            @foreach($backupFiles as $backup)
+                                                <option value="{{ $backup['name'] }}">
+                                                    {{ $backup['date'] }} ({{ number_format($backup['size'] / 1024 / 1024, 2) }} MB)
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-warning" title="백업으로 복원">
+                                            <i class="bi bi-arrow-counterclockwise"></i> 복원
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="text-muted small">백업 파일 없음</span>
+                                @endif
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
