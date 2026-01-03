@@ -119,7 +119,7 @@
                                             @endforeach
                                         </select>
                                         <button type="submit" class="btn btn-sm btn-warning" title="백업으로 복원">
-                                            <i class="bi bi-arrow-counterclockwise"></i> 복원
+                                            <i class="bi bi-arrow-counterclockwise"></i>
                                         </button>
                                     </form>
                                 @else
