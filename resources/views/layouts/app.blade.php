@@ -560,10 +560,11 @@
             ];
             $fontFamily = $fontFamilies[$fontDesign] ?? $fontFamilies['noto-sans'];
             
+            // 반응형 폰트 사이즈 - clamp(최소, 선호, 최대)를 사용하여 화면 크기에 따라 자연스럽게 조절
             $fontSizes = [
-                'small' => '14px',
-                'normal' => '16px',
-                'large' => '18px',
+                'small' => 'clamp(12px, 2vw, 14px)',
+                'normal' => 'clamp(14px, 2.5vw, 16px)',
+                'large' => 'clamp(15px, 3vw, 18px)',
             ];
             $baseFontSize = $fontSizes[$fontSize] ?? $fontSizes['normal'];
         @endphp
