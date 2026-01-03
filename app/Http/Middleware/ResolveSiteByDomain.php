@@ -13,16 +13,13 @@ class ResolveSiteByDomain
      * Handle an incoming request.
      * 도메인 기반으로 사이트를 찾아서 라우트에 바인딩합니다.
      * 
-     * 참고: URL 리라이트는 RewriteCleanUrls 글로벌 미들웨어에서 처리됩니다.
-     * 이 미들웨어는 이미 설정된 site를 확인하거나, 없으면 새로 찾습니다.
+     * 우선순위:
+     * 1. 마스터 도메인 → 마스터 사이트
+     * 2. 서브도메인 → slug로 사이트 조회
+     * 3. 커스텀 도메인 → domain으로 사이트 조회
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // 이미 RewriteCleanUrls에서 site가 설정되었으면 그대로 사용
-        if ($request->attributes->has('site')) {
-            return $next($request);
-        }
-        
         $host = $request->getHost();
         
         // 포트 제거 (localhost:8000 → localhost)

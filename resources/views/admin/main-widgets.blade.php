@@ -5251,7 +5251,7 @@ function addBlockSlideButton(itemIndex) {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">투명도</label>
+                    <label class="form-label">버튼 배경 투명도</label>
                     <input type="range" 
                            class="form-range block-slide-button-opacity" 
                            name="block_slide[${itemIndex}][buttons][${buttonIndex}][opacity]" 
@@ -5347,7 +5347,7 @@ function addBlockSlideButton(itemIndex) {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">호버 투명도</label>
+                    <label class="form-label">호버 배경 투명도</label>
                     <input type="range" 
                            class="form-range block-slide-button-hover-opacity" 
                            name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_opacity]" 
@@ -7543,7 +7543,7 @@ function addBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">투명도</label>
+                    <label class="form-label">버튼 배경 투명도</label>
                     <input type="range" 
                            class="form-range block-button-opacity" 
                            name="block_buttons[${blockButtonIndex}][opacity]" 
@@ -7639,7 +7639,7 @@ function addBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">호버 투명도</label>
+                    <label class="form-label">호버 배경 투명도</label>
                     <input type="range" 
                            class="form-range block-button-hover-opacity" 
                            name="block_buttons[${blockButtonIndex}][hover_opacity]" 
@@ -7779,7 +7779,7 @@ function addEditMainBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">투명도</label>
+                    <label class="form-label">버튼 배경 투명도</label>
                     <input type="range" 
                            class="form-range edit-main-block-button-opacity" 
                            name="edit_main_block_buttons[${editMainBlockButtonIndex}][opacity]" 
@@ -7875,7 +7875,7 @@ function addEditMainBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">호버 투명도</label>
+                    <label class="form-label">호버 배경 투명도</label>
                     <input type="range" 
                            class="form-range edit-main-block-button-hover-opacity" 
                            name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_opacity]" 
