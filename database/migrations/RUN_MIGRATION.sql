@@ -12,3 +12,4 @@ ADD COLUMN `failure_notification_sent_at` DATE NULL AFTER `reminder_sent_1day`;
 
 
 
+

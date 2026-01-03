@@ -26,3 +26,4 @@ class TrimStrings extends Middleware
 
 
 
+

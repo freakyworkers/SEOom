@@ -6,3 +6,4 @@ git push origin main
 ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.104.130 "cd /var/www/seoom; sudo git pull origin main; sudo -u www-data php artisan config:clear; sudo -u www-data php artisan view:clear; sudo systemctl reload apache2"
 pause
 
+

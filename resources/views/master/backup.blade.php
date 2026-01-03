@@ -35,6 +35,16 @@
                             </label>
                         </div>
                     </form>
+                    <div class="mt-3">
+                        <form method="POST" action="{{ route('master.backup.run-auto-backup') }}" class="d-inline" 
+                              onsubmit="return confirm('지금 모든 사이트의 백업을 실행하시겠습니까?');">
+                            @csrf
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-play-circle me-1"></i>지금 전체 백업 실행
+                            </button>
+                        </form>
+                        <small class="text-muted d-block mt-2">※ 자동 백업과 동일한 방식으로 모든 사이트의 백업을 생성합니다.</small>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6">

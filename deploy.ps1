@@ -7,3 +7,4 @@ cd /var/www/seoom && sudo git pull origin main && sudo -u www-data php artisan c
 
 ssh -i $keyPath $server $commands
 
+

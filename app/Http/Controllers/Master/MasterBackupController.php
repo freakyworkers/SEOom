@@ -76,14 +76,29 @@ class MasterBackupController extends Controller
             if ($siteId) {
                 // Backup specific site
                 Artisan::call('backup:site', ['site_id' => $siteId]);
+                return back()->with('success', '사이트 백업이 생성되었습니다.');
             } else {
-                // Backup all
-                Artisan::call('backup:run');
+                // Backup all sites (same as auto backup)
+                Artisan::call('backup:all-sites');
+                return back()->with('success', '모든 사이트 백업이 생성되었습니다.');
             }
-
-            return back()->with('success', '백업이 생성되었습니다.');
         } catch (\Exception $e) {
             return back()->with('error', '백업 생성 중 오류가 발생했습니다: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Run auto backup manually (same as scheduled backup).
+     */
+    public function runAutoBackup()
+    {
+        try {
+            Artisan::call('backup:all-sites');
+            $output = Artisan::output();
+            
+            return back()->with('success', '자동 백업이 실행되었습니다. 모든 사이트의 백업이 생성되었습니다.');
+        } catch (\Exception $e) {
+            return back()->with('error', '자동 백업 실행 중 오류가 발생했습니다: ' . $e->getMessage());
         }
     }
 
