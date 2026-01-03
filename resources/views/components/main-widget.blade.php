@@ -2,6 +2,23 @@
     $widgetSettings = $widget->settings ?? [];
     $limit = $widgetSettings['limit'] ?? 10;
     
+    // HEX 색상을 RGBA로 변환하는 헬퍼 함수
+    if (!function_exists('hexToRgbaButton')) {
+        function hexToRgbaButton($hex, $alpha = 1.0) {
+            $hex = ltrim($hex, '#');
+            if (strlen($hex) === 3) {
+                $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+            }
+            if (strlen($hex) !== 6) {
+                return "rgba(0, 0, 0, {$alpha})";
+            }
+            $r = hexdec(substr($hex, 0, 2));
+            $g = hexdec(substr($hex, 2, 2));
+            $b = hexdec(substr($hex, 4, 2));
+            return "rgba({$r}, {$g}, {$b}, {$alpha})";
+        }
+    }
+    
     // 헤더 테두리 설정 가져오기
     $headerBorder = $site->getSetting('header_border', '0') == '1';
     $headerBorderWidth = $site->getSetting('header_border_width', '1');
@@ -188,15 +205,21 @@
                         $buttonGradientAngle = $button['background_gradient_angle'] ?? 90;
                         $buttonOpacity = isset($button['opacity']) ? floatval($button['opacity']) : 1.0;
                         
-                        // 버튼 배경 스타일 생성
+                        // 버튼 배경 스타일 생성 (투명도는 배경색에만 적용)
                         $buttonBackgroundStyle = '';
                         if ($buttonBackgroundType === 'gradient') {
-                            $buttonBackgroundStyle = "background: linear-gradient({$buttonGradientAngle}deg, {$buttonGradientStart}, {$buttonGradientEnd});";
+                            // 그라데이션에 투명도 적용
+                            $gradientStartRgba = hexToRgbaButton($buttonGradientStart, $buttonOpacity);
+                            $gradientEndRgba = hexToRgbaButton($buttonGradientEnd, $buttonOpacity);
+                            $buttonBackgroundStyle = "background: linear-gradient({$buttonGradientAngle}deg, {$gradientStartRgba}, {$gradientEndRgba});";
                         } else {
-                            $buttonBackgroundStyle = "background-color: {$buttonBackgroundColor};";
-                        }
-                        if ($buttonOpacity < 1.0) {
-                            $buttonBackgroundStyle .= " opacity: {$buttonOpacity};";
+                            // 단색 배경에 투명도 적용
+                            if ($buttonOpacity < 1.0) {
+                                $bgColorRgba = hexToRgbaButton($buttonBackgroundColor, $buttonOpacity);
+                                $buttonBackgroundStyle = "background-color: {$bgColorRgba};";
+                            } else {
+                                $buttonBackgroundStyle = "background-color: {$buttonBackgroundColor};";
+                            }
                         }
                         
                         // Hover 배경 스타일 생성
@@ -206,14 +229,19 @@
                         $buttonHoverGradientAngle = $button['hover_background_gradient_angle'] ?? 90;
                         $buttonHoverOpacity = isset($button['hover_opacity']) ? floatval($button['hover_opacity']) : 1.0;
                         
+                        // Hover 배경 스타일 (투명도는 배경색에만 적용)
                         $buttonHoverBackgroundStyle = '';
                         if ($buttonHoverBackgroundType === 'gradient') {
-                            $buttonHoverBackgroundStyle = "background: linear-gradient({$buttonHoverGradientAngle}deg, {$buttonHoverGradientStart}, {$buttonHoverGradientEnd});";
+                            $hoverGradientStartRgba = hexToRgbaButton($buttonHoverGradientStart, $buttonHoverOpacity);
+                            $hoverGradientEndRgba = hexToRgbaButton($buttonHoverGradientEnd, $buttonHoverOpacity);
+                            $buttonHoverBackgroundStyle = "background: linear-gradient({$buttonHoverGradientAngle}deg, {$hoverGradientStartRgba}, {$hoverGradientEndRgba});";
                         } else {
-                            $buttonHoverBackgroundStyle = "background-color: {$buttonHoverBackgroundColor};";
-                        }
-                        if ($buttonHoverOpacity < 1.0) {
-                            $buttonHoverBackgroundStyle .= " opacity: {$buttonHoverOpacity};";
+                            if ($buttonHoverOpacity < 1.0) {
+                                $hoverBgColorRgba = hexToRgbaButton($buttonHoverBackgroundColor, $buttonHoverOpacity);
+                                $buttonHoverBackgroundStyle = "background-color: {$hoverBgColorRgba};";
+                            } else {
+                                $buttonHoverBackgroundStyle = "background-color: {$buttonHoverBackgroundColor};";
+                            }
                         }
                         
                         // 버튼 border-radius 설정 (원래 테마가 라운드인 경우 라운드 적용)
@@ -385,15 +413,19 @@
                                         $buttonGradientAngle = $button['background_gradient_angle'] ?? 90;
                                         $buttonOpacity = isset($button['opacity']) ? floatval($button['opacity']) : 1.0;
                                         
-                                        // 버튼 배경 스타일 생성
+                                        // 버튼 배경 스타일 생성 (투명도는 배경색에만 적용)
                                         $buttonBackgroundStyle = '';
                                         if ($buttonBackgroundType === 'gradient') {
-                                            $buttonBackgroundStyle = "background: linear-gradient({$buttonGradientAngle}deg, {$buttonGradientStart}, {$buttonGradientEnd});";
+                                            $gradientStartRgba = hexToRgbaButton($buttonGradientStart, $buttonOpacity);
+                                            $gradientEndRgba = hexToRgbaButton($buttonGradientEnd, $buttonOpacity);
+                                            $buttonBackgroundStyle = "background: linear-gradient({$buttonGradientAngle}deg, {$gradientStartRgba}, {$gradientEndRgba});";
                                         } else {
-                                            $buttonBackgroundStyle = "background-color: {$buttonBackgroundColor};";
-                                        }
-                                        if ($buttonOpacity < 1.0) {
-                                            $buttonBackgroundStyle .= " opacity: {$buttonOpacity};";
+                                            if ($buttonOpacity < 1.0) {
+                                                $bgColorRgba = hexToRgbaButton($buttonBackgroundColor, $buttonOpacity);
+                                                $buttonBackgroundStyle = "background-color: {$bgColorRgba};";
+                                            } else {
+                                                $buttonBackgroundStyle = "background-color: {$buttonBackgroundColor};";
+                                            }
                                         }
                                         
                                         // Hover 배경 스타일 생성
@@ -403,14 +435,19 @@
                                         $buttonHoverGradientAngle = $button['hover_background_gradient_angle'] ?? 90;
                                         $buttonHoverOpacity = isset($button['hover_opacity']) ? floatval($button['hover_opacity']) : 1.0;
                                         
+                                        // Hover 배경 스타일 (투명도는 배경색에만 적용)
                                         $buttonHoverBackgroundStyle = '';
                                         if ($buttonHoverBackgroundType === 'gradient') {
-                                            $buttonHoverBackgroundStyle = "background: linear-gradient({$buttonHoverGradientAngle}deg, {$buttonHoverGradientStart}, {$buttonHoverGradientEnd});";
+                                            $hoverGradientStartRgba = hexToRgbaButton($buttonHoverGradientStart, $buttonHoverOpacity);
+                                            $hoverGradientEndRgba = hexToRgbaButton($buttonHoverGradientEnd, $buttonHoverOpacity);
+                                            $buttonHoverBackgroundStyle = "background: linear-gradient({$buttonHoverGradientAngle}deg, {$hoverGradientStartRgba}, {$hoverGradientEndRgba});";
                                         } else {
-                                            $buttonHoverBackgroundStyle = "background-color: {$buttonHoverBackgroundColor};";
-                                        }
-                                        if ($buttonHoverOpacity < 1.0) {
-                                            $buttonHoverBackgroundStyle .= " opacity: {$buttonHoverOpacity};";
+                                            if ($buttonHoverOpacity < 1.0) {
+                                                $hoverBgColorRgba = hexToRgbaButton($buttonHoverBackgroundColor, $buttonHoverOpacity);
+                                                $buttonHoverBackgroundStyle = "background-color: {$hoverBgColorRgba};";
+                                            } else {
+                                                $buttonHoverBackgroundStyle = "background-color: {$buttonHoverBackgroundColor};";
+                                            }
                                         }
                                         
                                         // 버튼 border-radius 설정 (원래 테마가 라운드인 경우 라운드 적용)
