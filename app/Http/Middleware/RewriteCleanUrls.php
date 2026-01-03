@@ -33,12 +33,6 @@ class RewriteCleanUrls
     public function handle(Request $request, Closure $next): Response
     {
         $path = $request->getPathInfo();
-        
-        // 이미 /site/{slug}/ 형태이거나 제외 경로인 경우 리라이트하지 않음
-        if (!$this->shouldRewriteUrl($path)) {
-            return $next($request);
-        }
-        
         $host = $request->getHost();
         
         // 포트 제거
@@ -53,9 +47,13 @@ class RewriteCleanUrls
             $request->attributes->set('domain_based_access', true);
             $request->attributes->set('original_path', $path);
             
-            // URL 리라이트
-            $newPath = '/site/' . $site->slug . $path;
-            $this->rewriteRequest($request, $newPath);
+            // 이미 /site/{slug}/ 형태이거나 제외 경로인 경우 리라이트하지 않음
+            // 하지만 domain_based_access는 설정됨 (클린 URL 변환용)
+            if ($this->shouldRewriteUrl($path)) {
+                // URL 리라이트
+                $newPath = '/site/' . $site->slug . $path;
+                $this->rewriteRequest($request, $newPath);
+            }
         }
         
         return $next($request);
