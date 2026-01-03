@@ -2,6 +2,35 @@
 
 @section('title', $customPage->name)
 
+{{-- 첫 번째 컨테이너가 세로 100% 또는 가로 100%일 때 main 영역 상단 여백 제거 --}}
+@php
+    $themeSidebar = $site->getSetting('theme_sidebar', 'left');
+    $firstContainerIsFullHeight = isset($containers) && $containers->isNotEmpty() && ($containers->first()->full_height ?? false);
+    $firstContainerIsFullWidth = isset($containers) && $containers->isNotEmpty() && ($containers->first()->full_width ?? false) && ($themeSidebar === 'none');
+@endphp
+
+@if($firstContainerIsFullHeight || $firstContainerIsFullWidth)
+@push('styles')
+<style>
+    /* 첫 번째 컨테이너가 세로 100% 또는 가로 100%일 때 main 영역 상단 여백 완전 제거 */
+    body main.container,
+    body main.container.my-4,
+    body > main.container,
+    body > main.container.my-4,
+    .d-flex main.container,
+    .d-flex main.container.my-4 {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    /* full-height-container의 상단 여백도 제거 */
+    .full-height-container:first-child {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+</style>
+@endpush
+@endif
+
 @section('content')
 {{-- 커스텀 페이지 위젯 표시 --}}
 @if(isset($containers) && $containers->isNotEmpty())
