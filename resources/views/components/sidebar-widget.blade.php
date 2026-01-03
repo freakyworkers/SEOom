@@ -58,6 +58,9 @@
         $fontColor = $blockSettings['font_color'] ?? '#ffffff';
         $titleFontSize = $blockSettings['title_font_size'] ?? '16';
         $contentFontSize = $blockSettings['content_font_size'] ?? '14';
+        // 반응형 폰트 사이즈 계산
+        $responsiveTitleFontSize = "clamp(" . round($titleFontSize * 0.65) . "px, " . round($titleFontSize / 8, 1) . "vw, " . $titleFontSize . "px)";
+        $responsiveContentFontSize = "clamp(" . round($contentFontSize * 0.65) . "px, " . round($contentFontSize / 8, 1) . "vw, " . $contentFontSize . "px)";
         $showButton = $blockSettings['show_button'] ?? false;
         $buttonText = $blockSettings['button_text'] ?? '';
         $buttonBackgroundColor = $blockSettings['button_background_color'] ?? '#007bff';
@@ -85,10 +88,10 @@
                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
         @endif
         @if($blockTitle)
-            <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $titleFontSize }}px; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
+            <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }}; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
         @endif
         @if($blockContent)
-            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $contentFontSize }}px; white-space: pre-wrap;">{{ $blockContent }}</p>
+            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
         @endif
         @if($link && !$showButton)
             </a>
@@ -147,6 +150,9 @@
                         $fontColor = $block['font_color'] ?? '#ffffff';
                         $titleFontSize = $block['title_font_size'] ?? '16';
                         $contentFontSize = $block['content_font_size'] ?? '14';
+                        // 반응형 폰트 사이즈 계산
+                        $responsiveTitleFontSize = "clamp(" . round($titleFontSize * 0.65) . "px, " . round($titleFontSize / 8, 1) . "vw, " . $titleFontSize . "px)";
+                        $responsiveContentFontSize = "clamp(" . round($contentFontSize * 0.65) . "px, " . round($contentFontSize / 8, 1) . "vw, " . $contentFontSize . "px)";
                         $showButton = $block['show_button'] ?? false;
                         $buttonText = $block['button_text'] ?? '';
                         $buttonBackgroundColor = $block['button_background_color'] ?? '#007bff';
@@ -181,10 +187,10 @@
                                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
                         @endif
                         @if($blockTitle)
-                            <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $titleFontSize }}px; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
+                            <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }}; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
                         @endif
                         @if($blockContent)
-                            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $contentFontSize }}px; white-space: pre-wrap;">{{ $blockContent }}</p>
+                            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
                         @endif
                         @if($link && !$showButton)
                             </a>
@@ -230,6 +236,9 @@
                         $fontColor = $block['font_color'] ?? '#ffffff';
                         $titleFontSize = $block['title_font_size'] ?? '16';
                         $contentFontSize = $block['content_font_size'] ?? '14';
+                        // 반응형 폰트 사이즈 계산
+                        $responsiveTitleFontSize = "clamp(" . round($titleFontSize * 0.65) . "px, " . round($titleFontSize / 8, 1) . "vw, " . $titleFontSize . "px)";
+                        $responsiveContentFontSize = "clamp(" . round($contentFontSize * 0.65) . "px, " . round($contentFontSize / 8, 1) . "vw, " . $contentFontSize . "px)";
                         $showButton = $block['show_button'] ?? false;
                         $buttonText = $block['button_text'] ?? '';
                         $buttonBackgroundColor = $block['button_background_color'] ?? '#007bff';
@@ -263,10 +272,10 @@
                                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
                         @endif
                         @if($blockTitle)
-                            <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $titleFontSize }}px;">{{ $blockTitle }}</h4>
+                            <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }};">{{ $blockTitle }}</h4>
                         @endif
                         @if($blockContent)
-                            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $contentFontSize }}px; white-space: pre-wrap;">{{ $blockContent }}</p>
+                            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
                         @endif
                         @if($link && !$showButton)
                             </a>
