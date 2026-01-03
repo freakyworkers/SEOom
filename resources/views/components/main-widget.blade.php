@@ -2261,7 +2261,7 @@
                     @if($toggleMenu && $toggleMenu->items->count() > 0)
                         <div class="toggle-menu-widget" data-widget-id="{{ $widget->id }}">
                             @if($widget->title)
-                                <h5 class="mb-3">{{ $widget->title }}</h5>
+                                <h5 class="mt-3 mb-3">{{ $widget->title }}</h5>
                             @endif
                             @foreach($toggleMenu->items as $item)
                                 <div class="toggle-menu-item-widget mb-2" data-id="{{ $toggleMenu->id }}-{{ $item->id }}">
