@@ -36,10 +36,11 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\ResolveSiteByDomain::class, // 도메인 기반 라우팅
+            \App\Http\Middleware\ResolveSiteByDomain::class, // 도메인 기반 라우팅 + URL 리라이트
             \App\Http\Middleware\CheckTrafficLimit::class, // 트래픽 제한 확인
             \App\Http\Middleware\TrackVisitor::class,
             \App\Http\Middleware\TrackTraffic::class, // 트래픽 추적
+            \App\Http\Middleware\CleanSiteUrls::class, // 도메인 기반 접근 시 클린 URL 생성
         ],
 
         'api' => [
