@@ -854,16 +854,16 @@
                         <div class="mb-3">
                             <label class="form-label">텍스트 정렬</label>
                             <div class="btn-group w-100" role="group">
-                                <input type="radio" class="btn-check" name="edit_main_block_text_align" id="edit_main_block_align_left" value="left" checked>
-                                <label class="btn btn-outline-primary" for="edit_main_block_align_left">
+                                <input type="radio" class="btn-check" name="edit_custom_page_block_text_align" id="edit_custom_page_block_align_left" value="left" checked>
+                                <label class="btn btn-outline-primary" for="edit_custom_page_block_align_left">
                                     <i class="bi bi-text-left"></i> 좌
                                 </label>
-                                <input type="radio" class="btn-check" name="edit_main_block_text_align" id="edit_main_block_align_center" value="center">
-                                <label class="btn btn-outline-primary" for="edit_main_block_align_center">
+                                <input type="radio" class="btn-check" name="edit_custom_page_block_text_align" id="edit_custom_page_block_align_center" value="center">
+                                <label class="btn btn-outline-primary" for="edit_custom_page_block_align_center">
                                     <i class="bi bi-text-center"></i> 중앙
                                 </label>
-                                <input type="radio" class="btn-check" name="edit_main_block_text_align" id="edit_main_block_align_right" value="right">
-                                <label class="btn btn-outline-primary" for="edit_main_block_align_right">
+                                <input type="radio" class="btn-check" name="edit_custom_page_block_text_align" id="edit_custom_page_block_align_right" value="right">
+                                <label class="btn btn-outline-primary" for="edit_custom_page_block_align_right">
                                     <i class="bi bi-text-right"></i> 우
                                 </label>
                             </div>
@@ -3409,7 +3409,7 @@ function editCustomPageWidget(widgetId) {
                     document.getElementById('edit_custom_page_widget_block_content').value = settings.block_content || '';
                 }
                 const textAlign = settings.text_align || 'left';
-                const textAlignRadio = document.querySelector(`input[name="edit_main_block_text_align"][value="${textAlign}"]`);
+                const textAlignRadio = document.querySelector(`input[name="edit_custom_page_block_text_align"][value="${textAlign}"]`);
                 if (textAlignRadio) textAlignRadio.checked = true;
                 
                 const backgroundType = settings.background_type || 'color';
@@ -4324,7 +4324,7 @@ function addCustomPageBlockSlideButton(itemIndex) {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">투명도</label>
+                    <label class="form-label">버튼 배경 투명도</label>
                     <input type="range" 
                            class="form-range block-slide-button-opacity" 
                            name="block_slide[${itemIndex}][buttons][${buttonIndex}][opacity]" 
@@ -5021,11 +5021,11 @@ function saveCustomPageWidgetSettings() {
                 blockItem.background_gradient_end = gradientEndInput ? gradientEndInput.value : '#000000';
                 blockItem.background_gradient_angle = gradientAngleInput ? parseInt(gradientAngleInput.value) : 90;
             } else if (blockItem.background_type === 'image') {
-                const imageFileInput = item.querySelector(`#edit_main_block_slide_${itemIndex}_image_input`);
+                const imageFileInput = item.querySelector(`#edit_custom_page_block_slide_${itemIndex}_image_input`);
                 if (imageFileInput && imageFileInput.files[0]) {
-                    formData.append(`edit_main_block_slide[${itemIndex}][background_image_file]`, imageFileInput.files[0]);
+                    formData.append(`edit_custom_page_block_slide[${itemIndex}][background_image_file]`, imageFileInput.files[0]);
                 }
-                const imageUrlInput = item.querySelector(`#edit_main_block_slide_${itemIndex}_background_image_url`);
+                const imageUrlInput = item.querySelector(`#edit_custom_page_block_slide_${itemIndex}_background_image_url`);
                 if (imageUrlInput && imageUrlInput.value) {
                     blockItem.background_image_url = imageUrlInput.value;
                 }
@@ -5323,30 +5323,30 @@ function addEditMainBlockSlideItem(blockData = null) {
             <label class="form-label">제목</label>
             <input type="text" 
                    class="form-control edit-custom-page-block-slide-title" 
-                   name="edit_main_block_slide[${itemIndex}][title]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][title]" 
                    placeholder="제목을 입력하세요"
                    value="${blockData ? (blockData.title || '') : ''}">
         </div>
         <div class="mb-3">
             <label class="form-label">내용</label>
             <textarea class="form-control edit-custom-page-block-slide-content" 
-                      name="edit_main_block_slide[${itemIndex}][content]" 
+                      name="edit_custom_page_block_slide[${itemIndex}][content]" 
                       rows="3"
                       placeholder="내용을 입력하세요">${blockData ? (blockData.content || '') : ''}</textarea>
         </div>
         <div class="mb-3">
             <label class="form-label">텍스트 정렬</label>
             <div class="btn-group w-100" role="group">
-                <input type="radio" class="btn-check" name="edit_main_block_slide[${itemIndex}][text_align]" id="edit_main_block_slide_${itemIndex}_align_left" value="left" ${!blockData || blockData.text_align === 'left' ? 'checked' : ''}>
-                <label class="btn btn-outline-primary" for="edit_main_block_slide_${itemIndex}_align_left">
+                <input type="radio" class="btn-check" name="edit_custom_page_block_slide[${itemIndex}][text_align]" id="edit_custom_page_block_slide_${itemIndex}_align_left" value="left" ${!blockData || blockData.text_align === 'left' ? 'checked' : ''}>
+                <label class="btn btn-outline-primary" for="edit_custom_page_block_slide_${itemIndex}_align_left">
                     <i class="bi bi-text-left"></i> 좌
                 </label>
-                <input type="radio" class="btn-check" name="edit_main_block_slide[${itemIndex}][text_align]" id="edit_main_block_slide_${itemIndex}_align_center" value="center" ${blockData && blockData.text_align === 'center' ? 'checked' : ''}>
-                <label class="btn btn-outline-primary" for="edit_main_block_slide_${itemIndex}_align_center">
+                <input type="radio" class="btn-check" name="edit_custom_page_block_slide[${itemIndex}][text_align]" id="edit_custom_page_block_slide_${itemIndex}_align_center" value="center" ${blockData && blockData.text_align === 'center' ? 'checked' : ''}>
+                <label class="btn btn-outline-primary" for="edit_custom_page_block_slide_${itemIndex}_align_center">
                     <i class="bi bi-text-center"></i> 중앙
                 </label>
-                <input type="radio" class="btn-check" name="edit_main_block_slide[${itemIndex}][text_align]" id="edit_main_block_slide_${itemIndex}_align_right" value="right" ${blockData && blockData.text_align === 'right' ? 'checked' : ''}>
-                <label class="btn btn-outline-primary" for="edit_main_block_slide_${itemIndex}_align_right">
+                <input type="radio" class="btn-check" name="edit_custom_page_block_slide[${itemIndex}][text_align]" id="edit_custom_page_block_slide_${itemIndex}_align_right" value="right" ${blockData && blockData.text_align === 'right' ? 'checked' : ''}>
+                <label class="btn btn-outline-primary" for="edit_custom_page_block_slide_${itemIndex}_align_right">
                     <i class="bi bi-text-right"></i> 우
                 </label>
             </div>
@@ -5355,7 +5355,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <label class="form-label">제목 폰트 사이즈 (px)</label>
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-title-font-size" 
-                   name="edit_main_block_slide[${itemIndex}][title_font_size]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][title_font_size]" 
                    value="${blockData ? (blockData.title_font_size || '16') : '16'}"
                    min="8"
                    max="72"
@@ -5367,7 +5367,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <label class="form-label">내용 폰트 사이즈 (px)</label>
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-content-font-size" 
-                   name="edit_main_block_slide[${itemIndex}][content_font_size]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][content_font_size]" 
                    value="${blockData ? (blockData.content_font_size || '14') : '14'}"
                    min="8"
                    max="48"
@@ -5377,34 +5377,34 @@ function addEditMainBlockSlideItem(blockData = null) {
         </div>
         <div class="mb-3">
             <label class="form-label">배경</label>
-            <select class="form-select edit-custom-page-block-slide-background-type" name="edit_main_block_slide[${itemIndex}][background_type]" onchange="handleEditCustomPageBlockSlideBackgroundTypeChange(${itemIndex})">
+            <select class="form-select edit-custom-page-block-slide-background-type" name="edit_custom_page_block_slide[${itemIndex}][background_type]" onchange="handleEditCustomPageBlockSlideBackgroundTypeChange(${itemIndex})">
                 <option value="none" ${blockData && blockData.background_type === 'none' ? 'selected' : ''}>배경 없음</option>
                 <option value="color" ${!blockData || blockData.background_type === 'color' ? 'selected' : ''}>컬러</option>
                 <option value="gradient" ${blockData && blockData.background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
                 <option value="image" ${blockData && blockData.background_type === 'image' ? 'selected' : ''}>이미지</option>
             </select>
         </div>
-        <div class="mb-3 edit-custom-page-block-slide-color-container" id="edit_main_block_slide_${itemIndex}_color_container" style="${!blockData || (blockData.background_type !== 'color' && blockData.background_type !== 'none') ? 'display: none;' : ''}">
+        <div class="mb-3 edit-custom-page-block-slide-color-container" id="edit_custom_page_block_slide_${itemIndex}_color_container" style="${!blockData || (blockData.background_type !== 'color' && blockData.background_type !== 'none') ? 'display: none;' : ''}">
             <label class="form-label">배경 컬러</label>
             <input type="color" 
                    class="form-control form-control-color mb-2 edit-custom-page-block-slide-background-color" 
-                   name="edit_main_block_slide[${itemIndex}][background_color]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][background_color]" 
                    value="${blockData ? (blockData.background_color || '#007bff') : '#007bff'}">
             <label class="form-label">투명도</label>
             <input type="range" 
                    class="form-range edit-custom-page-block-slide-background-color-alpha" 
-                   name="edit_main_block_slide[${itemIndex}][background_color_alpha]"
+                   name="edit_custom_page_block_slide[${itemIndex}][background_color_alpha]"
                    min="0" 
                    max="100" 
                    value="${blockData ? (blockData.background_color_alpha || 100) : 100}"
-                   onchange="document.getElementById('edit_main_block_slide_${itemIndex}_background_color_alpha_value').textContent = this.value + '%'">
+                   onchange="document.getElementById('edit_custom_page_block_slide_${itemIndex}_background_color_alpha_value').textContent = this.value + '%'">
             <div class="d-flex justify-content-between">
                 <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                <small class="text-muted" id="edit_main_block_slide_${itemIndex}_background_color_alpha_value" style="font-size: 0.7rem;">${blockData ? (blockData.background_color_alpha || 100) : 100}%</small>
+                <small class="text-muted" id="edit_custom_page_block_slide_${itemIndex}_background_color_alpha_value" style="font-size: 0.7rem;">${blockData ? (blockData.background_color_alpha || 100) : 100}%</small>
                 <small class="text-muted" style="font-size: 0.7rem;">100%</small>
             </div>
         </div>
-        <div class="mb-3 edit-custom-page-block-slide-gradient-container" id="edit_main_block_slide_${itemIndex}_gradient_container" style="${!blockData || blockData.background_type !== 'gradient' ? 'display: none;' : ''}">
+        <div class="mb-3 edit-custom-page-block-slide-gradient-container" id="edit_custom_page_block_slide_${itemIndex}_gradient_container" style="${!blockData || blockData.background_type !== 'gradient' ? 'display: none;' : ''}">
             <label class="form-label">그라데이션 설정</label>
             <div class="d-flex align-items-center gap-2 mb-2">
                 <div id="edit_custom_page_block_slide_${itemIndex}_gradient_preview" 
@@ -5414,17 +5414,17 @@ function addEditMainBlockSlideItem(blockData = null) {
                 </div>
                 <input type="hidden" 
                        class="edit-custom-page-block-slide-background-gradient-start" 
-                       name="edit_main_block_slide[${itemIndex}][background_gradient_start]" 
+                       name="edit_custom_page_block_slide[${itemIndex}][background_gradient_start]" 
                        id="edit_custom_page_block_slide_${itemIndex}_gradient_start"
                        value="${blockData ? (blockData.background_gradient_start || '#ffffff') : '#ffffff'}">
                 <input type="hidden" 
                        class="edit-custom-page-block-slide-background-gradient-end" 
-                       name="edit_main_block_slide[${itemIndex}][background_gradient_end]" 
+                       name="edit_custom_page_block_slide[${itemIndex}][background_gradient_end]" 
                        id="edit_custom_page_block_slide_${itemIndex}_gradient_end"
                        value="${blockData ? (blockData.background_gradient_end || '#000000') : '#000000'}">
                 <input type="hidden" 
                        class="edit-custom-page-block-slide-background-gradient-angle" 
-                       name="edit_main_block_slide[${itemIndex}][background_gradient_angle]" 
+                       name="edit_custom_page_block_slide[${itemIndex}][background_gradient_angle]" 
                        id="edit_custom_page_block_slide_${itemIndex}_gradient_angle"
                        value="${blockData ? (blockData.background_gradient_angle || 90) : 90}">
             </div>
@@ -5434,40 +5434,40 @@ function addEditMainBlockSlideItem(blockData = null) {
             <label class="form-label">폰트 컬러</label>
             <input type="color" 
                    class="form-control form-control-color edit-custom-page-block-slide-font-color" 
-                   name="edit_main_block_slide[${itemIndex}][font_color]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][font_color]" 
                    value="${blockData ? (blockData.font_color || '#ffffff') : '#ffffff'}">
         </div>
-        <div class="mb-3 edit-custom-page-block-slide-image-container" id="edit_main_block_slide_${itemIndex}_image_container" style="${!blockData || blockData.background_type !== 'image' ? 'display: none;' : ''}">
+        <div class="mb-3 edit-custom-page-block-slide-image-container" id="edit_custom_page_block_slide_${itemIndex}_image_container" style="${!blockData || blockData.background_type !== 'image' ? 'display: none;' : ''}">
             <label class="form-label">배경 이미지</label>
             <div class="d-flex align-items-center gap-2">
                 <button type="button" 
                         class="btn btn-outline-secondary" 
-                        onclick="document.getElementById('edit_main_block_slide_${itemIndex}_image_input').click()">
+                        onclick="document.getElementById('edit_custom_page_block_slide_${itemIndex}_image_input').click()">
                     <i class="bi bi-image"></i> 이미지 선택
                 </button>
                 <input type="file" 
-                       id="edit_main_block_slide_${itemIndex}_image_input" 
-                       name="edit_main_block_slide[${itemIndex}][background_image]" 
+                       id="edit_custom_page_block_slide_${itemIndex}_image_input" 
+                       name="edit_custom_page_block_slide[${itemIndex}][background_image]" 
                        accept="image/*" 
                        style="display: none;"
-                       onchange="handleEditMainBlockSlideImageChange(${itemIndex}, this)">
-                <input type="hidden" class="edit-custom-page-block-slide-background-image-url" name="edit_main_block_slide[${itemIndex}][background_image_url]" id="edit_main_block_slide_${itemIndex}_background_image_url" value="${blockData && blockData.background_image_url ? blockData.background_image_url : ''}">
-                <div class="edit-custom-page-block-slide-image-preview" id="edit_main_block_slide_${itemIndex}_image_preview" style="${blockData && blockData.background_image_url ? '' : 'display: none;'}">
-                    <img id="edit_main_block_slide_${itemIndex}_image_preview_img" src="${blockData && blockData.background_image_url ? blockData.background_image_url : ''}" alt="미리보기" style="max-width: 100px; max-height: 100px; object-fit: cover;">
-                    <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeEditMainBlockSlideImage(${itemIndex})">삭제</button>
+                       onchange="handleEditCustomPageBlockSlideImageChange(${itemIndex}, this)">
+                <input type="hidden" class="edit-custom-page-block-slide-background-image-url" name="edit_custom_page_block_slide[${itemIndex}][background_image_url]" id="edit_custom_page_block_slide_${itemIndex}_background_image_url" value="${blockData && blockData.background_image_url ? blockData.background_image_url : ''}">
+                <div class="edit-custom-page-block-slide-image-preview" id="edit_custom_page_block_slide_${itemIndex}_image_preview" style="${blockData && blockData.background_image_url ? '' : 'display: none;'}">
+                    <img id="edit_custom_page_block_slide_${itemIndex}_image_preview_img" src="${blockData && blockData.background_image_url ? blockData.background_image_url : ''}" alt="미리보기" style="max-width: 100px; max-height: 100px; object-fit: cover;">
+                    <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeEditCustomPageBlockSlideImage(${itemIndex})">삭제</button>
                 </div>
             </div>
             <label class="form-label">투명도</label>
             <input type="range" 
                    class="form-range edit-custom-page-block-slide-background-image-alpha" 
-                   name="edit_main_block_slide[${itemIndex}][background_image_alpha]"
+                   name="edit_custom_page_block_slide[${itemIndex}][background_image_alpha]"
                    min="0" 
                    max="100" 
                    value="${blockData ? (blockData.background_image_alpha || 100) : 100}"
-                   onchange="document.getElementById('edit_main_block_slide_${itemIndex}_background_image_alpha_value').textContent = this.value + '%'">
+                   onchange="document.getElementById('edit_custom_page_block_slide_${itemIndex}_background_image_alpha_value').textContent = this.value + '%'">
             <div class="d-flex justify-content-between">
                 <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                <small class="text-muted" id="edit_main_block_slide_${itemIndex}_background_image_alpha_value" style="font-size: 0.7rem;">${blockData ? (blockData.background_image_alpha || 100) : 100}%</small>
+                <small class="text-muted" id="edit_custom_page_block_slide_${itemIndex}_background_image_alpha_value" style="font-size: 0.7rem;">${blockData ? (blockData.background_image_alpha || 100) : 100}%</small>
                 <small class="text-muted" style="font-size: 0.7rem;">100%</small>
             </div>
         </div>
@@ -5475,7 +5475,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <label class="form-label">상단 여백 (px)</label>
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-padding-top" 
-                   name="edit_main_block_slide[${itemIndex}][padding_top]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][padding_top]" 
                    value="${blockData ? (blockData.padding_top || '20') : '20'}"
                    min="0"
                    max="200"
@@ -5487,7 +5487,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <label class="form-label">하단 여백 (px)</label>
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-padding-bottom" 
-                   name="edit_main_block_slide[${itemIndex}][padding_bottom]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][padding_bottom]" 
                    value="${blockData && blockData.padding_bottom !== undefined ? blockData.padding_bottom : (blockData && blockData.padding_top !== undefined ? blockData.padding_top : '20')}"
                    min="0"
                    max="200"
@@ -5499,7 +5499,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <label class="form-label">좌측 여백 (px)</label>
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-padding-left" 
-                   name="edit_main_block_slide[${itemIndex}][padding_left]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][padding_left]" 
                    value="${blockData ? (blockData.padding_left || '20') : '20'}"
                    min="0"
                    max="200"
@@ -5511,7 +5511,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <label class="form-label">우측 여백 (px)</label>
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-padding-right" 
-                   name="edit_main_block_slide[${itemIndex}][padding_right]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][padding_right]" 
                    value="${blockData && blockData.padding_right !== undefined ? blockData.padding_right : (blockData && blockData.padding_left !== undefined ? blockData.padding_left : '20')}"
                    min="0"
                    max="200"
@@ -5523,7 +5523,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <label class="form-label">제목-내용 여백 (px)</label>
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-title-content-gap" 
-                   name="edit_main_block_slide[${itemIndex}][title_content_gap]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][title_content_gap]" 
                    value="${blockData ? (blockData.title_content_gap || '8') : '8'}"
                    min="0"
                    max="100"
@@ -5544,7 +5544,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <label class="form-label">버튼 상단 여백 (px)</label>
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-button-top-margin" 
-                   name="edit_main_block_slide[${itemIndex}][button_top_margin]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][button_top_margin]" 
                    value="${blockData ? (blockData.button_top_margin || '12') : '12'}"
                    min="0"
                    max="100"
@@ -5558,7 +5558,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             </label>
             <input type="url" 
                    class="form-control edit-custom-page-block-slide-link" 
-                   name="edit_main_block_slide[${itemIndex}][link]" 
+                   name="edit_custom_page_block_slide[${itemIndex}][link]" 
                    placeholder="https://example.com"
                    value="${blockData ? (blockData.link || '') : ''}">
         </div>
@@ -5566,10 +5566,10 @@ function addEditMainBlockSlideItem(blockData = null) {
             <div class="form-check">
                 <input class="form-check-input edit-custom-page-block-slide-open-new-tab" 
                        type="checkbox" 
-                       name="edit_main_block_slide[${itemIndex}][open_new_tab]"
-                       id="edit_main_block_slide_${itemIndex}_open_new_tab"
+                       name="edit_custom_page_block_slide[${itemIndex}][open_new_tab]"
+                       id="edit_custom_page_block_slide_${itemIndex}_open_new_tab"
                        ${blockData && blockData.open_new_tab ? 'checked' : ''}>
-                <label class="form-check-label" for="edit_main_block_slide_${itemIndex}_open_new_tab">
+                <label class="form-check-label" for="edit_custom_page_block_slide_${itemIndex}_open_new_tab">
                     새창에서 열기
                 </label>
             </div>
@@ -5633,7 +5633,7 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                     <label class="form-label">버튼 텍스트</label>
                     <input type="text" 
                            class="form-control edit-custom-page-block-slide-button-text" 
-                           name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][text]" 
+                           name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][text]" 
                            placeholder="버튼 텍스트를 입력하세요"
                            value="${buttonData ? (buttonData.text || '') : ''}">
                 </div>
@@ -5641,7 +5641,7 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                     <label class="form-label">버튼 링크</label>
                     <input type="url" 
                            class="form-control edit-custom-page-block-slide-button-link" 
-                           name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][link]" 
+                           name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][link]" 
                            placeholder="https://example.com"
                            value="${buttonData ? (buttonData.link || '') : ''}">
                 </div>
@@ -5649,7 +5649,7 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                     <div class="form-check">
                         <input class="form-check-input edit-custom-page-block-slide-button-open-new-tab" 
                                type="checkbox" 
-                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][open_new_tab]" 
+                               name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][open_new_tab]" 
                                id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_open_new_tab"
                                ${buttonData && buttonData.open_new_tab ? 'checked' : ''}>
                         <label class="form-check-label" for="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_open_new_tab">
@@ -5660,7 +5660,7 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                 <div class="mb-3">
                     <label class="form-label">버튼 배경 타입</label>
                     <select class="form-select edit-custom-page-block-slide-button-background-type" 
-                            name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][background_type]"
+                            name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][background_type]"
                             onchange="handleButtonBackgroundTypeChange(this)">
                         <option value="color" ${buttonData && buttonData.background_type === 'gradient' ? '' : 'selected'}>컬러</option>
                         <option value="gradient" ${buttonData && buttonData.background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
@@ -5671,14 +5671,14 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                         <label class="form-label">버튼 배경 컬러</label>
                         <input type="color" 
                                class="form-control form-control-color edit-custom-page-block-slide-button-background-color" 
-                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][background_color]" 
+                               name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][background_color]" 
                                value="${buttonData ? (buttonData.background_color || '#007bff') : '#007bff'}">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">버튼 텍스트 컬러</label>
                         <input type="color" 
                                class="form-control form-control-color edit-custom-page-block-slide-button-text-color" 
-                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][text_color]" 
+                               name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][text_color]" 
                                value="${buttonData ? (buttonData.text_color || '#ffffff') : '#ffffff'}">
                     </div>
                 </div>
@@ -5695,27 +5695,27 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                             <input type="hidden" 
                                    class="edit-custom-page-block-slide-button-gradient-start" 
                                    id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_gradient_start"
-                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_start]" 
+                                   name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_start]" 
                                    value="${buttonData ? (buttonData.background_gradient_start || '#007bff') : '#007bff'}">
                             <input type="hidden" 
                                    class="edit-custom-page-block-slide-button-gradient-end" 
                                    id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_gradient_end"
-                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_end]" 
+                                   name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_end]" 
                                    value="${buttonData ? (buttonData.background_gradient_end || '#0056b3') : '#0056b3'}">
                             <input type="hidden" 
                                    class="edit-custom-page-block-slide-button-gradient-angle" 
                                    id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_gradient_angle"
-                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_angle]" 
+                                   name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][background_gradient_angle]" 
                                    value="${buttonData ? (buttonData.background_gradient_angle || '90') : '90'}">
                         </div>
                         <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">투명도</label>
+                    <label class="form-label">버튼 배경 투명도</label>
                     <input type="range" 
                            class="form-range edit-custom-page-block-slide-button-opacity" 
-                           name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][opacity]" 
+                           name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][opacity]" 
                            id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_opacity"
                            value="${buttonData ? (Math.round((buttonData.opacity || 1.0) * 100)) : '100'}" 
                            min="0" 
@@ -5732,14 +5732,14 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                         <label class="form-label">버튼 테두리 컬러</label>
                         <input type="color" 
                                class="form-control form-control-color edit-custom-page-block-slide-button-border-color" 
-                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][border_color]" 
+                               name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][border_color]" 
                                value="${buttonData ? (buttonData.border_color || '#007bff') : '#007bff'}">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">버튼 테두리 두께 (px)</label>
                         <input type="number" 
                                class="form-control edit-custom-page-block-slide-button-border-width" 
-                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][border_width]" 
+                               name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][border_width]" 
                                value="${buttonData ? (buttonData.border_width || '2') : '2'}" 
                                min="0" 
                                max="10" 
@@ -5749,7 +5749,7 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                 <div class="mb-3">
                     <label class="form-label">호버 배경 타입</label>
                     <select class="form-select edit-custom-page-block-slide-button-hover-background-type" 
-                            name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_type]"
+                            name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_type]"
                             onchange="handleButtonHoverBackgroundTypeChange(this)">
                         <option value="color" ${buttonData && buttonData.hover_background_type === 'gradient' ? '' : 'selected'}>컬러</option>
                         <option value="gradient" ${buttonData && buttonData.hover_background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
@@ -5760,21 +5760,21 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                         <label class="form-label">호버 배경 컬러</label>
                         <input type="color" 
                                class="form-control form-control-color edit-custom-page-block-slide-button-hover-background-color" 
-                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_color]" 
+                               name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_color]" 
                                value="${buttonData ? (buttonData.hover_background_color || '#0056b3') : '#0056b3'}">
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">호버 텍스트 컬러</label>
                         <input type="color" 
                                class="form-control form-control-color edit-custom-page-block-slide-button-hover-text-color" 
-                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_text_color]" 
+                               name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_text_color]" 
                                value="${buttonData ? (buttonData.hover_text_color || '#ffffff') : '#ffffff'}">
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">호버 테두리 컬러</label>
                         <input type="color" 
                                class="form-control form-control-color edit-custom-page-block-slide-button-hover-border-color" 
-                               name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_border_color]" 
+                               name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_border_color]" 
                                value="${buttonData ? (buttonData.hover_border_color || '#0056b3') : '#0056b3'}">
                     </div>
                 </div>
@@ -5791,17 +5791,17 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                             <input type="hidden" 
                                    class="edit-custom-page-block-slide-button-hover-gradient-start" 
                                    id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_start"
-                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_start]" 
+                                   name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_start]" 
                                    value="${buttonData ? (buttonData.hover_background_gradient_start || '#0056b3') : '#0056b3'}">
                             <input type="hidden" 
                                    class="edit-custom-page-block-slide-button-hover-gradient-end" 
                                    id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_end"
-                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_end]" 
+                                   name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_end]" 
                                    value="${buttonData ? (buttonData.hover_background_gradient_end || '#004085') : '#004085'}">
                             <input type="hidden" 
                                    class="edit-custom-page-block-slide-button-hover-gradient-angle" 
                                    id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_gradient_angle"
-                                   name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_angle]" 
+                                   name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_background_gradient_angle]" 
                                    value="${buttonData ? (buttonData.hover_background_gradient_angle || '90') : '90'}">
                         </div>
                         <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
@@ -5811,7 +5811,7 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                     <label class="form-label">호버 투명도</label>
                     <input type="range" 
                            class="form-range edit-custom-page-block-slide-button-hover-opacity" 
-                           name="edit_main_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_opacity]" 
+                           name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_opacity]" 
                            id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity"
                            value="${buttonData ? (Math.round((buttonData.hover_opacity || 1.0) * 100)) : '100'}" 
                            min="0" 
@@ -5869,9 +5869,9 @@ function toggleEditMainBlockSlideItem(itemIndex) {
 
 function handleEditCustomPageBlockSlideBackgroundTypeChange(itemIndex) {
     const backgroundType = document.querySelector(`#edit_custom_page_block_slide_item_${itemIndex} .edit-custom-page-block-slide-background-type`)?.value;
-    const colorContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_color_container`);
-    const gradientContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_gradient_container`);
-    const imageContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_image_container`);
+    const colorContainer = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_color_container`);
+    const gradientContainer = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_gradient_container`);
+    const imageContainer = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_image_container`);
     
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
@@ -5893,13 +5893,13 @@ function handleEditCustomPageBlockSlideBackgroundTypeChange(itemIndex) {
     }
 }
 
-function handleEditMainBlockSlideImageChange(itemIndex, input) {
+function handleEditCustomPageBlockSlideImageChange(itemIndex, input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            const preview = document.getElementById(`edit_main_block_slide_${itemIndex}_image_preview`);
-            const previewImg = document.getElementById(`edit_main_block_slide_${itemIndex}_image_preview_img`);
-            const imageUrl = document.getElementById(`edit_main_block_slide_${itemIndex}_background_image_url`);
+            const preview = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_image_preview`);
+            const previewImg = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_image_preview_img`);
+            const imageUrl = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_background_image_url`);
             if (preview && previewImg && imageUrl) {
                 previewImg.src = e.target.result;
                 preview.style.display = 'block';
@@ -5910,10 +5910,10 @@ function handleEditMainBlockSlideImageChange(itemIndex, input) {
     }
 }
 
-function removeEditMainBlockSlideImage(itemIndex) {
-    const input = document.getElementById(`edit_main_block_slide_${itemIndex}_image_input`);
-    const preview = document.getElementById(`edit_main_block_slide_${itemIndex}_image_preview`);
-    const imageUrl = document.getElementById(`edit_main_block_slide_${itemIndex}_background_image_url`);
+function removeEditCustomPageBlockSlideImage(itemIndex) {
+    const input = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_image_input`);
+    const preview = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_image_preview`);
+    const imageUrl = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_background_image_url`);
     if (input) input.value = '';
     if (preview) preview.style.display = 'none';
     if (imageUrl) imageUrl.value = '';
@@ -6192,7 +6192,7 @@ function addBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">투명도</label>
+                    <label class="form-label">버튼 배경 투명도</label>
                     <input type="range" 
                            class="form-range block-button-opacity" 
                            name="block_buttons[${blockButtonIndex}][opacity]" 
@@ -6467,7 +6467,7 @@ function addEditCustomPageBlockButton(buttonData = null) {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">투명도</label>
+                    <label class="form-label">버튼 배경 투명도</label>
                     <input type="range" 
                            class="form-range edit-custom-page-block-button-opacity" 
                            name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][opacity]" 
