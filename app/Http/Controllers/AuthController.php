@@ -54,7 +54,8 @@ class AuthController extends Controller
                 $request->session()->regenerate();
                 
                 // 관리자 페이지로 리다이렉트
-                return redirect($site->getHomeUrl() . '/admin/dashboard')
+                $homeUrl = rtrim($site->getHomeUrl(), '/');
+                return redirect($homeUrl . '/admin/dashboard')
                     ->with('info', '테스트 어드민으로 로그인했습니다. 모든 변경 사항은 저장되지 않습니다.');
             }
         }
