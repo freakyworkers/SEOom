@@ -5724,14 +5724,14 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                            class="form-range edit-custom-page-block-slide-button-opacity" 
                            name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][opacity]" 
                            id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_opacity"
-                           value="${buttonData ? (Math.round((buttonData.opacity || 1.0) * 100)) : '100'}" 
+                           value="${buttonData && buttonData.opacity !== undefined ? Math.round(buttonData.opacity * 100) : '100'}" 
                            min="0" 
                            max="100" 
                            step="1"
                            onchange="document.getElementById('edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_opacity_value').textContent = this.value + '%'">
                     <div class="d-flex justify-content-between">
                         <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_opacity_value" style="font-size: 0.7rem;">${buttonData ? (Math.round((buttonData.opacity || 1.0) * 100)) : '100'}%</small>
+                        <small class="text-muted" id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_opacity_value" style="font-size: 0.7rem;">${buttonData && buttonData.opacity !== undefined ? Math.round(buttonData.opacity * 100) : '100'}%</small>
                     </div>
                 </div>
                 <div class="row">
@@ -5820,14 +5820,14 @@ function addEditCustomPageBlockSlideButton(itemIndex, buttonData = null) {
                            class="form-range edit-custom-page-block-slide-button-hover-opacity" 
                            name="edit_custom_page_block_slide[${itemIndex}][buttons][${buttonIndex}][hover_opacity]" 
                            id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity"
-                           value="${buttonData ? (Math.round((buttonData.hover_opacity || 1.0) * 100)) : '100'}" 
+                           value="${buttonData && buttonData.hover_opacity !== undefined ? Math.round(buttonData.hover_opacity * 100) : '100'}" 
                            min="0" 
                            max="100" 
                            step="1"
                            onchange="document.getElementById('edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value').textContent = this.value + '%'">
                     <div class="d-flex justify-content-between">
                         <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value" style="font-size: 0.7rem;">${buttonData ? (Math.round((buttonData.hover_opacity || 1.0) * 100)) : '100'}%</small>
+                        <small class="text-muted" id="edit_custom_page_block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value" style="font-size: 0.7rem;">${buttonData && buttonData.hover_opacity !== undefined ? Math.round(buttonData.hover_opacity * 100) : '100'}%</small>
                     </div>
                 </div>
             </div>
@@ -6479,14 +6479,14 @@ function addEditCustomPageBlockButton(buttonData = null) {
                            class="form-range edit-custom-page-block-button-opacity" 
                            name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][opacity]" 
                            id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_opacity"
-                           value="${buttonData ? (Math.round((buttonData.opacity || 1.0) * 100)) : '100'}" 
+                           value="${buttonData && buttonData.opacity !== undefined ? Math.round(buttonData.opacity * 100) : '100'}" 
                            min="0" 
                            max="100" 
                            step="1"
                            onchange="document.getElementById('edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_opacity_value').textContent = this.value + '%'">
                     <div class="d-flex justify-content-between">
                         <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_opacity_value" style="font-size: 0.7rem;">${buttonData ? (Math.round((buttonData.opacity || 1.0) * 100)) : '100'}%</small>
+                        <small class="text-muted" id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_opacity_value" style="font-size: 0.7rem;">${buttonData && buttonData.opacity !== undefined ? Math.round(buttonData.opacity * 100) : '100'}%</small>
                     </div>
                 </div>
                 <div class="row">
@@ -6575,14 +6575,14 @@ function addEditCustomPageBlockButton(buttonData = null) {
                            class="form-range edit-custom-page-block-button-hover-opacity" 
                            name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][hover_opacity]" 
                            id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_opacity"
-                           value="${buttonData ? (Math.round((buttonData.hover_opacity || 1.0) * 100)) : '100'}" 
+                           value="${buttonData && buttonData.hover_opacity !== undefined ? Math.round(buttonData.hover_opacity * 100) : '100'}" 
                            min="0" 
                            max="100" 
                            step="1"
                            onchange="document.getElementById('edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_opacity_value').textContent = this.value + '%'">
                     <div class="d-flex justify-content-between">
                         <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_opacity_value" style="font-size: 0.7rem;">${buttonData ? (Math.round((buttonData.hover_opacity || 1.0) * 100)) : '100'}%</small>
+                        <small class="text-muted" id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_opacity_value" style="font-size: 0.7rem;">${buttonData && buttonData.hover_opacity !== undefined ? Math.round(buttonData.hover_opacity * 100) : '100'}%</small>
                     </div>
                 </div>
             </div>
