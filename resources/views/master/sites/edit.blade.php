@@ -104,6 +104,99 @@
 
             @include('master.sites.edit-features-section')
 
+            {{-- 관리자 계정 설정 섹션 --}}
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="bi bi-person-gear me-2"></i>관리자 계정 설정</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="login_type" class="form-label">로그인 타입</label>
+                            <select class="form-select @error('login_type') is-invalid @enderror" 
+                                    id="login_type" 
+                                    name="login_type">
+                                <option value="email" {{ old('login_type', $site->login_type ?? 'email') === 'email' ? 'selected' : '' }}>이메일</option>
+                                <option value="username" {{ old('login_type', $site->login_type ?? 'email') === 'username' ? 'selected' : '' }}>사용자명</option>
+                            </select>
+                            <small class="form-text text-muted">사이트 로그인 시 사용할 계정 타입을 선택합니다.</small>
+                            @error('login_type')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h6 class="mb-3"><i class="bi bi-shield-check me-2"></i>테스트 관리자 계정</h6>
+                    <p class="text-muted small mb-3">사이트 테스트를 위한 관리자 계정 정보입니다. 실제 로그인에는 사용되지 않으며, 관리 목적으로만 저장됩니다.</p>
+                    
+                    @php
+                        $testAdmin = $site->test_admin ?? [];
+                    @endphp
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="test_admin_id" class="form-label">관리자 ID</label>
+                            <input type="text" 
+                                   class="form-control @error('test_admin.id') is-invalid @enderror" 
+                                   id="test_admin_id" 
+                                   name="test_admin[id]" 
+                                   value="{{ old('test_admin.id', $testAdmin['id'] ?? '') }}"
+                                   placeholder="admin">
+                            @error('test_admin.id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label for="test_admin_password" class="form-label">관리자 비밀번호</label>
+                            <div class="input-group">
+                                <input type="password" 
+                                       class="form-control @error('test_admin.password') is-invalid @enderror" 
+                                       id="test_admin_password" 
+                                       name="test_admin[password]" 
+                                       value="{{ old('test_admin.password', $testAdmin['password'] ?? '') }}"
+                                       placeholder="••••••••">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('test_admin_password')">
+                                    <i class="bi bi-eye" id="test_admin_password_icon"></i>
+                                </button>
+                            </div>
+                            @error('test_admin.password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label for="test_admin_email" class="form-label">관리자 이메일</label>
+                            <input type="email" 
+                                   class="form-control @error('test_admin.email') is-invalid @enderror" 
+                                   id="test_admin_email" 
+                                   name="test_admin[email]" 
+                                   value="{{ old('test_admin.email', $testAdmin['email'] ?? '') }}"
+                                   placeholder="admin@example.com">
+                            @error('test_admin.email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="test_admin_note" class="form-label">메모</label>
+                            <textarea class="form-control @error('test_admin.note') is-invalid @enderror" 
+                                      id="test_admin_note" 
+                                      name="test_admin[note]" 
+                                      rows="2"
+                                      placeholder="관리자 계정 관련 메모를 입력하세요.">{{ old('test_admin.note', $testAdmin['note'] ?? '') }}</textarea>
+                            @error('test_admin.note')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="d-flex justify-content-end mt-4">
                 <a href="{{ route('master.sites.show', $site->id) }}" class="btn btn-secondary me-2">
                     <i class="bi bi-x-circle me-1"></i>취소
@@ -490,6 +583,22 @@ function selectPlanCustomPageWidgetTypes() {
 }
 function deselectAllCustomPageWidgetTypes() {
     document.querySelectorAll('input[name="custom_custom_page_widget_types[]"]').forEach(cb => cb.checked = false);
+}
+
+// 비밀번호 표시/숨기기 토글
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(inputId + '_icon');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    }
 }
 </script>
 @endsection

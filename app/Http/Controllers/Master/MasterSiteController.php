@@ -286,6 +286,23 @@ class MasterSiteController extends Controller
 
         $site->update($request->only(['name', 'slug', 'domain', 'plan', 'status']));
 
+        // 로그인 타입 저장
+        if ($request->has('login_type')) {
+            $site->login_type = $request->input('login_type');
+            $site->save();
+        }
+
+        // 테스트 관리자 계정 저장
+        if ($request->has('test_admin')) {
+            $testAdmin = $request->input('test_admin');
+            // 빈 값 필터링
+            $filteredTestAdmin = array_filter($testAdmin, function($value) {
+                return $value !== null && $value !== '';
+            });
+            $site->test_admin = !empty($filteredTestAdmin) ? $filteredTestAdmin : null;
+            $site->save();
+        }
+
         // 사이트별 커스텀 features 저장
         // JavaScript로 모든 체크박스 값을 전송하므로, 항상 request에서 값을 가져옴
         // 빈 값('')이 포함된 배열은 필터링
