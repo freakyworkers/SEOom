@@ -412,9 +412,9 @@ class SampleSitesSeeder extends Seeder
 
     private function createLandingMenus(Site $site): void
     {
-        Menu::create(['site_id' => $site->id, 'title' => '홈', 'url' => '/', 'order' => 1, 'is_active' => true]);
-        Menu::create(['site_id' => $site->id, 'title' => '서비스', 'url' => '#services', 'order' => 2, 'is_active' => true]);
-        Menu::create(['site_id' => $site->id, 'title' => '문의', 'url' => '#contact', 'order' => 3, 'is_active' => true]);
+        Menu::create(['site_id' => $site->id, 'name' => '홈', 'link_type' => 'external_link', 'link_target' => '/', 'order' => 1]);
+        Menu::create(['site_id' => $site->id, 'name' => '서비스', 'link_type' => 'external_link', 'link_target' => '#services', 'order' => 2]);
+        Menu::create(['site_id' => $site->id, 'name' => '문의', 'link_type' => 'external_link', 'link_target' => '#contact', 'order' => 3]);
     }
 
     // ========================================
