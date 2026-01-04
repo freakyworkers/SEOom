@@ -57,6 +57,10 @@ Route::get('/', function (Request $request) {
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [\App\Http\Controllers\RobotsController::class, 'index'])->name('robots');
 
+// Store Routes (스토어) - 마스터 사이트용
+Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
+Route::get('/store/plugins', [\App\Http\Controllers\StoreController::class, 'plugins'])->name('store.plugins');
+
 // 마스터 사이트 인증 라우트 (루트 경로)
 Route::middleware('web')->group(function () {
     // 마스터 사이트가 있으면 루트 경로에 인증 라우트 추가
@@ -120,10 +124,6 @@ Route::middleware('web')->group(function () {
         }
         return app(\App\Http\Controllers\AuthController::class)->logout($request, $masterSite);
     })->middleware('auth')->name('master.site.logout');
-        
-    // Store Routes (스토어)
-    Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
-    Route::get('/store/plugins', [\App\Http\Controllers\StoreController::class, 'plugins'])->name('store.plugins');
     
     // Payment Routes (마스터 사이트용)
     Route::get('/plans/{plan}/subscribe', [PaymentController::class, 'subscribe'])->name('payment.subscribe');
