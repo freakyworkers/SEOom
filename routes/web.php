@@ -61,8 +61,8 @@ Route::get('/robots.txt', [\App\Http\Controllers\RobotsController::class, 'index
 Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
 Route::get('/store/plugins', [\App\Http\Controllers\StoreController::class, 'plugins'])->name('store.plugins');
 
-// Master Console SSO Token Generation (from master site) - 반드시 다른 라우트보다 먼저 정의
-Route::post('/master-console-sso-token', function (Request $request) {
+// Master Console SSO Token Generation (from master site) - API 경로로 정의
+Route::post('/api/master-console-sso-token', function (Request $request) {
     return app(\App\Http\Controllers\Master\MasterAuthController::class)->generateSsoToken();
 })->middleware(['web', 'auth'])->name('master.console.sso-token');
 
