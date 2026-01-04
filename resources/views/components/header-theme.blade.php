@@ -181,8 +181,8 @@
                                 <i class="bi bi-shop me-1"></i>스토어
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
-                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index') }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins') }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
                             </ul>
                         </li>
                     @endif
@@ -276,8 +276,8 @@
                                 <i class="bi bi-shop me-1"></i>스토어
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
-                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index') }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins') }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
                             </ul>
                         </li>
                     @endif
@@ -372,8 +372,8 @@
                                 <i class="bi bi-shop me-1"></i>스토어
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
-                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index') }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins') }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
                             </ul>
                         </li>
                     @endif
@@ -736,8 +736,8 @@
                                 <i class="bi bi-shop me-1"></i>스토어
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
-                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins', ['site' => $site->slug ?? 'default']) }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.index') ? 'active' : '' }}" href="{{ route('store.index') }}"><i class="bi bi-credit-card me-2"></i>플랜/서버</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('store.plugins') ? 'active' : '' }}" href="{{ route('store.plugins') }}"><i class="bi bi-puzzle me-2"></i>플러그인</a></li>
                             </ul>
                         </li>
                     @endif
