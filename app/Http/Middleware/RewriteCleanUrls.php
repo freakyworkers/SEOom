@@ -23,6 +23,12 @@ class RewriteCleanUrls
         'horizon/',
         'telescope/',
         'auth/',  // 소셜 로그인 콜백
+        'store/',  // 스토어 페이지 (마스터 사이트 전용)
+        'login',
+        'register',
+        'logout',
+        'plans/',
+        'payment/',
     ];
     
     /**
