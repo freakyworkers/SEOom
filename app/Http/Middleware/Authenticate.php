@@ -25,10 +25,19 @@ class Authenticate extends Middleware
             // 도메인/서브도메인으로 접근한 경우 사이트 찾기
             if (!$site) {
                 $host = $request->getHost();
+                $masterDomain = config('app.master_domain', 'seoomweb.com');
+                
+                // 커스텀 도메인으로 찾기
                 $site = \App\Models\Site::where('domain', $host)
-                    ->orWhere('domain', 'www.' . $host)
-                    ->orWhere('subdomain', explode('.', $host)[0])
+                    ->orWhere('domain', str_replace('www.', '', $host))
                     ->first();
+                
+                // 서브도메인으로 찾기 (예: landing.seoomweb.com -> slug: landing)
+                if (!$site && str_ends_with($host, '.' . $masterDomain)) {
+                    $subdomain = str_replace('.' . $masterDomain, '', $host);
+                    $subdomain = str_replace('www.', '', $subdomain);
+                    $site = \App\Models\Site::where('slug', $subdomain)->first();
+                }
             }
             
             $siteId = is_object($site) ? $site->id : null;
