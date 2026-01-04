@@ -116,8 +116,11 @@
         } else if ($backgroundType === 'image' && $backgroundImageUrl) {
             $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
         }
+        
+        // 배경색이 없음(none)인 경우 그림자 제거
+        $blockShadowClass = ($backgroundType === 'none') ? 'no-shadow-widget' : $shadowClass;
     @endphp
-    <div class="mb-3 {{ $shadowClass }}" style="{{ $blockStyle }}">
+    <div class="mb-3 {{ $blockShadowClass }}" style="{{ $blockStyle }}">
         @if($link && !$showButton)
             <a href="{{ $link }}" 
                style="color: {{ $fontColor }}; text-decoration: none; display: block;"

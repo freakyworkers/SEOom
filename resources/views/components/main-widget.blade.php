@@ -198,8 +198,11 @@
         
         // 위젯 자체의 하단 마진 제거
         $blockMarginBottom = 'mb-0';
+        
+        // 배경색이 없음(none)인 경우 그림자 제거
+        $blockShadowClass = ($backgroundType === 'none') ? 'no-shadow-widget' : $shadowClass;
     @endphp
-    <div class="{{ $blockMarginBottom }} {{ $shadowClass }} {{ $animationClass }}" style="{{ $blockStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
+    <div class="{{ $blockMarginBottom }} {{ $blockShadowClass }} {{ $animationClass }}" style="{{ $blockStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
         @if($link && !$hasButtons)
             <a href="{{ $link }}" 
                style="color: {{ $fontColor }}; text-decoration: none; display: block;"

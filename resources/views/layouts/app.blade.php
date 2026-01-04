@@ -688,12 +688,12 @@
             /* 라운드 스타일 - 위젯, 배너, 게시판의 최상위 컨테이너에만 라운드 적용 */
             /* 위젯 최상위 컨테이너 - 그림자 클래스와 독립적으로 라운드 적용 */
             .card.mb-3,
-            .card.shadow-sm.mb-3,
+            .card.mb-0,
             .widget-card,
             .main-widget-container,
             .sidebar-widget-container,
-            .mb-3.shadow-sm,
             .mb-3:not(.rounded-0),
+            .mb-0:not(.rounded-0):not(.no-shadow-widget),
             .image-slide-wrapper:not(.rounded-0),
             .block-slide-wrapper:not(.rounded-0) {
                 border-radius: 0.5rem !important;
@@ -717,20 +717,18 @@
             
             /* 게시판 최상위 컨테이너 */
             .board-container,
-            .bg-white.p-3.rounded.shadow-sm,
+            .bg-white.p-3.rounded,
             .post-list-container,
-            .card.bg-white.shadow-sm,
-            .card.shadow-sm,
-            .card.shadow,
+            .card.bg-white,
+            .card:not(.rounded-0),
             .card.mb-4 {
                 border-radius: 0.5rem !important;
             }
             
             /* 게시판 카드 라운드 적용 (더 구체적인 선택자) */
-            .card.bg-white.shadow-sm[style*="border-radius"],
-            .card.bg-white.shadow-sm:not(.rounded-0),
-            .card.shadow-sm:not(.rounded-0),
-            .card.shadow:not(.rounded-0) {
+            .card.bg-white[style*="border-radius"],
+            .card.bg-white:not(.rounded-0),
+            .card:not(.rounded-0) {
                 border-radius: 0.5rem !important;
             }
             
@@ -774,15 +772,24 @@
             .widget-card .table tbody tr,
             .widget-card .table td,
             .widget-card .table th,
-            .card.shadow-sm.mb-3 .nav-tabs,
-            .card.shadow-sm.mb-3 .tab-content,
-            .card.shadow-sm.mb-3 .tab-pane,
-            .card.shadow-sm.mb-3 .list-group,
-            .card.shadow-sm.mb-3 .list-group-item,
-            .card.shadow-sm.mb-3 .table,
-            .card.shadow-sm.mb-3 .table tbody tr,
-            .card.shadow-sm.mb-3 .table td,
-            .card.shadow-sm.mb-3 .table th {
+            .card.mb-3 .nav-tabs,
+            .card.mb-3 .tab-content,
+            .card.mb-3 .tab-pane,
+            .card.mb-3 .list-group,
+            .card.mb-3 .list-group-item,
+            .card.mb-3 .table,
+            .card.mb-3 .table tbody tr,
+            .card.mb-3 .table td,
+            .card.mb-3 .table th,
+            .card.mb-0 .nav-tabs,
+            .card.mb-0 .tab-content,
+            .card.mb-0 .tab-pane,
+            .card.mb-0 .list-group,
+            .card.mb-0 .list-group-item,
+            .card.mb-0 .table,
+            .card.mb-0 .table tbody tr,
+            .card.mb-0 .table td,
+            .card.mb-0 .table th {
                 border-radius: 0 !important;
             }
             
@@ -832,6 +839,11 @@
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
             }
         @endif
+        
+        /* 배경색 없음 위젯은 그림자 제거 */
+        .no-shadow-widget {
+            box-shadow: none !important;
+        }
         
         /* 위젯 애니메이션 스타일 */
         .widget-animate {
