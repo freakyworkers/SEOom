@@ -1776,7 +1776,8 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
     Route::put('/event-application/submissions/{submission}/cancel', [\App\Http\Controllers\EventApplicationController::class, 'cancel'])->name('event-application.cancel');
 
     // Custom Pages (게시판 라우트 이후에 배치)
-    Route::get('/{slug}', [HomeController::class, 'showCustomPage'])->name('custom-pages.show')->where('slug', '[a-zA-Z0-9-_가-힣]+');
+    // master-console-sso-token은 별도 POST 라우트가 있으므로 제외
+    Route::get('/{slug}', [HomeController::class, 'showCustomPage'])->name('custom-pages.show')->where('slug', '(?!master-console-sso-token)[a-zA-Z0-9-_가-힣]+');
 
     // Board Management Routes (Admin only) - edit/update/delete
     Route::middleware('auth')->group(function () {
