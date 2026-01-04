@@ -7,3 +7,4 @@ ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.10
 pause
 
 
+

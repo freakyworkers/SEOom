@@ -1239,7 +1239,7 @@ Route::middleware('web')->group(function () {
 // 서브도메인/커스텀 도메인으로 접근할 때 사용
 Route::middleware(['block.ip', 'verify.site.user'])->group(function () {
     // 어드민 라우트 (서브도메인/커스텀 도메인용)
-    Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::prefix('admin')->middleware(['auth', 'sample.readonly'])->group(function () {
         // Dashboard
         Route::get('/dashboard', function (Request $request) {
             $site = $request->attributes->get('site');
@@ -1799,7 +1799,7 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
     });
 
     // Admin Routes
-    Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::prefix('admin')->middleware(['auth', 'sample.readonly'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         Route::get('/dashboard/chart-data', [AdminController::class, 'getChartData'])->name('admin.dashboard.chart');
         Route::get('/users', [AdminController::class, 'users'])->name('admin.users');

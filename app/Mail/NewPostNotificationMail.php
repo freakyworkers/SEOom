@@ -52,3 +52,4 @@ class NewPostNotificationMail extends Mailable
 
 
 
+

@@ -61,6 +61,7 @@ class Kernel extends HttpKernel
     protected $middlewareAliases = [
         'block.ip' => \App\Http\Middleware\BlockIp::class,
         'verify.site.user' => \App\Http\Middleware\VerifySiteUser::class,
+        'sample.readonly' => \App\Http\Middleware\SampleSiteReadOnly::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,

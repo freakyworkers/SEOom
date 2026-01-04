@@ -568,6 +568,17 @@
                 </div>
             @endif
 
+            {{-- 샘플 사이트 안내 배너 --}}
+            @if(isset($site) && $site->isSample())
+                <div class="alert alert-warning alert-dismissible fade show d-flex align-items-center mb-4" role="alert">
+                    <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                    <div>
+                        <strong>샘플 사이트입니다.</strong> 이 사이트는 미리보기 전용으로, 모든 변경 사항은 저장되지 않습니다.
+                        <a href="{{ route('user-sites.select-plan', ['site' => \App\Models\Site::getMasterSite()?->slug ?? 'master']) }}" class="alert-link">직접 사이트 만들기 →</a>
+                    </div>
+                </div>
+            @endif
+
             @yield('content')
         </main>
     </div>

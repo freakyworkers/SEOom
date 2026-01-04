@@ -19,6 +19,7 @@ class Site extends Model
         'plan',
         'status',
         'is_master_site',
+        'is_sample',
         'created_by',
         'storage_used_mb',
         'storage_limit_mb',
@@ -32,9 +33,18 @@ class Site extends Model
     protected $casts = [
         'status' => 'string',
         'is_master_site' => 'boolean',
+        'is_sample' => 'boolean',
         'nameservers' => 'array',
         'traffic_reset_date' => 'date',
     ];
+
+    /**
+     * Check if this site is a sample site.
+     */
+    public function isSample(): bool
+    {
+        return $this->is_sample === true;
+    }
 
     /**
      * Get the users for the site.

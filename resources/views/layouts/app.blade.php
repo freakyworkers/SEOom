@@ -1254,6 +1254,20 @@
         // 투명헤더이거나 첫 번째 컨테이너가 세로 100% 또는 가로 100%일 때 상단 여백 제거
         $removeTopMargin = ($headerTransparent && $isHomePage) || $firstContainerFullHeight || $firstContainerFullWidth || $customPageFirstFullHeight || $customPageFirstFullWidth;
     @endphp
+    
+    {{-- 샘플 사이트 안내 배너 (상단 고정) --}}
+    @if(isset($site) && $site->isSample())
+        <div class="bg-warning bg-opacity-25 border-bottom border-warning py-2">
+            <div class="container d-flex align-items-center justify-content-center gap-2 text-center flex-wrap">
+                <i class="bi bi-info-circle text-warning"></i>
+                <span><strong>샘플 사이트</strong> - 미리보기 전용입니다.</span>
+                <a href="{{ route('user-sites.select-plan', ['site' => \App\Models\Site::getMasterSite()?->slug ?? 'master']) }}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-plus-circle me-1"></i>직접 만들기
+                </a>
+            </div>
+        </div>
+    @endif
+    
     <main class="container {{ $removeTopMargin ? '' : 'my-4' }} flex-grow-1">
         @if(session('error'))
             @if(str_contains(session('error'), '비밀글'))

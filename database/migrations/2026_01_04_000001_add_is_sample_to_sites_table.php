@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('subscriptions', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->after('site_id')->constrained('users')->onDelete('cascade');
+        Schema::table('sites', function (Blueprint $table) {
+            $table->boolean('is_sample')->default(false)->after('is_master_site');
         });
     }
 
@@ -21,15 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('subscriptions', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->dropColumn('user_id');
+        Schema::table('sites', function (Blueprint $table) {
+            $table->dropColumn('is_sample');
         });
     }
 };
-
-
-
-
-
 
