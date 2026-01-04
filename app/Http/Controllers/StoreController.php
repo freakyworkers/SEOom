@@ -16,6 +16,8 @@ class StoreController extends Controller
      */
     public function index()
     {
+        \Log::info('StoreController@index called');
+        
         // 마스터 사이트 가져오기
         $site = Site::getMasterSite();
         
@@ -25,8 +27,11 @@ class StoreController extends Controller
         }
         
         if (!$site) {
+            \Log::error('StoreController@index: No active site found');
             abort(404, 'No active site found');
         }
+        
+        \Log::info('StoreController@index: Site found', ['site_id' => $site->id, 'slug' => $site->slug]);
 
         // 무료 플랜 가져오기
         $freePlans = Plan::where('is_active', true)
