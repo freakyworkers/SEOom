@@ -128,72 +128,132 @@
 
                     <hr class="my-4">
 
-                    <h6 class="mb-3"><i class="bi bi-shield-check me-2"></i>테스트 관리자 계정</h6>
-                    <p class="text-muted small mb-3">사이트 테스트를 위한 관리자 계정 정보입니다. 실제 로그인에는 사용되지 않으며, 관리 목적으로만 저장됩니다.</p>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0"><i class="bi bi-shield-check me-2"></i>테스트 관리자 계정</h6>
+                    </div>
                     
                     @php
                         $testAdmin = $site->test_admin ?? [];
+                        $hasTestAdmin = !empty($testAdmin) && (!empty($testAdmin['id'] ?? '') || !empty($testAdmin['password'] ?? ''));
                     @endphp
                     
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="test_admin_id" class="form-label">관리자 ID</label>
-                            <input type="text" 
-                                   class="form-control @error('test_admin.id') is-invalid @enderror" 
-                                   id="test_admin_id" 
-                                   name="test_admin[id]" 
-                                   value="{{ old('test_admin.id', $testAdmin['id'] ?? '') }}"
-                                   placeholder="admin">
-                            @error('test_admin.id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label for="test_admin_password" class="form-label">관리자 비밀번호</label>
-                            <div class="input-group">
-                                <input type="password" 
-                                       class="form-control @error('test_admin.password') is-invalid @enderror" 
-                                       id="test_admin_password" 
-                                       name="test_admin[password]" 
-                                       value="{{ old('test_admin.password', $testAdmin['password'] ?? '') }}"
-                                       placeholder="••••••••">
-                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('test_admin_password')">
-                                    <i class="bi bi-eye" id="test_admin_password_icon"></i>
-                                </button>
+                    {{-- 등록된 테스트 관리자가 있는 경우 --}}
+                    @if($hasTestAdmin)
+                        <div id="testAdminDisplay">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <small class="text-muted d-block">관리자 ID</small>
+                                            <strong>{{ $testAdmin['id'] ?? '-' }}</strong>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small class="text-muted d-block">비밀번호</small>
+                                            <span id="passwordDisplay">••••••••</span>
+                                            <button type="button" class="btn btn-sm btn-link p-0 ms-2" onclick="showTestAdminPassword()">
+                                                <i class="bi bi-eye" id="displayPasswordIcon"></i>
+                                            </button>
+                                            <span id="passwordActual" class="d-none">{{ $testAdmin['password'] ?? '' }}</span>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="showTestAdminEditForm()">
+                                                <i class="bi bi-pencil me-1"></i>수정
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearTestAdmin()">
+                                                <i class="bi bi-trash me-1"></i>삭제
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            @error('test_admin.password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            
+                            {{-- 숨겨진 입력 필드 (폼 제출용) --}}
+                            <input type="hidden" name="test_admin[id]" id="hidden_test_admin_id" value="{{ $testAdmin['id'] ?? '' }}">
+                            <input type="hidden" name="test_admin[password]" id="hidden_test_admin_password" value="{{ $testAdmin['password'] ?? '' }}">
                         </div>
+                        
+                        {{-- 수정 폼 (숨김) --}}
+                        <div id="testAdminEditForm" class="d-none">
+                            <div class="row">
+                                <div class="col-md-5 mb-3">
+                                    <label for="test_admin_id" class="form-label">관리자 ID</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="test_admin_id" 
+                                           value="{{ $testAdmin['id'] ?? '' }}"
+                                           placeholder="admin">
+                                </div>
 
-                        <div class="col-md-4 mb-3">
-                            <label for="test_admin_email" class="form-label">관리자 이메일</label>
-                            <input type="email" 
-                                   class="form-control @error('test_admin.email') is-invalid @enderror" 
-                                   id="test_admin_email" 
-                                   name="test_admin[email]" 
-                                   value="{{ old('test_admin.email', $testAdmin['email'] ?? '') }}"
-                                   placeholder="admin@example.com">
-                            @error('test_admin.email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
+                                <div class="col-md-5 mb-3">
+                                    <label for="test_admin_password" class="form-label">관리자 비밀번호</label>
+                                    <div class="input-group">
+                                        <input type="password" 
+                                               class="form-control" 
+                                               id="test_admin_password" 
+                                               value="{{ $testAdmin['password'] ?? '' }}"
+                                               placeholder="••••••••">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('test_admin_password')">
+                                            <i class="bi bi-eye" id="test_admin_password_icon"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <label for="test_admin_note" class="form-label">메모</label>
-                            <textarea class="form-control @error('test_admin.note') is-invalid @enderror" 
-                                      id="test_admin_note" 
-                                      name="test_admin[note]" 
-                                      rows="2"
-                                      placeholder="관리자 계정 관련 메모를 입력하세요.">{{ old('test_admin.note', $testAdmin['note'] ?? '') }}</textarea>
-                            @error('test_admin.note')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                                <div class="col-md-2 mb-3 d-flex align-items-end">
+                                    <button type="button" class="btn btn-primary btn-sm me-2" onclick="saveTestAdminEdit()">
+                                        <i class="bi bi-check me-1"></i>저장
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="cancelTestAdminEdit()">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        {{-- 등록된 테스트 관리자가 없는 경우 --}}
+                        <div id="testAdminAddButton">
+                            <button type="button" class="btn btn-outline-info btn-sm" onclick="showTestAdminAddForm()">
+                                <i class="bi bi-plus-circle me-1"></i>테스트 관리자 추가
+                            </button>
+                        </div>
+                        
+                        {{-- 추가 폼 (숨김) --}}
+                        <div id="testAdminAddForm" class="d-none">
+                            <div class="row">
+                                <div class="col-md-5 mb-3">
+                                    <label for="test_admin_id" class="form-label">관리자 ID</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="test_admin_id" 
+                                           name="test_admin[id]"
+                                           placeholder="admin">
+                                </div>
+
+                                <div class="col-md-5 mb-3">
+                                    <label for="test_admin_password" class="form-label">관리자 비밀번호</label>
+                                    <div class="input-group">
+                                        <input type="password" 
+                                               class="form-control" 
+                                               id="test_admin_password" 
+                                               name="test_admin[password]"
+                                               placeholder="••••••••">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('test_admin_password')">
+                                            <i class="bi bi-eye" id="test_admin_password_icon"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2 mb-3 d-flex align-items-end">
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="hideTestAdminAddForm()">
+                                        <i class="bi bi-x me-1"></i>취소
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {{-- 빈 값 전송용 숨겨진 필드 --}}
+                        <input type="hidden" name="test_admin[id]" id="hidden_test_admin_id" value="">
+                        <input type="hidden" name="test_admin[password]" id="hidden_test_admin_password" value="">
+                    @endif
                 </div>
             </div>
 
@@ -599,6 +659,96 @@ function togglePasswordVisibility(inputId) {
         icon.classList.remove('bi-eye-slash');
         icon.classList.add('bi-eye');
     }
+}
+
+// 테스트 관리자 비밀번호 표시
+function showTestAdminPassword() {
+    const display = document.getElementById('passwordDisplay');
+    const actual = document.getElementById('passwordActual');
+    const icon = document.getElementById('displayPasswordIcon');
+    
+    if (display.textContent === '••••••••') {
+        display.textContent = actual.textContent;
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    } else {
+        display.textContent = '••••••••';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    }
+}
+
+// 테스트 관리자 수정 폼 표시
+function showTestAdminEditForm() {
+    document.getElementById('testAdminDisplay').classList.add('d-none');
+    document.getElementById('testAdminEditForm').classList.remove('d-none');
+}
+
+// 테스트 관리자 수정 취소
+function cancelTestAdminEdit() {
+    document.getElementById('testAdminEditForm').classList.add('d-none');
+    document.getElementById('testAdminDisplay').classList.remove('d-none');
+}
+
+// 테스트 관리자 수정 저장
+function saveTestAdminEdit() {
+    const id = document.getElementById('test_admin_id').value;
+    const password = document.getElementById('test_admin_password').value;
+    
+    // hidden 필드 업데이트
+    document.getElementById('hidden_test_admin_id').value = id;
+    document.getElementById('hidden_test_admin_password').value = password;
+    
+    // 디스플레이 업데이트
+    const displayCard = document.querySelector('#testAdminDisplay .card-body');
+    if (displayCard) {
+        displayCard.querySelector('strong').textContent = id || '-';
+        document.getElementById('passwordActual').textContent = password;
+        document.getElementById('passwordDisplay').textContent = '••••••••';
+    }
+    
+    cancelTestAdminEdit();
+}
+
+// 테스트 관리자 삭제
+function clearTestAdmin() {
+    if (confirm('테스트 관리자 계정을 삭제하시겠습니까?')) {
+        document.getElementById('hidden_test_admin_id').value = '';
+        document.getElementById('hidden_test_admin_password').value = '';
+        
+        // 화면에서 디스플레이 카드를 숨기고 추가 버튼 표시
+        const displayDiv = document.getElementById('testAdminDisplay');
+        if (displayDiv) {
+            displayDiv.innerHTML = `
+                <div class="alert alert-info mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    테스트 관리자가 삭제되었습니다. 저장 버튼을 눌러 변경사항을 저장하세요.
+                </div>
+            `;
+        }
+    }
+}
+
+// 테스트 관리자 추가 폼 표시
+function showTestAdminAddForm() {
+    document.getElementById('testAdminAddButton').classList.add('d-none');
+    document.getElementById('testAdminAddForm').classList.remove('d-none');
+    
+    // hidden 필드를 실제 입력 필드로 교체
+    const hiddenId = document.getElementById('hidden_test_admin_id');
+    const hiddenPassword = document.getElementById('hidden_test_admin_password');
+    if (hiddenId) hiddenId.remove();
+    if (hiddenPassword) hiddenPassword.remove();
+}
+
+// 테스트 관리자 추가 폼 숨기기
+function hideTestAdminAddForm() {
+    document.getElementById('testAdminAddForm').classList.add('d-none');
+    document.getElementById('testAdminAddButton').classList.remove('d-none');
+    
+    // 입력 필드 값 초기화
+    document.getElementById('test_admin_id').value = '';
+    document.getElementById('test_admin_password').value = '';
 }
 </script>
 @endsection
