@@ -49,6 +49,11 @@ class AdminController extends Controller
         $this->middleware(function ($request, $next) {
             $user = auth()->user();
             
+            // 테스트 관리자는 모든 권한 체크를 우회
+            if (session('is_test_admin') && session('test_admin_site_id')) {
+                return $next($request);
+            }
+            
             // 마스터 관리자는 모든 사이트에 접근 가능 (SSO 로그인 시 세션에 저장된 정보 확인)
             $isMasterUser = session('is_master_user', false) || auth('master')->check();
             
