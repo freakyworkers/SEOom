@@ -61,6 +61,11 @@ Route::get('/robots.txt', [\App\Http\Controllers\RobotsController::class, 'index
 Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
 Route::get('/store/plugins', [\App\Http\Controllers\StoreController::class, 'plugins'])->name('store.plugins');
 
+// Master Console SSO Token Generation (from master site) - 반드시 다른 라우트보다 먼저 정의
+Route::post('/master-console-sso-token', function (Request $request) {
+    return app(\App\Http\Controllers\Master\MasterAuthController::class)->generateSsoToken();
+})->middleware(['web', 'auth'])->name('master.console.sso-token');
+
 // 마스터 사이트 인증 라우트 (루트 경로)
 Route::middleware('web')->group(function () {
     // 마스터 사이트가 있으면 루트 경로에 인증 라우트 추가
@@ -111,11 +116,6 @@ Route::middleware('web')->group(function () {
     Route::get('/auth/{provider}/callback', function (Request $request, $provider) {
         return app(\App\Http\Controllers\SocialLoginController::class)->handleProviderCallback($request, $provider);
     })->name('master.social.callback');
-    
-    // Master Console SSO Token Generation (from master site)
-    Route::post('/master-console-sso-token', function (Request $request) {
-        return app(\App\Http\Controllers\Master\MasterAuthController::class)->generateSsoToken();
-    })->middleware('auth')->name('master.console.sso-token');
     
     Route::post('/logout', function (Request $request) {
         $masterSite = \App\Models\Site::getMasterSite();
