@@ -2,11 +2,31 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
 
 class Authenticate extends Middleware
 {
+    /**
+     * Handle an incoming request.
+     */
+    public function handle($request, Closure $next, ...$guards)
+    {
+        // 테스트 어드민 세션이 있으면 인증 우회
+        if (session('is_test_admin') && session('test_admin_site_id')) {
+            // 현재 사이트가 테스트 어드민 세션의 사이트와 일치하는지 확인
+            $site = $request->attributes->get('site') ?? $request->route('site');
+            $siteId = is_object($site) ? $site->id : null;
+            
+            if ($siteId === session('test_admin_site_id')) {
+                return $next($request);
+            }
+        }
+        
+        return parent::handle($request, $next, ...$guards);
+    }
+    
     /**
      * Get the path the user should be redirected to when they are not authenticated.
      */

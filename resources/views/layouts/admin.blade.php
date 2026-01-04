@@ -579,6 +579,16 @@
                 </div>
             @endif
 
+            @if(session('is_test_admin'))
+                <div class="alert alert-info alert-dismissible fade show d-flex align-items-center mb-4" role="alert">
+                    <i class="bi bi-person-badge me-2 fs-5"></i>
+                    <div>
+                        <strong>테스트 어드민으로 접속 중입니다.</strong> 관리자 기능을 체험할 수 있지만, 모든 변경 사항은 저장되지 않습니다.
+                        <a href="{{ url('/logout') }}" class="alert-link ms-2">로그아웃 →</a>
+                    </div>
+                </div>
+            @endif
+
             @yield('content')
         </main>
     </div>

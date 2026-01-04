@@ -96,15 +96,32 @@ class MasterSiteController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $loginType = $request->input('login_type', 'email');
+        
+        $rules = [
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:sites,slug',
             'domain' => 'nullable|string|max:255',
             'plan' => 'required|exists:plans,slug',
+            'login_type' => 'required|in:email,username',
             'admin_name' => 'required|string|max:255',
-            'admin_email' => 'required|email',
             'admin_password' => 'required|string|min:8|confirmed',
-        ]);
+        ];
+        
+        // 로그인 타입에 따라 필수 필드 다르게 설정
+        if ($loginType === 'email') {
+            $rules['admin_email'] = 'required|email';
+        } else {
+            $rules['admin_username'] = 'required|string|min:4|max:20|regex:/^[a-zA-Z0-9_]+$/';
+        }
+        
+        // 테스트 어드민 유효성 검사
+        if ($request->input('test_admin_enabled')) {
+            $rules['test_admin_username'] = 'required|string|min:2|max:20';
+            $rules['test_admin_password'] = 'required|string|min:1';
+        }
+        
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
@@ -113,6 +130,18 @@ class MasterSiteController extends Controller
         $data = $request->all();
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
+        }
+        
+        // 로그인 타입 설정
+        $data['login_type'] = $loginType;
+        
+        // 테스트 어드민 설정
+        if ($request->input('test_admin_enabled')) {
+            $data['test_admin'] = [
+                'enabled' => true,
+                'username' => $request->input('test_admin_username'),
+                'password' => $request->input('test_admin_password'),
+            ];
         }
 
         $site = $this->provisionService->provision($data);

@@ -36,7 +36,35 @@ class AuthController extends Controller
      */
     public function login(Request $request, Site $site)
     {
+        // 테스트 어드민 로그인 체크
+        $testAdmin = $site->test_admin;
+        if ($testAdmin && ($testAdmin['enabled'] ?? false)) {
+            $inputUsername = $request->input('email'); // 이메일/아이디 필드
+            $inputPassword = $request->input('password');
+            
+            if ($inputUsername === $testAdmin['username'] && $inputPassword === $testAdmin['password']) {
+                // 테스트 어드민으로 세션 설정 (실제 로그인은 하지 않음)
+                // 대신 세션에 테스트 어드민 정보를 저장하고 리다이렉트
+                session([
+                    'is_test_admin' => true,
+                    'test_admin_site_id' => $site->id,
+                    'test_admin_username' => $testAdmin['username'],
+                ]);
+                
+                $request->session()->regenerate();
+                
+                // 관리자 페이지로 리다이렉트
+                return redirect($site->getHomeUrl() . '/admin/dashboard')
+                    ->with('info', '테스트 어드민으로 로그인했습니다. 모든 변경 사항은 저장되지 않습니다.');
+            }
+        }
+        
         $loginMethod = $site->getSetting('registration_login_method', 'email');
+        
+        // 사이트의 login_type이 설정되어 있으면 우선 사용
+        if ($site->login_type) {
+            $loginMethod = $site->login_type;
+        }
         
         $rules = [
             'password' => 'required',
@@ -263,6 +291,18 @@ class AuthController extends Controller
      */
     public function logout(Request $request, Site $site)
     {
+        // 테스트 어드민 세션 정리
+        if (session('is_test_admin')) {
+            session()->forget(['is_test_admin', 'test_admin_site_id', 'test_admin_username']);
+            
+            // 마스터 사이트인 경우 루트로 리다이렉트
+            if ($site->isMasterSite()) {
+                return redirect('/');
+            }
+            // 커스텀 도메인/서브도메인인 경우 루트 경로로, 아니면 /site/{slug}로
+            return redirect($site->getHomeUrl());
+        }
+        
         $this->authService->logout();
 
         // 마스터 사이트인 경우 루트로 리다이렉트

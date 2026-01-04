@@ -20,6 +20,8 @@ class Site extends Model
         'status',
         'is_master_site',
         'is_sample',
+        'login_type',
+        'test_admin',
         'created_by',
         'storage_used_mb',
         'storage_limit_mb',
@@ -36,6 +38,7 @@ class Site extends Model
         'is_sample' => 'boolean',
         'nameservers' => 'array',
         'traffic_reset_date' => 'date',
+        'test_admin' => 'array',
     ];
 
     /**

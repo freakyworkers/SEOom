@@ -62,6 +62,7 @@ class Kernel extends HttpKernel
         'block.ip' => \App\Http\Middleware\BlockIp::class,
         'verify.site.user' => \App\Http\Middleware\VerifySiteUser::class,
         'sample.readonly' => \App\Http\Middleware\SampleSiteReadOnly::class,
+        'test.admin.readonly' => \App\Http\Middleware\TestAdminReadOnly::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,

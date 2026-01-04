@@ -48,6 +48,8 @@ class SiteProvisionService
             'plan' => $planSlug,
             'status' => $data['status'] ?? 'active',
             'is_master_site' => $data['is_master_site'] ?? false,
+            'login_type' => $data['login_type'] ?? 'email',
+            'test_admin' => $data['test_admin'] ?? null,
             'created_by' => $data['created_by'] ?? null,
             'storage_limit_mb' => null, // 플랜의 limits 사용
             'traffic_limit_mb' => null, // 플랜의 traffic_limit_mb 사용
@@ -57,7 +59,11 @@ class SiteProvisionService
         ]);
 
         // 마스터 사이트가 아닌 경우에만 관리자 계정 생성
-        if (!$isMasterSite && isset($data['admin_email']) && isset($data['admin_password'])) {
+        $loginType = $data['login_type'] ?? 'email';
+        $hasAdminCredentials = ($loginType === 'email' && isset($data['admin_email']) && isset($data['admin_password']))
+            || ($loginType === 'username' && isset($data['admin_username']) && isset($data['admin_password']));
+        
+        if (!$isMasterSite && $hasAdminCredentials) {
             // username 중복 체크 (해당 사이트 내에서)
             if (isset($data['admin_username'])) {
                 $existingUser = User::where('site_id', $site->id)
@@ -74,7 +80,7 @@ class SiteProvisionService
                 'name' => $data['admin_name'] ?? 'Administrator',
                 'username' => $data['admin_username'] ?? null,
                 'nickname' => '운영자',
-                'email' => $data['admin_email'],
+                'email' => $data['admin_email'] ?? ($data['admin_username'] . '@' . ($data['slug'] ?? 'site') . '.local'),
                 'password' => Hash::make($data['admin_password']),
                 'role' => 'admin',
             ]);

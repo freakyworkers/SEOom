@@ -132,6 +132,21 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
+                    <label for="login_type" class="form-label">로그인 형태 <span class="text-danger">*</span></label>
+                    <select class="form-select @error('login_type') is-invalid @enderror" 
+                            id="login_type" 
+                            name="login_type" 
+                            required>
+                        <option value="email" {{ old('login_type', 'email') === 'email' ? 'selected' : '' }}>이메일 타입</option>
+                        <option value="username" {{ old('login_type') === 'username' ? 'selected' : '' }}>아이디 타입</option>
+                    </select>
+                    <small class="form-text text-muted">사용자가 로그인할 때 사용할 방식을 선택하세요.</small>
+                    @error('login_type')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-md-6 mb-3">
                     <label for="admin_name" class="form-label">관리자 이름 <span class="text-danger">*</span></label>
                     <input type="text" 
                            class="form-control @error('admin_name') is-invalid @enderror" 
@@ -144,7 +159,9 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+            </div>
 
+            <div class="row" id="email-login-fields">
                 <div class="col-md-6 mb-3">
                     <label for="admin_email" class="form-label">관리자 이메일 <span class="text-danger">*</span></label>
                     <input type="email" 
@@ -152,10 +169,26 @@
                            id="admin_email" 
                            name="admin_email" 
                            value="{{ old('admin_email') }}" 
-                           placeholder="admin@example.com"
-                           required>
+                           placeholder="admin@example.com">
                     <small class="form-text text-muted">로그인 시 사용할 이메일 주소입니다.</small>
                     @error('admin_email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="row" id="username-login-fields" style="display: none;">
+                <div class="col-md-6 mb-3">
+                    <label for="admin_username" class="form-label">관리자 아이디 <span class="text-danger">*</span></label>
+                    <input type="text" 
+                           class="form-control @error('admin_username') is-invalid @enderror" 
+                           id="admin_username" 
+                           name="admin_username" 
+                           value="{{ old('admin_username') }}" 
+                           placeholder="admin"
+                           pattern="[a-zA-Z0-9_]{4,20}">
+                    <small class="form-text text-muted">4~20자의 영문, 숫자, 언더스코어만 사용 가능합니다.</small>
+                    @error('admin_username')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -190,6 +223,60 @@
                 </div>
             </div>
 
+            <hr class="my-4">
+
+            <!-- 테스트 어드민 계정 섹션 -->
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>테스트 어드민 계정 (선택)</strong><br>
+                테스트 어드민은 관리자 페이지에 접근할 수 있지만, 모든 수정 사항이 실제로 저장되지 않습니다. 샘플 사이트 체험용으로 사용하세요.
+            </div>
+
+            <h5 class="mb-3"><i class="bi bi-person-badge me-2"></i>테스트 어드민 계정</h5>
+
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="test_admin_enabled" name="test_admin_enabled" value="1" {{ old('test_admin_enabled') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="test_admin_enabled">
+                            테스트 어드민 계정 사용
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="test-admin-fields" style="{{ old('test_admin_enabled') ? '' : 'display: none;' }}">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="test_admin_username" class="form-label">테스트 어드민 아이디</label>
+                        <input type="text" 
+                               class="form-control @error('test_admin_username') is-invalid @enderror" 
+                               id="test_admin_username" 
+                               name="test_admin_username" 
+                               value="{{ old('test_admin_username', 'admin') }}" 
+                               placeholder="admin">
+                        <small class="form-text text-muted">테스트 어드민이 로그인할 때 사용할 아이디입니다.</small>
+                        @error('test_admin_username')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="test_admin_password" class="form-label">테스트 어드민 비밀번호</label>
+                        <input type="text" 
+                               class="form-control @error('test_admin_password') is-invalid @enderror" 
+                               id="test_admin_password" 
+                               name="test_admin_password" 
+                               value="{{ old('test_admin_password', '1234') }}" 
+                               placeholder="1234">
+                        <small class="form-text text-muted">테스트 어드민의 비밀번호입니다. 간단한 비밀번호도 허용됩니다.</small>
+                        @error('test_admin_password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
             <div class="d-flex justify-content-end mt-4">
                 <a href="{{ route('master.sites.index') }}" class="btn btn-secondary me-2">
                     <i class="bi bi-x-circle me-1"></i>취소
@@ -207,6 +294,49 @@
 const plansData = @json($plansData);
 
 document.addEventListener('DOMContentLoaded', function() {
+    // 로그인 타입 변경 처리
+    const loginTypeSelect = document.getElementById('login_type');
+    const emailLoginFields = document.getElementById('email-login-fields');
+    const usernameLoginFields = document.getElementById('username-login-fields');
+    const adminEmailInput = document.getElementById('admin_email');
+    const adminUsernameInput = document.getElementById('admin_username');
+    
+    function toggleLoginFields() {
+        if (loginTypeSelect.value === 'email') {
+            emailLoginFields.style.display = '';
+            usernameLoginFields.style.display = 'none';
+            adminEmailInput.required = true;
+            if (adminUsernameInput) adminUsernameInput.required = false;
+        } else {
+            emailLoginFields.style.display = 'none';
+            usernameLoginFields.style.display = '';
+            adminEmailInput.required = false;
+            if (adminUsernameInput) adminUsernameInput.required = true;
+        }
+    }
+    
+    if (loginTypeSelect) {
+        loginTypeSelect.addEventListener('change', toggleLoginFields);
+        toggleLoginFields(); // 초기 상태 설정
+    }
+    
+    // 테스트 어드민 체크박스 처리
+    const testAdminCheckbox = document.getElementById('test_admin_enabled');
+    const testAdminFields = document.getElementById('test-admin-fields');
+    
+    function toggleTestAdminFields() {
+        if (testAdminCheckbox.checked) {
+            testAdminFields.style.display = '';
+        } else {
+            testAdminFields.style.display = 'none';
+        }
+    }
+    
+    if (testAdminCheckbox) {
+        testAdminCheckbox.addEventListener('change', toggleTestAdminFields);
+        toggleTestAdminFields(); // 초기 상태 설정
+    }
+    
     const planSelect = document.getElementById('plan');
     const planDescription = document.getElementById('plan-description');
     
