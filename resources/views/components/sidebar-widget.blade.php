@@ -2,6 +2,30 @@
     $widgetSettings = $widget->settings ?? [];
     $limit = $widgetSettings['limit'] ?? 10;
     
+    // 다크모드에서 흰색 배경을 다크 배경으로 변환하는 헬퍼 함수
+    if (!function_exists('darkModeBackgroundSidebar')) {
+        function darkModeBackgroundSidebar($color, $isDark) {
+            if (!$isDark) return $color;
+            $normalizedColor = strtolower(trim($color));
+            if ($normalizedColor === '#ffffff' || $normalizedColor === '#fff' || $normalizedColor === 'white' || $normalizedColor === 'rgb(255, 255, 255)') {
+                return 'rgb(43, 43, 43)';
+            }
+            return $color;
+        }
+    }
+    
+    // 다크모드에서 텍스트 색상 변환 헬퍼 함수
+    if (!function_exists('darkModeTextColorSidebar')) {
+        function darkModeTextColorSidebar($color, $isDark) {
+            if (!$isDark) return $color;
+            $normalizedColor = strtolower(trim($color));
+            if ($normalizedColor === '#000000' || $normalizedColor === '#000' || $normalizedColor === 'black' || $normalizedColor === 'rgb(0, 0, 0)') {
+                return '#ffffff';
+            }
+            return $color;
+        }
+    }
+    
     // 헤더 테두리 설정 가져오기
     $headerBorder = $site->getSetting('header_border', '0') == '1';
     $headerBorderWidth = $site->getSetting('header_border_width', '1');
@@ -67,14 +91,20 @@
         $buttonTextColor = $blockSettings['button_text_color'] ?? '#ffffff';
         $buttonTopMargin = $blockSettings['button_top_margin'] ?? 12;
         
+        // 다크모드에서 텍스트 색상 조정
+        $fontColor = darkModeTextColorSidebar($fontColor, $isDark);
+        
         // 스타일 생성
         $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
         
         if ($backgroundType === 'color') {
-            $blockStyle .= " background-color: {$backgroundColor};";
+            $adjustedBgColor = darkModeBackgroundSidebar($backgroundColor, $isDark);
+            $blockStyle .= " background-color: {$adjustedBgColor};";
         } else if ($backgroundType === 'gradient') {
             $gradientStart = $blockSettings['background_gradient_start'] ?? '#ffffff';
             $gradientEnd = $blockSettings['background_gradient_end'] ?? '#000000';
+            $gradientStart = darkModeBackgroundSidebar($gradientStart, $isDark);
+            $gradientEnd = darkModeBackgroundSidebar($gradientEnd, $isDark);
             $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
             $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
         } else if ($backgroundType === 'image' && $backgroundImageUrl) {

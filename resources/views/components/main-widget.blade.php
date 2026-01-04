@@ -19,6 +19,32 @@
         }
     }
     
+    // 다크모드에서 흰색 배경을 다크 배경으로 변환하는 헬퍼 함수
+    if (!function_exists('darkModeBackground')) {
+        function darkModeBackground($color, $isDark) {
+            if (!$isDark) return $color;
+            $normalizedColor = strtolower(trim($color));
+            // 흰색 계열인 경우 다크 배경으로 변환
+            if ($normalizedColor === '#ffffff' || $normalizedColor === '#fff' || $normalizedColor === 'white' || $normalizedColor === 'rgb(255, 255, 255)' || $normalizedColor === 'rgba(255, 255, 255, 1)') {
+                return 'rgb(43, 43, 43)';
+            }
+            return $color;
+        }
+    }
+    
+    // 다크모드에서 텍스트 색상 변환 헬퍼 함수
+    if (!function_exists('darkModeTextColor')) {
+        function darkModeTextColor($color, $isDark) {
+            if (!$isDark) return $color;
+            $normalizedColor = strtolower(trim($color));
+            // 검은색 계열인 경우 흰색으로 변환
+            if ($normalizedColor === '#000000' || $normalizedColor === '#000' || $normalizedColor === 'black' || $normalizedColor === 'rgb(0, 0, 0)') {
+                return '#ffffff';
+            }
+            return $color;
+        }
+    }
+    
     // 헤더 테두리 설정 가져오기
     $headerBorder = $site->getSetting('header_border', '0') == '1';
     $headerBorderWidth = $site->getSetting('header_border_width', '1');
@@ -122,6 +148,9 @@
         $buttonTopMargin = $blockSettings['button_top_margin'] ?? 12;
         $hasButtons = !empty($buttons);
         
+        // 다크모드에서 텍스트 색상 조정
+        $fontColor = darkModeTextColor($fontColor, $isDark);
+        
         // 스타일 생성
         $blockStyle = "width: 100%; padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
         
@@ -131,10 +160,14 @@
         }
         
         if ($backgroundType === 'color') {
-            $blockStyle .= " background-color: {$backgroundColor};";
+            $adjustedBgColor = darkModeBackground($backgroundColor, $isDark);
+            $blockStyle .= " background-color: {$adjustedBgColor};";
         } else if ($backgroundType === 'gradient') {
             $gradientStart = $blockSettings['background_gradient_start'] ?? '#ffffff';
             $gradientEnd = $blockSettings['background_gradient_end'] ?? '#000000';
+            // 다크모드에서 그라디언트 색상도 조정
+            $gradientStart = darkModeBackground($gradientStart, $isDark);
+            $gradientEnd = darkModeBackground($gradientEnd, $isDark);
             $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
             $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
         } else if ($backgroundType === 'image' && $backgroundImageUrl) {
@@ -961,15 +994,20 @@
 @endphp
 <div class="card {{ $shadowClass }} {{ $animationClass }} {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
     @if($hasTitle)
+        @php
+            $cardHeaderBg = $isDark ? 'rgb(43, 43, 43)' : 'white';
+            $cardHeaderBorder = $isDark ? 'rgba(255, 255, 255, 0.1)' : '#dee2e6';
+            $cardHeaderTextColor = $isDark ? '#ffffff' : 'inherit';
+        @endphp
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
-            <div class="card-header" style="background-color: white; padding-top: 1rem !important;{{ $isRoundTheme ? ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' : ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' }} border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; border: none !important; border-bottom: 1px solid #dee2e6 !important;">
-                <h6 class="mb-0">{{ $widget->title }}</h6>
+            <div class="card-header" style="background-color: {{ $cardHeaderBg }}; color: {{ $cardHeaderTextColor }}; padding-top: 1rem !important;{{ $isRoundTheme ? ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' : ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' }} border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; border: none !important; border-bottom: 1px solid {{ $cardHeaderBorder }} !important;">
+                <h6 class="mb-0" style="color: {{ $cardHeaderTextColor }};">{{ $widget->title }}</h6>
             </div>
             @endif
         @else
-        <div class="card-header" style="background-color: white; padding-top: 1rem !important; {{ $widgetTopBorderStyle }}{{ $isRoundTheme ? ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' : ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' }} border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; border: none !important; border-bottom: 1px solid #dee2e6 !important;">
-            <h6 class="mb-0">{{ $widget->title }}</h6>
+        <div class="card-header" style="background-color: {{ $cardHeaderBg }}; color: {{ $cardHeaderTextColor }}; padding-top: 1rem !important; {{ $widgetTopBorderStyle }}{{ $isRoundTheme ? ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' : ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' }} border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; border: none !important; border-bottom: 1px solid {{ $cardHeaderBorder }} !important;">
+            <h6 class="mb-0" style="color: {{ $cardHeaderTextColor }};">{{ $widget->title }}</h6>
         </div>
         @endif
     @endif

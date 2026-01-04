@@ -486,6 +486,60 @@
                 background-color: rgb(53, 53, 53) !important;
                 color: #ffffff !important;
             }
+            
+            /* 메인/커스텀 위젯 다크모드 강제 스타일 */
+            .widget-card,
+            .widget-card .card,
+            .widget-card .card-body,
+            .main-widget-area .card,
+            .main-widget-area .card-body,
+            .custom-page-widget .card,
+            .custom-page-widget .card-body,
+            [class*="widget"] .card,
+            [class*="widget"] .card-body {
+                background-color: rgb(43, 43, 43) !important;
+                color: #ffffff !important;
+            }
+            
+            /* 모든 위젯 텍스트 색상 강제 */
+            .widget-card *,
+            .main-widget-area *,
+            .custom-page-widget *,
+            [class*="widget"] p,
+            [class*="widget"] span,
+            [class*="widget"] div,
+            [class*="widget"] h1,
+            [class*="widget"] h2,
+            [class*="widget"] h3,
+            [class*="widget"] h4,
+            [class*="widget"] h5,
+            [class*="widget"] h6,
+            [class*="widget"] a:not(.btn),
+            [class*="widget"] li {
+                color: #ffffff !important;
+            }
+            
+            /* 링크 호버 색상 */
+            [class*="widget"] a:not(.btn):hover {
+                color: rgba(255, 255, 255, 0.8) !important;
+            }
+            
+            /* 사이드바 위젯도 동일하게 적용 */
+            .sidebar .card,
+            .sidebar .card-body,
+            .sidebar .card-header {
+                background-color: rgb(43, 43, 43) !important;
+                color: #ffffff !important;
+                border-color: rgba(255, 255, 255, 0.1) !important;
+            }
+            
+            .sidebar * {
+                color: #ffffff !important;
+            }
+            
+            .sidebar a:not(.btn):hover {
+                color: rgba(255, 255, 255, 0.8) !important;
+            }
         @endif
         @if($themeDarkMode !== 'dark')
             :root {
@@ -2480,6 +2534,62 @@
     @endphp
     @if($customCodeBody && !empty(trim($customCodeBody->code)))
         {!! $customCodeBody->code !!}
+    @endif
+    
+    @if($themeDarkMode === 'dark')
+    <script>
+    // 다크모드에서 인라인 스타일의 흰색 배경을 다크 배경으로 변환
+    document.addEventListener('DOMContentLoaded', function() {
+        // 흰색 배경 요소 찾아서 변환
+        const whiteBackgrounds = ['#ffffff', '#fff', 'white', 'rgb(255, 255, 255)', 'rgba(255, 255, 255, 1)'];
+        const darkBg = 'rgb(43, 43, 43)';
+        const darkBorder = 'rgba(255, 255, 255, 0.1)';
+        
+        // 모든 요소 검사
+        document.querySelectorAll('[style]').forEach(function(el) {
+            const style = el.getAttribute('style');
+            if (style) {
+                let newStyle = style;
+                
+                // 배경색 변환
+                whiteBackgrounds.forEach(function(whiteBg) {
+                    const bgRegex = new RegExp('background(-color)?\\s*:\\s*' + whiteBg.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                    if (bgRegex.test(newStyle)) {
+                        newStyle = newStyle.replace(bgRegex, 'background-color: ' + darkBg);
+                    }
+                });
+                
+                // 테두리 색상 변환 (#dee2e6 등 라이트 색상)
+                newStyle = newStyle.replace(/border(-color)?:\s*#dee2e6/gi, 'border-color: ' + darkBorder);
+                newStyle = newStyle.replace(/border-bottom:\s*1px\s+solid\s+#dee2e6/gi, 'border-bottom: 1px solid ' + darkBorder);
+                
+                if (newStyle !== style) {
+                    el.setAttribute('style', newStyle);
+                }
+            }
+        });
+        
+        // 검은색 텍스트를 흰색으로 변환 (카드/위젯 내부)
+        const blackTextColors = ['#000000', '#000', 'black', 'rgb(0, 0, 0)'];
+        document.querySelectorAll('.card, .widget-card, [class*="widget"], .sidebar').forEach(function(container) {
+            container.querySelectorAll('[style]').forEach(function(el) {
+                const style = el.getAttribute('style');
+                if (style) {
+                    let newStyle = style;
+                    blackTextColors.forEach(function(blackColor) {
+                        const colorRegex = new RegExp('color\\s*:\\s*' + blackColor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                        if (colorRegex.test(newStyle) && !newStyle.includes('background')) {
+                            newStyle = newStyle.replace(colorRegex, 'color: #ffffff');
+                        }
+                    });
+                    if (newStyle !== style) {
+                        el.setAttribute('style', newStyle);
+                    }
+                }
+            });
+        });
+    });
+    </script>
     @endif
 </body>
 </html>
