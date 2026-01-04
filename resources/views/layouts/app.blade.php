@@ -383,6 +383,62 @@
                 border-color: var(--point-main-color) !important;
             }
             
+            /* 모달 다크모드 스타일 */
+            .modal-content {
+                background-color: rgb(43, 43, 43) !important;
+                color: #ffffff !important;
+                border-color: rgba(255, 255, 255, 0.1) !important;
+            }
+            
+            .modal-header {
+                background-color: rgb(53, 53, 53) !important;
+                color: #ffffff !important;
+                border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+            }
+            
+            .modal-body {
+                background-color: rgb(43, 43, 43) !important;
+                color: #ffffff !important;
+            }
+            
+            .modal-footer {
+                background-color: rgb(43, 43, 43) !important;
+                border-top-color: rgba(255, 255, 255, 0.1) !important;
+            }
+            
+            .modal-title {
+                color: #ffffff !important;
+            }
+            
+            .btn-close {
+                filter: invert(1) grayscale(100%) brightness(200%);
+            }
+            
+            /* 알림창 다크모드 */
+            .alert {
+                border-color: rgba(255, 255, 255, 0.1) !important;
+            }
+            
+            .alert-info {
+                background-color: rgba(13, 202, 240, 0.15) !important;
+                color: #6edff6 !important;
+            }
+            
+            .alert-warning {
+                background-color: rgba(255, 193, 7, 0.15) !important;
+                color: #ffca2c !important;
+            }
+            
+            .alert-success {
+                background-color: rgba(25, 135, 84, 0.15) !important;
+                color: #75b798 !important;
+            }
+            
+            .alert-danger {
+                background-color: rgba(220, 53, 69, 0.15) !important;
+                color: #ea868f !important;
+            }
+            
             /* 포인트 컬러가 화이트일 때 버튼 텍스트 색상 자동 조정 */
             @php
                 $pointColorRgb = $colorDarkPointMain ?? '#ffffff';
