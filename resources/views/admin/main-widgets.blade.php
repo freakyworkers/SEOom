@@ -3010,6 +3010,21 @@ function addMainWidget() {
     const form = document.getElementById('addWidgetForm');
     const formData = new FormData(form);
     
+    // 이미지 파일 크기 체크 (최대 10MB)
+    const maxFileSize = 10 * 1024 * 1024; // 10MB
+    const fileInputs = form.querySelectorAll('input[type="file"]');
+    for (const fileInput of fileInputs) {
+        if (fileInput.files && fileInput.files.length > 0) {
+            for (const file of fileInput.files) {
+                if (file.size > maxFileSize) {
+                    const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+                    alert('이미지 파일 크기가 너무 큽니다.\n\n파일명: ' + file.name + '\n파일 크기: ' + fileSizeMB + 'MB\n최대 허용 크기: 10MB\n\n이미지 파일 크기를 줄여서 다시 시도해주세요.');
+                    return;
+                }
+            }
+        }
+    }
+    
     // settings 객체 생성 (사이드 위젯 페이지의 addWidget 함수와 동일한 로직)
     const settings = {};
     const widgetType = formData.get('type');
@@ -3569,7 +3584,12 @@ function addMainWidget() {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('위젯 추가 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
+        // Failed to fetch 오류는 보통 파일 크기가 너무 크거나 네트워크 오류일 때 발생
+        if (error.message === 'Failed to fetch') {
+            alert('위젯 추가 중 오류가 발생했습니다.\n\n가능한 원인:\n- 이미지 파일 크기가 너무 큽니다 (10MB 이하로 줄여주세요)\n- 네트워크 연결 문제\n- 서버 응답 시간 초과\n\n이미지 파일 크기를 줄이거나 잠시 후 다시 시도해주세요.');
+        } else {
+            alert('위젯 추가 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
+        }
     });
 }
 
