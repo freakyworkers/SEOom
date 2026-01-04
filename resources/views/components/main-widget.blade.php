@@ -3096,13 +3096,43 @@
                                         const position = null;
                                     @endif
                                     
+                                    // 다크모드 스타일 정의
+                                    const darkModeStyles = [
+                                        { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+                                        { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+                                        { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+                                        { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+                                        { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+                                        { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#263c3f" }] },
+                                        { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#6b9a76" }] },
+                                        { featureType: "road", elementType: "geometry", stylers: [{ color: "#38414e" }] },
+                                        { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#212a37" }] },
+                                        { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#9ca5b3" }] },
+                                        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#746855" }] },
+                                        { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#1f2835" }] },
+                                        { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#f3d19c" }] },
+                                        { featureType: "transit", elementType: "geometry", stylers: [{ color: "#2f3948" }] },
+                                        { featureType: "transit.station", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+                                        { featureType: "water", elementType: "geometry", stylers: [{ color: "#17263c" }] },
+                                        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#515c6d" }] },
+                                        { featureType: "water", elementType: "labels.text.stroke", stylers: [{ color: "#17263c" }] }
+                                    ];
+                                    
+                                    const isDarkMode = {{ $isDark ?? false ? 'true' : 'false' }};
+                                    
                                     const mapOptions = {
                                         zoom: {{ $map->zoom ?? 15 }},
                                         center: position || { lat: 37.5665, lng: 126.9780 },
-                                        mapTypeId: google.maps.MapTypeId.ROADMAP
+                                        mapTypeId: google.maps.MapTypeId.ROADMAP,
+                                        styles: isDarkMode ? darkModeStyles : []
                                     };
                                     
                                     const map = new google.maps.Map(container, mapOptions);
+                                    
+                                    // 정보창 스타일 (다크모드 대응)
+                                    const infoWindowStyle = isDarkMode 
+                                        ? 'padding: 10px; min-width: 200px; background: #1e1e1e; color: #ffffff;'
+                                        : 'padding: 10px; min-width: 200px;';
                                     
                                     @if($map->latitude && $map->longitude)
                                         // 좌표가 있는 경우 마커 표시
@@ -3115,7 +3145,7 @@
                                         });
                                         
                                         const infoWindow = new google.maps.InfoWindow({
-                                            content: '<div style="padding: 10px; min-width: 200px;"><strong>{{ addslashes($map->name) }}</strong><br>{{ addslashes($map->address) }}</div>'
+                                            content: '<div style="' + infoWindowStyle + '"><strong>{{ addslashes($map->name) }}</strong><br>{{ addslashes($map->address) }}</div>'
                                         });
                                         
                                         // 마커 클릭 시 정보창 표시
@@ -3143,7 +3173,7 @@
                                                 });
                                                 
                                                 const infoWindow = new google.maps.InfoWindow({
-                                                    content: '<div style="padding: 10px; min-width: 200px;"><strong>{{ addslashes($map->name) }}</strong><br>{{ addslashes($map->address) }}</div>'
+                                                    content: '<div style="' + infoWindowStyle + '"><strong>{{ addslashes($map->name) }}</strong><br>{{ addslashes($map->address) }}</div>'
                                                 });
                                                 
                                                 marker.addListener('click', function() {
