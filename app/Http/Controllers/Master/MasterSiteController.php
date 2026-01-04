@@ -509,10 +509,18 @@ class MasterSiteController extends Controller
             'site_id' => $site->id,
         ], now()->addMinutes(10));
         
+        // 도메인이 있는 경우 해당 도메인으로 SSO URL 생성 (Cross-domain SSO 지원)
+        if ($site->domain) {
+            $ssoUrl = 'https://' . $site->domain . '/sso-login?token=' . $token;
+        } else {
+            // 도메인이 없는 경우 slug 기반 URL 사용
+            $ssoUrl = url('/site/' . $site->slug . '/sso-login?token=' . $token);
+        }
+        
         return response()->json([
             'success' => true,
             'token' => $token,
-            'url' => route('master.sites.sso', ['site' => $site->id, 'token' => $token]),
+            'url' => $ssoUrl,
         ]);
     }
 

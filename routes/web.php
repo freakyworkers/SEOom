@@ -149,6 +149,67 @@ Route::middleware('web')->group(function () {
         return app(\App\Http\Controllers\AuthController::class)->logout($request, $site);
     })->middleware('auth')->name('master.site.logout');
     
+    // 도메인 기반 SSO 로그인 (마스터 콘솔에서 사이트 관리자로 로그인)
+    Route::get('/sso-login', function (Request $request) {
+        $site = $request->attributes->get('site');
+        if (!$site) {
+            abort(404, '사이트를 찾을 수 없습니다.');
+        }
+        
+        $token = $request->input('token');
+        if (!$token) {
+            return redirect('/login')->with('error', 'SSO 토큰이 필요합니다.');
+        }
+        
+        $cacheKey = 'sso_token_' . $token;
+        $ssoData = \Illuminate\Support\Facades\Cache::get($cacheKey);
+        
+        if (!$ssoData || !isset($ssoData['master_user_id']) || !isset($ssoData['site_id'])) {
+            return redirect('/login')->with('error', 'SSO 토큰이 만료되었거나 유효하지 않습니다.');
+        }
+        
+        if ($ssoData['site_id'] != $site->id) {
+            return redirect('/login')->with('error', '잘못된 SSO 토큰입니다.');
+        }
+        
+        $masterUser = \App\Models\MasterUser::find($ssoData['master_user_id']);
+        if (!$masterUser) {
+            return redirect('/login')->with('error', '마스터 사용자를 찾을 수 없습니다.');
+        }
+        
+        // 토큰 삭제
+        \Illuminate\Support\Facades\Cache::forget($cacheKey);
+        
+        // 마스터 관리자의 이메일로 해당 사이트의 관리자 계정 찾기 또는 생성
+        $admin = $site->users()->where('email', $masterUser->email)->first();
+        
+        if (!$admin) {
+            $admin = \App\Models\User::create([
+                'site_id' => $site->id,
+                'name' => $masterUser->name . ' (Master)',
+                'email' => $masterUser->email,
+                'password' => \Illuminate\Support\Facades\Hash::make(uniqid()),
+                'role' => 'admin',
+            ]);
+        } elseif ($admin->role !== 'admin') {
+            $admin->update(['role' => 'admin']);
+        }
+        
+        // 세션에 마스터 사용자 정보 저장
+        session(['is_master_user' => true, 'master_user_id' => $masterUser->id]);
+        
+        // 관리자로 로그인
+        auth()->login($admin);
+        
+        // 세션 재생성
+        $request->session()->regenerate();
+        
+        // 세션에 마스터 사용자 정보 다시 저장
+        session(['is_master_user' => true, 'master_user_id' => $masterUser->id]);
+        
+        return redirect('/admin/dashboard');
+    })->name('sso.login');
+    
     // Payment Routes (마스터 사이트용)
     Route::get('/plans/{plan}/subscribe', [PaymentController::class, 'subscribe'])->name('payment.subscribe');
     Route::post('/plans/{plan}/subscribe', [PaymentController::class, 'processSubscription'])->name('payment.process-subscription');
@@ -1667,6 +1728,67 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
     Route::get('/robots.txt/download', [\App\Http\Controllers\RobotsController::class, 'download'])->name('robots.download');
     Route::get('/rss.xml', [\App\Http\Controllers\RssController::class, 'index'])->name('rss');
     Route::get('/ads.txt', [\App\Http\Controllers\AdsController::class, 'index'])->name('ads');
+
+    // SSO 로그인 (마스터 콘솔에서 사이트 관리자로 로그인)
+    Route::get('/sso-login', function (Request $request) {
+        $site = $request->route('site');
+        if (!$site) {
+            abort(404, '사이트를 찾을 수 없습니다.');
+        }
+        
+        $token = $request->input('token');
+        if (!$token) {
+            return redirect()->route('login', ['site' => $site->slug])->with('error', 'SSO 토큰이 필요합니다.');
+        }
+        
+        $cacheKey = 'sso_token_' . $token;
+        $ssoData = \Illuminate\Support\Facades\Cache::get($cacheKey);
+        
+        if (!$ssoData || !isset($ssoData['master_user_id']) || !isset($ssoData['site_id'])) {
+            return redirect()->route('login', ['site' => $site->slug])->with('error', 'SSO 토큰이 만료되었거나 유효하지 않습니다.');
+        }
+        
+        if ($ssoData['site_id'] != $site->id) {
+            return redirect()->route('login', ['site' => $site->slug])->with('error', '잘못된 SSO 토큰입니다.');
+        }
+        
+        $masterUser = \App\Models\MasterUser::find($ssoData['master_user_id']);
+        if (!$masterUser) {
+            return redirect()->route('login', ['site' => $site->slug])->with('error', '마스터 사용자를 찾을 수 없습니다.');
+        }
+        
+        // 토큰 삭제
+        \Illuminate\Support\Facades\Cache::forget($cacheKey);
+        
+        // 마스터 관리자의 이메일로 해당 사이트의 관리자 계정 찾기 또는 생성
+        $admin = $site->users()->where('email', $masterUser->email)->first();
+        
+        if (!$admin) {
+            $admin = \App\Models\User::create([
+                'site_id' => $site->id,
+                'name' => $masterUser->name . ' (Master)',
+                'email' => $masterUser->email,
+                'password' => \Illuminate\Support\Facades\Hash::make(uniqid()),
+                'role' => 'admin',
+            ]);
+        } elseif ($admin->role !== 'admin') {
+            $admin->update(['role' => 'admin']);
+        }
+        
+        // 세션에 마스터 사용자 정보 저장
+        session(['is_master_user' => true, 'master_user_id' => $masterUser->id]);
+        
+        // 관리자로 로그인
+        auth()->login($admin);
+        
+        // 세션 재생성
+        $request->session()->regenerate();
+        
+        // 세션에 마스터 사용자 정보 다시 저장
+        session(['is_master_user' => true, 'master_user_id' => $masterUser->id]);
+        
+        return redirect()->route('admin.dashboard', ['site' => $site->slug]);
+    })->name('site.sso.login');
 
     // Authentication Routes
     Route::middleware('guest')->group(function () {
