@@ -59,8 +59,8 @@ class AuthController extends Controller
             }
         }
         
-        // site_settings 테이블에서 로그인 방식을 가져옴 (email 또는 username)
-        $loginMethod = $site->getSetting('registration_login_method', 'email');
+        // 로그인 방식을 가져옴: login_type 컬럼 우선, 없으면 site_settings에서 가져옴
+        $loginMethod = $site->login_type ?? $site->getSetting('registration_login_method', 'email');
         
         $rules = [
             'password' => 'required',

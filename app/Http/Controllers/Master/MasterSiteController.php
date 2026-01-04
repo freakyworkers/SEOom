@@ -286,10 +286,17 @@ class MasterSiteController extends Controller
 
         $site->update($request->only(['name', 'slug', 'domain', 'plan', 'status']));
 
-        // 로그인 타입 저장
+        // 로그인 타입 저장 (login_type 컬럼과 site_settings 테이블 모두 저장)
         if ($request->has('login_type')) {
-            $site->login_type = $request->input('login_type');
+            $loginType = $request->input('login_type');
+            $site->login_type = $loginType;
             $site->save();
+            
+            // site_settings 테이블에도 저장 (동기화)
+            $site->settings()->updateOrCreate(
+                ['key' => 'registration_login_method'],
+                ['value' => $loginType]
+            );
         }
 
         // 테스트 관리자 계정 저장
