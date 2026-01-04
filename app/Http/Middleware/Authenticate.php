@@ -43,6 +43,14 @@ class Authenticate extends Middleware
             $siteId = is_object($site) ? $site->id : null;
             $testAdminSiteId = session('test_admin_site_id');
             
+            \Log::info('Test Admin Auth Check', [
+                'is_test_admin' => session('is_test_admin'),
+                'test_admin_site_id' => $testAdminSiteId,
+                'current_site_id' => $siteId,
+                'host' => $request->getHost(),
+                'site_found' => $site ? $site->slug : null,
+            ]);
+            
             // 타입 변환하여 비교 (int vs int)
             if ($siteId && (int)$siteId === (int)$testAdminSiteId) {
                 // 사이트 정보를 request에 설정
