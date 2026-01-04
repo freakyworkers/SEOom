@@ -2337,9 +2337,14 @@
                 {{-- 토글 메뉴 위젯 --}}
                 @php
                     $toggleMenuId = $widgetSettings['toggle_menu_id'] ?? ($widgetSettings['toggle_menu_ids'][0] ?? null);
+                    // 다크모드용 토글 메뉴 색상
+                    $toggleHeaderBg = $isDark ? 'rgb(53, 53, 53)' : '#f8f9fa';
+                    $toggleContentBg = $isDark ? 'rgb(43, 43, 43)' : '#fff';
+                    $toggleActiveBg = $isDark ? 'rgb(63, 63, 63)' : '#e7f3ff';
+                    $toggleTextColor = $isDark ? '#ffffff' : 'inherit';
                 @endphp
                 @if(empty($toggleMenuId))
-                    <p class="text-muted mb-0">토글 메뉴가 설정되지 않았습니다.</p>
+                    <p style="color: {{ $widgetMutedColor }};" class="mb-0">토글 메뉴가 설정되지 않았습니다.</p>
                 @else
                     @php
                         $toggleMenu = \App\Models\ToggleMenu::where('site_id', $site->id)
@@ -2351,24 +2356,28 @@
                     @if($toggleMenu && $toggleMenu->items->count() > 0)
                         <div class="toggle-menu-widget" data-widget-id="{{ $widget->id }}">
                             @if($widget->title)
-                                <h5 class="mt-3 mb-3">{{ $widget->title }}</h5>
+                                <h5 class="mt-3 mb-3" style="color: {{ $widgetTextColor }};">{{ $widget->title }}</h5>
                             @endif
                             @foreach($toggleMenu->items as $item)
                                 <div class="toggle-menu-item-widget mb-2" data-id="{{ $toggleMenu->id }}-{{ $item->id }}">
-                                    <div class="toggle-menu-header-widget" onclick="toggleWidgetItemContent(this)" style="padding: 0.75rem; background-color: #f8f9fa; border: 1px solid #dee2e6; cursor: pointer; display: flex; align-items: center; justify-content: space-between; {{ $isRoundTheme ? 'border-radius: 0.375rem 0.375rem 0 0;' : '' }}">
+                                    <div class="toggle-menu-header-widget" onclick="toggleWidgetItemContent(this)" style="padding: 0.75rem; background-color: {{ $toggleHeaderBg }}; border: 1px solid {{ $widgetBorderColor }}; cursor: pointer; display: flex; align-items: center; justify-content: space-between; color: {{ $toggleTextColor }}; {{ $isRoundTheme ? 'border-radius: 0.375rem 0.375rem 0 0;' : '' }}">
                                         <div class="d-flex align-items-center">
-                                            <i class="bi bi-chevron-right toggle-icon-widget me-2" style="transition: transform 0.3s;"></i>
-                                            <strong>{{ $item->title }}</strong>
+                                            <i class="bi bi-chevron-right toggle-icon-widget me-2" style="transition: transform 0.3s; color: {{ $toggleTextColor }};"></i>
+                                            <strong style="color: {{ $toggleTextColor }};">{{ $item->title }}</strong>
                                         </div>
                                     </div>
-                                    <div class="toggle-menu-content-widget" style="display: none; padding: 0.75rem; border: 1px solid #dee2e6; border-top: none; background-color: #fff; {{ $isRoundTheme ? 'border-radius: 0 0 0.375rem 0.375rem;' : '' }}">
-                                        <div style="white-space: pre-wrap;">{!! nl2br(e($item->content)) !!}</div>
+                                    <div class="toggle-menu-content-widget" style="display: none; padding: 0.75rem; border: 1px solid {{ $widgetBorderColor }}; border-top: none; background-color: {{ $toggleContentBg }}; color: {{ $toggleTextColor }}; {{ $isRoundTheme ? 'border-radius: 0 0 0.375rem 0.375rem;' : '' }}">
+                                        <div style="white-space: pre-wrap; color: {{ $toggleTextColor }};">{!! nl2br(e($item->content)) !!}</div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
                         <script>
                         (function() {
+                            const isDarkMode = {{ $isDark ? 'true' : 'false' }};
+                            const toggleHeaderBg = '{{ $toggleHeaderBg }}';
+                            const toggleActiveBg = '{{ $toggleActiveBg }}';
+                            
                             function toggleWidgetItemContent(header) {
                                 const item = header.closest('.toggle-menu-item-widget');
                                 const content = item.querySelector('.toggle-menu-content-widget');
@@ -2379,12 +2388,12 @@
                                     header.style.borderRadius = '{{ $isRoundTheme ? "0.375rem 0.375rem 0 0" : "0" }}';
                                     content.style.borderRadius = '{{ $isRoundTheme ? "0 0 0.375rem 0.375rem" : "0" }}';
                                     icon.style.transform = 'rotate(90deg)';
-                                    header.style.backgroundColor = '#e7f3ff';
+                                    header.style.backgroundColor = toggleActiveBg;
                                 } else {
                                     content.style.display = 'none';
                                     header.style.borderRadius = '{{ $isRoundTheme ? "0.375rem" : "0" }}';
                                     icon.style.transform = 'rotate(0deg)';
-                                    header.style.backgroundColor = '#f8f9fa';
+                                    header.style.backgroundColor = toggleHeaderBg;
                                 }
                             }
                             
@@ -2397,7 +2406,7 @@
                         })();
                         </script>
                     @else
-                        <p class="text-muted mb-0">활성화된 토글 메뉴가 없습니다.</p>
+                        <p style="color: {{ $widgetMutedColor }};" class="mb-0">활성화된 토글 메뉴가 없습니다.</p>
                     @endif
                 @endif
                 @break
