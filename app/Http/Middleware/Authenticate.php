@@ -15,11 +15,31 @@ class Authenticate extends Middleware
     {
         // 테스트 어드민 세션이 있으면 인증 우회
         if (session('is_test_admin') && session('test_admin_site_id')) {
-            // 현재 사이트가 테스트 어드민 세션의 사이트와 일치하는지 확인
-            $site = $request->attributes->get('site') ?? $request->route('site');
-            $siteId = is_object($site) ? $site->id : null;
+            // 현재 사이트 가져오기 (다양한 방법 시도)
+            $site = $request->attributes->get('site');
             
-            if ($siteId === session('test_admin_site_id')) {
+            if (!$site) {
+                $site = $request->route('site');
+            }
+            
+            // 도메인/서브도메인으로 접근한 경우 사이트 찾기
+            if (!$site) {
+                $host = $request->getHost();
+                $site = \App\Models\Site::where('domain', $host)
+                    ->orWhere('domain', 'www.' . $host)
+                    ->orWhere('subdomain', explode('.', $host)[0])
+                    ->first();
+            }
+            
+            $siteId = is_object($site) ? $site->id : null;
+            $testAdminSiteId = session('test_admin_site_id');
+            
+            // 타입 변환하여 비교 (int vs int)
+            if ($siteId && (int)$siteId === (int)$testAdminSiteId) {
+                // 사이트 정보를 request에 설정
+                if ($site && !$request->attributes->has('site')) {
+                    $request->attributes->set('site', $site);
+                }
                 return $next($request);
             }
         }
