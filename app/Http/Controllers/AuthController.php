@@ -59,21 +59,8 @@ class AuthController extends Controller
             }
         }
         
+        // site_settings 테이블에서 로그인 방식을 가져옴 (email 또는 username)
         $loginMethod = $site->getSetting('registration_login_method', 'email');
-        
-        // 사이트의 login_type이 설정되어 있으면 우선 사용
-        if ($site->login_type) {
-            $loginMethod = $site->login_type;
-        }
-        
-        // 디버깅 로그 추가
-        \Log::info('Login attempt', [
-            'site_id' => $site->id,
-            'site_slug' => $site->slug,
-            'login_method_from_setting' => $site->getSetting('registration_login_method', 'email'),
-            'site_login_type' => $site->login_type,
-            'final_login_method' => $loginMethod,
-        ]);
         
         $rules = [
             'password' => 'required',
@@ -88,12 +75,6 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            \Log::warning('Login validation failed', [
-                'site_id' => $site->id,
-                'login_method' => $loginMethod,
-                'rules' => $rules,
-                'errors' => $validator->errors()->toArray(),
-            ]);
             return back()->withErrors($validator)->withInput();
         }
 
