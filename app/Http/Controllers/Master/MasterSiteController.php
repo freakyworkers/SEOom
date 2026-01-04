@@ -477,7 +477,15 @@ class MasterSiteController extends Controller
         // 세션에 마스터 사용자 정보 다시 저장 (세션 재생성 후)
         session(['is_master_user' => true, 'master_user_id' => $masterUser->id]);
         
-        return redirect()->route('admin.dashboard', ['site' => $site->slug]);
+        // 해당 사이트의 관리자 대시보드 URL로 리다이렉트
+        // 도메인이 설정된 경우 도메인 기반 URL 사용, 아니면 slug 기반 URL 사용
+        if ($site->domain) {
+            $adminUrl = 'https://' . $site->domain . '/admin/dashboard';
+        } else {
+            $adminUrl = url('/site/' . $site->slug . '/admin/dashboard');
+        }
+        
+        return redirect($adminUrl);
     }
     
     /**
