@@ -55,6 +55,12 @@
     $pointColor = $isDark ? $site->getSetting('color_dark_point_main', '#ffffff') : $site->getSetting('color_light_point_main', '#0d6efd');
     $headerBorderColor = $pointColor;
     
+    // 다크모드 텍스트 컬러 (위젯 링크, 게시판 제목 등에 사용)
+    $widgetTextColor = $isDark ? ($site->getSetting('color_dark_body_text', '#ffffff')) : '#495057';
+    $widgetMutedColor = $isDark ? 'rgba(255, 255, 255, 0.7)' : '#6c757d';
+    $widgetBorderColor = $isDark ? 'rgba(255, 255, 255, 0.1)' : '#dee2e6';
+    $widgetHoverColor = $isDark ? 'rgba(255, 255, 255, 0.8)' : '#212529';
+    
     // 위젯 상단 테두리 스타일
     $widgetTopBorderStyle = '';
     if ($headerBorder) {
@@ -1066,11 +1072,11 @@
                             <li class="mb-2 pb-2 border-bottom">
                                 <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug ?? 'default', 'post' => $post->id]) }}" 
                                    class="text-decoration-none d-block" 
-                                   style="color: #495057;">
-                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem;">
+                                   style="color: {{ $widgetTextColor }};">
+                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem; color: {{ $widgetTextColor }};">
                                         {{ $post->title }}
                                     </div>
-                                    <small class="text-muted">
+                                    <small style="color: {{ $widgetMutedColor }}"
                                         {{ $post->board->name ?? '게시판' }} · 
                                         {{ $post->user->nickname ?? $post->user->name ?? '익명' }} · 
                                         {{ $post->created_at->diffForHumans() }}
@@ -1121,11 +1127,11 @@
                             <li class="mb-2 pb-2 border-bottom">
                                 <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug ?? 'default', 'post' => $post->id]) }}" 
                                    class="text-decoration-none d-block" 
-                                   style="color: #495057;">
-                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem;">
+                                   style="color: {{ $widgetTextColor }};">
+                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem; color: {{ $widgetTextColor }};">
                                         {{ $post->title }}
                                     </div>
-                                    <small class="text-muted">
+                                    <small style="color: {{ $widgetMutedColor }}"
                                         {{ $post->board->name ?? '게시판' }} · 
                                         {{ $post->user->nickname ?? $post->user->name ?? '익명' }} · 
                                         {{ $post->created_at->diffForHumans() }}
@@ -1179,11 +1185,11 @@
                             <li class="mb-2 pb-2 border-bottom">
                                 <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug ?? 'default', 'post' => $post->id]) }}" 
                                    class="text-decoration-none d-block" 
-                                   style="color: #495057;">
-                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem;">
+                                   style="color: {{ $widgetTextColor }};">
+                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem; color: {{ $widgetTextColor }};">
                                         {{ $post->title }}
                                     </div>
-                                    <small class="text-muted">
+                                    <small style="color: {{ $widgetMutedColor }}"
                                         {{ $post->board->name ?? '게시판' }} · 
                                         {{ $post->user->nickname ?? $post->user->name ?? '익명' }} · 
                                         {{ $post->created_at->diffForHumans() }}
@@ -1237,11 +1243,11 @@
                             <li class="mb-2 pb-2 border-bottom">
                                 <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug ?? 'default', 'post' => $post->id]) }}" 
                                    class="text-decoration-none d-block" 
-                                   style="color: #495057;">
-                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem;">
+                                   style="color: {{ $widgetTextColor }};">
+                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem; color: {{ $widgetTextColor }};">
                                         {{ $post->title }}
                                     </div>
-                                    <small class="text-muted">
+                                    <small style="color: {{ $widgetMutedColor }}"
                                         {{ $post->board->name ?? '게시판' }} · 
                                         {{ $post->user->nickname ?? $post->user->name ?? '익명' }} · 
                                         {{ $post->created_at->diffForHumans() }}
@@ -1353,12 +1359,12 @@
                             <li class="mb-2 pb-2 border-bottom">
                                 <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug ?? 'default', 'post' => $post->id]) }}" 
                                    class="text-decoration-none d-block {{ $isQaBoard && !empty($qaStatuses) ? 'd-flex align-items-center justify-content-between' : '' }}" 
-                                   style="color: #495057;">
+                                   style="color: {{ $widgetTextColor }};">
                                     <div class="flex-grow-1">
-                                        <div class="fw-semibold text-truncate" style="font-size: 0.9rem;">
+                                        <div class="fw-semibold text-truncate" style="font-size: 0.9rem; color: {{ $widgetTextColor }};">
                                             {{ $post->title }}
                                         </div>
-                                        <small class="text-muted">
+                                        <small style="color: {{ $widgetMutedColor }}">
                                             {{ $post->user->nickname ?? $post->user->name ?? '익명' }} · 
                                             {{ $post->created_at->diffForHumans() }}
                                         </small>
@@ -1448,9 +1454,9 @@
                                      style="position: absolute; width: 100%; height: 100%; display: flex; align-items: center; opacity: 0; transition: opacity 0.5s ease-in-out;">
                                     <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug ?? 'default', 'post' => $post->id]) }}" 
                                        class="text-decoration-none d-flex align-items-center" 
-                                       style="color: #495057; width: 100%;">
-                                        <span class="fw-semibold me-2">{{ $boardName }} | </span>
-                                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">{{ Str::limit($post->title, 50, '...') }}</span>
+                                       style="color: {{ $widgetTextColor }}; width: 100%;">
+                                        <span class="fw-semibold me-2" style="color: {{ $widgetTextColor }};">{{ $boardName }} | </span>
+                                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; color: {{ $widgetTextColor }};">{{ Str::limit($post->title, 50, '...') }}</span>
                                     </a>
                                 </div>
                             @endforeach
@@ -1955,9 +1961,9 @@
                             <li class="mb-2">
                                 <a href="{{ route('posts.index', ['site' => $site->slug, 'boardSlug' => $board->slug]) }}" 
                                    class="text-decoration-none d-flex justify-content-between align-items-center" 
-                                   style="color: #495057;">
-                                    <span>{{ $board->name }}</span>
-                                    <small class="text-muted">{{ $board->posts_count ?? 0 }}</small>
+                                   style="color: {{ $widgetTextColor }};">
+                                    <span style="color: {{ $widgetTextColor }};">{{ $board->name }}</span>
+                                    <small style="color: {{ $widgetMutedColor }};">{{ $board->posts_count ?? 0 }}</small>
                                 </a>
                             </li>
                         @endforeach
@@ -2020,11 +2026,11 @@
                             <li class="mb-2 pb-2 border-bottom">
                                 <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $post->board->slug ?? 'default', 'post' => $post->id]) }}" 
                                    class="text-decoration-none d-block" 
-                                   style="color: #495057;">
-                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem;">
+                                   style="color: {{ $widgetTextColor }};">
+                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem; color: {{ $widgetTextColor }};">
                                         {{ $post->title }}
                                     </div>
-                                    <small class="text-muted">
+                                    <small style="color: {{ $widgetMutedColor }}"
                                         {{ $post->created_at->diffForHumans() }}
                                     </small>
                                 </a>
