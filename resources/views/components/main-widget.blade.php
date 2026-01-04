@@ -694,15 +694,19 @@
         
         // 이미지 위젯도 같은 높이를 가지도록 flex 적용 및 세로 정렬 추가
         $imageWidgetStyle = 'display: flex; flex-direction: column; flex: 1; justify-content: ' . $imageJustifyContent . '; margin-top: 0 !important; margin-bottom: 0 !important;';
+        
+        // 이미지 링크 및 이미지 자체의 스타일 (세로 중앙일 때는 flex-shrink: 0 적용)
+        $imageLinkStyle = $isRoundTheme ? 'display: block; border-radius: 0.5rem; overflow: hidden; width: 100%;' : 'display: block; width: 100%;';
+        $imageStyle = 'width: 100%; height: auto; display: block;' . ($isRoundTheme ? ' border-radius: 0.5rem;' : '');
     @endphp
     @if($imageUrl)
         <div class="mb-0 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; max-width: 100%; {{ $imageWidgetStyle }}" data-widget-id="{{ $widget->id }}">
             @if($link)
                 <a href="{{ $link }}" 
                    @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
-                   style="{{ $isRoundTheme ? 'display: block; border-radius: 0.5rem; overflow: hidden; width: 100%;' : 'display: block; width: 100%;' }}">
+                   style="{{ $imageLinkStyle }}">
             @endif
-            <img src="{{ $imageUrl }}" alt="이미지" style="width: 100%; height: auto; display: block;{{ $isRoundTheme ? ' border-radius: 0.5rem;' : '' }}">
+            <img src="{{ $imageUrl }}" alt="이미지" style="{{ $imageStyle }}">
             @if($link)
                 </a>
             @endif

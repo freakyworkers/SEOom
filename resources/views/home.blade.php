@@ -186,15 +186,26 @@
                         <div class="col-md-{{ $colWidth }} {{ $colMarginBottom }}" style="{{ $colFlexStyle }}">
                         @foreach($columnWidgets as $index => $widget)
                             @php
-                                // 블록 위젯인 경우 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1 적용
+                                // 블록 위젯, 이미지 위젯인 경우 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1 적용
                                 $isBlockWidget = $widget->type === 'block';
+                                $isImageWidget = $widget->type === 'image';
                                 $widgetWrapperStyle = 'display: flex; flex-direction: column; width: 100%; max-width: 100%; margin-top: 0 !important; margin-bottom: 0 !important;';
                                 if ($isFullHeight || $isBlockWidget) {
                                     // 세로 100%이거나 블록 위젯일 때는 항상 flex: 1 적용하여 위젯이 높이를 꽉 채우도록
                                     $widgetWrapperStyle .= ' flex: 1;';
-                                } elseif ($verticalAlign === 'center') {
-                                    // 중앙 정렬일 때만 flex: 1 적용
+                                } elseif ($verticalAlign === 'center' || $isImageWidget) {
+                                    // 중앙 정렬이거나 이미지 위젯일 때 flex: 1 적용
                                     $widgetWrapperStyle .= ' flex: 1;';
+                                    // 이미지 위젯의 경우 justify-content도 설정
+                                    if ($isImageWidget) {
+                                        if ($verticalAlign === 'top') {
+                                            $widgetWrapperStyle .= ' justify-content: flex-start;';
+                                        } elseif ($verticalAlign === 'bottom') {
+                                            $widgetWrapperStyle .= ' justify-content: flex-end;';
+                                        } else {
+                                            $widgetWrapperStyle .= ' justify-content: center;';
+                                        }
+                                    }
                                 }
                                 $isFirstWidget = $index === 0;
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
