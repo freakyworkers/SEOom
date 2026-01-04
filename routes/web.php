@@ -66,49 +66,69 @@ Route::post('/api/master-console-sso-token', function (Request $request) {
     return app(\App\Http\Controllers\Master\MasterAuthController::class)->generateSsoToken();
 })->middleware(['web', 'auth'])->name('master.console.sso-token');
 
-// 마스터 사이트 인증 라우트 (루트 경로)
+// 도메인 기반 인증 라우트 (루트 경로) - 커스텀 도메인 또는 마스터 도메인 모두 지원
 Route::middleware('web')->group(function () {
-    // 마스터 사이트가 있으면 루트 경로에 인증 라우트 추가
+    // 도메인 기반 사이트 또는 마스터 사이트 인증 라우트
     Route::middleware('guest')->group(function () {
-        Route::get('/login', function () {
-            $masterSite = \App\Models\Site::getMasterSite();
-            if (!$masterSite) {
+        Route::get('/login', function (Request $request) {
+            // 도메인 기반 접근: request attributes에서 site 가져오기
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                $site = \App\Models\Site::getMasterSite();
+            }
+            if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AuthController::class)->showLoginForm($masterSite);
+            return app(\App\Http\Controllers\AuthController::class)->showLoginForm($site);
         })->name('home.login');
         
         Route::post('/login', function (Request $request) {
-            $masterSite = \App\Models\Site::getMasterSite();
-            if (!$masterSite) {
+            // 도메인 기반 접근: request attributes에서 site 가져오기
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                $site = \App\Models\Site::getMasterSite();
+            }
+            if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AuthController::class)->login($request, $masterSite);
+            return app(\App\Http\Controllers\AuthController::class)->login($request, $site);
         });
         
-        Route::get('/register', function () {
-            $masterSite = \App\Models\Site::getMasterSite();
-            if (!$masterSite) {
+        Route::get('/register', function (Request $request) {
+            // 도메인 기반 접근: request attributes에서 site 가져오기
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                $site = \App\Models\Site::getMasterSite();
+            }
+            if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AuthController::class)->showRegisterForm($masterSite);
+            return app(\App\Http\Controllers\AuthController::class)->showRegisterForm($site);
         })->name('home.register');
         
         Route::post('/register', function (Request $request) {
-            $masterSite = \App\Models\Site::getMasterSite();
-            if (!$masterSite) {
+            // 도메인 기반 접근: request attributes에서 site 가져오기
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                $site = \App\Models\Site::getMasterSite();
+            }
+            if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AuthController::class)->register($request, $masterSite);
+            return app(\App\Http\Controllers\AuthController::class)->register($request, $site);
         });
         
-        // Master Site Social Login Routes
-        Route::get('/auth/{provider}', function ($provider) {
-            $masterSite = \App\Models\Site::getMasterSite();
-            if (!$masterSite) {
+        // Social Login Routes - 도메인 기반 사이트 지원
+        Route::get('/auth/{provider}', function (Request $request, $provider) {
+            // 도메인 기반 접근: request attributes에서 site 가져오기
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                $site = \App\Models\Site::getMasterSite();
+            }
+            if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\SocialLoginController::class)->redirectToProvider($masterSite, $provider);
+            return app(\App\Http\Controllers\SocialLoginController::class)->redirectToProvider($site, $provider);
         })->name('master.social.login');
     });
     
@@ -118,11 +138,15 @@ Route::middleware('web')->group(function () {
     })->name('master.social.callback');
     
     Route::post('/logout', function (Request $request) {
-        $masterSite = \App\Models\Site::getMasterSite();
-        if (!$masterSite) {
+        // 도메인 기반 접근: request attributes에서 site 가져오기
+        $site = $request->attributes->get('site');
+        if (!$site) {
+            $site = \App\Models\Site::getMasterSite();
+        }
+        if (!$site) {
             abort(404);
         }
-        return app(\App\Http\Controllers\AuthController::class)->logout($request, $masterSite);
+        return app(\App\Http\Controllers\AuthController::class)->logout($request, $site);
     })->middleware('auth')->name('master.site.logout');
     
     // Payment Routes (마스터 사이트용)
