@@ -60,8 +60,14 @@ class AuthController extends Controller
             }
         }
         
-        // 로그인 방식을 가져옴: login_type 컬럼 우선, 없으면 site_settings에서 가져옴
-        $loginMethod = $site->login_type ?? $site->getSetting('registration_login_method', 'email');
+        // 로그인 방식을 가져옴: site_settings의 registration_login_method를 기본으로 사용
+        // login_type 컬럼은 마스터 콘솔에서 설정한 값이지만, 실제 사이트 설정값이 우선
+        $loginMethod = $site->getSetting('registration_login_method', 'email');
+        
+        // login_type 컬럼이 명시적으로 설정되어 있고, site_settings에 값이 없으면 login_type 사용
+        if (!$site->getSetting('registration_login_method') && $site->login_type) {
+            $loginMethod = $site->login_type;
+        }
         
         $rules = [
             'password' => 'required',

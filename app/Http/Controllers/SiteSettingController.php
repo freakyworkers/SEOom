@@ -18,6 +18,11 @@ class SiteSettingController extends Controller
         $this->settingService = $settingService;
         $this->middleware('auth')->except(['getTermsOfService', 'getPrivacyPolicy']);
         $this->middleware(function ($request, $next) {
+            // 테스트 관리자는 권한 체크 우회
+            if (session('is_test_admin') && session('test_admin_site_id')) {
+                return $next($request);
+            }
+            
             if (!auth()->check() || !auth()->user()->canManage()) {
                 abort(403, 'Unauthorized action.');
             }

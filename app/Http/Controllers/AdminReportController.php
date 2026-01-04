@@ -15,8 +15,11 @@ class AdminReportController extends Controller
      */
     public function index(Site $site, Request $request)
     {
-        if (!Auth::check() || !Auth::user()->canManage()) {
-            abort(403);
+        // 테스트 관리자는 권한 체크 우회
+        if (!session('is_test_admin') || !session('test_admin_site_id')) {
+            if (!Auth::check() || !Auth::user()->canManage()) {
+                abort(403);
+            }
         }
 
         // Get search parameters
@@ -136,8 +139,11 @@ class AdminReportController extends Controller
      */
     public function show(Site $site, Report $report)
     {
-        if (!Auth::check() || !Auth::user()->canManage()) {
-            abort(403);
+        // 테스트 관리자는 권한 체크 우회
+        if (!session('is_test_admin') || !session('test_admin_site_id')) {
+            if (!Auth::check() || !Auth::user()->canManage()) {
+                abort(403);
+            }
         }
 
         if ($report->site_id !== $site->id) {
