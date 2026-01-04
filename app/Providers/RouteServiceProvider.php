@@ -30,9 +30,15 @@ class RouteServiceProvider extends ServiceProvider
 
         // Route model binding for Site by slug (for web routes)
         Route::bind('site', function ($value, $route) {
-            // 도메인 기반 접근 시 미들웨어에서 이미 설정한 site 사용
             $request = request();
-            if ($request && $request->attributes->has('site')) {
+            
+            // 마스터 콘솔 라우트에서는 request attributes를 무시하고 직접 ID로 조회
+            // (마스터 라우트: /master/sites/{site})
+            $path = $request->path();
+            $isMasterRoute = str_starts_with($path, 'master/');
+            
+            // 도메인 기반 접근 시 미들웨어에서 이미 설정한 site 사용 (마스터 라우트가 아닌 경우에만)
+            if (!$isMasterRoute && $request && $request->attributes->has('site')) {
                 return $request->attributes->get('site');
             }
             
