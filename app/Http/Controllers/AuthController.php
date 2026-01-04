@@ -38,17 +38,17 @@ class AuthController extends Controller
     {
         // 테스트 어드민 로그인 체크
         $testAdmin = $site->test_admin;
-        if ($testAdmin && ($testAdmin['enabled'] ?? false)) {
+        if ($testAdmin && !empty($testAdmin['id']) && !empty($testAdmin['password'])) {
             $inputUsername = $request->input('email'); // 이메일/아이디 필드
             $inputPassword = $request->input('password');
             
-            if ($inputUsername === $testAdmin['username'] && $inputPassword === $testAdmin['password']) {
+            if ($inputUsername === $testAdmin['id'] && $inputPassword === $testAdmin['password']) {
                 // 테스트 어드민으로 세션 설정 (실제 로그인은 하지 않음)
                 // 대신 세션에 테스트 어드민 정보를 저장하고 리다이렉트
                 session([
                     'is_test_admin' => true,
                     'test_admin_site_id' => $site->id,
-                    'test_admin_username' => $testAdmin['username'],
+                    'test_admin_username' => $testAdmin['id'],
                 ]);
                 
                 $request->session()->regenerate();
