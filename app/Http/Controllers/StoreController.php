@@ -19,15 +19,13 @@ class StoreController extends Controller
         // 마스터 사이트 가져오기
         $site = Site::getMasterSite();
         
-        \Log::info('StoreController@index', [
-            'site' => $site ? $site->slug : null,
-            'is_master' => $site ? $site->is_master_site : null,
-            'status' => $site ? $site->status : null,
-        ]);
+        // 마스터 사이트가 없으면 첫 번째 활성 사이트 사용
+        if (!$site) {
+            $site = Site::where('status', 'active')->first();
+        }
         
         if (!$site) {
-            \Log::warning('StoreController@index: Master site not found');
-            abort(404, 'Master site not found');
+            abort(404, 'No active site found');
         }
 
         // 무료 플랜 가져오기
@@ -81,8 +79,13 @@ class StoreController extends Controller
         // 마스터 사이트 가져오기
         $site = Site::getMasterSite();
         
+        // 마스터 사이트가 없으면 첫 번째 활성 사이트 사용
         if (!$site) {
-            abort(404, 'Master site not found');
+            $site = Site::where('status', 'active')->first();
+        }
+        
+        if (!$site) {
+            abort(404, 'No active site found');
         }
 
         // 활성화된 추가 구매 상품(플러그인) 가져오기
