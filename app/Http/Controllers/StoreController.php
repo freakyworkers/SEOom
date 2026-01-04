@@ -19,8 +19,8 @@ class StoreController extends Controller
         // 마스터 사이트 가져오기
         $site = Site::getMasterSite();
         
-        if (!$site || !$site->isMasterSite()) {
-            abort(404);
+        if (!$site) {
+            abort(404, 'Master site not found');
         }
 
         // 무료 플랜 가져오기
@@ -74,8 +74,8 @@ class StoreController extends Controller
         // 마스터 사이트 가져오기
         $site = Site::getMasterSite();
         
-        if (!$site || !$site->isMasterSite()) {
-            abort(404);
+        if (!$site) {
+            abort(404, 'Master site not found');
         }
 
         // 활성화된 추가 구매 상품(플러그인) 가져오기
