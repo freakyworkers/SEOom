@@ -117,7 +117,7 @@
                                     id="login_type" 
                                     name="login_type">
                                 <option value="email" {{ old('login_type', $site->login_type ?? 'email') === 'email' ? 'selected' : '' }}>이메일</option>
-                                <option value="username" {{ old('login_type', $site->login_type ?? 'email') === 'username' ? 'selected' : '' }}>사용자명</option>
+                                <option value="username" {{ old('login_type', $site->login_type ?? 'email') === 'username' ? 'selected' : '' }}>아이디</option>
                             </select>
                             <small class="form-text text-muted">사이트 로그인 시 사용할 계정 타입을 선택합니다.</small>
                             @error('login_type')
