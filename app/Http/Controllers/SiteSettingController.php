@@ -76,6 +76,7 @@ class SiteSettingController extends Controller
                 'themeTopHeaderShow' => $settings['theme_top_header_show'] ?? '0',
                 'topHeaderLoginShow' => $settings['top_header_login_show'] ?? '0',
                 'menuLoginShow' => $settings['menu_login_show'] ?? '0',
+                'headerHideSearch' => $settings['header_hide_search'] ?? '0',
                 'headerSticky' => $settings['header_sticky'] ?? '0',
                 'themeDarkMode' => $themeDarkMode,
                 'pointColor' => $pointColor,
@@ -281,6 +282,7 @@ class SiteSettingController extends Controller
                 'header_sticky',
                 'header_transparent',
                 'menu_login_show',
+                'header_hide_search',
                 'header_shadow',
                 'header_border',
                 'theme_full_width',
@@ -328,6 +330,7 @@ class SiteSettingController extends Controller
                 'header_sticky',
                 'header_transparent',
                 'menu_login_show',
+                'header_hide_search',
                 'header_shadow',
                 'header_border',
                 'show_views',
@@ -629,6 +632,7 @@ class SiteSettingController extends Controller
             $themeTopHeaderShow = $request->get('theme_top_header_show', $settings['theme_top_header_show'] ?? '0');
             $topHeaderLoginShow = $request->get('top_header_login_show', $settings['top_header_login_show'] ?? '0');
             $menuLoginShow = $request->get('menu_login_show', $settings['menu_login_show'] ?? '0');
+            $headerHideSearch = $request->get('header_hide_search', $settings['header_hide_search'] ?? '0');
             $headerSticky = $request->get('header_sticky', $settings['header_sticky'] ?? '0');
             $headerTransparent = $request->get('header_transparent', $settings['header_transparent'] ?? '0');
             
@@ -687,6 +691,7 @@ class SiteSettingController extends Controller
                     'themeTopHeaderShow' => $themeTopHeaderShow,
                     'topHeaderLoginShow' => $topHeaderLoginShow,
                     'menuLoginShow' => $menuLoginShow,
+                    'headerHideSearch' => $headerHideSearch,
                     'headerSticky' => $headerSticky,
                     'themeDarkMode' => $themeDarkMode,
                     'pointColor' => $pointColor,
@@ -732,6 +737,7 @@ class SiteSettingController extends Controller
                         'themeTopHeaderShow' => $themeTopHeaderShow ?? '0',
                         'topHeaderLoginShow' => $topHeaderLoginShow ?? '0',
                         'menuLoginShow' => $menuLoginShow ?? '0',
+                        'headerHideSearch' => $headerHideSearch ?? '0',
                         'headerSticky' => $headerSticky ?? '0',
                         'themeDarkMode' => $themeDarkMode ?? 'light',
                         'pointColor' => $pointColor ?? ($isDark ? '#ffffff' : '#0d6efd'),

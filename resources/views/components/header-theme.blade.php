@@ -14,6 +14,9 @@
     // 메뉴 로그인 표시 설정 확인
     $showMenuLogin = $site->getSetting('menu_login_show', '0') == '1';
     
+    // 검색창 제거 설정 확인
+    $hideSearchBar = $site->getSetting('header_hide_search', '0') == '1';
+    
     // 포인트 컬러 설정
     $pointColor = $isDark ? $site->getSetting('color_dark_point_main', '#ffffff') : $site->getSetting('color_light_point_main', '#0d6efd');
     
@@ -283,14 +286,8 @@
                     @endif
                 </ul>
                 <div class="d-flex align-items-center">
-                    @if(!$showMenuLogin)
-                    <form class="d-flex me-2" action="{{ route('search', ['site' => $site->slug ?? 'default']) }}" method="GET" style="min-width: 200px; max-width: 300px;">
-                        <input class="form-control form-control-sm" type="search" name="q" placeholder="검색..." aria-label="Search" style="flex: 1;">
-                        <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </form>
-                    @else
+                    @if($showMenuLogin)
+                    {{-- 메뉴 로그인이 활성화된 경우 로그인 버튼 표시 --}}
                     <ul class="navbar-nav align-items-center">
                         @auth
                             <li class="nav-item dropdown">
@@ -348,7 +345,16 @@
                             </li>
                         @endauth
                     </ul>
+                    @elseif(!$hideSearchBar)
+                    {{-- 메뉴 로그인이 비활성화되고 검색창 제거가 아닌 경우 검색창 표시 --}}
+                    <form class="d-flex me-2" action="{{ route('search', ['site' => $site->slug ?? 'default']) }}" method="GET" style="min-width: 200px; max-width: 300px;">
+                        <input class="form-control form-control-sm" type="search" name="q" placeholder="검색..." aria-label="Search" style="flex: 1;">
+                        <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
                     @endif
+                    {{-- hideSearchBar가 true이고 showMenuLogin이 false인 경우 아무것도 표시 안함 --}}
                 </div>
             </div>
         </div>
@@ -357,11 +363,12 @@
 @elseif($designType === 'design3')
         {{-- 테마3: 메뉴 좌측 로고 중앙 검색창 우측 --}}
         <nav class="navbar navbar-expand-lg navbar-dark pc-header {{ $headerClass }}" style="{{ $headerStyle }}" data-bg-color="{{ $headerBgColor }}">
-        <div class="{{ $containerClass }}" style="{{ $containerStyle }}">
+        <div class="{{ $containerClass }}" style="{{ $containerStyle }} display: flex; align-items: center;">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav3">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav3">
+            {{-- 좌측 영역: 메뉴 --}}
+            <div class="d-none d-lg-flex align-items-center" style="flex: 1; justify-content: flex-start;">
                 <ul class="navbar-nav">
                     @if($menus->count() > 0)
                         @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
@@ -379,24 +386,22 @@
                     @endif
                 </ul>
             </div>
-            <a class="navbar-brand mx-auto" href="{{ route('home', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
-                @if($logoType === 'text' || empty($siteLogo))
-                    {{ $siteName }}
-                @else
-                    <img src="{{ $siteLogo }}" alt="{{ $siteName }}" style="width: {{ $logoDesktopSize }}px; height: auto;" class="d-none d-md-inline" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-                    <img src="{{ $siteLogo }}" alt="{{ $siteName }}" style="width: {{ $logoMobileSize }}px; height: auto;" class="d-md-none" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-                    <span style="display: none;">{{ $siteName }}</span>
-                @endif
-            </a>
-            <div class="d-flex align-items-center">
-                @if(!$showMenuLogin)
-                <form class="d-flex me-2" action="{{ route('search', ['site' => $site->slug ?? 'default']) }}" method="GET" style="min-width: 200px; max-width: 300px;">
-                    <input class="form-control form-control-sm" type="search" name="q" placeholder="검색..." aria-label="Search" style="flex: 1;">
-                    <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </form>
-                @else
+            {{-- 중앙 영역: 로고 --}}
+            <div class="d-flex align-items-center justify-content-center" style="flex: 1;">
+                <a class="navbar-brand m-0" href="{{ route('home', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
+                    @if($logoType === 'text' || empty($siteLogo))
+                        {{ $siteName }}
+                    @else
+                        <img src="{{ $siteLogo }}" alt="{{ $siteName }}" style="width: {{ $logoDesktopSize }}px; height: auto;" class="d-none d-md-inline" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                        <img src="{{ $siteLogo }}" alt="{{ $siteName }}" style="width: {{ $logoMobileSize }}px; height: auto;" class="d-md-none" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                        <span style="display: none;">{{ $siteName }}</span>
+                    @endif
+                </a>
+            </div>
+            {{-- 우측 영역: 검색창 또는 로그인 버튼 --}}
+            <div class="d-none d-lg-flex align-items-center justify-content-end" style="flex: 1;">
+                @if($showMenuLogin)
+                {{-- 메뉴 로그인이 활성화된 경우 로그인 버튼 표시 --}}
                 <ul class="navbar-nav align-items-center">
                     @auth
                         <li class="nav-item dropdown">
@@ -456,7 +461,16 @@
                         </li>
                     @endauth
                 </ul>
+                @elseif(!$hideSearchBar)
+                {{-- 메뉴 로그인이 비활성화되고 검색창 제거가 아닌 경우 검색창 표시 --}}
+                <form class="d-flex" action="{{ route('search', ['site' => $site->slug ?? 'default']) }}" method="GET" style="min-width: 200px; max-width: 300px;">
+                    <input class="form-control form-control-sm" type="search" name="q" placeholder="검색..." aria-label="Search" style="flex: 1;">
+                    <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
                 @endif
+                {{-- hideSearchBar가 true이고 showMenuLogin이 false인 경우 아무것도 표시 안함 --}}
             </div>
         </div>
     </nav>
@@ -477,14 +491,8 @@
                         @endif
                     </a>
                     <div class="d-flex align-items-center">
-                        @if(!$showMenuLogin)
-                        <form class="d-flex me-2" action="{{ route('search', ['site' => $site->slug ?? 'default']) }}" method="GET" style="min-width: 200px; max-width: 300px;">
-                            <input class="form-control form-control-sm" type="search" name="q" placeholder="검색..." aria-label="Search" style="flex: 1;">
-                            <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </form>
-                        @else
+                        @if($showMenuLogin)
+                        {{-- 메뉴 로그인이 활성화된 경우 로그인 버튼 표시 --}}
                         <ul class="navbar-nav flex-row align-items-center">
                             @auth
                                 <li class="nav-item dropdown">
@@ -525,7 +533,16 @@
                                 </li>
                             @endauth
                         </ul>
+                        @elseif(!$hideSearchBar)
+                        {{-- 메뉴 로그인이 비활성화되고 검색창 제거가 아닌 경우 검색창 표시 --}}
+                        <form class="d-flex me-2" action="{{ route('search', ['site' => $site->slug ?? 'default']) }}" method="GET" style="min-width: 200px; max-width: 300px;">
+                            <input class="form-control form-control-sm" type="search" name="q" placeholder="검색..." aria-label="Search" style="flex: 1;">
+                            <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </form>
                         @endif
+                        {{-- hideSearchBar가 true이고 showMenuLogin이 false인 경우 아무것도 표시 안함 --}}
                     </div>
                 </div>
                 <div class="d-flex justify-content-center border-top pt-2" style="border-color: rgba(255,255,255,0.2) !important;">

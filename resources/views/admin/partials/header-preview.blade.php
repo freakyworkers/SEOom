@@ -12,6 +12,7 @@
     $themeTopHeaderShow = isset($themeTopHeaderShow) ? $themeTopHeaderShow : '0';
     $topHeaderLoginShow = isset($topHeaderLoginShow) ? $topHeaderLoginShow : '0';
     $menuLoginShow = isset($menuLoginShow) ? $menuLoginShow : '0';
+    $headerHideSearch = isset($headerHideSearch) ? $headerHideSearch : '0';
     $headerSticky = isset($headerSticky) ? $headerSticky : '0';
     $themeDarkMode = isset($themeDarkMode) ? $themeDarkMode : 'light';
     $isDark = $themeDarkMode === 'dark';
@@ -275,15 +276,8 @@
                     @endif
                 </ul>
                 <div class="d-flex align-items-center">
-                    @if($menuLoginShow != '1' && $menuLoginShow !== '1')
-                    <form class="d-flex me-2" style="min-width: 150px; max-width: 200px;">
-                        <input class="form-control form-control-sm" type="search" placeholder="검색..." style="flex: 1;">
-                        <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </form>
-                    @else
-                    <ul class="navbar-nav">
+                    @if($menuLoginShow == '1' || $menuLoginShow === '1')
+                    <ul class="navbar-nav flex-row">
                         <li class="nav-item">
                             <a class="nav-link" href="#" style="background-color: transparent; border: 1px solid {{ $pointColor }}; color: {{ $pointColor }} !important; padding: 0.5rem 1rem; border-radius: 0.375rem; margin: 0 0.25rem;">로그인</a>
                         </li>
@@ -291,6 +285,13 @@
                             <a class="nav-link" href="#" style="background-color: {{ $pointColor }}; border: 1px solid {{ $pointColor }}; color: {{ $headerBgColor }} !important; padding: 0.5rem 1rem; border-radius: 0.375rem; margin: 0 0.25rem;">회원가입</a>
                         </li>
                     </ul>
+                    @elseif($headerHideSearch != '1' && $headerHideSearch !== '1')
+                    <form class="d-flex me-2" style="min-width: 150px; max-width: 200px;">
+                        <input class="form-control form-control-sm" type="search" placeholder="검색..." style="flex: 1;">
+                        <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
                     @endif
                 </div>
             </div>
@@ -324,14 +325,7 @@
                     @endif
                 </a>
                 <div class="d-flex align-items-center">
-                    @if($menuLoginShow != '1' && $menuLoginShow !== '1')
-                    <form class="d-flex me-2" style="min-width: 150px; max-width: 200px;">
-                        <input class="form-control form-control-sm" type="search" placeholder="검색..." style="flex: 1;">
-                        <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </form>
-                    @else
+                    @if($menuLoginShow == '1' || $menuLoginShow === '1')
                     <ul class="navbar-nav flex-row">
                         <li class="nav-item">
                             <a class="nav-link" href="#" style="background-color: transparent; border: 1px solid {{ $pointColor }}; color: {{ $pointColor }} !important; padding: 0.5rem 1rem; border-radius: 0.375rem; margin: 0 0.25rem;">로그인</a>
@@ -340,6 +334,13 @@
                             <a class="nav-link" href="#" style="background-color: {{ $pointColor }}; border: 1px solid {{ $pointColor }}; color: {{ $headerBgColor }} !important; padding: 0.5rem 1rem; border-radius: 0.375rem; margin: 0 0.25rem;">회원가입</a>
                         </li>
                     </ul>
+                    @elseif($headerHideSearch != '1' && $headerHideSearch !== '1')
+                    <form class="d-flex me-2" style="min-width: 150px; max-width: 200px;">
+                        <input class="form-control form-control-sm" type="search" placeholder="검색..." style="flex: 1;">
+                        <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
                     @endif
                 </div>
             </div>
@@ -359,14 +360,7 @@
                             @endif
                         </a>
                         <div class="d-flex align-items-center">
-                            @if($menuLoginShow != '1' && $menuLoginShow !== '1')
-                            <form class="d-flex me-2" style="min-width: 150px; max-width: 200px;">
-                                <input class="form-control form-control-sm" type="search" placeholder="검색..." style="flex: 1;">
-                                <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </form>
-                            @else
+                            @if($menuLoginShow == '1' || $menuLoginShow === '1')
                             <ul class="navbar-nav flex-row">
                                 <li class="nav-item">
                                     <a class="nav-link" href="#" style="background-color: transparent; border: 1px solid {{ $pointColor }}; color: {{ $pointColor }} !important; padding: 0.5rem 1rem; border-radius: 0.375rem; margin: 0 0.25rem;">로그인</a>
@@ -375,6 +369,13 @@
                                     <a class="nav-link" href="#" style="background-color: {{ $pointColor }}; border: 1px solid {{ $pointColor }}; color: {{ $headerBgColor }} !important; padding: 0.5rem 1rem; border-radius: 0.375rem; margin: 0 0.25rem;">회원가입</a>
                                 </li>
                             </ul>
+                            @elseif($headerHideSearch != '1' && $headerHideSearch !== '1')
+                            <form class="d-flex me-2" style="min-width: 150px; max-width: 200px;">
+                                <input class="form-control form-control-sm" type="search" placeholder="검색..." style="flex: 1;">
+                                <button class="btn btn-outline-light btn-sm ms-2" type="submit" style="--bs-btn-padding-y: 0.25rem; --bs-btn-padding-x: 0.75rem;">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </form>
                             @endif
                         </div>
                     </div>

@@ -892,6 +892,15 @@
                             </div>
                         </div>
                         <div class="form-check mt-2">
+                            <div class="d-flex align-items-center">
+                                <input class="form-check-input" type="checkbox" name="header_hide_search" id="header_hide_search" value="1" {{ (isset($settings['header_hide_search']) && $settings['header_hide_search'] == '1') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="header_hide_search">
+                                    검색창 제거
+                                </label>
+                                <i class="bi bi-question-circle help-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="활성화 시 헤더의 검색창이 숨겨집니다. 메뉴 로그인 표시가 활성화된 경우 로그인 버튼은 정상적으로 표시됩니다."></i>
+                            </div>
+                        </div>
+                        <div class="form-check mt-2">
                             <input class="form-check-input" type="checkbox" name="header_shadow" id="header_shadow" value="1" {{ (isset($settings['header_shadow']) && $settings['header_shadow'] == '1') ? 'checked' : '' }}>
                             <label class="form-check-label" for="header_shadow">
                                 그림자
@@ -2133,6 +2142,17 @@
             }
         });
     }
+    
+    // 검색창 제거 체크박스 변경 시 미리보기 업데이트
+    const headerHideSearchCheckbox = document.getElementById('header_hide_search');
+    if (headerHideSearchCheckbox) {
+        headerHideSearchCheckbox.addEventListener('change', function() {
+            const headerSelect = document.getElementById('theme_top');
+            if (headerSelect && headerSelect.value) {
+                updateThemePreview('header', headerSelect.value);
+            }
+        });
+    }
 
     // 이미지 업로드 함수
     function uploadImage(file, $uploadArea) {
@@ -2700,6 +2720,11 @@ function updateThemePreview(type, theme) {
         const menuLoginShow = menuLoginShowCheckbox && menuLoginShowCheckbox.checked ? '1' : '0';
         params.append('menu_login_show', menuLoginShow);
         
+        // 검색창 제거 체크박스 값 추가
+        const headerHideSearchCheckbox = document.getElementById('header_hide_search');
+        const headerHideSearch = headerHideSearchCheckbox && headerHideSearchCheckbox.checked ? '1' : '0';
+        params.append('header_hide_search', headerHideSearch);
+        
         // 그림자 체크박스 값 추가
         const headerShadowCheckbox = document.getElementById('header_shadow');
         const headerShadow = headerShadowCheckbox && headerShadowCheckbox.checked ? '1' : '0';
@@ -2997,6 +3022,7 @@ $(document).ready(function() {
         $('input[name="header_sticky"][type="hidden"]').remove();
         $('input[name="header_transparent"][type="hidden"]').remove();
         $('input[name="menu_login_show"][type="hidden"]').remove();
+        $('input[name="header_hide_search"][type="hidden"]').remove();
         $('input[name="header_shadow"][type="hidden"]').remove();
         $('input[name="header_border"][type="hidden"]').remove();
         
@@ -3038,6 +3064,12 @@ $(document).ready(function() {
             $('#menu_login_show').attr('name', 'menu_login_show_disabled');
         }
         $(this).append('<input type="hidden" name="menu_login_show" value="' + menuLoginShow + '">');
+        
+        const headerHideSearch = $('#header_hide_search').is(':checked') ? '1' : '0';
+        if (! $('#header_hide_search').is(':checked')) {
+            $('#header_hide_search').attr('name', 'header_hide_search_disabled');
+        }
+        $(this).append('<input type="hidden" name="header_hide_search" value="' + headerHideSearch + '">');
         
         const headerShadow = $('#header_shadow').is(':checked') ? '1' : '0';
         if (! $('#header_shadow').is(':checked')) {
