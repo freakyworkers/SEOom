@@ -19,7 +19,14 @@ class StoreController extends Controller
         // 마스터 사이트 가져오기
         $site = Site::getMasterSite();
         
+        \Log::info('StoreController@index', [
+            'site' => $site ? $site->slug : null,
+            'is_master' => $site ? $site->is_master_site : null,
+            'status' => $site ? $site->status : null,
+        ]);
+        
         if (!$site) {
+            \Log::warning('StoreController@index: Master site not found');
             abort(404, 'Master site not found');
         }
 
