@@ -4861,6 +4861,11 @@ function saveCustomPageWidgetSettings() {
         settings.buttons = buttons;
         settings.button_top_margin = parseInt(buttonTopMargin) || 12;
         
+        // 디버깅: 버튼 투명도 값 확인
+        if (buttons.length > 0) {
+            console.log('Block widget buttons with opacity:', buttons.map(b => ({ text: b.text, opacity: b.opacity, hover_opacity: b.hover_opacity })));
+        }
+        
         if (backgroundType === 'color') {
             const backgroundColor = document.getElementById('edit_custom_page_widget_block_background_color')?.value || '#007bff';
             const backgroundColorAlpha = document.getElementById('edit_custom_page_widget_block_background_color_alpha')?.value || '100';
@@ -5084,6 +5089,8 @@ function saveCustomPageWidgetSettings() {
     
     // settings를 JSON으로 추가 (빈 객체가 아닌 경우에만)
     if (Object.keys(settings).length > 0) {
+        // 디버깅: 저장 전 settings 확인
+        console.log('Saving settings:', JSON.stringify(settings, null, 2));
         formData.append('settings', JSON.stringify(settings));
     }
     
