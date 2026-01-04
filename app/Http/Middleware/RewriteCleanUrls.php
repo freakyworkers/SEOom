@@ -152,7 +152,8 @@ class RewriteCleanUrls
         
         // 제외 경로 체크
         foreach ($this->excludedPaths as $excludedPath) {
-            if (str_starts_with($trimmedPath, $excludedPath)) {
+            // 정확히 일치하거나 시작하는 경우 제외
+            if ($trimmedPath === rtrim($excludedPath, '/') || str_starts_with($trimmedPath, $excludedPath)) {
                 return false;
             }
         }
