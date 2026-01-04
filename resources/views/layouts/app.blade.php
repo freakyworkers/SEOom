@@ -935,7 +935,44 @@
             }
         @endif
         
-        /* 모바일에서 가로 100% 컨테이너 라운드 제거 */
+        /* 가로 100% 컨테이너 라운드 제거 (데스크탑 + 모바일) */
+        .container-fluid.px-0,
+        .container-fluid.px-0 .card,
+        .container-fluid.px-0 .widget-card,
+        .container-fluid.px-0 .card.shadow-sm,
+        .container-fluid.px-0 .main-widget-container .card,
+        .container-fluid.px-0 [class*="banner-item"],
+        .container-fluid.px-0 .banner-link,
+        .container-fluid.px-0 .banner-image,
+        .container-fluid.px-0 img,
+        .container-fluid.px-0 .card-header,
+        .container-fluid.px-0 .card-body,
+        .container-fluid.px-0 .card-footer {
+            border-radius: 0 !important;
+            -webkit-border-radius: 0 !important;
+            -moz-border-radius: 0 !important;
+        }
+        
+        /* 가로 100% 컨테이너 내 모든 요소 라운드 제거 */
+        .container-fluid.px-0 .rounded,
+        .container-fluid.px-0 .rounded-top,
+        .container-fluid.px-0 .rounded-bottom,
+        .container-fluid.px-0 .rounded-start,
+        .container-fluid.px-0 .rounded-end,
+        .container-fluid.px-0 .rounded-0,
+        .container-fluid.px-0 .rounded-1,
+        .container-fluid.px-0 .rounded-2,
+        .container-fluid.px-0 .rounded-3,
+        .container-fluid.px-0 .rounded-4,
+        .container-fluid.px-0 .rounded-5,
+        .container-fluid.px-0 [class*="rounded-"],
+        .container-fluid.px-0 [style*="border-radius"] {
+            border-radius: 0 !important;
+            -webkit-border-radius: 0 !important;
+            -moz-border-radius: 0 !important;
+        }
+        
+        /* 모바일에서 가로 100% 컨테이너 추가 스타일 */
         @media (max-width: 999px) {
             .container-fluid.px-0 .card,
             .container-fluid.px-0 .widget-card,
