@@ -900,7 +900,7 @@ class AdminController extends Controller
             'name' => 'nullable|string|max:255',
             'link_type' => 'required|in:board,custom_page,external_link,attendance,point_exchange,event_application',
             'link_target' => 'nullable|string',
-            'icon_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'icon_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:51200',
         ]);
 
         // 아이콘 경로 처리
@@ -1089,7 +1089,7 @@ class AdminController extends Controller
             'name' => 'nullable|string|max:255',
             'link_type' => 'required|in:board,custom_page,external_link,attendance,point_exchange,event_application',
             'link_target' => 'nullable|string',
-            'icon_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'icon_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:51200',
         ]);
 
         // 이미지 업로드 처리
@@ -1429,7 +1429,7 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'location' => 'required|in:header,main_top,main_bottom,content_top,content_bottom,sidebar_top,sidebar_bottom,left_margin,right_margin,mobile_menu_top,mobile_menu_bottom',
             'type' => 'required|in:image,html',
-            'image' => 'required_if:type,image|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'image' => 'required_if:type,image|image|mimes:jpeg,png,jpg,gif,webp|max:51200',
             'html_code' => 'required_if:type,html|nullable|string',
             'link' => 'nullable|url|max:500',
             'open_new_window' => 'boolean',
@@ -1536,7 +1536,7 @@ class AdminController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'banner_id' => 'required|exists:banners,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200',
             'link' => 'nullable|url|max:500',
             'open_new_window' => 'boolean',
         ]);
@@ -1963,7 +1963,7 @@ class AdminController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'type' => 'required|in:image,html',
-            'image' => 'required_if:type,image|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'image' => 'required_if:type,image|image|mimes:jpeg,png,jpg,gif,webp|max:51200',
             'html_code' => 'required_if:type,html|nullable|string',
             'link' => 'nullable|url|max:500',
             'open_new_window' => 'boolean',
@@ -2096,7 +2096,7 @@ class AdminController extends Controller
             'display_type' => 'in:overlay,list',
             'position' => 'in:center,top-left,top-right,bottom-left,bottom-right',
             'target_type' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200',
             'html_code' => 'nullable|string',
         ]);
 
@@ -2305,15 +2305,15 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'criteria_type' => 'required|in:current_points,max_points,post_count',
             'display_type' => 'required|in:icon,color',
-            'admin_icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'manager_icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'admin_icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200',
+            'manager_icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200',
             'ranks' => 'required|array',
             'ranks.*.id' => 'required',
             'ranks.*.name' => 'required|string|max:255',
             'ranks.*.rank' => 'required|integer|min:1',
             'ranks.*.criteria_value' => 'required|integer|min:0',
             'ranks.*.display_type' => 'required|in:icon,color',
-            'ranks.*.icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'ranks.*.icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200',
             'ranks.*.color' => 'nullable|string|max:7',
         ]);
 
@@ -3549,7 +3549,7 @@ class AdminController extends Controller
             'background_gradient_end' => 'nullable|string|max:7',
             'background_gradient_angle' => 'nullable|integer|min:0|max:360',
             'background_image_url' => 'nullable|string|max:500',
-            'background_image_file' => 'nullable|image|max:5120',
+            'background_image_file' => 'nullable|image|max:51200',
             'background_image_alpha' => 'nullable|integer|min:0|max:100',
         ]);
 
@@ -4317,7 +4317,7 @@ class AdminController extends Controller
             'background_gradient_end' => 'nullable|string|max:7',
             'background_gradient_angle' => 'nullable|integer|min:0|max:360',
             'background_image_url' => 'nullable|string|max:500',
-            'background_image_file' => 'nullable|image|max:5120',
+            'background_image_file' => 'nullable|image|max:51200',
         ]);
 
         $oldColumns = $container->columns;

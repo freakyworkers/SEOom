@@ -55,7 +55,7 @@ class MasterPluginController extends Controller
             'one_time_price' => 'nullable|numeric|min:0',
             'features' => 'nullable|array',
             'features.*' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200',
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'nullable|boolean',
         ]);
@@ -108,7 +108,7 @@ class MasterPluginController extends Controller
             'one_time_price' => 'nullable|numeric|min:0',
             'features' => 'nullable|array',
             'features.*' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200',
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'nullable|boolean',
         ]);

@@ -156,7 +156,7 @@ class ChatController extends Controller
         // Validate - message or attachment must be present
         $validator = Validator::make($request->all(), [
             'message' => 'nullable|string|max:1000',
-            'attachment' => 'nullable|image|max:5120', // 5MB max
+            'attachment' => 'nullable|image|max:51200', // 50MB max
         ]);
 
         if ($validator->fails()) {

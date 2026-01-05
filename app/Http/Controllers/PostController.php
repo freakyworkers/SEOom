@@ -215,7 +215,7 @@ class PostController extends Controller
         $rules = [
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200', // 50MB max
             'site_name' => 'nullable|string|max:255',
             'code' => 'nullable|string|max:255',
             'link' => 'nullable|url|max:500',
@@ -530,7 +530,7 @@ class PostController extends Controller
         $rules = [
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200', // 50MB max
             'site_name' => 'nullable|string|max:255',
             'code' => 'nullable|string|max:255',
             'link' => 'nullable|url|max:500',
@@ -880,7 +880,7 @@ class PostController extends Controller
     public function uploadImage(Request $request, Site $site)
     {
         $validator = Validator::make($request->all(), [
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:51200', // 50MB max
         ]);
 
         if ($validator->fails()) {

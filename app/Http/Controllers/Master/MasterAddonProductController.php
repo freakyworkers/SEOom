@@ -49,7 +49,7 @@ class MasterAddonProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200',
             'type' => 'required|in:storage,traffic,feature_crawler,feature_event_application,feature_point_exchange,board_type_event,registration_referral,feature_point_message',
             'amount_mb' => $isResourceType ? 'nullable|integer|min:0' : 'nullable|integer|min:0',
             'price' => 'nullable|numeric|min:0',
@@ -163,7 +163,7 @@ class MasterAddonProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200',
             'type' => 'required|in:storage,traffic,feature_crawler,feature_event_application,feature_point_exchange,board_type_event,registration_referral,feature_point_message',
             'amount_mb' => $isResourceType ? 'nullable|integer|min:0' : 'nullable|integer|min:0',
             'price' => 'nullable|numeric|min:0',

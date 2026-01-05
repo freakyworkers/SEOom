@@ -88,7 +88,7 @@ class EventApplicationController extends Controller
     public function storeProduct(Site $site, Request $request)
     {
         $request->validate([
-            'thumbnail' => 'nullable|image|max:2048',
+            'thumbnail' => 'nullable|image|max:51200',
             'item_name' => 'required|string|max:255',
             'item_content' => 'required|string|max:255',
             'notice' => 'nullable|string',
@@ -125,7 +125,7 @@ class EventApplicationController extends Controller
         }
 
         $request->validate([
-            'thumbnail' => 'nullable|image|max:2048',
+            'thumbnail' => 'nullable|image|max:51200',
             'item_name' => 'required|string|max:255',
             'item_content' => 'required|string|max:255',
             'notice' => 'nullable|string',
