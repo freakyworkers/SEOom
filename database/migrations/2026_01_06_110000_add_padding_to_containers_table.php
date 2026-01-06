@@ -20,7 +20,7 @@ return new class extends Migration
         // CustomPageWidgetContainer에 상단/하단 여백과 fixed_width_columns 추가
         Schema::table('custom_page_widget_containers', function (Blueprint $table) {
             $table->boolean('fixed_width_columns')->default(false)->after('full_width');
-            $table->integer('padding_top')->default(0)->after('widget_spacing');
+            $table->integer('padding_top')->default(0)->after('full_height');
             $table->integer('padding_bottom')->default(0)->after('padding_top');
         });
     }
