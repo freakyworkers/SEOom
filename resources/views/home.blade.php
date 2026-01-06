@@ -125,6 +125,16 @@
                 $backgroundStyle = 'background-image: url(' . htmlspecialchars($container->background_image_url) . '); background-size: cover; background-position: center; background-repeat: no-repeat;';
             }
             
+            // 컨테이너 상단/하단 여백 추가
+            $paddingTop = $container->padding_top ?? 0;
+            $paddingBottom = $container->padding_bottom ?? 0;
+            if ($paddingTop > 0) {
+                $containerStyle .= ' padding-top: ' . $paddingTop . 'px !important;';
+            }
+            if ($paddingBottom > 0) {
+                $containerStyle .= ' padding-bottom: ' . $paddingBottom . 'px !important;';
+            }
+            
             if ($backgroundStyle) {
                 $containerStyle .= ($containerStyle ? ' ' : '') . $backgroundStyle;
             }

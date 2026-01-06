@@ -18,6 +18,8 @@ class MainWidgetContainer extends Model
         'fixed_width_columns',
         'full_height',
         'widget_spacing',
+        'padding_top',
+        'padding_bottom',
         'background_type',
         'background_color',
         'background_gradient_start',
@@ -35,6 +37,8 @@ class MainWidgetContainer extends Model
         'fixed_width_columns' => 'boolean',
         'full_height' => 'boolean',
         'widget_spacing' => 'integer',
+        'padding_top' => 'integer',
+        'padding_bottom' => 'integer',
     ];
 
     /**

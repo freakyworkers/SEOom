@@ -3491,6 +3491,8 @@ class AdminController extends Controller
             'fixed_width_columns' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
             'widget_spacing' => 'nullable|integer|min:0|max:5',
+            'padding_top' => 'nullable|integer|min:0|max:500',
+            'padding_bottom' => 'nullable|integer|min:0|max:500',
         ]);
 
         $maxOrder = MainWidgetContainer::where('site_id', $site->id)->max('order') ?? 0;
@@ -3525,6 +3527,8 @@ class AdminController extends Controller
             'fixed_width_columns' => $fixedWidthColumns,
             'full_height' => $fullHeight,
             'widget_spacing' => $request->widget_spacing ?? 3,
+            'padding_top' => $request->padding_top ?? 0,
+            'padding_bottom' => $request->padding_bottom ?? 0,
             'order' => $maxOrder + 1,
         ]);
 
@@ -3553,6 +3557,8 @@ class AdminController extends Controller
             'fixed_width_columns' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
             'widget_spacing' => 'nullable|integer|min:0|max:5',
+            'padding_top' => 'nullable|integer|min:0|max:500',
+            'padding_bottom' => 'nullable|integer|min:0|max:500',
             'background_type' => 'nullable|string|in:none,color,gradient,image',
             'background_color' => 'nullable|string|max:7',
             'background_gradient_start' => 'nullable|string|max:7',
@@ -3646,6 +3652,14 @@ class AdminController extends Controller
             } catch (\Exception $e) {
                 // widget_spacing 컬럼이 없는 경우 무시
             }
+        }
+        
+        // padding_top, padding_bottom 처리
+        if ($request->has('padding_top')) {
+            $container->padding_top = (int) $request->padding_top;
+        }
+        if ($request->has('padding_bottom')) {
+            $container->padding_bottom = (int) $request->padding_bottom;
         }
         
         // column_merges 처리
@@ -4278,7 +4292,10 @@ class AdminController extends Controller
             'columns' => 'required|integer|in:1,2,3,4',
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
+            'fixed_width_columns' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
+            'padding_top' => 'nullable|integer|min:0|max:500',
+            'padding_bottom' => 'nullable|integer|min:0|max:500',
         ]);
 
         $maxOrder = CustomPageWidgetContainer::where('custom_page_id', $customPage->id)->max('order') ?? 0;
@@ -4297,13 +4314,23 @@ class AdminController extends Controller
             $fullHeightValue = $request->input('full_height');
             $fullHeight = ($fullHeightValue == '1' || $fullHeightValue === '1' || $fullHeightValue === true || $fullHeightValue === 1);
         }
+        
+        // fixed_width_columns 처리
+        $fixedWidthColumns = false;
+        if ($fullWidth && $request->has('fixed_width_columns')) {
+            $fixedWidthColumnsValue = $request->input('fixed_width_columns');
+            $fixedWidthColumns = ($fixedWidthColumnsValue == '1' || $fixedWidthColumnsValue === '1' || $fixedWidthColumnsValue === true || $fixedWidthColumnsValue === 1);
+        }
 
         $container = CustomPageWidgetContainer::create([
             'custom_page_id' => $customPage->id,
             'columns' => $request->columns,
             'vertical_align' => $request->vertical_align ?? 'top',
             'full_width' => $fullWidth,
+            'fixed_width_columns' => $fixedWidthColumns,
             'full_height' => $fullHeight,
+            'padding_top' => $request->padding_top ?? 0,
+            'padding_bottom' => $request->padding_bottom ?? 0,
             'order' => $maxOrder + 1,
         ]);
 
@@ -4329,7 +4356,10 @@ class AdminController extends Controller
             'column_merges' => 'nullable|string',
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
+            'fixed_width_columns' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
+            'padding_top' => 'nullable|integer|min:0|max:500',
+            'padding_bottom' => 'nullable|integer|min:0|max:500',
             'background_type' => 'nullable|string|in:none,color,gradient,image',
             'background_color' => 'nullable|string|max:7',
             'background_gradient_start' => 'nullable|string|max:7',
@@ -4387,6 +4417,14 @@ class AdminController extends Controller
             $container->full_width = false;
         }
         
+        // fixed_width_columns 처리 (full_width가 true일 때만 의미 있음)
+        if ($container->full_width && $request->has('fixed_width_columns')) {
+            $fixedWidthColumnsValue = $request->input('fixed_width_columns');
+            $container->fixed_width_columns = ($fixedWidthColumnsValue == '1' || $fixedWidthColumnsValue === '1' || $fixedWidthColumnsValue === true || $fixedWidthColumnsValue === 1);
+        } else if (!$container->full_width) {
+            $container->fixed_width_columns = false;
+        }
+        
         // full_height 처리
         if ($request->has('full_height')) {
             $fullHeightValue = $request->input('full_height');
@@ -4406,6 +4444,14 @@ class AdminController extends Controller
             } catch (\Exception $e) {
                 // widget_spacing 컬럼이 없는 경우 무시
             }
+        }
+        
+        // padding_top, padding_bottom 처리
+        if ($request->has('padding_top')) {
+            $container->padding_top = (int) $request->padding_top;
+        }
+        if ($request->has('padding_bottom')) {
+            $container->padding_bottom = (int) $request->padding_bottom;
         }
         
         // column_merges 처리

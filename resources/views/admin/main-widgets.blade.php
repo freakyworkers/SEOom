@@ -99,6 +99,16 @@
                                     </select>
                                     <small class="text-muted">같은 컨테이너 내 위젯들 사이의 간격을 설정합니다.</small>
                                 </div>
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <label for="container_padding_top" class="form-label">상단 여백 (px)</label>
+                                        <input type="number" class="form-control" id="container_padding_top" name="padding_top" value="0" min="0" max="500">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="container_padding_bottom" class="form-label">하단 여백 (px)</label>
+                                        <input type="number" class="form-control" id="container_padding_bottom" name="padding_bottom" value="0" min="0" max="500">
+                                    </div>
+                                </div>
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="bi bi-plus-circle me-2"></i>컨테이너 추가
                                 </button>
@@ -227,7 +237,7 @@
                                                 </div>
                                                 {{-- 두 번째 줄: 위젯간격, 배경, 위로이동, 아래로이동, 삭제 아이콘 --}}
                                                 <div class="d-flex align-items-center justify-content-between gap-2">
-                                                    <div class="d-flex align-items-center gap-2">
+                                                    <div class="d-flex align-items-center gap-2 flex-wrap">
                                                         <label class="mb-0 small">위젯 간격:</label>
                                                         <select class="form-select form-select-sm" 
                                                                 style="width: auto; min-width: 100px;" 
@@ -240,7 +250,25 @@
                                                             <option value="4" {{ ($container->widget_spacing ?? 3) == 4 ? 'selected' : '' }}>넓음</option>
                                                             <option value="5" {{ ($container->widget_spacing ?? 3) == 5 ? 'selected' : '' }}>매우 넓음</option>
                                                         </select>
-                                                        <label class="mb-0 small ms-3">배경:</label>
+                                                        <label class="mb-0 small ms-2">상단:</label>
+                                                        <input type="number" 
+                                                               class="form-control form-control-sm" 
+                                                               style="width: 70px;" 
+                                                               id="container_padding_top_{{ $container->id }}"
+                                                               value="{{ $container->padding_top ?? 0 }}"
+                                                               min="0" max="500"
+                                                               onchange="updateContainerPadding({{ $container->id }})"
+                                                               placeholder="px">
+                                                        <label class="mb-0 small">하단:</label>
+                                                        <input type="number" 
+                                                               class="form-control form-control-sm" 
+                                                               style="width: 70px;" 
+                                                               id="container_padding_bottom_{{ $container->id }}"
+                                                               value="{{ $container->padding_bottom ?? 0 }}"
+                                                               min="0" max="500"
+                                                               onchange="updateContainerPadding({{ $container->id }})"
+                                                               placeholder="px">
+                                                        <label class="mb-0 small ms-2">배경:</label>
                                                         <select class="form-select form-select-sm" 
                                                                 style="width: auto; min-width: 100px;" 
                                                                 id="container_background_type_{{ $container->id }}"
@@ -450,6 +478,24 @@
                                                             <option value="4" {{ ($container->widget_spacing ?? 3) == 4 ? 'selected' : '' }}>넓음</option>
                                                             <option value="5" {{ ($container->widget_spacing ?? 3) == 5 ? 'selected' : '' }}>매우 넓음</option>
                                                         </select>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <label class="form-label small mb-1">상단 여백 (px)</label>
+                                                        <input type="number" 
+                                                               class="form-control form-control-sm" 
+                                                               id="container_padding_top_mobile_{{ $container->id }}"
+                                                               value="{{ $container->padding_top ?? 0 }}"
+                                                               min="0" max="500"
+                                                               onchange="updateContainerPadding({{ $container->id }})">
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <label class="form-label small mb-1">하단 여백 (px)</label>
+                                                        <input type="number" 
+                                                               class="form-control form-control-sm" 
+                                                               id="container_padding_bottom_mobile_{{ $container->id }}"
+                                                               value="{{ $container->padding_bottom ?? 0 }}"
+                                                               min="0" max="500"
+                                                               onchange="updateContainerPadding({{ $container->id }})">
                                                     </div>
                                                     <div class="col-12">
                                                         <label class="form-label small mb-1">배경</label>
@@ -1384,6 +1430,28 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="edit_main_widget_image_padding_top" class="form-label">상단 여백 (px)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="edit_main_widget_image_padding_top" 
+                                       name="image_padding_top" 
+                                       min="0" max="500" 
+                                       value="0"
+                                       placeholder="0">
+                            </div>
+                            <div class="col-6">
+                                <label for="edit_main_widget_image_padding_bottom" class="form-label">하단 여백 (px)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="edit_main_widget_image_padding_bottom" 
+                                       name="image_padding_bottom" 
+                                       min="0" max="500" 
+                                       value="0"
+                                       placeholder="0">
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3" id="edit_main_widget_image_slide_container" style="display: none;">
                         <div class="mb-3">
@@ -2208,6 +2276,81 @@ function updateContainerWidgetSpacing(containerId, widgetSpacing) {
     } catch (error) {
         console.error('Error in updateContainerWidgetSpacing:', error);
         alert('위젯 간격 설정 업데이트 중 오류가 발생했습니다: ' + error.message);
+    }
+}
+
+// 컨테이너 상단/하단 여백 업데이트
+function updateContainerPadding(containerId) {
+    try {
+        const formData = new FormData();
+        
+        // 컨테이너 아이템 찾기
+        const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+        if (!containerItem) {
+            console.error('Container item not found for ID:', containerId);
+            alert('컨테이너를 찾을 수 없습니다.');
+            return;
+        }
+        
+        // 기존 설정 값들을 모두 포함하여 전송
+        const columnsSelect = containerItem.querySelector('select[data-container-id="' + containerId + '"]');
+        if (columnsSelect) formData.append('columns', columnsSelect.value);
+        const allSelects = containerItem.querySelectorAll('select[data-container-id="' + containerId + '"]');
+        if (allSelects.length >= 2) formData.append('vertical_align', allSelects[1].value);
+        const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+        if (fullWidthCheckbox) formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+        const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+        if (fullHeightCheckbox) formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+        const fixedWidthColumnsCheckbox = document.getElementById(`container_fixed_width_columns_${containerId}`);
+        if (fixedWidthColumnsCheckbox) formData.append('fixed_width_columns', fixedWidthColumnsCheckbox.checked ? '1' : '0');
+        const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
+        if (widgetSpacingSelect) formData.append('widget_spacing', widgetSpacingSelect.value);
+
+        // 상단/하단 여백 값 가져오기 (데스크탑 또는 모바일 중 하나에서)
+        let paddingTop = document.getElementById(`container_padding_top_${containerId}`)?.value || 
+                         document.getElementById(`container_padding_top_mobile_${containerId}`)?.value || 0;
+        let paddingBottom = document.getElementById(`container_padding_bottom_${containerId}`)?.value || 
+                            document.getElementById(`container_padding_bottom_mobile_${containerId}`)?.value || 0;
+        
+        formData.append('padding_top', paddingTop);
+        formData.append('padding_bottom', paddingBottom);
+        formData.append('_method', 'PUT');
+        
+        fetch('{{ route("admin.main-widgets.containers.update", ["site" => $site->slug, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 성공 메시지 표시
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                alertDiv.style.zIndex = '9999';
+                alertDiv.innerHTML = `
+                    <i class="bi bi-check-circle me-2"></i>컨테이너 여백이 저장되었습니다.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(alertDiv);
+                
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 3000);
+            } else {
+                alert('컨테이너 여백 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('컨테이너 여백 업데이트 중 오류가 발생했습니다: ' + error.message);
+        });
+    } catch (error) {
+        console.error('Error in updateContainerPadding:', error);
+        alert('컨테이너 여백 업데이트 중 오류가 발생했습니다: ' + error.message);
     }
 }
 
@@ -4368,6 +4511,13 @@ function editMainWidget(widgetId) {
                 }
                 if (document.getElementById('edit_main_widget_image_open_new_tab')) {
                     document.getElementById('edit_main_widget_image_open_new_tab').checked = settings.image_open_new_tab || false;
+                }
+                // 상단/하단 여백 로드
+                if (document.getElementById('edit_main_widget_image_padding_top')) {
+                    document.getElementById('edit_main_widget_image_padding_top').value = settings.padding_top || 0;
+                }
+                if (document.getElementById('edit_main_widget_image_padding_bottom')) {
+                    document.getElementById('edit_main_widget_image_padding_bottom').value = settings.padding_bottom || 0;
                 }
             } else if (widgetType === 'image_slide') {
                 if (imageSlideContainer) imageSlideContainer.style.display = 'block';
@@ -6549,6 +6699,12 @@ function saveMainWidgetSettings() {
         }
         const imageOpenNewTab = document.getElementById('edit_main_widget_image_open_new_tab')?.checked;
         settings.image_open_new_tab = imageOpenNewTab || false;
+        
+        // 상단/하단 여백
+        const imagePaddingTop = document.getElementById('edit_main_widget_image_padding_top')?.value || '0';
+        const imagePaddingBottom = document.getElementById('edit_main_widget_image_padding_bottom')?.value || '0';
+        settings.padding_top = parseInt(imagePaddingTop) || 0;
+        settings.padding_bottom = parseInt(imagePaddingBottom) || 0;
     } else if (widgetType === 'image_slide') {
         const slideDirection = document.querySelector('input[name="edit_main_image_slide_direction"]:checked')?.value || 'left';
         settings.slide_direction = slideDirection;

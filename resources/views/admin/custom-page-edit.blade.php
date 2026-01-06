@@ -45,7 +45,7 @@
                                 @endphp
                                 <div class="mb-3">
                                     <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" id="container_full_width" name="full_width" value="1" {{ !$hasSidebar ? '' : 'disabled' }}>
+                                        <input class="form-check-input" type="checkbox" id="container_full_width" name="full_width" value="1" {{ !$hasSidebar ? '' : 'disabled' }} onchange="toggleFixedWidthColumnsAdd()">
                                         <label class="form-check-label" for="container_full_width">
                                             가로 100%
                                         </label>
@@ -62,6 +62,19 @@
                                         </small>
                                     @endif
                                 </div>
+                                <div class="mb-3" id="fixed_width_columns_option_add" style="display: none;">
+                                    <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input" type="checkbox" id="container_fixed_width_columns" name="fixed_width_columns" value="1">
+                                        <label class="form-check-label" for="container_fixed_width_columns">
+                                            칸 고정너비
+                                        </label>
+                                        <i class="bi bi-question-circle text-muted ms-2" 
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="top" 
+                                           title="가로 100% 활성화 시 컨테이너의 배경은 전체 너비를 사용하지만, 컨테이너 안의 칸들은 고정된 너비를 유지합니다." 
+                                           style="cursor: help; font-size: 0.9rem;"></i>
+                                    </div>
+                                </div>
                                 <div class="mb-3">
                                     <div class="form-check d-flex align-items-center">
                                         <input class="form-check-input" type="checkbox" id="container_full_height" name="full_height" value="1">
@@ -73,6 +86,16 @@
                                            data-bs-placement="top" 
                                            title="활성화 시 해당 컨테이너가 브라우저 세로 100% 영역을 사용합니다. 컨테이너 안의 요소들이 전체 높이를 활용할 수 있습니다." 
                                            style="cursor: help; font-size: 0.9rem;"></i>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <label for="container_padding_top" class="form-label">상단 여백 (px)</label>
+                                        <input type="number" class="form-control" id="container_padding_top" name="padding_top" value="0" min="0" max="500">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="container_padding_bottom" class="form-label">하단 여백 (px)</label>
+                                        <input type="number" class="form-control" id="container_padding_bottom" name="padding_bottom" value="0" min="0" max="500">
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary w-100">
@@ -160,7 +183,7 @@
                                                         <input class="form-check-input container-full-width-checkbox" type="checkbox" 
                                                                id="container_full_width_{{ $container->id }}" 
                                                                @if($container->full_width) checked @endif
-                                                               @if(!$hasSidebar) data-container-id="{{ $container->id }}" @else disabled @endif>
+                                                               @if(!$hasSidebar) data-container-id="{{ $container->id }}" onchange="toggleFixedWidthColumnsOption({{ $container->id }})" @else disabled @endif>
                                                         <label class="form-check-label small mb-0" for="container_full_width_{{ $container->id }}">
                                                             가로 100%
                                                         </label>
@@ -168,6 +191,21 @@
                                                            data-bs-toggle="tooltip" 
                                                            data-bs-placement="top" 
                                                            title="활성화 시 해당 컨테이너가 브라우저 전체 너비를 사용합니다. 사이드바가 없음으로 설정된 경우에만 사용할 수 있습니다." 
+                                                           style="cursor: help; font-size: 0.85rem;"></i>
+                                                    </div>
+                                                    <div class="form-check ms-3 d-flex align-items-center" id="fixed_width_columns_container_{{ $container->id }}" style="display: {{ $container->full_width ? 'flex' : 'none' }} !important;">
+                                                        <input class="form-check-input container-fixed-width-columns-checkbox" type="checkbox" 
+                                                               id="container_fixed_width_columns_{{ $container->id }}" 
+                                                               @if($container->fixed_width_columns) checked @endif
+                                                               data-container-id="{{ $container->id }}"
+                                                               onchange="updateContainerFixedWidthColumns({{ $container->id }}, this.checked)">
+                                                        <label class="form-check-label small mb-0" for="container_fixed_width_columns_{{ $container->id }}">
+                                                            칸 고정너비
+                                                        </label>
+                                                        <i class="bi bi-question-circle text-muted ms-1" 
+                                                           data-bs-toggle="tooltip" 
+                                                           data-bs-placement="top" 
+                                                           title="활성화 시 컨테이너 배경은 100%이지만 칸들은 기존 고정 너비를 유지합니다." 
                                                            style="cursor: help; font-size: 0.85rem;"></i>
                                                     </div>
                                                     <div class="form-check ms-3 d-flex align-items-center">
@@ -187,7 +225,7 @@
                                                 </div>
                                                 {{-- 두 번째 줄: 위젯간격, 배경, 위로이동, 아래로이동, 삭제 아이콘 --}}
                                                 <div class="d-flex align-items-center justify-content-between gap-2">
-                                                    <div class="d-flex align-items-center gap-2">
+                                                    <div class="d-flex align-items-center gap-2 flex-wrap">
                                                         <label class="mb-0 small">위젯 간격:</label>
                                                         <select class="form-select form-select-sm" 
                                                                 style="width: auto; min-width: 100px;" 
@@ -200,7 +238,25 @@
                                                             <option value="4" {{ ($container->widget_spacing ?? 3) == 4 ? 'selected' : '' }}>넓음</option>
                                                             <option value="5" {{ ($container->widget_spacing ?? 3) == 5 ? 'selected' : '' }}>매우 넓음</option>
                                                         </select>
-                                                        <label class="mb-0 small ms-3">배경:</label>
+                                                        <label class="mb-0 small ms-2">상단:</label>
+                                                        <input type="number" 
+                                                               class="form-control form-control-sm" 
+                                                               style="width: 70px;" 
+                                                               id="container_padding_top_{{ $container->id }}"
+                                                               value="{{ $container->padding_top ?? 0 }}"
+                                                               min="0" max="500"
+                                                               onchange="updateContainerPadding({{ $container->id }})"
+                                                               placeholder="px">
+                                                        <label class="mb-0 small">하단:</label>
+                                                        <input type="number" 
+                                                               class="form-control form-control-sm" 
+                                                               style="width: 70px;" 
+                                                               id="container_padding_bottom_{{ $container->id }}"
+                                                               value="{{ $container->padding_bottom ?? 0 }}"
+                                                               min="0" max="500"
+                                                               onchange="updateContainerPadding({{ $container->id }})"
+                                                               placeholder="px">
+                                                        <label class="mb-0 small ms-2">배경:</label>
                                                         <select class="form-select form-select-sm" 
                                                                 style="width: auto; min-width: 100px;" 
                                                                 id="container_background_type_{{ $container->id }}"
@@ -1464,6 +1520,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (fullHeightCheckbox) {
                 formData.set('full_height', fullHeightCheckbox.checked ? '1' : '0');
             }
+            // 칸 고정너비 체크박스 값 추가
+            const fixedWidthColumnsCheckbox = document.getElementById('container_fixed_width_columns');
+            if (fixedWidthColumnsCheckbox) {
+                formData.set('fixed_width_columns', fixedWidthColumnsCheckbox.checked ? '1' : '0');
+            }
             
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
@@ -1784,6 +1845,161 @@ function updateContainerBackground(containerId, backgroundType, value) {
         console.error('Error:', error);
         alert('배경 설정 업데이트 중 오류가 발생했습니다.');
     });
+}
+
+// 컨테이너 추가 시 칸 고정너비 옵션 토글
+function toggleFixedWidthColumnsAdd() {
+    const fullWidthCheckbox = document.getElementById('container_full_width');
+    const fixedWidthColumnsDiv = document.getElementById('fixed_width_columns_option_add');
+    
+    if (fullWidthCheckbox && fixedWidthColumnsDiv) {
+        if (fullWidthCheckbox.checked) {
+            fixedWidthColumnsDiv.style.display = 'block';
+        } else {
+            fixedWidthColumnsDiv.style.display = 'none';
+            const fixedWidthColumnsCheckbox = document.getElementById('container_fixed_width_columns');
+            if (fixedWidthColumnsCheckbox) {
+                fixedWidthColumnsCheckbox.checked = false;
+            }
+        }
+    }
+}
+
+// 기존 컨테이너 칸 고정너비 옵션 토글
+function toggleFixedWidthColumnsOption(containerId) {
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    const fixedWidthColumnsDiv = document.getElementById(`fixed_width_columns_container_${containerId}`);
+    const fixedWidthColumnsCheckbox = document.getElementById(`container_fixed_width_columns_${containerId}`);
+
+    if (fullWidthCheckbox && fixedWidthColumnsDiv && fixedWidthColumnsCheckbox) {
+        if (fullWidthCheckbox.checked) {
+            fixedWidthColumnsDiv.style.display = 'flex';
+        } else {
+            fixedWidthColumnsDiv.style.display = 'none';
+            if (fixedWidthColumnsCheckbox.checked) {
+                fixedWidthColumnsCheckbox.checked = false;
+                updateContainerFixedWidthColumns(containerId, false);
+            }
+        }
+    }
+}
+
+// 컨테이너 칸 고정너비 업데이트
+function updateContainerFixedWidthColumns(containerId, fixedWidthColumns) {
+    try {
+        const formData = new FormData();
+        const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+        if (!containerItem) {
+            console.error('Container item not found for ID:', containerId);
+            alert('컨테이너를 찾을 수 없습니다.');
+            return;
+        }
+
+        const columnsSelect = containerItem.querySelector('select[data-container-id="' + containerId + '"]');
+        if (columnsSelect) formData.append('columns', columnsSelect.value);
+        const allSelects = containerItem.querySelectorAll('select[data-container-id="' + containerId + '"]');
+        if (allSelects.length >= 2) formData.append('vertical_align', allSelects[1].value);
+        const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+        if (fullWidthCheckbox) formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+        const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+        if (fullHeightCheckbox) formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+        const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
+        if (widgetSpacingSelect) formData.append('widget_spacing', widgetSpacingSelect.value);
+
+        formData.append('fixed_width_columns', fixedWidthColumns ? '1' : '0');
+        formData.append('_method', 'PUT');
+
+        fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "page" => $page->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                alertDiv.style.zIndex = '9999';
+                alertDiv.innerHTML = `<i class="bi bi-check-circle me-2"></i>칸 고정너비 설정이 저장되었습니다.<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+                document.body.appendChild(alertDiv);
+                setTimeout(() => { alertDiv.remove(); }, 3000);
+            } else {
+                alert('칸 고정너비 설정 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('칸 고정너비 설정 업데이트 중 오류가 발생했습니다: ' + error.message);
+        });
+    } catch (error) {
+        console.error('Error in updateContainerFixedWidthColumns:', error);
+        alert('칸 고정너비 설정 업데이트 중 오류가 발생했습니다: ' + error.message);
+    }
+}
+
+// 컨테이너 상단/하단 여백 업데이트
+function updateContainerPadding(containerId) {
+    try {
+        const formData = new FormData();
+        const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+        if (!containerItem) {
+            console.error('Container item not found for ID:', containerId);
+            alert('컨테이너를 찾을 수 없습니다.');
+            return;
+        }
+
+        const columnsSelect = containerItem.querySelector('select[data-container-id="' + containerId + '"]');
+        if (columnsSelect) formData.append('columns', columnsSelect.value);
+        const allSelects = containerItem.querySelectorAll('select[data-container-id="' + containerId + '"]');
+        if (allSelects.length >= 2) formData.append('vertical_align', allSelects[1].value);
+        const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+        if (fullWidthCheckbox) formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+        const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+        if (fullHeightCheckbox) formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+        const fixedWidthColumnsCheckbox = document.getElementById(`container_fixed_width_columns_${containerId}`);
+        if (fixedWidthColumnsCheckbox) formData.append('fixed_width_columns', fixedWidthColumnsCheckbox.checked ? '1' : '0');
+        const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
+        if (widgetSpacingSelect) formData.append('widget_spacing', widgetSpacingSelect.value);
+
+        let paddingTop = document.getElementById(`container_padding_top_${containerId}`)?.value || 0;
+        let paddingBottom = document.getElementById(`container_padding_bottom_${containerId}`)?.value || 0;
+        
+        formData.append('padding_top', paddingTop);
+        formData.append('padding_bottom', paddingBottom);
+        formData.append('_method', 'PUT');
+
+        fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "page" => $page->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                alertDiv.style.zIndex = '9999';
+                alertDiv.innerHTML = `<i class="bi bi-check-circle me-2"></i>컨테이너 여백이 저장되었습니다.<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+                document.body.appendChild(alertDiv);
+                setTimeout(() => { alertDiv.remove(); }, 3000);
+            } else {
+                alert('컨테이너 여백 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('컨테이너 여백 업데이트 중 오류가 발생했습니다: ' + error.message);
+        });
+    } catch (error) {
+        console.error('Error in updateContainerPadding:', error);
+        alert('컨테이너 여백 업데이트 중 오류가 발생했습니다: ' + error.message);
+    }
 }
 
 // 컨테이너 위젯 간격 업데이트

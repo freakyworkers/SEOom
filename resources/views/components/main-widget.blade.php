@@ -690,6 +690,10 @@
         $link = $imageSettings['link'] ?? '';
         $openNewTab = $imageSettings['open_new_tab'] ?? false;
         
+        // 이미지 위젯 상단/하단 여백
+        $imagePaddingTop = $imageSettings['padding_top'] ?? 0;
+        $imagePaddingBottom = $imageSettings['padding_bottom'] ?? 0;
+        
         // 컨테이너 정렬에 따라 justify-content 설정
         $imageJustifyContent = 'center';
         if ($verticalAlign === 'top') {
@@ -700,6 +704,14 @@
         
         // 이미지 위젯도 같은 높이를 가지도록 flex 적용 및 세로 정렬 추가
         $imageWidgetStyle = 'display: flex; flex-direction: column; flex: 1; justify-content: ' . $imageJustifyContent . '; margin-top: 0 !important; margin-bottom: 0 !important;';
+        
+        // 상단/하단 여백 적용
+        if ($imagePaddingTop > 0) {
+            $imageWidgetStyle .= ' padding-top: ' . $imagePaddingTop . 'px;';
+        }
+        if ($imagePaddingBottom > 0) {
+            $imageWidgetStyle .= ' padding-bottom: ' . $imagePaddingBottom . 'px;';
+        }
         
         // 이미지 링크 및 이미지 자체의 스타일
         $imageLinkStyle = $isRoundTheme ? 'display: block; border-radius: 0.5rem; overflow: hidden; width: 100%;' : 'display: block; width: 100%;';

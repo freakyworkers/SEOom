@@ -50,6 +50,9 @@
             $themeSidebar = $site->getSetting('theme_sidebar', 'left');
             $isFullWidth = ($container->full_width ?? false) && ($themeSidebar === 'none');
             $isFullHeight = ($container->full_height ?? false);
+            // 칸 고정너비 설정 확인 (가로 100%일 때만 적용)
+            $fixedWidthColumns = ($container->fixed_width_columns ?? false) && $isFullWidth;
+            
             $containerClass = $isFullWidth ? 'container-fluid px-0' : '';
             $containerStyle = $isFullWidth ? 'width: 100vw; position: relative; left: 50%; transform: translateX(-50%); padding: 0;' : '';
             
@@ -62,7 +65,9 @@
                 $containerStyle .= ($containerStyle ? ' ' : '') . 'height: 100vh; overflow: hidden;';
                 $containerClass .= ' full-height-container';
             }
-            $rowStyle = $isFullWidth ? 'margin-left: 0; margin-right: 0; width: 100%;' : '';
+            
+            // 칸 고정너비가 아닐 때만 row에 100% 적용
+            $rowStyle = ($isFullWidth && !$fixedWidthColumns) ? 'margin-left: 0; margin-right: 0; width: 100%;' : '';
             if ($isFullHeight) {
                 $rowStyle .= ($rowStyle ? ' ' : '') . 'height: 100%;';
             }
@@ -85,9 +90,19 @@
             if ($backgroundStyle) {
                 $containerStyle .= ($containerStyle ? ' ' : '') . $backgroundStyle;
             }
+            
+            // 컨테이너 상단/하단 여백 추가
+            $paddingTop = $container->padding_top ?? 0;
+            $paddingBottom = $container->padding_bottom ?? 0;
+            if ($paddingTop > 0) {
+                $containerStyle .= ' padding-top: ' . $paddingTop . 'px !important;';
+            }
+            if ($paddingBottom > 0) {
+                $containerStyle .= ' padding-bottom: ' . $paddingBottom . 'px !important;';
+            }
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
-            <div class="row custom-page-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
+            <div class="row custom-page-widget-container {{ $alignClass }}{{ $fixedWidthColumns ? ' container mx-auto' : '' }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
                 @php
                     $columnMerges = $container->column_merges ?? [];
                     $hiddenColumns = [];
@@ -103,8 +118,8 @@
                         $mergeSpan = $columnMerges[$i] ?? 1;
                         $colWidth = $mergeSpan * (12 / $container->columns);
                         $columnWidgets = $container->widgets->where('column_index', $i)->sortBy('order');
-                        // 가로 100%일 때만 padding 제거, 일반적인 경우에는 Bootstrap gutter 유지
-                        $colStyle = $isFullWidth ? 'padding-left: 0; padding-right: 0;' : '';
+                        // 가로 100%이고 칸 고정너비가 비활성화일 때만 padding 제거
+                        $colStyle = ($isFullWidth && !$fixedWidthColumns) ? 'padding-left: 0; padding-right: 0;' : '';
                         if ($isFullHeight) {
                             $colStyle .= ($colStyle ? ' ' : '') . 'height: 100%; display: flex; flex-direction: column;';
                         }
