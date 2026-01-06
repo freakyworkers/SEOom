@@ -999,6 +999,83 @@
         })();
         </script>
     @endif
+@elseif($widget->type === 'countdown')
+    @php
+        $countdownSettings = $widgetSettings;
+        $countdownTitle = $countdownSettings['countdown_title'] ?? '';
+        $countdownContent = $countdownSettings['countdown_content'] ?? '';
+        $countdownType = $countdownSettings['countdown_type'] ?? 'dday';
+        
+        // 카운트다운 위젯 전용 그림자/라운드 적용 (가로/세로 100%여도 적용)
+        $countdownShadowClass = $widgetShadow ? 'shadow-sm' : '';
+        $countdownRoundClass = $isOriginalRoundTheme ? '' : 'rounded-0';
+        $countdownStyle = 'display: flex; flex-direction: column; flex: 1; justify-content: center; padding: 1.5rem; margin-top: 0 !important; margin-bottom: 0 !important;';
+        if ($isOriginalRoundTheme) {
+            $countdownStyle .= ' border-radius: 0.5rem;';
+        }
+        
+        // 컨테이너 정렬에 따라 justify-content 설정
+        if ($verticalAlign === 'top') {
+            $countdownStyle = str_replace('justify-content: center;', 'justify-content: flex-start;', $countdownStyle);
+        } elseif ($verticalAlign === 'bottom') {
+            $countdownStyle = str_replace('justify-content: center;', 'justify-content: flex-end;', $countdownStyle);
+        }
+        
+        // 다크모드 배경색 처리
+        $countdownBgColor = $isDark ? 'rgb(43, 43, 43)' : '#ffffff';
+    @endphp
+    <div class="card {{ $countdownShadowClass }} {{ $animationClass }} mb-0 {{ $countdownRoundClass }}" style="{{ $countdownStyle }} background-color: {{ $countdownBgColor }}; {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
+        <div class="countdown-widget text-center" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+            @if($countdownTitle)
+                <h4 class="mb-3">{{ $countdownTitle }}</h4>
+            @endif
+            @if($countdownContent)
+                <p class="mb-3">{{ $countdownContent }}</p>
+            @endif
+            
+            @if($countdownType === 'dday')
+                @php
+                    $targetDate = $countdownSettings['countdown_target_date'] ?? '';
+                    $ddayAnimationEnabled = $countdownSettings['countdown_dday_animation_enabled'] ?? false;
+                @endphp
+                @if($targetDate)
+                    <div class="countdown-dday" data-target-date="{{ $targetDate }}" data-animation-enabled="{{ $ddayAnimationEnabled ? 'true' : 'false' }}">
+                        <div class="countdown-display">
+                            <span class="countdown-text">계산 중...</span>
+                        </div>
+                    </div>
+                @else
+                    <p class="text-muted">목표 날짜가 설정되지 않았습니다.</p>
+                @endif
+            @elseif($countdownType === 'number')
+                @php
+                    $numberItems = $countdownSettings['countdown_number_items'] ?? [];
+                    $animationEnabled = $countdownSettings['countdown_animation_enabled'] 
+                        ?? $countdownSettings['countdown_animation'] 
+                        ?? false;
+                @endphp
+                @if(count($numberItems) > 0)
+                    <div class="countdown-number-items row g-3">
+                        @foreach($numberItems as $index => $item)
+                            <div class="col-md-{{ 12 / min(count($numberItems), 3) }} countdown-number-item" 
+                                 data-item-name="{{ $item['name'] ?? '' }}"
+                                 data-item-number="{{ $item['number'] ?? 0 }}"
+                                 data-item-unit="{{ $item['unit'] ?? '' }}"
+                                 data-animation="{{ $animationEnabled ? 'true' : 'false' }}">
+                                <div class="countdown-number-name mb-2">{{ $item['name'] ?? '' }}</div>
+                                <div class="countdown-number-value">
+                                    <span class="countdown-number-display" style="font-size: 2.5rem; font-weight: bold;">{{ $animationEnabled ? '0' : ($item['number'] ?? 0) }}</span>
+                                    <span class="countdown-number-unit" style="font-size: 1.2rem; margin-left: 0.5rem;">{{ $item['unit'] ?? '' }}</span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-muted">숫자 카운트 항목이 없습니다.</p>
+                @endif
+            @endif
+        </div>
+    </div>
 @else
 @php
     // 제목이 있을 때만 상단 테두리 적용
@@ -4111,66 +4188,6 @@
                         </a>
                     </div>
                 @endif
-                @break
-
-            @case('countdown')
-                @php
-                    $countdownSettings = $widgetSettings;
-                    $countdownTitle = $countdownSettings['countdown_title'] ?? '';
-                    $countdownContent = $countdownSettings['countdown_content'] ?? '';
-                    $countdownType = $countdownSettings['countdown_type'] ?? 'dday';
-                @endphp
-                <div class="countdown-widget text-center" style="{{ $isFullHeight ? 'flex: 1; display: flex; flex-direction: column; justify-content: center;' : '' }}">
-                    @if($countdownTitle)
-                        <h4 class="mb-3">{{ $countdownTitle }}</h4>
-                    @endif
-                    @if($countdownContent)
-                        <p class="mb-3">{{ $countdownContent }}</p>
-                    @endif
-                    
-                    @if($countdownType === 'dday')
-                        @php
-                            $targetDate = $countdownSettings['countdown_target_date'] ?? '';
-                            $ddayAnimationEnabled = $countdownSettings['countdown_dday_animation_enabled'] ?? false;
-                        @endphp
-                        @if($targetDate)
-                            <div class="countdown-dday" data-target-date="{{ $targetDate }}" data-animation-enabled="{{ $ddayAnimationEnabled ? 'true' : 'false' }}">
-                                <div class="countdown-display">
-                                    <span class="countdown-text">계산 중...</span>
-                                </div>
-                            </div>
-                        @else
-                            <p class="text-muted">목표 날짜가 설정되지 않았습니다.</p>
-                        @endif
-                    @elseif($countdownType === 'number')
-                        @php
-                            $numberItems = $countdownSettings['countdown_number_items'] ?? [];
-                            // 기존 키(countdown_animation)와 신규 키(countdown_animation_enabled) 모두 대응
-                            $animationEnabled = $countdownSettings['countdown_animation_enabled'] 
-                                ?? $countdownSettings['countdown_animation'] 
-                                ?? false;
-                        @endphp
-                        @if(count($numberItems) > 0)
-                            <div class="countdown-number-items row g-3">
-                                @foreach($numberItems as $index => $item)
-                                    <div class="col-md-{{ 12 / min(count($numberItems), 3) }} countdown-number-item" 
-                                         data-item-name="{{ $item['name'] ?? '' }}"
-                                         data-item-number="{{ $item['number'] ?? 0 }}"
-                                         data-item-unit="{{ $item['unit'] ?? '' }}"
-                                         data-animation="{{ $animationEnabled ? 'true' : 'false' }}">
-                                        <div class="countdown-number-name mb-2">{{ $item['name'] ?? '' }}</div>
-                                        <div class="countdown-number-value">
-                                            <span class="countdown-number-display" style="font-size: 2.5rem; font-weight: bold;">{{ $animationEnabled ? '0' : ($item['number'] ?? 0) }}</span>
-                                            <span class="countdown-number-unit" style="font-size: 1.2rem; margin-left: 0.5rem;">{{ $item['unit'] ?? '' }}</span>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <p class="text-muted">숫자 카운트 항목이 없습니다.</p>
-                        @endif
-                    @endif
-                </div>
                 @break
 
             @default
