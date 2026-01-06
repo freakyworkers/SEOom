@@ -107,9 +107,8 @@
             $prevContainer = $index > 0 ? $mainWidgetContainers[$index - 1] : null;
             $prevIsFullHeight = $prevContainer ? ($prevContainer->full_height ?? false) : false;
             
-            // 컨테이너 여백 처리 - 세로 100%일 때도 하단 여백 유지
-            // 모든 컨테이너에 동일하게 하단 여백 적용
-            $containerMarginBottom = 'mb-' . min(max($containerSpacing, 0), 5);
+            // 컨테이너 여백은 인라인 스타일로만 적용 (Bootstrap 클래스 제거)
+            $containerMarginBottom = '';
             
             // 배경 스타일 추가
             $backgroundStyle = '';
@@ -125,15 +124,14 @@
                 $backgroundStyle = 'background-image: url(' . htmlspecialchars($container->background_image_url) . '); background-size: cover; background-position: center; background-repeat: no-repeat;';
             }
             
-            // 컨테이너 상단/하단 마진 추가
+            // 컨테이너 상단/하단 마진 추가 (0 포함 항상 적용)
             $marginTop = $container->margin_top ?? 0;
             $marginBottom = $container->margin_bottom ?? 24;
             if ($marginTop > 0) {
                 $containerStyle .= ' margin-top: ' . $marginTop . 'px !important;';
             }
-            if ($marginBottom > 0) {
-                $containerStyle .= ' margin-bottom: ' . $marginBottom . 'px !important;';
-            }
+            // margin_bottom은 0일 때도 적용해야 함
+            $containerStyle .= ' margin-bottom: ' . $marginBottom . 'px !important;';
             
             if ($backgroundStyle) {
                 $containerStyle .= ($containerStyle ? ' ' : '') . $backgroundStyle;

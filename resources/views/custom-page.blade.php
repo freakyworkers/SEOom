@@ -71,7 +71,8 @@
             if ($isFullHeight) {
                 $rowStyle .= ($rowStyle ? ' ' : '') . 'height: 100%;';
             }
-            $containerMarginBottom = 'mb-4';
+            // 컨테이너 여백은 인라인 스타일로만 적용 (Bootstrap 클래스 제거)
+            $containerMarginBottom = '';
             
             // 배경 스타일 추가
             $backgroundStyle = '';
@@ -91,15 +92,14 @@
                 $containerStyle .= ($containerStyle ? ' ' : '') . $backgroundStyle;
             }
             
-            // 컨테이너 상단/하단 마진 추가
+            // 컨테이너 상단/하단 마진 추가 (0 포함 항상 적용)
             $marginTop = $container->margin_top ?? 0;
             $marginBottom = $container->margin_bottom ?? 24;
             if ($marginTop > 0) {
                 $containerStyle .= ' margin-top: ' . $marginTop . 'px !important;';
             }
-            if ($marginBottom > 0) {
-                $containerStyle .= ' margin-bottom: ' . $marginBottom . 'px !important;';
-            }
+            // margin_bottom은 0일 때도 적용해야 함
+            $containerStyle .= ' margin-bottom: ' . $marginBottom . 'px !important;';
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
             <div class="row custom-page-widget-container {{ $alignClass }}{{ $fixedWidthColumns ? ' container mx-auto' : '' }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
