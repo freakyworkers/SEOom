@@ -137,7 +137,7 @@
                 $containerStyle .= ' padding-right: ' . $paddingRight . 'px !important;';
             }
         @endphp
-        <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
+        <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}"@if($container->anchor_id) id="{{ $container->anchor_id }}"@endif>
             <div class="row custom-page-widget-container {{ $alignClass }}{{ $fixedWidthColumns ? ' container mx-auto' : '' }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
                 @php
                     $columnMerges = $container->column_merges ?? [];

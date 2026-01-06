@@ -34,6 +34,7 @@ class CustomPageWidgetContainer extends Model
         'background_image_url',
         'background_parallax',
         'order',
+        'anchor_id',
     ];
 
     protected $casts = [

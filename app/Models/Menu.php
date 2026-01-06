@@ -70,6 +70,9 @@ class Menu extends Model
                 return route('point-exchange.index', ['site' => $this->site->slug]);
             case 'event_application':
                 return route('event-application.index', ['site' => $this->site->slug]);
+            case 'anchor':
+                // 앵커 링크는 현재 페이지에서 해당 ID로 스크롤
+                return '#' . ($this->link_target ?? '');
             default:
                 return '#';
         }

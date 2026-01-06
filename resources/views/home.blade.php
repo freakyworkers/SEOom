@@ -173,7 +173,7 @@
                 $containerStyle .= ($containerStyle ? ' ' : '') . $backgroundStyle;
             }
         @endphp
-        <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
+        <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}"@if($container->anchor_id) id="{{ $container->anchor_id }}"@endif>
             @if($fixedWidthColumns)
             {{-- 칸 고정너비: 배경은 100%지만 칸들은 고정 너비 유지 --}}
             <div class="container">

@@ -2433,6 +2433,56 @@
         });
     </script>
     
+    <!-- 앵커 링크 스무스 스크롤 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 앵커 링크 클릭 시 스무스 스크롤
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId && targetId.length > 1) {
+                        const targetElement = document.querySelector(targetId);
+                        if (targetElement) {
+                            e.preventDefault();
+                            
+                            // 헤더 높이 계산 (고정 헤더 고려)
+                            const header = document.querySelector('header, .header, .navbar, [data-header]');
+                            const headerHeight = header ? header.offsetHeight : 0;
+                            
+                            // 타겟 위치로 스무스 스크롤
+                            const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                            
+                            window.scrollTo({
+                                top: targetPosition,
+                                behavior: 'smooth'
+                            });
+                            
+                            // URL 해시 업데이트
+                            history.pushState(null, null, targetId);
+                        }
+                    }
+                });
+            });
+            
+            // 페이지 로드 시 URL에 해시가 있으면 해당 위치로 스크롤
+            if (window.location.hash) {
+                const targetElement = document.querySelector(window.location.hash);
+                if (targetElement) {
+                    setTimeout(() => {
+                        const header = document.querySelector('header, .header, .navbar, [data-header]');
+                        const headerHeight = header ? header.offsetHeight : 0;
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }, 100);
+                }
+            }
+        });
+    </script>
+    
     @stack('scripts')
     
     @auth

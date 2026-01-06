@@ -270,6 +270,15 @@
                                                         <input type="hidden" id="container_padding_bottom_{{ $container->id }}" value="{{ $container->padding_bottom ?? 0 }}">
                                                         <input type="hidden" id="container_padding_left_{{ $container->id }}" value="{{ $container->padding_left ?? 0 }}">
                                                         <input type="hidden" id="container_padding_right_{{ $container->id }}" value="{{ $container->padding_right ?? 0 }}">
+                                                        <label class="mb-0 small ms-2">앵커ID:</label>
+                                                        <input type="text" 
+                                                               class="form-control form-control-sm" 
+                                                               style="width: 120px;"
+                                                               id="container_anchor_id_{{ $container->id }}"
+                                                               value="{{ $container->anchor_id ?? '' }}"
+                                                               placeholder="section-name"
+                                                               onchange="updateContainerAnchorId({{ $container->id }})"
+                                                               title="메뉴에서 이 컨테이너로 스크롤 이동 시 사용되는 ID">
                                                         <label class="mb-0 small ms-2">배경:</label>
                                                         <select class="form-select form-select-sm" 
                                                                 style="width: auto; min-width: 100px;" 
@@ -2353,6 +2362,54 @@ function updateContainerBackgroundColor(containerId) {
     .catch(error => {
         console.error('Error:', error);
         alert('배경 설정 업데이트 중 오류가 발생했습니다.');
+    });
+}
+
+// 컨테이너 앵커 ID 업데이트
+function updateContainerAnchorId(containerId) {
+    const anchorInput = document.getElementById(`container_anchor_id_${containerId}`);
+    if (!anchorInput) return;
+    
+    const anchorId = anchorInput.value.trim();
+    
+    // 앵커 ID 유효성 검사 (영문 시작, 영문/숫자/하이픈/언더스코어만 허용)
+    if (anchorId && !/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(anchorId)) {
+        alert('앵커 ID는 영문으로 시작하고 영문, 숫자, 하이픈(-), 언더스코어(_)만 사용할 수 있습니다.');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('anchor_id', anchorId);
+    formData.append('_method', 'PUT');
+    
+    // 현재 컨테이너 설정 유지
+    const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+    if (containerItem) {
+        const columnsSelect = containerItem.querySelector('select[onchange*="updateContainerColumns"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        }
+    }
+    
+    fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 성공 알림 표시하지 않음
+        } else {
+            alert('앵커 ID 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('앵커 ID 업데이트 중 오류가 발생했습니다.');
     });
 }
 

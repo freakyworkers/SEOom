@@ -3759,6 +3759,17 @@ class AdminController extends Controller
             $container->background_parallax = $request->boolean('background_parallax');
         }
         
+        // 앵커 ID 설정
+        if ($request->has('anchor_id')) {
+            // 앵커 ID 유효성 검사: 영문, 숫자, 하이픈, 언더스코어만 허용
+            $anchorId = $request->anchor_id;
+            if ($anchorId && preg_match('/^[a-zA-Z][a-zA-Z0-9_-]*$/', $anchorId)) {
+                $container->anchor_id = $anchorId;
+            } elseif (empty($anchorId)) {
+                $container->anchor_id = null;
+            }
+        }
+        
         $container->save();
 
         return response()->json([
@@ -4571,6 +4582,17 @@ class AdminController extends Controller
         // 패럴랙스 설정
         if ($request->has('background_parallax')) {
             $container->background_parallax = $request->boolean('background_parallax');
+        }
+        
+        // 앵커 ID 설정
+        if ($request->has('anchor_id')) {
+            // 앵커 ID 유효성 검사: 영문, 숫자, 하이픈, 언더스코어만 허용
+            $anchorId = $request->anchor_id;
+            if ($anchorId && preg_match('/^[a-zA-Z][a-zA-Z0-9_-]*$/', $anchorId)) {
+                $container->anchor_id = $anchorId;
+            } elseif (empty($anchorId)) {
+                $container->anchor_id = null;
+            }
         }
         
         $container->save();

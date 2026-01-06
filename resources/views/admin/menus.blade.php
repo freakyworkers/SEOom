@@ -82,6 +82,7 @@
                         <option value="board">게시판</option>
                         <option value="custom_page">커스텀 페이지</option>
                         <option value="external_link">외부링크</option>
+                        <option value="anchor">컨테이너(앵커)</option>
                         @if($siteFeatures['attendance'] ?? false)
                         <option value="attendance">출첵페이지</option>
                         @endif
@@ -108,6 +109,8 @@
                         @endforeach
                     </select>
                     <input type="text" class="form-control link-target-input" id="new_link_target_external" placeholder="https://example.com" style="display: none;">
+                    <input type="text" class="form-control link-target-input" id="new_link_target_anchor" placeholder="section-about (앵커 ID)" style="display: none;">
+                    <small class="text-muted d-none" id="new_link_target_anchor_help">컨테이너에 설정한 앵커 ID를 입력하세요. 클릭 시 해당 컨테이너로 스크롤됩니다.</small>
                     <div class="link-target-placeholder" style="display: none;"></div>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
@@ -484,11 +487,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const linkTargetPlaceholder = document.querySelector('.link-target-placeholder');
     const linkTargetLabel = document.querySelector('label[for="new_link_target"]');
 
+    const newLinkTargetAnchor = document.getElementById('new_link_target_anchor');
+    const newLinkTargetAnchorHelp = document.getElementById('new_link_target_anchor_help');
+
     newLinkType.addEventListener('change', function() {
         // 모든 연결 대상 필드 숨김
         newLinkTargetBoard.style.display = 'none';
         newLinkTargetCustomPage.style.display = 'none';
         newLinkTargetExternal.style.display = 'none';
+        newLinkTargetAnchor.style.display = 'none';
+        newLinkTargetAnchorHelp.classList.add('d-none');
         linkTargetPlaceholder.style.display = 'none';
         linkTargetLabel.style.display = 'block';
 
@@ -498,26 +506,38 @@ document.addEventListener('DOMContentLoaded', function() {
             newLinkTargetBoard.required = true;
             newLinkTargetCustomPage.required = false;
             newLinkTargetExternal.required = false;
+            newLinkTargetAnchor.required = false;
         } else if (linkType === 'custom_page') {
             newLinkTargetCustomPage.style.display = 'block';
             newLinkTargetCustomPage.required = true;
             newLinkTargetBoard.required = false;
             newLinkTargetExternal.required = false;
+            newLinkTargetAnchor.required = false;
         } else if (linkType === 'external_link') {
             newLinkTargetExternal.style.display = 'block';
             newLinkTargetExternal.required = true;
             newLinkTargetBoard.required = false;
             newLinkTargetCustomPage.required = false;
+            newLinkTargetAnchor.required = false;
+        } else if (linkType === 'anchor') {
+            newLinkTargetAnchor.style.display = 'block';
+            newLinkTargetAnchorHelp.classList.remove('d-none');
+            newLinkTargetAnchor.required = true;
+            newLinkTargetBoard.required = false;
+            newLinkTargetCustomPage.required = false;
+            newLinkTargetExternal.required = false;
         } else if (['attendance', 'point_exchange', 'event_application'].includes(linkType)) {
             linkTargetPlaceholder.style.display = 'block';
             linkTargetLabel.style.display = 'none';
             newLinkTargetBoard.required = false;
             newLinkTargetCustomPage.required = false;
             newLinkTargetExternal.required = false;
+            newLinkTargetAnchor.required = false;
         } else {
             newLinkTargetBoard.required = false;
             newLinkTargetCustomPage.required = false;
             newLinkTargetExternal.required = false;
+            newLinkTargetAnchor.required = false;
         }
     });
 
@@ -535,6 +555,8 @@ document.addEventListener('DOMContentLoaded', function() {
             linkTarget = document.getElementById('new_link_target_custom_page').value;
         } else if (linkType === 'external_link') {
             linkTarget = document.getElementById('new_link_target_external').value;
+        } else if (linkType === 'anchor') {
+            linkTarget = document.getElementById('new_link_target_anchor').value;
         }
 
         fetch('{{ route("admin.menus.store", ["site" => $site->slug]) }}', {
@@ -698,6 +720,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <option value="board">게시판</option>
                                     <option value="custom_page">커스텀 페이지</option>
                                     <option value="external_link">외부링크</option>
+                                    <option value="anchor">컨테이너(앵커)</option>
                                     @if($siteFeatures['attendance'] ?? false)
                                     <option value="attendance">출첵페이지</option>
                                     @endif
@@ -723,6 +746,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     @endforeach
                                 </select>
                                 <input type="text" class="form-control form-control-sm submenu-link-target-external" name="link_target_external" placeholder="https://example.com" style="display: none;">
+                                <input type="text" class="form-control form-control-sm submenu-link-target-anchor" name="link_target_anchor" placeholder="section-about (앵커 ID)" style="display: none;">
                             </div>
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-sm btn-primary">추가</button>
@@ -748,6 +772,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <option value="board">게시판</option>
                                         <option value="custom_page">커스텀 페이지</option>
                                         <option value="external_link">외부링크</option>
+                                        <option value="anchor">컨테이너(앵커)</option>
                                         @if($siteFeatures['attendance'] ?? false)
                                         <option value="attendance">출첵페이지</option>
                                         @endif
@@ -773,6 +798,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         @endforeach
                                     </select>
                                     <input type="text" class="form-control submenu-link-target-external" name="link_target_external" placeholder="https://example.com" style="display: none;">
+                                    <input type="text" class="form-control submenu-link-target-anchor" name="link_target_anchor" placeholder="section-about (앵커 ID)" style="display: none;">
                                 </div>
                                 <div class="col-md-2">
                                     <button type="submit" class="btn btn-sm btn-primary">추가</button>
@@ -792,10 +818,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const boardSelect = submenuForm.querySelector('.submenu-link-target-board');
                 const customPageSelect = submenuForm.querySelector('.submenu-link-target-custom-page');
                 const externalInput = submenuForm.querySelector('.submenu-link-target-external');
+                const anchorInput = submenuForm.querySelector('.submenu-link-target-anchor');
                 
                 boardSelect.style.display = 'none';
                 customPageSelect.style.display = 'none';
                 externalInput.style.display = 'none';
+                if (anchorInput) anchorInput.style.display = 'none';
                 
                 if (this.value === 'board') {
                     boardSelect.style.display = 'block';
@@ -803,6 +831,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     customPageSelect.style.display = 'block';
                 } else if (this.value === 'external_link') {
                     externalInput.style.display = 'block';
+                } else if (this.value === 'anchor') {
+                    if (anchorInput) anchorInput.style.display = 'block';
                 }
             });
 
@@ -820,6 +850,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     linkTarget = formData.get('link_target_custom_page');
                 } else if (linkType === 'external_link') {
                     linkTarget = formData.get('link_target_external');
+                } else if (linkType === 'anchor') {
+                    linkTarget = formData.get('link_target_anchor');
                 }
 
                 fetch('{{ route("admin.menus.store", ["site" => $site->slug]) }}', {

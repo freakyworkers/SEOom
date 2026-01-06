@@ -3,6 +3,7 @@
         'board' => '게시판',
         'custom_page' => '커스텀 페이지',
         'external_link' => '외부링크',
+        'anchor' => '컨테이너(앵커)',
         'attendance' => '출첵페이지',
         'point_exchange' => '포인트교환페이지',
         'event_application' => '신청형 이벤트 페이지',
@@ -17,6 +18,8 @@
         $linkTargetDisplay = $customPage ? $customPage->name : '알 수 없음';
     } elseif ($menu->link_type === 'external_link') {
         $linkTargetDisplay = $menu->link_target ?? '';
+    } elseif ($menu->link_type === 'anchor') {
+        $linkTargetDisplay = '#' . ($menu->link_target ?? '');
     } else {
         $linkTargetDisplay = '-';
     }
