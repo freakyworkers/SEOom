@@ -740,6 +740,84 @@
                   placeholder="내용을 입력하세요 (선택사항)"></textarea>
     </div>
     <div class="mb-3">
+        <label for="widget_countdown_background_type" class="form-label">배경</label>
+        <select class="form-select" id="widget_countdown_background_type" name="countdown_background_type" onchange="handleCountdownBackgroundTypeChange()">
+            <option value="none">배경 없음</option>
+            <option value="color">단색</option>
+            <option value="gradient">그라데이션</option>
+        </select>
+    </div>
+    <div class="mb-3" id="widget_countdown_color_container" style="display: none;">
+        <label for="widget_countdown_background_color" class="form-label">배경 색상</label>
+        <input type="color" 
+               class="form-control form-control-color mb-2" 
+               id="widget_countdown_background_color" 
+               name="countdown_background_color" 
+               value="#007bff">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <label for="widget_countdown_background_opacity" class="form-label mb-0">투명도 (%)</label>
+            </div>
+            <div class="col-auto">
+                <input type="number" 
+                       class="form-control form-control-sm" 
+                       id="widget_countdown_background_opacity" 
+                       name="countdown_background_opacity"
+                       min="0" 
+                       max="100" 
+                       value="100"
+                       style="width: 80px;">
+            </div>
+        </div>
+        <small class="text-muted">0~100 사이의 값을 입력하세요. 0은 완전 투명, 100은 불투명입니다.</small>
+    </div>
+    <div class="mb-3" id="widget_countdown_gradient_container" style="display: none;">
+        <label class="form-label">그라데이션 설정</label>
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <div id="widget_countdown_gradient_preview" 
+                 style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #ffffff, #000000);"
+                 onclick="openCountdownGradientModal('widget_countdown')"
+                 title="그라데이션 설정">
+            </div>
+            <input type="hidden" 
+                   id="widget_countdown_background_gradient_start"
+                   name="countdown_background_gradient_start" 
+                   value="#ffffff">
+            <input type="hidden" 
+                   id="widget_countdown_background_gradient_end"
+                   name="countdown_background_gradient_end" 
+                   value="#000000">
+            <input type="hidden" 
+                   id="widget_countdown_background_gradient_angle"
+                   name="countdown_background_gradient_angle" 
+                   value="90">
+        </div>
+        <div class="row align-items-center mb-2">
+            <div class="col-auto">
+                <label for="widget_countdown_gradient_opacity" class="form-label mb-0">투명도 (%)</label>
+            </div>
+            <div class="col-auto">
+                <input type="number" 
+                       class="form-control form-control-sm" 
+                       id="widget_countdown_gradient_opacity" 
+                       name="countdown_gradient_opacity"
+                       min="0" 
+                       max="100" 
+                       value="100"
+                       style="width: 80px;">
+            </div>
+        </div>
+        <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
+    </div>
+    <div class="mb-3">
+        <label for="widget_countdown_font_color" class="form-label">폰트 색상</label>
+        <input type="color" 
+               class="form-control form-control-color" 
+               id="widget_countdown_font_color" 
+               name="countdown_font_color" 
+               value="#333333">
+    </div>
+    <div class="mb-3">
         <label for="widget_countdown_type" class="form-label">카운트 타입</label>
         <select class="form-select" id="widget_countdown_type" name="countdown_type" onchange="handleCountdownTypeChange()">
             <option value="dday">D-day 카운트</option>

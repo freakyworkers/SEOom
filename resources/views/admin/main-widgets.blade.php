@@ -1181,19 +1181,22 @@
                                    id="edit_main_widget_block_background_color" 
                                    name="block_background_color" 
                                    value="#007bff">
-                            <label for="edit_main_widget_block_background_color_alpha" class="form-label">투명도</label>
-                            <input type="range" 
-                                   class="form-range" 
-                                   id="edit_main_widget_block_background_color_alpha" 
-                                   name="block_background_color_alpha"
-                                   min="0" 
-                                   max="100" 
-                                   value="100"
-                                   onchange="document.getElementById('edit_main_widget_block_background_color_alpha_value').textContent = this.value + '%'">
-                            <div class="d-flex justify-content-between">
-                                <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                                <small class="text-muted" id="edit_main_widget_block_background_color_alpha_value" style="font-size: 0.7rem;">100%</small>
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <label for="edit_main_widget_block_background_color_alpha" class="form-label mb-0">투명도 (%)</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="edit_main_widget_block_background_color_alpha" 
+                                           name="block_background_color_alpha"
+                                           min="0" 
+                                           max="100" 
+                                           value="100"
+                                           style="width: 80px;">
+                                </div>
                             </div>
+                            <small class="text-muted">0~100 사이의 값을 입력하세요. 0은 완전 투명, 100은 불투명입니다.</small>
                         </div>
                         <div class="mb-3" id="edit_main_widget_block_gradient_container" style="display: none;">
                             <label class="form-label">그라데이션 설정</label>
@@ -1247,19 +1250,22 @@
                                     <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeEditMainBlockImage()">삭제</button>
                                 </div>
                             </div>
-                            <label for="edit_main_widget_block_background_image_alpha" class="form-label">투명도</label>
-                            <input type="range" 
-                                   class="form-range" 
-                                   id="edit_main_widget_block_background_image_alpha" 
-                                   name="block_background_image_alpha"
-                                   min="0" 
-                                   max="100" 
-                                   value="100"
-                                   onchange="document.getElementById('edit_main_widget_block_background_image_alpha_value').textContent = this.value + '%'">
-                            <div class="d-flex justify-content-between">
-                                <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                                <small class="text-muted" id="edit_main_widget_block_background_image_alpha_value" style="font-size: 0.7rem;">100%</small>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-auto">
+                                    <label for="edit_main_widget_block_background_image_alpha" class="form-label mb-0">투명도 (%)</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="edit_main_widget_block_background_image_alpha" 
+                                           name="block_background_image_alpha"
+                                           min="0" 
+                                           max="100" 
+                                           value="100"
+                                           style="width: 80px;">
+                                </div>
                             </div>
+                            <small class="text-muted">0~100 사이의 값을 입력하세요. 0은 완전 투명, 100은 불투명입니다.</small>
                         </div>
                         <div class="mb-3">
                             <label for="edit_main_widget_block_padding_top" class="form-label">상단 여백 (px)</label>
@@ -1797,6 +1803,84 @@
                                       name="countdown_content" 
                                       rows="3"
                                       placeholder="내용을 입력하세요 (선택사항)"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_countdown_background_type" class="form-label">배경</label>
+                            <select class="form-select" id="edit_main_widget_countdown_background_type" name="countdown_background_type" onchange="handleEditCountdownBackgroundTypeChange()">
+                                <option value="none">배경 없음</option>
+                                <option value="color">단색</option>
+                                <option value="gradient">그라데이션</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="edit_main_widget_countdown_color_container" style="display: none;">
+                            <label for="edit_main_widget_countdown_background_color" class="form-label">배경 색상</label>
+                            <input type="color" 
+                                   class="form-control form-control-color mb-2" 
+                                   id="edit_main_widget_countdown_background_color" 
+                                   name="countdown_background_color" 
+                                   value="#007bff">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <label for="edit_main_widget_countdown_background_opacity" class="form-label mb-0">투명도 (%)</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="edit_main_widget_countdown_background_opacity" 
+                                           name="countdown_background_opacity"
+                                           min="0" 
+                                           max="100" 
+                                           value="100"
+                                           style="width: 80px;">
+                                </div>
+                            </div>
+                            <small class="text-muted">0~100 사이의 값을 입력하세요. 0은 완전 투명, 100은 불투명입니다.</small>
+                        </div>
+                        <div class="mb-3" id="edit_main_widget_countdown_gradient_container" style="display: none;">
+                            <label class="form-label">그라데이션 설정</label>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <div id="edit_main_widget_countdown_gradient_preview" 
+                                     style="width: 120px; height: 38px; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer; background: linear-gradient(90deg, #ffffff, #000000);"
+                                     onclick="openCountdownGradientModal('edit_main_widget_countdown')"
+                                     title="그라데이션 설정">
+                                </div>
+                                <input type="hidden" 
+                                       id="edit_main_widget_countdown_background_gradient_start"
+                                       name="countdown_background_gradient_start" 
+                                       value="#ffffff">
+                                <input type="hidden" 
+                                       id="edit_main_widget_countdown_background_gradient_end"
+                                       name="countdown_background_gradient_end" 
+                                       value="#000000">
+                                <input type="hidden" 
+                                       id="edit_main_widget_countdown_background_gradient_angle"
+                                       name="countdown_background_gradient_angle" 
+                                       value="90">
+                            </div>
+                            <div class="row align-items-center mb-2">
+                                <div class="col-auto">
+                                    <label for="edit_main_widget_countdown_gradient_opacity" class="form-label mb-0">투명도 (%)</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="edit_main_widget_countdown_gradient_opacity" 
+                                           name="countdown_gradient_opacity"
+                                           min="0" 
+                                           max="100" 
+                                           value="100"
+                                           style="width: 80px;">
+                                </div>
+                            </div>
+                            <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_main_widget_countdown_font_color" class="form-label">폰트 색상</label>
+                            <input type="color" 
+                                   class="form-control form-control-color" 
+                                   id="edit_main_widget_countdown_font_color" 
+                                   name="countdown_font_color" 
+                                   value="#333333">
                         </div>
                         <div class="mb-3">
                             <label for="edit_main_widget_countdown_type" class="form-label">카운트 타입</label>
@@ -4078,6 +4162,30 @@ async function addMainWidget() {
         settings.countdown_content = countdownContent;
         settings.countdown_type = countdownType;
         
+        // 배경 설정
+        const backgroundType = document.getElementById('widget_countdown_background_type')?.value || 'none';
+        settings.background_type = backgroundType;
+        
+        if (backgroundType === 'color') {
+            const backgroundColor = document.getElementById('widget_countdown_background_color')?.value || '#007bff';
+            const backgroundOpacity = document.getElementById('widget_countdown_background_opacity')?.value || '100';
+            settings.background_color = backgroundColor;
+            settings.background_opacity = parseInt(backgroundOpacity) || 100;
+        } else if (backgroundType === 'gradient') {
+            const gradientStart = document.getElementById('widget_countdown_background_gradient_start')?.value || '#ffffff';
+            const gradientEnd = document.getElementById('widget_countdown_background_gradient_end')?.value || '#000000';
+            const gradientAngle = document.getElementById('widget_countdown_background_gradient_angle')?.value || '90';
+            const gradientOpacity = document.getElementById('widget_countdown_gradient_opacity')?.value || '100';
+            settings.background_gradient_start = gradientStart;
+            settings.background_gradient_end = gradientEnd;
+            settings.background_gradient_angle = parseInt(gradientAngle) || 90;
+            settings.background_gradient_opacity = parseInt(gradientOpacity) || 100;
+        }
+        
+        // 폰트 색상
+        const fontColor = document.getElementById('widget_countdown_font_color')?.value || '#333333';
+        settings.font_color = fontColor;
+        
         if (countdownType === 'dday') {
             const targetDate = document.getElementById('widget_countdown_target_date')?.value;
             if (targetDate) {
@@ -4864,6 +4972,49 @@ function editMainWidget(widgetId) {
                 if (document.getElementById('edit_main_widget_countdown_content')) {
                     document.getElementById('edit_main_widget_countdown_content').value = settings.countdown_content || '';
                 }
+                
+                // 배경 설정 로드
+                const backgroundType = settings.background_type || 'none';
+                if (document.getElementById('edit_main_widget_countdown_background_type')) {
+                    document.getElementById('edit_main_widget_countdown_background_type').value = backgroundType;
+                    handleEditCountdownBackgroundTypeChange();
+                }
+                
+                if (backgroundType === 'color') {
+                    if (document.getElementById('edit_main_widget_countdown_background_color')) {
+                        document.getElementById('edit_main_widget_countdown_background_color').value = settings.background_color || '#007bff';
+                    }
+                    if (document.getElementById('edit_main_widget_countdown_background_opacity')) {
+                        document.getElementById('edit_main_widget_countdown_background_opacity').value = settings.background_opacity !== undefined ? settings.background_opacity : 100;
+                    }
+                } else if (backgroundType === 'gradient') {
+                    if (document.getElementById('edit_main_widget_countdown_background_gradient_start')) {
+                        document.getElementById('edit_main_widget_countdown_background_gradient_start').value = settings.background_gradient_start || '#ffffff';
+                    }
+                    if (document.getElementById('edit_main_widget_countdown_background_gradient_end')) {
+                        document.getElementById('edit_main_widget_countdown_background_gradient_end').value = settings.background_gradient_end || '#000000';
+                    }
+                    if (document.getElementById('edit_main_widget_countdown_background_gradient_angle')) {
+                        document.getElementById('edit_main_widget_countdown_background_gradient_angle').value = settings.background_gradient_angle || 90;
+                    }
+                    if (document.getElementById('edit_main_widget_countdown_gradient_opacity')) {
+                        document.getElementById('edit_main_widget_countdown_gradient_opacity').value = settings.background_gradient_opacity !== undefined ? settings.background_gradient_opacity : 100;
+                    }
+                    // 그라데이션 미리보기 업데이트
+                    const gradientPreview = document.getElementById('edit_main_widget_countdown_gradient_preview');
+                    if (gradientPreview) {
+                        const start = settings.background_gradient_start || '#ffffff';
+                        const end = settings.background_gradient_end || '#000000';
+                        const angle = settings.background_gradient_angle || 90;
+                        gradientPreview.style.background = `linear-gradient(${angle}deg, ${start}, ${end})`;
+                    }
+                }
+                
+                // 폰트 색상 로드
+                if (document.getElementById('edit_main_widget_countdown_font_color')) {
+                    document.getElementById('edit_main_widget_countdown_font_color').value = settings.font_color || '#333333';
+                }
+                
                 const countdownType = settings.countdown_type || 'dday';
                 if (document.getElementById('edit_main_widget_countdown_type')) {
                     document.getElementById('edit_main_widget_countdown_type').value = countdownType;
@@ -5872,20 +6023,22 @@ function addBlockSlideButton(itemIndex) {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">버튼 배경 투명도</label>
-                    <input type="range" 
-                           class="form-range block-slide-button-opacity" 
-                           name="block_slide[${itemIndex}][buttons][${buttonIndex}][opacity]" 
-                           id="block_slide_${itemIndex}_button_${buttonIndex}_opacity"
-                           value="100" 
-                           min="0" 
-                           max="100" 
-                           step="1"
-                           onchange="document.getElementById('block_slide_${itemIndex}_button_${buttonIndex}_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="block_slide_${itemIndex}_button_${buttonIndex}_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label mb-0">버튼 배경 투명도 (%)</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" 
+                                   class="form-control form-control-sm block-slide-button-opacity" 
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][opacity]" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_opacity"
+                                   value="100" 
+                                   min="0" 
+                                   max="100"
+                                   style="width: 80px;">
+                        </div>
                     </div>
+                    <small class="text-muted">0~100 사이의 값을 입력하세요.</small>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -5968,20 +6121,22 @@ function addBlockSlideButton(itemIndex) {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">호버 배경 투명도</label>
-                    <input type="range" 
-                           class="form-range block-slide-button-hover-opacity" 
-                           name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_opacity]" 
-                           id="block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity"
-                           value="100" 
-                           min="0" 
-                           max="100" 
-                           step="1"
-                           onchange="document.getElementById('block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label mb-0">호버 배경 투명도 (%)</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" 
+                                   class="form-control form-control-sm block-slide-button-hover-opacity" 
+                                   name="block_slide[${itemIndex}][buttons][${buttonIndex}][hover_opacity]" 
+                                   id="block_slide_${itemIndex}_button_${buttonIndex}_hover_opacity"
+                                   value="100" 
+                                   min="0" 
+                                   max="100"
+                                   style="width: 80px;">
+                        </div>
                     </div>
+                    <small class="text-muted">0~100 사이의 값을 입력하세요.</small>
                 </div>
             </div>
         </div>
@@ -6972,6 +7127,30 @@ function saveMainWidgetSettings() {
         settings.countdown_title = countdownTitle;
         settings.countdown_content = countdownContent;
         settings.countdown_type = countdownType;
+        
+        // 배경 설정
+        const backgroundType = document.getElementById('edit_main_widget_countdown_background_type')?.value || 'none';
+        settings.background_type = backgroundType;
+        
+        if (backgroundType === 'color') {
+            const backgroundColor = document.getElementById('edit_main_widget_countdown_background_color')?.value || '#007bff';
+            const backgroundOpacity = document.getElementById('edit_main_widget_countdown_background_opacity')?.value || '100';
+            settings.background_color = backgroundColor;
+            settings.background_opacity = parseInt(backgroundOpacity) || 100;
+        } else if (backgroundType === 'gradient') {
+            const gradientStart = document.getElementById('edit_main_widget_countdown_background_gradient_start')?.value || '#ffffff';
+            const gradientEnd = document.getElementById('edit_main_widget_countdown_background_gradient_end')?.value || '#000000';
+            const gradientAngle = document.getElementById('edit_main_widget_countdown_background_gradient_angle')?.value || '90';
+            const gradientOpacity = document.getElementById('edit_main_widget_countdown_gradient_opacity')?.value || '100';
+            settings.background_gradient_start = gradientStart;
+            settings.background_gradient_end = gradientEnd;
+            settings.background_gradient_angle = parseInt(gradientAngle) || 90;
+            settings.background_gradient_opacity = parseInt(gradientOpacity) || 100;
+        }
+        
+        // 폰트 색상
+        const fontColor = document.getElementById('edit_main_widget_countdown_font_color')?.value || '#333333';
+        settings.font_color = fontColor;
         
         if (countdownType === 'dday') {
             const targetDate = document.getElementById('edit_main_widget_countdown_target_date')?.value;
@@ -8168,20 +8347,22 @@ function addBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">버튼 배경 투명도</label>
-                    <input type="range" 
-                           class="form-range block-button-opacity" 
-                           name="block_buttons[${blockButtonIndex}][opacity]" 
-                           id="block_button_${blockButtonIndex}_opacity"
-                           value="100" 
-                           min="0" 
-                           max="100" 
-                           step="1"
-                           onchange="document.getElementById('block_button_${blockButtonIndex}_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="block_button_${blockButtonIndex}_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label mb-0">버튼 배경 투명도 (%)</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" 
+                                   class="form-control form-control-sm block-button-opacity" 
+                                   name="block_buttons[${blockButtonIndex}][opacity]" 
+                                   id="block_button_${blockButtonIndex}_opacity"
+                                   value="100" 
+                                   min="0" 
+                                   max="100"
+                                   style="width: 80px;">
+                        </div>
                     </div>
+                    <small class="text-muted">0~100 사이의 값을 입력하세요.</small>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -8264,20 +8445,22 @@ function addBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">호버 배경 투명도</label>
-                    <input type="range" 
-                           class="form-range block-button-hover-opacity" 
-                           name="block_buttons[${blockButtonIndex}][hover_opacity]" 
-                           id="block_button_${blockButtonIndex}_hover_opacity"
-                           value="100" 
-                           min="0" 
-                           max="100" 
-                           step="1"
-                           onchange="document.getElementById('block_button_${blockButtonIndex}_hover_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="block_button_${blockButtonIndex}_hover_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label mb-0">호버 배경 투명도 (%)</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" 
+                                   class="form-control form-control-sm block-button-hover-opacity" 
+                                   name="block_buttons[${blockButtonIndex}][hover_opacity]" 
+                                   id="block_button_${blockButtonIndex}_hover_opacity"
+                                   value="100" 
+                                   min="0" 
+                                   max="100"
+                                   style="width: 80px;">
+                        </div>
                     </div>
+                    <small class="text-muted">0~100 사이의 값을 입력하세요.</small>
                 </div>
             </div>
         </div>
@@ -8404,20 +8587,22 @@ function addEditMainBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">버튼 배경 투명도</label>
-                    <input type="range" 
-                           class="form-range edit-main-block-button-opacity" 
-                           name="edit_main_block_buttons[${editMainBlockButtonIndex}][opacity]" 
-                           id="edit_main_block_button_${editMainBlockButtonIndex}_opacity"
-                           value="100" 
-                           min="0" 
-                           max="100" 
-                           step="1"
-                           onchange="document.getElementById('edit_main_block_button_${editMainBlockButtonIndex}_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="edit_main_block_button_${editMainBlockButtonIndex}_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label mb-0">버튼 배경 투명도 (%)</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" 
+                                   class="form-control form-control-sm edit-main-block-button-opacity" 
+                                   name="edit_main_block_buttons[${editMainBlockButtonIndex}][opacity]" 
+                                   id="edit_main_block_button_${editMainBlockButtonIndex}_opacity"
+                                   value="100" 
+                                   min="0" 
+                                   max="100"
+                                   style="width: 80px;">
+                        </div>
                     </div>
+                    <small class="text-muted">0~100 사이의 값을 입력하세요.</small>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -8500,20 +8685,22 @@ function addEditMainBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">호버 배경 투명도</label>
-                    <input type="range" 
-                           class="form-range edit-main-block-button-hover-opacity" 
-                           name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_opacity]" 
-                           id="edit_main_block_button_${editMainBlockButtonIndex}_hover_opacity"
-                           value="100" 
-                           min="0" 
-                           max="100" 
-                           step="1"
-                           onchange="document.getElementById('edit_main_block_button_${editMainBlockButtonIndex}_hover_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="edit_main_block_button_${editMainBlockButtonIndex}_hover_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label mb-0">호버 배경 투명도 (%)</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" 
+                                   class="form-control form-control-sm edit-main-block-button-hover-opacity" 
+                                   name="edit_main_block_buttons[${editMainBlockButtonIndex}][hover_opacity]" 
+                                   id="edit_main_block_button_${editMainBlockButtonIndex}_hover_opacity"
+                                   value="100" 
+                                   min="0" 
+                                   max="100"
+                                   style="width: 80px;">
+                        </div>
                     </div>
+                    <small class="text-muted">0~100 사이의 값을 입력하세요.</small>
                 </div>
             </div>
         </div>
@@ -8708,6 +8895,52 @@ function handleEditCountdownTypeChange() {
             }
         }
     }
+}
+
+// 카운트다운 배경 타입 변경 처리 (위젯 추가용)
+function handleCountdownBackgroundTypeChange() {
+    const backgroundType = document.getElementById('widget_countdown_background_type')?.value || 'none';
+    const colorContainer = document.getElementById('widget_countdown_color_container');
+    const gradientContainer = document.getElementById('widget_countdown_gradient_container');
+    
+    if (colorContainer) colorContainer.style.display = backgroundType === 'color' ? 'block' : 'none';
+    if (gradientContainer) gradientContainer.style.display = backgroundType === 'gradient' ? 'block' : 'none';
+}
+
+// 카운트다운 배경 타입 변경 처리 (위젯 수정용)
+function handleEditCountdownBackgroundTypeChange() {
+    const backgroundType = document.getElementById('edit_main_widget_countdown_background_type')?.value || 'none';
+    const colorContainer = document.getElementById('edit_main_widget_countdown_color_container');
+    const gradientContainer = document.getElementById('edit_main_widget_countdown_gradient_container');
+    
+    if (colorContainer) colorContainer.style.display = backgroundType === 'color' ? 'block' : 'none';
+    if (gradientContainer) gradientContainer.style.display = backgroundType === 'gradient' ? 'block' : 'none';
+}
+
+// 카운트다운 그라데이션 모달 열기
+function openCountdownGradientModal(prefix) {
+    const startColor = document.getElementById(`${prefix}_background_gradient_start`)?.value || '#ffffff';
+    const endColor = document.getElementById(`${prefix}_background_gradient_end`)?.value || '#000000';
+    const angle = document.getElementById(`${prefix}_background_gradient_angle`)?.value || 90;
+    
+    // 블록 그라데이션 모달 재사용
+    const modal = document.getElementById('blockGradientModal');
+    if (!modal) {
+        // 모달이 없으면 간단한 프롬프트로 대체
+        alert('그라데이션 설정 모달을 찾을 수 없습니다.');
+        return;
+    }
+    
+    document.getElementById('block_gradient_start_color').value = startColor;
+    document.getElementById('block_gradient_end_color').value = endColor;
+    document.getElementById('block_gradient_angle').value = angle;
+    document.getElementById('block_gradient_angle_value').textContent = angle + '°';
+    updateBlockGradientPreview();
+    
+    window.currentCountdownGradientPrefix = prefix;
+    
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
 }
 
 // 카운트다운 숫자 카운트 항목 추가 (위젯 수정용)

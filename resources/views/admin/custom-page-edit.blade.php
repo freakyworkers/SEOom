@@ -980,19 +980,22 @@
                                    id="edit_custom_page_widget_block_background_color" 
                                    name="block_background_color" 
                                    value="#007bff">
-                            <label for="edit_custom_page_widget_block_background_color_alpha" class="form-label">투명도</label>
-                            <input type="range" 
-                                   class="form-range" 
-                                   id="edit_custom_page_widget_block_background_color_alpha" 
-                                   name="block_background_color_alpha"
-                                   min="0" 
-                                   max="100" 
-                                   value="100"
-                                   onchange="document.getElementById('edit_custom_page_widget_block_background_color_alpha_value').textContent = this.value + '%'">
-                            <div class="d-flex justify-content-between">
-                                <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                                <small class="text-muted" id="edit_custom_page_widget_block_background_color_alpha_value" style="font-size: 0.7rem;">100%</small>
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <label for="edit_custom_page_widget_block_background_color_alpha" class="form-label mb-0">투명도 (%)</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="edit_custom_page_widget_block_background_color_alpha" 
+                                           name="block_background_color_alpha"
+                                           min="0" 
+                                           max="100" 
+                                           value="100"
+                                           style="width: 80px;">
+                                </div>
                             </div>
+                            <small class="text-muted">0~100 사이의 값을 입력하세요. 0은 완전 투명, 100은 불투명입니다.</small>
                         </div>
                         <div class="mb-3" id="edit_custom_page_widget_block_gradient_container" style="display: none;">
                             <label class="form-label">그라데이션 설정</label>
@@ -1046,19 +1049,22 @@
                                     <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeEditMainBlockImage()">삭제</button>
                                 </div>
                             </div>
-                            <label for="edit_custom_page_widget_block_background_image_alpha" class="form-label">투명도</label>
-                            <input type="range" 
-                                   class="form-range" 
-                                   id="edit_custom_page_widget_block_background_image_alpha" 
-                                   name="block_background_image_alpha"
-                                   min="0" 
-                                   max="100" 
-                                   value="100"
-                                   onchange="document.getElementById('edit_custom_page_widget_block_background_image_alpha_value').textContent = this.value + '%'">
-                            <div class="d-flex justify-content-between">
-                                <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                                <small class="text-muted" id="edit_custom_page_widget_block_background_image_alpha_value" style="font-size: 0.7rem;">100%</small>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-auto">
+                                    <label for="edit_custom_page_widget_block_background_image_alpha" class="form-label mb-0">투명도 (%)</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="edit_custom_page_widget_block_background_image_alpha" 
+                                           name="block_background_image_alpha"
+                                           min="0" 
+                                           max="100" 
+                                           value="100"
+                                           style="width: 80px;">
+                                </div>
                             </div>
+                            <small class="text-muted">0~100 사이의 값을 입력하세요. 0은 완전 투명, 100은 불투명입니다.</small>
                         </div>
                         <div class="mb-3">
                             <label for="edit_custom_page_widget_block_padding_top" class="form-label">상단 여백 (px)</label>
@@ -3417,6 +3423,30 @@ async function addCustomPageWidget() {
         settings.countdown_title = countdownTitle;
         settings.countdown_content = countdownContent;
         settings.countdown_type = countdownType;
+        
+        // 배경 설정
+        const backgroundType = document.getElementById('widget_countdown_background_type')?.value || 'none';
+        settings.background_type = backgroundType;
+        
+        if (backgroundType === 'color') {
+            const backgroundColor = document.getElementById('widget_countdown_background_color')?.value || '#007bff';
+            const backgroundOpacity = document.getElementById('widget_countdown_background_opacity')?.value || '100';
+            settings.background_color = backgroundColor;
+            settings.background_opacity = parseInt(backgroundOpacity) || 100;
+        } else if (backgroundType === 'gradient') {
+            const gradientStart = document.getElementById('widget_countdown_background_gradient_start')?.value || '#ffffff';
+            const gradientEnd = document.getElementById('widget_countdown_background_gradient_end')?.value || '#000000';
+            const gradientAngle = document.getElementById('widget_countdown_background_gradient_angle')?.value || '90';
+            const gradientOpacity = document.getElementById('widget_countdown_gradient_opacity')?.value || '100';
+            settings.background_gradient_start = gradientStart;
+            settings.background_gradient_end = gradientEnd;
+            settings.background_gradient_angle = parseInt(gradientAngle) || 90;
+            settings.background_gradient_opacity = parseInt(gradientOpacity) || 100;
+        }
+        
+        // 폰트 색상
+        const fontColor = document.getElementById('widget_countdown_font_color')?.value || '#333333';
+        settings.font_color = fontColor;
         
         if (countdownType === 'dday') {
             const targetDate = formData.get('countdown_target_date');
@@ -6659,20 +6689,22 @@ function addBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">버튼 배경 투명도</label>
-                    <input type="range" 
-                           class="form-range block-button-opacity" 
-                           name="block_buttons[${blockButtonIndex}][opacity]" 
-                           id="block_button_${blockButtonIndex}_opacity"
-                           value="100" 
-                           min="0" 
-                           max="100" 
-                           step="1"
-                           onchange="document.getElementById('block_button_${blockButtonIndex}_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="block_button_${blockButtonIndex}_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label mb-0">버튼 배경 투명도 (%)</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" 
+                                   class="form-control form-control-sm block-button-opacity" 
+                                   name="block_buttons[${blockButtonIndex}][opacity]" 
+                                   id="block_button_${blockButtonIndex}_opacity"
+                                   value="100" 
+                                   min="0" 
+                                   max="100"
+                                   style="width: 80px;">
+                        </div>
                     </div>
+                    <small class="text-muted">0~100 사이의 값을 입력하세요.</small>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -6755,20 +6787,22 @@ function addBlockButton() {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">호버 투명도</label>
-                    <input type="range" 
-                           class="form-range block-button-hover-opacity" 
-                           name="block_buttons[${blockButtonIndex}][hover_opacity]" 
-                           id="block_button_${blockButtonIndex}_hover_opacity"
-                           value="100" 
-                           min="0" 
-                           max="100" 
-                           step="1"
-                           onchange="document.getElementById('block_button_${blockButtonIndex}_hover_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="block_button_${blockButtonIndex}_hover_opacity_value" style="font-size: 0.7rem;">100%</small>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label mb-0">호버 배경 투명도 (%)</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" 
+                                   class="form-control form-control-sm block-button-hover-opacity" 
+                                   name="block_buttons[${blockButtonIndex}][hover_opacity]" 
+                                   id="block_button_${blockButtonIndex}_hover_opacity"
+                                   value="100" 
+                                   min="0" 
+                                   max="100"
+                                   style="width: 80px;">
+                        </div>
                     </div>
+                    <small class="text-muted">0~100 사이의 값을 입력하세요.</small>
                 </div>
             </div>
         </div>
@@ -6934,20 +6968,22 @@ function addEditCustomPageBlockButton(buttonData = null) {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">버튼 배경 투명도</label>
-                    <input type="range" 
-                           class="form-range edit-custom-page-block-button-opacity" 
-                           name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][opacity]" 
-                           id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_opacity"
-                           value="${buttonData && buttonData.opacity !== undefined ? Math.round(buttonData.opacity * 100) : '100'}" 
-                           min="0" 
-                           max="100" 
-                           step="1"
-                           onchange="document.getElementById('edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_opacity_value" style="font-size: 0.7rem;">${buttonData && buttonData.opacity !== undefined ? Math.round(buttonData.opacity * 100) : '100'}%</small>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label mb-0">버튼 배경 투명도 (%)</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" 
+                                   class="form-control form-control-sm edit-custom-page-block-button-opacity" 
+                                   name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][opacity]" 
+                                   id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_opacity"
+                                   value="${buttonData && buttonData.opacity !== undefined ? Math.round(buttonData.opacity * 100) : '100'}" 
+                                   min="0" 
+                                   max="100"
+                                   style="width: 80px;">
+                        </div>
                     </div>
+                    <small class="text-muted">0~100 사이의 값을 입력하세요.</small>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -7030,20 +7066,22 @@ function addEditCustomPageBlockButton(buttonData = null) {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">호버 투명도</label>
-                    <input type="range" 
-                           class="form-range edit-custom-page-block-button-hover-opacity" 
-                           name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][hover_opacity]" 
-                           id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_opacity"
-                           value="${buttonData && buttonData.hover_opacity !== undefined ? Math.round(buttonData.hover_opacity * 100) : '100'}" 
-                           min="0" 
-                           max="100" 
-                           step="1"
-                           onchange="document.getElementById('edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-muted" id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_opacity_value" style="font-size: 0.7rem;">${buttonData && buttonData.hover_opacity !== undefined ? Math.round(buttonData.hover_opacity * 100) : '100'}%</small>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label mb-0">호버 배경 투명도 (%)</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" 
+                                   class="form-control form-control-sm edit-custom-page-block-button-hover-opacity" 
+                                   name="edit_custom_page_block_buttons[${editCustomPageBlockButtonIndex}][hover_opacity]" 
+                                   id="edit_custom_page_block_button_${editCustomPageBlockButtonIndex}_hover_opacity"
+                                   value="${buttonData && buttonData.hover_opacity !== undefined ? Math.round(buttonData.hover_opacity * 100) : '100'}" 
+                                   min="0" 
+                                   max="100"
+                                   style="width: 80px;">
+                        </div>
                     </div>
+                    <small class="text-muted">0~100 사이의 값을 입력하세요.</small>
                 </div>
             </div>
         </div>
@@ -7238,6 +7276,41 @@ function handleCountdownTypeChange() {
             addCountdownNumberItem();
         }
     }
+}
+
+// 카운트다운 배경 타입 변경 핸들러
+function handleCountdownBackgroundTypeChange() {
+    const backgroundType = document.getElementById('widget_countdown_background_type')?.value || 'none';
+    const colorContainer = document.getElementById('widget_countdown_color_container');
+    const gradientContainer = document.getElementById('widget_countdown_gradient_container');
+    
+    if (colorContainer) colorContainer.style.display = backgroundType === 'color' ? 'block' : 'none';
+    if (gradientContainer) gradientContainer.style.display = backgroundType === 'gradient' ? 'block' : 'none';
+}
+
+// 카운트다운 그라데이션 모달 열기
+function openCountdownGradientModal(prefix) {
+    const startColor = document.getElementById(`${prefix}_background_gradient_start`)?.value || '#ffffff';
+    const endColor = document.getElementById(`${prefix}_background_gradient_end`)?.value || '#000000';
+    const angle = document.getElementById(`${prefix}_background_gradient_angle`)?.value || 90;
+    
+    // 블록 그라데이션 모달 재사용
+    const modal = document.getElementById('blockGradientModal');
+    if (!modal) {
+        alert('그라데이션 설정 모달을 찾을 수 없습니다.');
+        return;
+    }
+    
+    document.getElementById('block_gradient_start_color').value = startColor;
+    document.getElementById('block_gradient_end_color').value = endColor;
+    document.getElementById('block_gradient_angle').value = angle;
+    document.getElementById('block_gradient_angle_value').textContent = angle + '°';
+    updateBlockGradientPreview();
+    
+    window.currentCountdownGradientPrefix = prefix;
+    
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
 }
 
 // 카운트다운 숫자 카운트 항목 추가
