@@ -127,7 +127,9 @@
         $textAlign = $blockSettings['text_align'] ?? 'left';
         $backgroundType = $blockSettings['background_type'] ?? 'color';
         $backgroundColor = $blockSettings['background_color'] ?? '#007bff';
+        $backgroundColorAlpha = isset($blockSettings['background_color_alpha']) ? $blockSettings['background_color_alpha'] : 100;
         $backgroundImageUrl = $blockSettings['background_image_url'] ?? '';
+        $backgroundImageAlpha = isset($blockSettings['background_image_alpha']) ? $blockSettings['background_image_alpha'] : 100;
         $paddingTop = $blockSettings['padding_top'] ?? 20;
         $paddingBottom = $blockSettings['padding_bottom'] ?? ($blockSettings['padding_top'] ?? 20);
         $paddingLeft = $blockSettings['padding_left'] ?? 20;
@@ -173,6 +175,10 @@
         
         if ($backgroundType === 'color') {
             $adjustedBgColor = darkModeBackground($backgroundColor, $isDark);
+            // 투명도 적용
+            if ($backgroundColorAlpha < 100) {
+                $adjustedBgColor = hexToRgba($adjustedBgColor, $backgroundColorAlpha / 100);
+            }
             $blockStyle .= " background-color: {$adjustedBgColor};";
         } else if ($backgroundType === 'gradient') {
             $gradientStart = $blockSettings['background_gradient_start'] ?? '#ffffff';
@@ -184,6 +190,10 @@
             $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
         } else if ($backgroundType === 'image' && $backgroundImageUrl) {
             $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
+            // 이미지 투명도 적용
+            if ($backgroundImageAlpha < 100) {
+                $blockStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
+            }
         }
         
         // 모든 위젯이 상하 영역을 꽉 차게 하기 위해 flex 적용
@@ -349,7 +359,9 @@
                         $textAlign = $block['text_align'] ?? 'left';
                         $backgroundType = $block['background_type'] ?? 'color';
                         $backgroundColor = $block['background_color'] ?? '#007bff';
+                        $backgroundColorAlpha = isset($block['background_color_alpha']) ? $block['background_color_alpha'] : 100;
                         $backgroundImageUrl = $block['background_image_url'] ?? '';
+                        $backgroundImageAlpha = isset($block['background_image_alpha']) ? $block['background_image_alpha'] : 100;
                         $paddingTop = $block['padding_top'] ?? 20;
                         $paddingBottom = $block['padding_bottom'] ?? ($block['padding_top'] ?? 20);
                         $paddingLeft = $block['padding_left'] ?? 20;
@@ -386,7 +398,13 @@
                         $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
                         
                         if ($backgroundType === 'color') {
-                            $blockStyle .= " background-color: {$backgroundColor};";
+                            // 투명도 적용
+                            if ($backgroundColorAlpha < 100) {
+                                $bgColorRgba = hexToRgba($backgroundColor, $backgroundColorAlpha / 100);
+                                $blockStyle .= " background-color: {$bgColorRgba};";
+                            } else {
+                                $blockStyle .= " background-color: {$backgroundColor};";
+                            }
                         } else if ($backgroundType === 'gradient') {
                             $gradientStart = $block['background_gradient_start'] ?? '#ffffff';
                             $gradientEnd = $block['background_gradient_end'] ?? '#000000';
@@ -394,6 +412,10 @@
                             $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
                         } else if ($backgroundType === 'image' && $backgroundImageUrl) {
                             $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
+                            // 이미지 투명도 적용
+                            if ($backgroundImageAlpha < 100) {
+                                $blockStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
+                            }
                         }
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
@@ -535,7 +557,9 @@
                         $textAlign = $block['text_align'] ?? 'left';
                         $backgroundType = $block['background_type'] ?? 'color';
                         $backgroundColor = $block['background_color'] ?? '#007bff';
+                        $backgroundColorAlpha = isset($block['background_color_alpha']) ? $block['background_color_alpha'] : 100;
                         $backgroundImageUrl = $block['background_image_url'] ?? '';
+                        $backgroundImageAlpha = isset($block['background_image_alpha']) ? $block['background_image_alpha'] : 100;
                         $paddingTop = $block['padding_top'] ?? 20;
                         $paddingLeft = $block['padding_left'] ?? 20;
                         $link = $block['link'] ?? '';
@@ -546,7 +570,13 @@
                         $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingTop}px; padding-left: {$paddingLeft}px; padding-right: {$paddingLeft}px; text-align: {$textAlign}; color: {$fontColor};";
                         
                         if ($backgroundType === 'color') {
-                            $blockStyle .= " background-color: {$backgroundColor};";
+                            // 투명도 적용
+                            if ($backgroundColorAlpha < 100) {
+                                $bgColorRgba = hexToRgba($backgroundColor, $backgroundColorAlpha / 100);
+                                $blockStyle .= " background-color: {$bgColorRgba};";
+                            } else {
+                                $blockStyle .= " background-color: {$backgroundColor};";
+                            }
                         } else if ($backgroundType === 'gradient') {
                             $gradientStart = $block['background_gradient_start'] ?? '#ffffff';
                             $gradientEnd = $block['background_gradient_end'] ?? '#000000';
@@ -554,6 +584,10 @@
                             $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
                         } else if ($backgroundType === 'image' && $backgroundImageUrl) {
                             $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
+                            // 이미지 투명도 적용
+                            if ($backgroundImageAlpha < 100) {
+                                $blockStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
+                            }
                         }
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
