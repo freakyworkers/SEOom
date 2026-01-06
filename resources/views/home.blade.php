@@ -78,6 +78,9 @@
             // 가로 100% 설정 확인 (사이드바가 없을 때만 적용)
             $isFullWidth = ($container->full_width ?? false) && ($themeSidebar === 'none');
             $isFullHeight = ($container->full_height ?? false);
+            // 칸 고정너비 설정 확인 (가로 100%일 때만 적용)
+            $fixedWidthColumns = ($container->fixed_width_columns ?? false) && $isFullWidth;
+            
             $containerClass = $isFullWidth ? 'container-fluid px-0' : '';
             $containerStyle = $isFullWidth ? 'width: 100vw; position: relative; left: 50%; transform: translateX(-50%); padding: 0;' : '';
             
@@ -92,7 +95,8 @@
                 $containerClass .= ' full-height-container';
             }
             
-            $rowStyle = $isFullWidth ? 'margin-left: 0; margin-right: 0; width: 100%;' : '';
+            // 칸 고정너비가 아닐 때만 row에 100% 적용
+            $rowStyle = ($isFullWidth && !$fixedWidthColumns) ? 'margin-left: 0; margin-right: 0; width: 100%;' : '';
             if ($isFullHeight) {
                 $rowStyle .= ($rowStyle ? ' ' : '') . 'height: 100%;';
             }
@@ -126,6 +130,10 @@
             }
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
+            @if($fixedWidthColumns)
+            {{-- 칸 고정너비: 배경은 100%지만 칸들은 고정 너비 유지 --}}
+            <div class="container">
+            @endif
             <div class="row main-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
                 @php
                     $columnMerges = $container->column_merges ?? [];
@@ -153,13 +161,13 @@
                         $mergeSpan = $columnMerges[$i] ?? 1;
                         $colWidth = $mergeSpan * (12 / $container->columns);
                         $columnWidgets = $container->widgets->where('column_index', $i)->sortBy('order');
-                        // 가로 100%일 때만 padding 제거, 일반적인 경우에는 Bootstrap gutter 유지
-                        $colStyle = $isFullWidth ? 'padding-left: 0; padding-right: 0;' : '';
+                        // 가로 100%이고 칸 고정너비가 아닐 때만 padding 제거, 일반적인 경우와 칸 고정너비일 때는 Bootstrap gutter 유지
+                        $colStyle = ($isFullWidth && !$fixedWidthColumns) ? 'padding-left: 0; padding-right: 0;' : '';
                         if ($isFullHeight) {
                             $colStyle .= ($colStyle ? ' ' : '') . 'height: 100%; display: flex; flex-direction: column;';
                         }
-                        // 컬럼 간 여백은 항상 유지 (가로 100%가 아닐 때만)
-                        $colMarginBottom = $isFullWidth ? 'mb-0' : ($isFullHeight ? 'mb-0' : 'mb-3');
+                        // 컬럼 간 여백은 항상 유지 (가로 100%이고 칸 고정너비가 아닐 때만 제거)
+                        $colMarginBottom = ($isFullWidth && !$fixedWidthColumns) ? 'mb-0' : ($isFullHeight ? 'mb-0' : 'mb-3');
                         
                         // 위젯 간격 설정 (컨테이너별)
                         $widgetSpacing = $container->widget_spacing ?? 3;
@@ -211,13 +219,16 @@
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
                             @endphp
                             <div style="{{ $widgetWrapperStyle }}">
-                                <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" :isFirstWidget="$isFirstWidget" :isLastWidget="$isLastWidget" :verticalAlign="$verticalAlign" />
+                                <x-main-widget :widget="$widget" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" :fixedWidthColumns="$fixedWidthColumns" :isFirstWidget="$isFirstWidget" :isLastWidget="$isLastWidget" :verticalAlign="$verticalAlign" />
                             </div>
                         @endforeach
                         </div>
                     @endif
                 @endfor
             </div>
+            @if($fixedWidthColumns)
+            </div>
+            @endif
         </div>
     @endforeach
 @endif

@@ -44,7 +44,7 @@
                                 @endphp
                                 <div class="mb-3">
                                     <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" id="container_full_width" name="full_width" value="1" {{ !$hasSidebar ? '' : 'disabled' }}>
+                                        <input class="form-check-input" type="checkbox" id="container_full_width" name="full_width" value="1" {{ !$hasSidebar ? '' : 'disabled' }} onchange="toggleAddContainerFixedWidthColumns()">
                                         <label class="form-check-label" for="container_full_width">
                                             가로 100%
                                         </label>
@@ -60,6 +60,19 @@
                                             사이드바가 없음으로 설정된 경우에만 사용할 수 있습니다.
                                         </small>
                                     @endif
+                                </div>
+                                <div class="mb-3" id="add_container_fixed_width_columns_div" style="display: none;">
+                                    <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input" type="checkbox" id="container_fixed_width_columns" name="fixed_width_columns" value="1">
+                                        <label class="form-check-label" for="container_fixed_width_columns">
+                                            칸 고정너비
+                                        </label>
+                                        <i class="bi bi-question-circle text-muted ms-2" 
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="top" 
+                                           title="활성화 시 컨테이너 배경은 100%이지만 칸들은 기존 고정 너비를 유지합니다." 
+                                           style="cursor: help; font-size: 0.9rem;"></i>
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-check d-flex align-items-center">
@@ -172,7 +185,7 @@
                                                         <input class="form-check-input container-full-width-checkbox" type="checkbox" 
                                                                id="container_full_width_{{ $container->id }}" 
                                                                @if($container->full_width) checked @endif
-                                                               @if(!$hasSidebar) data-container-id="{{ $container->id }}" @else disabled @endif>
+                                                               @if(!$hasSidebar) data-container-id="{{ $container->id }}" onchange="toggleFixedWidthColumnsOption({{ $container->id }})" @else disabled @endif>
                                                         <label class="form-check-label small mb-0" for="container_full_width_{{ $container->id }}">
                                                             가로 100%
                                                         </label>
@@ -180,6 +193,21 @@
                                                            data-bs-toggle="tooltip" 
                                                            data-bs-placement="top" 
                                                            title="활성화 시 해당 컨테이너가 브라우저 전체 너비를 사용합니다. 사이드바가 없음으로 설정된 경우에만 사용할 수 있습니다." 
+                                                           style="cursor: help; font-size: 0.85rem;"></i>
+                                                    </div>
+                                                    <div class="form-check ms-3 d-flex align-items-center" id="fixed_width_columns_container_{{ $container->id }}" style="display: {{ $container->full_width ? 'flex' : 'none' }} !important;">
+                                                        <input class="form-check-input container-fixed-width-columns-checkbox" type="checkbox" 
+                                                               id="container_fixed_width_columns_{{ $container->id }}" 
+                                                               @if($container->fixed_width_columns) checked @endif
+                                                               data-container-id="{{ $container->id }}"
+                                                               onchange="updateContainerFixedWidthColumns({{ $container->id }}, this.checked)">
+                                                        <label class="form-check-label small mb-0" for="container_fixed_width_columns_{{ $container->id }}">
+                                                            칸 고정너비
+                                                        </label>
+                                                        <i class="bi bi-question-circle text-muted ms-1" 
+                                                           data-bs-toggle="tooltip" 
+                                                           data-bs-placement="top" 
+                                                           title="활성화 시 컨테이너 배경은 100%이지만 칸들은 기존 고정 너비를 유지합니다." 
                                                            style="cursor: help; font-size: 0.85rem;"></i>
                                                     </div>
                                                     <div class="form-check ms-3 d-flex align-items-center">
@@ -381,7 +409,7 @@
                                                             <input class="form-check-input container-full-width-checkbox" type="checkbox" 
                                                                    id="container_full_width_mobile_{{ $container->id }}" 
                                                                    @if($container->full_width) checked @endif
-                                                                   @if(!$hasSidebar) data-container-id="{{ $container->id }}" @else disabled @endif>
+                                                                   @if(!$hasSidebar) data-container-id="{{ $container->id }}" onchange="toggleFixedWidthColumnsOptionMobile({{ $container->id }})" @else disabled @endif>
                                                             <label class="form-check-label small mb-0 ms-2" for="container_full_width_mobile_{{ $container->id }}">
                                                                 가로 100%
                                                             </label>
@@ -395,6 +423,18 @@
                                                                    data-container-id="{{ $container->id }}">
                                                             <label class="form-check-label small mb-0 ms-2" for="container_full_height_mobile_{{ $container->id }}">
                                                                 세로 100%
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12" id="fixed_width_columns_container_mobile_{{ $container->id }}" style="display: {{ $container->full_width ? 'block' : 'none' }};">
+                                                        <div class="form-check d-flex align-items-center pt-2">
+                                                            <input class="form-check-input container-fixed-width-columns-checkbox" type="checkbox" 
+                                                                   id="container_fixed_width_columns_mobile_{{ $container->id }}" 
+                                                                   @if($container->fixed_width_columns) checked @endif
+                                                                   data-container-id="{{ $container->id }}"
+                                                                   onchange="updateContainerFixedWidthColumns({{ $container->id }}, this.checked)">
+                                                            <label class="form-check-label small mb-0 ms-2" for="container_fixed_width_columns_mobile_{{ $container->id }}">
+                                                                칸 고정너비 (배경만 100%)
                                                             </label>
                                                         </div>
                                                     </div>
@@ -1867,6 +1907,25 @@ let currentEditWidgetId = null;
 let successModalReloadHandler = null;
 let mainWidgetSortables = {}; // 각 위젯 리스트의 Sortable 인스턴스 저장
 
+// 컨테이너 추가 폼: 가로 100% 체크시 칸 고정너비 옵션 표시
+function toggleAddContainerFixedWidthColumns() {
+    const fullWidthCheckbox = document.getElementById('container_full_width');
+    const fixedWidthColumnsDiv = document.getElementById('add_container_fixed_width_columns_div');
+    const fixedWidthColumnsCheckbox = document.getElementById('container_fixed_width_columns');
+    
+    if (fullWidthCheckbox && fixedWidthColumnsDiv) {
+        if (fullWidthCheckbox.checked) {
+            fixedWidthColumnsDiv.style.display = 'block';
+        } else {
+            fixedWidthColumnsDiv.style.display = 'none';
+            // 가로 100% 비활성화시 칸 고정너비도 비활성화
+            if (fixedWidthColumnsCheckbox) {
+                fixedWidthColumnsCheckbox.checked = false;
+            }
+        }
+    }
+}
+
 // 컨테이너 추가
 document.getElementById('addContainerForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -1880,6 +1939,10 @@ document.getElementById('addContainerForm').addEventListener('submit', function(
     const fullHeightCheckbox = document.getElementById('container_full_height');
     if (fullHeightCheckbox) {
         formData.set('full_height', fullHeightCheckbox.checked ? '1' : '0');
+    }
+    const fixedWidthColumnsCheckbox = document.getElementById('container_fixed_width_columns');
+    if (fixedWidthColumnsCheckbox) {
+        formData.set('fixed_width_columns', fixedWidthColumnsCheckbox.checked ? '1' : '0');
     }
     
     fetch('{{ route("admin.main-widgets.containers.store", ["site" => $site->slug]) }}', {
@@ -2697,6 +2760,16 @@ function updateContainerFullWidth(containerId, fullWidth) {
             formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
         }
         
+        // fixed_width_columns 값 찾기 (가로 100% 비활성화시 자동으로 비활성화)
+        const fixedWidthColumnsCheckbox = document.getElementById(`container_fixed_width_columns_${containerId}`);
+        if (!fullWidth && fixedWidthColumnsCheckbox) {
+            // 가로 100%가 비활성화되면 칸 고정너비도 비활성화
+            fixedWidthColumnsCheckbox.checked = false;
+            formData.append('fixed_width_columns', '0');
+        } else if (fixedWidthColumnsCheckbox) {
+            formData.append('fixed_width_columns', fixedWidthColumnsCheckbox.checked ? '1' : '0');
+        }
+        
         formData.append('full_width', fullWidth ? '1' : '0');
         formData.append('_method', 'PUT');
         
@@ -2759,6 +2832,173 @@ function updateContainerFullWidth(containerId, fullWidth) {
     } catch (error) {
         console.error('Error in updateContainerFullWidth:', error);
         alert('가로 100% 설정 업데이트 중 오류가 발생했습니다: ' + error.message);
+    }
+}
+
+// 칸 고정너비 옵션 표시/숨김 토글 (데스크탑)
+function toggleFixedWidthColumnsOption(containerId) {
+    const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    const fixedWidthColumnsContainer = document.getElementById(`fixed_width_columns_container_${containerId}`);
+    
+    if (fullWidthCheckbox && fixedWidthColumnsContainer) {
+        if (fullWidthCheckbox.checked) {
+            fixedWidthColumnsContainer.style.display = 'flex';
+        } else {
+            fixedWidthColumnsContainer.style.display = 'none';
+            // 가로 100% 비활성화시 칸 고정너비도 비활성화
+            const fixedWidthColumnsCheckbox = document.getElementById(`container_fixed_width_columns_${containerId}`);
+            if (fixedWidthColumnsCheckbox) {
+                fixedWidthColumnsCheckbox.checked = false;
+            }
+        }
+    }
+    
+    // 가로 100% 업데이트 호출
+    updateContainerFullWidth(containerId, fullWidthCheckbox ? fullWidthCheckbox.checked : false);
+}
+
+// 칸 고정너비 옵션 표시/숨김 토글 (모바일)
+function toggleFixedWidthColumnsOptionMobile(containerId) {
+    const fullWidthCheckbox = document.getElementById(`container_full_width_mobile_${containerId}`);
+    const fixedWidthColumnsContainer = document.getElementById(`fixed_width_columns_container_mobile_${containerId}`);
+    
+    if (fullWidthCheckbox && fixedWidthColumnsContainer) {
+        if (fullWidthCheckbox.checked) {
+            fixedWidthColumnsContainer.style.display = 'block';
+        } else {
+            fixedWidthColumnsContainer.style.display = 'none';
+            // 가로 100% 비활성화시 칸 고정너비도 비활성화
+            const fixedWidthColumnsCheckbox = document.getElementById(`container_fixed_width_columns_mobile_${containerId}`);
+            if (fixedWidthColumnsCheckbox) {
+                fixedWidthColumnsCheckbox.checked = false;
+            }
+        }
+    }
+    
+    // 데스크탑과 동기화
+    const desktopFullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+    if (desktopFullWidthCheckbox && fullWidthCheckbox) {
+        desktopFullWidthCheckbox.checked = fullWidthCheckbox.checked;
+    }
+    const desktopFixedWidthColumnsContainer = document.getElementById(`fixed_width_columns_container_${containerId}`);
+    if (desktopFixedWidthColumnsContainer) {
+        desktopFixedWidthColumnsContainer.style.display = fullWidthCheckbox && fullWidthCheckbox.checked ? 'flex' : 'none';
+    }
+    
+    // 가로 100% 업데이트 호출
+    updateContainerFullWidth(containerId, fullWidthCheckbox ? fullWidthCheckbox.checked : false);
+}
+
+// 컨테이너 칸 고정너비 업데이트
+function updateContainerFixedWidthColumns(containerId, fixedWidthColumns) {
+    try {
+        const formData = new FormData();
+        
+        // 컨테이너 아이템 찾기
+        const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
+        if (!containerItem) {
+            console.error('Container item not found for ID:', containerId);
+            alert('컨테이너를 찾을 수 없습니다.');
+            return;
+        }
+        
+        // 컬럼 값 찾기 (첫 번째 select)
+        const columnsSelect = containerItem.querySelector('select[data-container-id="' + containerId + '"]');
+        if (columnsSelect) {
+            formData.append('columns', columnsSelect.value);
+        } else {
+            console.error('Columns select not found');
+            alert('컨테이너 설정을 찾을 수 없습니다.');
+            return;
+        }
+        
+        // 정렬 값 찾기 (두 번째 select)
+        const allSelects = containerItem.querySelectorAll('select[data-container-id="' + containerId + '"]');
+        if (allSelects.length >= 2) {
+            formData.append('vertical_align', allSelects[1].value);
+        } else if (allSelects.length === 1) {
+            formData.append('vertical_align', 'top');
+        }
+        
+        // full_width 값 찾기
+        const fullWidthCheckbox = document.getElementById(`container_full_width_${containerId}`);
+        if (fullWidthCheckbox) {
+            formData.append('full_width', fullWidthCheckbox.checked ? '1' : '0');
+        }
+        
+        // full_height 값 찾기
+        const fullHeightCheckbox = document.getElementById(`container_full_height_${containerId}`);
+        if (fullHeightCheckbox) {
+            formData.append('full_height', fullHeightCheckbox.checked ? '1' : '0');
+        }
+        
+        formData.append('fixed_width_columns', fixedWidthColumns ? '1' : '0');
+        formData.append('_method', 'PUT');
+        
+        fetch('{{ route("admin.main-widgets.containers.update", ["site" => $site->slug, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Error response:', text);
+                    throw new Error('Network response was not ok: ' + response.status);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // 성공 시 체크박스 상태만 업데이트 (페이지 새로고침 없이)
+                const checkbox = document.getElementById(`container_fixed_width_columns_${containerId}`);
+                if (checkbox) {
+                    checkbox.checked = fixedWidthColumns;
+                }
+                // 모바일 체크박스도 동기화
+                const mobileCheckbox = document.getElementById(`container_fixed_width_columns_mobile_${containerId}`);
+                if (mobileCheckbox) {
+                    mobileCheckbox.checked = fixedWidthColumns;
+                }
+                // 성공 메시지 표시
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                alertDiv.style.zIndex = '9999';
+                alertDiv.innerHTML = `
+                    <i class="bi bi-check-circle me-2"></i>칸 고정너비 설정이 저장되었습니다.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(alertDiv);
+                
+                // 3초 후 자동으로 알림 제거
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 3000);
+            } else {
+                alert('칸 고정너비 설정 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                // 실패 시 체크박스 상태 복원
+                const checkbox = document.getElementById(`container_fixed_width_columns_${containerId}`);
+                if (checkbox) {
+                    checkbox.checked = !fixedWidthColumns;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('칸 고정너비 설정 업데이트 중 오류가 발생했습니다: ' + error.message);
+            // 오류 시 체크박스 상태 복원
+            const checkbox = document.getElementById(`container_fixed_width_columns_${containerId}`);
+            if (checkbox) {
+                checkbox.checked = !fixedWidthColumns;
+            }
+        });
+    } catch (error) {
+        console.error('Error in updateContainerFixedWidthColumns:', error);
+        alert('칸 고정너비 설정 업데이트 중 오류가 발생했습니다: ' + error.message);
     }
 }
 

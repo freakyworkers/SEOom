@@ -78,6 +78,12 @@
     // 가로 100% 설정 확인
     $isFullWidth = $isFullWidth ?? false;
     
+    // 칸 고정너비 설정 확인 (가로 100%이지만 칸들은 고정 너비 유지)
+    $fixedWidthColumns = $fixedWidthColumns ?? false;
+    
+    // 실제로 가로 100%를 적용할지 결정 (칸 고정너비일 때는 실제 가로 100% 아님)
+    $isActualFullWidth = $isFullWidth && !$fixedWidthColumns;
+    
     // 첫 번째 위젯 여부 확인
     $isFirstWidget = $isFirstWidget ?? false;
     
@@ -91,16 +97,16 @@
         $verticalAlign = 'top';
     }
     
-    // 가로 100%일 때는 라운드 제거 (버튼 제외)
-    if ($isFullWidth) {
+    // 가로 100%일 때는 라운드 제거 (버튼 제외) - 칸 고정너비일 때는 유지
+    if ($isActualFullWidth) {
         $isRoundTheme = false;
     }
     
     // 위젯 그림자 설정 확인 (기본값: ON)
     $widgetShadow = $site->getSetting('widget_shadow', '1') == '1';
     
-    // 그림자 클래스 결정: full width/full height이거나 그림자 설정이 OFF이면 그림자 제거
-    $shadowClass = ($isFullWidth || $isFullHeight || !$widgetShadow) ? '' : 'shadow-sm';
+    // 그림자 클래스 결정: 실제 full width/full height이거나 그림자 설정이 OFF이면 그림자 제거
+    $shadowClass = ($isActualFullWidth || $isFullHeight || !$widgetShadow) ? '' : 'shadow-sm';
     
     // 애니메이션 설정 가져오기
     $animationDirection = $widgetSettings['animation_direction'] ?? 'none';
@@ -160,8 +166,8 @@
         // 스타일 생성
         $blockStyle = "width: 100%; padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
         
-        // 가로 100%일 때 좌우 보더 레디우스 제거
-        if ($isFullWidth) {
+        // 가로 100%일 때 좌우 보더 레디우스 제거 (칸 고정너비일 때는 유지)
+        if ($isActualFullWidth) {
             $blockStyle .= " border-radius: 0 !important;";
         }
         
@@ -326,8 +332,8 @@
             if (in_array($slideDirection, ['up', 'down'])) {
                 $blockSlideWrapperStyle .= ' height: 200px;';
             }
-            // 가로 100%일 때 보더 레디우스 제거
-            if ($isFullWidth) {
+            // 가로 100%일 때 보더 레디우스 제거 (칸 고정너비일 때는 유지)
+            if ($isActualFullWidth) {
                 $blockSlideWrapperStyle .= ' border-radius: 0 !important;';
             }
         @endphp
@@ -1083,8 +1089,8 @@
     if (!$isRoundTheme) {
         $cardStyle .= ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;';
     }
-    // 가로 100%일 때 좌우 보더 레디우스 제거
-    if ($isFullWidth) {
+    // 가로 100%일 때 좌우 보더 레디우스 제거 (칸 고정너비일 때는 유지)
+    if ($isActualFullWidth) {
         $cardStyle .= ($cardStyle ? ' ' : '') . 'border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important;';
     }
     // 모든 위젯이 상하 영역을 꽉 차게 하기 위해 flex 적용

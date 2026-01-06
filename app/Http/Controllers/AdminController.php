@@ -3488,6 +3488,7 @@ class AdminController extends Controller
             'columns' => 'required|integer|in:1,2,3,4',
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
+            'fixed_width_columns' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
             'widget_spacing' => 'nullable|integer|min:0|max:5',
         ]);
@@ -3508,12 +3509,20 @@ class AdminController extends Controller
             $fullHeightValue = $request->input('full_height');
             $fullHeight = ($fullHeightValue == '1' || $fullHeightValue === '1' || $fullHeightValue === true || $fullHeightValue === 1);
         }
+        
+        // fixed_width_columns 처리 (full_width가 true일 때만 의미 있음)
+        $fixedWidthColumns = false;
+        if ($fullWidth && $request->has('fixed_width_columns')) {
+            $fixedWidthColumnsValue = $request->input('fixed_width_columns');
+            $fixedWidthColumns = ($fixedWidthColumnsValue == '1' || $fixedWidthColumnsValue === '1' || $fixedWidthColumnsValue === true || $fixedWidthColumnsValue === 1);
+        }
 
         $container = MainWidgetContainer::create([
             'site_id' => $site->id,
             'columns' => $request->columns,
             'vertical_align' => $request->vertical_align ?? 'top',
             'full_width' => $fullWidth,
+            'fixed_width_columns' => $fixedWidthColumns,
             'full_height' => $fullHeight,
             'widget_spacing' => $request->widget_spacing ?? 3,
             'order' => $maxOrder + 1,
@@ -3541,6 +3550,7 @@ class AdminController extends Controller
             'column_merges' => 'nullable|string',
             'vertical_align' => 'nullable|string|in:top,center,bottom',
             'full_width' => 'nullable|boolean',
+            'fixed_width_columns' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
             'widget_spacing' => 'nullable|integer|min:0|max:5',
             'background_type' => 'nullable|string|in:none,color,gradient,image',
@@ -3606,6 +3616,15 @@ class AdminController extends Controller
         } else {
             // 사이드바가 있으면 항상 false
             $container->full_width = false;
+        }
+        
+        // fixed_width_columns 처리 (full_width가 true일 때만 의미 있음)
+        if ($container->full_width && $request->has('fixed_width_columns')) {
+            $fixedWidthColumnsValue = $request->input('fixed_width_columns');
+            $container->fixed_width_columns = ($fixedWidthColumnsValue == '1' || $fixedWidthColumnsValue === '1' || $fixedWidthColumnsValue === true || $fixedWidthColumnsValue === 1);
+        } else if (!$container->full_width) {
+            // full_width가 비활성화되면 fixed_width_columns도 비활성화
+            $container->fixed_width_columns = false;
         }
         
         // full_height 처리
