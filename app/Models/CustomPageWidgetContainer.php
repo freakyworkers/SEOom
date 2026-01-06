@@ -32,6 +32,7 @@ class CustomPageWidgetContainer extends Model
         'background_gradient_end',
         'background_gradient_angle',
         'background_image_url',
+        'background_parallax',
         'order',
     ];
 
@@ -51,6 +52,7 @@ class CustomPageWidgetContainer extends Model
         'padding_bottom' => 'integer',
         'padding_left' => 'integer',
         'padding_right' => 'integer',
+        'background_parallax' => 'boolean',
     ];
 
     /**

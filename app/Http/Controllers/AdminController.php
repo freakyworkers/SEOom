@@ -3567,6 +3567,7 @@ class AdminController extends Controller
             'background_image_url' => 'nullable|string|max:500',
             'background_image_file' => 'nullable|image|max:51200',
             'background_image_alpha' => 'nullable|integer|min:0|max:100',
+            'background_parallax' => 'nullable|boolean',
         ]);
 
         $oldColumns = $container->columns;
@@ -3749,7 +3750,13 @@ class AdminController extends Controller
                 $container->background_gradient_end = null;
                 $container->background_gradient_angle = null;
                 $container->background_image_url = null;
+                $container->background_parallax = false;
             }
+        }
+        
+        // 패럴랙스 설정
+        if ($request->has('background_parallax')) {
+            $container->background_parallax = $request->boolean('background_parallax');
         }
         
         $container->save();
@@ -4387,6 +4394,7 @@ class AdminController extends Controller
             'background_gradient_angle' => 'nullable|integer|min:0|max:360',
             'background_image_url' => 'nullable|string|max:500',
             'background_image_file' => 'nullable|image|max:51200',
+            'background_parallax' => 'nullable|boolean',
         ]);
 
         $oldColumns = $container->columns;
@@ -4556,7 +4564,13 @@ class AdminController extends Controller
                 $container->background_gradient_end = null;
                 $container->background_gradient_angle = null;
                 $container->background_image_url = null;
+                $container->background_parallax = false;
             }
+        }
+        
+        // 패럴랙스 설정
+        if ($request->has('background_parallax')) {
+            $container->background_parallax = $request->boolean('background_parallax');
         }
         
         $container->save();

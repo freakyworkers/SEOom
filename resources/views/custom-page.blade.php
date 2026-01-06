@@ -86,6 +86,10 @@
                 $backgroundStyle = 'background: linear-gradient(' . $gradientAngle . 'deg, ' . $gradientStart . ', ' . $gradientEnd . ');';
             } elseif ($backgroundType === 'image' && !empty($container->background_image_url)) {
                 $backgroundStyle = 'background-image: url(' . htmlspecialchars($container->background_image_url) . '); background-size: cover; background-position: center; background-repeat: no-repeat;';
+                // 패럴랙스 효과
+                if ($container->background_parallax ?? false) {
+                    $backgroundStyle .= ' background-attachment: fixed;';
+                }
             }
             
             if ($backgroundStyle) {

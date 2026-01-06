@@ -380,6 +380,15 @@
                                                             <input type="hidden" 
                                                                    id="container_background_image_alpha_hidden_{{ $container->id }}"
                                                                    value="{{ isset($container->background_image_alpha) ? $container->background_image_alpha : 100 }}">
+                                                            <div class="form-check ms-2" style="display: inline-flex; align-items: center;">
+                                                                <input type="checkbox" 
+                                                                       class="form-check-input" 
+                                                                       id="container_background_parallax_{{ $container->id }}"
+                                                                       {{ ($container->background_parallax ?? false) ? 'checked' : '' }}
+                                                                       onchange="updateContainerBackgroundParallax({{ $container->id }}, this.checked)"
+                                                                       style="margin-top: 0;">
+                                                                <label class="form-check-label ms-1" for="container_background_parallax_{{ $container->id }}" style="font-size: 0.75rem; white-space: nowrap;">패럴랙스</label>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="d-flex align-items-center gap-2">
@@ -3014,6 +3023,34 @@ function updateContainerBackgroundImage(containerId) {
     .catch(error => {
         console.error('Error:', error);
         alert('배경 설정 업데이트 중 오류가 발생했습니다.');
+    });
+}
+
+// 컨테이너 배경 이미지 패럴랙스 업데이트
+function updateContainerBackgroundParallax(containerId, parallaxEnabled) {
+    const formData = new FormData();
+    formData.append('background_parallax', parallaxEnabled ? '1' : '0');
+    formData.append('_method', 'PUT');
+    
+    fetch('{{ route("admin.main-widgets.containers.update", ["site" => $site->slug, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 성공 알림은 표시하지 않고 조용히 업데이트
+        } else {
+            alert('패럴랙스 설정 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('패럴랙스 설정 업데이트 중 오류가 발생했습니다.');
     });
 }
 
