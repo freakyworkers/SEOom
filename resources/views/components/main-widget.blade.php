@@ -1062,9 +1062,6 @@
         $countdownContent = $countdownSettings['countdown_content'] ?? '';
         $countdownType = $countdownSettings['countdown_type'] ?? 'dday';
         
-        // 카운트다운 위젯 전용 그림자/라운드 적용 (가로/세로 100%여도 적용)
-        $countdownShadowClass = $widgetShadow ? 'shadow-sm' : '';
-        
         // 라운드 스타일 설정 - 명시적으로 border-radius 적용
         $countdownBorderRadius = $isOriginalRoundTheme ? 'border-radius: 0.5rem !important; overflow: hidden;' : 'border-radius: 0 !important;';
         $countdownStyle = 'display: flex; flex-direction: column; flex: 1; justify-content: center; padding: 1.5rem; margin-top: 0 !important; margin-bottom: 0 !important; ' . $countdownBorderRadius;
@@ -1106,6 +1103,9 @@
         
         // 폰트 색상 처리
         $countdownFontColor = $countdownSettings['font_color'] ?? ($isDark ? '#ffffff' : '#333333');
+        
+        // 배경 없음일 때 그림자 제거 (블록 위젯과 동일하게)
+        $countdownShadowClass = ($countdownBackgroundType === 'none') ? '' : ($widgetShadow ? 'shadow-sm' : '');
     @endphp
     <div class="card {{ $countdownShadowClass }} {{ $animationClass }} mb-0" style="{{ $countdownStyle }} {{ $countdownBgStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
         <div class="countdown-widget text-center" style="flex: 1; display: flex; flex-direction: column; justify-content: center; color: {{ $countdownFontColor }};">
