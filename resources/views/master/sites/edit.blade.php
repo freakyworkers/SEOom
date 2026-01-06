@@ -67,15 +67,14 @@
                             <option value="{{ $plan->slug }}" 
                                     {{ old('plan', $site->plan) === $plan->slug ? 'selected' : '' }}
                                     data-price="{{ $plan->price }}"
-                                    data-description="{{ $plan->description }}">
+                                    data-description="{{ $plan->description }}"
+                                    data-type="{{ $plan->type }}"
+                                    data-billing="{{ $plan->billing_type }}">
                                 {{ $plan->name }}
-                                @if($plan->price > 0)
-                                    ({{ number_format($plan->price) }}원/월)
-                                @else
+                                @if($plan->billing_type === 'free')
                                     (무료)
-                                @endif
-                                @if($plan->is_default)
-                                    - 기본 플랜
+                                @elseif($plan->price > 0)
+                                    ({{ number_format($plan->price) }}원/월)
                                 @endif
                             </option>
                         @endforeach
@@ -101,6 +100,54 @@
                     @enderror
                 </div>
             </div>
+
+            @if(isset($serverPlans) && $serverPlans->count() > 0)
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="server_plan" class="form-label">서버 용량</label>
+                    <select class="form-select @error('server_plan') is-invalid @enderror" 
+                            id="server_plan" 
+                            name="server_plan">
+                        <option value="">기본 (플랜에 포함된 용량 사용)</option>
+                        @foreach($serverPlans as $serverPlan)
+                            @php
+                                $currentServerPlan = $site->traffic_limit_mb == $serverPlan->traffic_limit_mb;
+                            @endphp
+                            <option value="{{ $serverPlan->slug }}" 
+                                    {{ $currentServerPlan ? 'selected' : '' }}
+                                    data-traffic="{{ $serverPlan->traffic_limit_mb }}">
+                                {{ $serverPlan->name }}
+                                @if($serverPlan->price > 0)
+                                    ({{ number_format($serverPlan->price) }}원/월)
+                                @endif
+                            </option>
+                        @endforeach
+                    </select>
+                    <small class="form-text text-muted">선택한 서버 용량 플랜의 트래픽 제한이 적용됩니다.</small>
+                    @error('server_plan')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">현재 트래픽 사용량</label>
+                    <div class="progress" style="height: 25px;">
+                        @php
+                            $trafficUsed = $site->traffic_used_mb ?? 0;
+                            $trafficLimit = $site->getTotalTrafficLimit() ?? 0;
+                            $trafficPercent = $trafficLimit > 0 ? min(100, ($trafficUsed / $trafficLimit) * 100) : 0;
+                        @endphp
+                        <div class="progress-bar {{ $trafficPercent > 80 ? 'bg-danger' : ($trafficPercent > 50 ? 'bg-warning' : 'bg-success') }}" 
+                             role="progressbar" 
+                             style="width: {{ $trafficPercent }}%">
+                            {{ number_format($trafficPercent, 1) }}%
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        {{ number_format($trafficUsed) }} MB / {{ $trafficLimit ? number_format($trafficLimit) . ' MB' : '무제한' }}
+                    </small>
+                </div>
+            </div>
+            @endif
 
             @include('master.sites.edit-features-section')
 

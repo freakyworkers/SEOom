@@ -66,7 +66,17 @@ class MasterSiteController extends Controller
      */
     public function create()
     {
-        $plans = Plan::where('is_active', true)->orderBy('sort_order')->orderBy('price')->get();
+        $allPlans = Plan::where('is_active', true)->orderBy('sort_order')->orderBy('price')->get();
+        
+        // 일반 플랜 (서버 용량 제외)
+        $plans = $allPlans->filter(function($plan) {
+            return $plan->type !== 'server';
+        });
+        
+        // 서버 용량 플랜
+        $serverPlans = $allPlans->filter(function($plan) {
+            return $plan->type === 'server';
+        });
         
         // 게시판 타입 목록
         $boardTypes = \App\Models\Board::getTypes();
@@ -88,7 +98,7 @@ class MasterSiteController extends Controller
             ];
         })->keyBy('slug');
         
-        return view('master.sites.create', compact('plans', 'boardTypes', 'sidebarWidgetTypes', 'mainWidgetTypes', 'customPageWidgetTypes', 'plansData'));
+        return view('master.sites.create', compact('plans', 'serverPlans', 'boardTypes', 'sidebarWidgetTypes', 'mainWidgetTypes', 'customPageWidgetTypes', 'plansData'));
     }
 
     /**
@@ -103,6 +113,7 @@ class MasterSiteController extends Controller
             'slug' => 'nullable|string|max:255|unique:sites,slug',
             'domain' => 'nullable|string|max:255',
             'plan' => 'required|exists:plans,slug',
+            'server_plan' => 'nullable|exists:plans,slug',
             'login_type' => 'required|in:email,username',
             'admin_name' => 'required|string|max:255',
             'admin_password' => 'required|string|min:8|confirmed',
@@ -145,6 +156,16 @@ class MasterSiteController extends Controller
         }
 
         $site = $this->provisionService->provision($data);
+
+        // 서버 용량 플랜 처리
+        $serverPlanSlug = $request->input('server_plan');
+        if ($serverPlanSlug) {
+            $serverPlan = Plan::where('slug', $serverPlanSlug)->first();
+            if ($serverPlan && $serverPlan->type === 'server') {
+                $site->traffic_limit_mb = $serverPlan->traffic_limit_mb;
+                $site->save();
+            }
+        }
 
         // 사이트 생성 시 커스텀 features 저장
         $customFeatures = [];
@@ -209,7 +230,17 @@ class MasterSiteController extends Controller
      */
     public function edit(Site $site)
     {
-        $plans = Plan::where('is_active', true)->orderBy('sort_order')->orderBy('price')->get();
+        $allPlans = Plan::where('is_active', true)->orderBy('sort_order')->orderBy('price')->get();
+        
+        // 일반 플랜 (서버 용량 제외)
+        $plans = $allPlans->filter(function($plan) {
+            return $plan->type !== 'server';
+        });
+        
+        // 서버 용량 플랜
+        $serverPlans = $allPlans->filter(function($plan) {
+            return $plan->type === 'server';
+        });
         
         // 현재 사이트의 플랜 정보
         $currentPlan = $site->planModel();
@@ -253,7 +284,7 @@ class MasterSiteController extends Controller
             ];
         })->keyBy('slug');
         
-        return view('master.sites.edit', compact('site', 'plans', 'currentPlan', 'customFeaturesArray', 'boardTypes', 'sidebarWidgetTypes', 'mainWidgetTypes', 'customPageWidgetTypes', 'plansData'));
+        return view('master.sites.edit', compact('site', 'plans', 'serverPlans', 'currentPlan', 'customFeaturesArray', 'boardTypes', 'sidebarWidgetTypes', 'mainWidgetTypes', 'customPageWidgetTypes', 'plansData'));
     }
 
     /**
@@ -267,9 +298,10 @@ class MasterSiteController extends Controller
             'domain' => 'nullable|string|max:255',
             'plan' => 'required|exists:plans,slug',
             'status' => 'required|in:active,suspended,deleted',
+            'server_plan' => 'nullable|exists:plans,slug',
         ]);
 
-        if (        $validator->fails()) {
+        if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
@@ -285,6 +317,20 @@ class MasterSiteController extends Controller
         }
 
         $site->update($request->only(['name', 'slug', 'domain', 'plan', 'status']));
+        
+        // 서버 용량 플랜 처리
+        $serverPlanSlug = $request->input('server_plan');
+        if ($serverPlanSlug) {
+            $serverPlan = Plan::where('slug', $serverPlanSlug)->first();
+            if ($serverPlan && $serverPlan->type === 'server') {
+                $site->traffic_limit_mb = $serverPlan->traffic_limit_mb;
+                $site->save();
+            }
+        } else {
+            // 서버 용량 플랜이 선택되지 않으면 null로 설정 (플랜 기본값 사용)
+            $site->traffic_limit_mb = null;
+            $site->save();
+        }
 
         // 로그인 타입 저장 (login_type 컬럼과 site_settings 테이블 모두 저장)
         if ($request->has('login_type')) {
