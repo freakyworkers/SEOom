@@ -177,7 +177,7 @@
             $adjustedBgColor = darkModeBackground($backgroundColor, $isDark);
             // 투명도 적용
             if ($backgroundColorAlpha < 100) {
-                $adjustedBgColor = hexToRgba($adjustedBgColor, $backgroundColorAlpha / 100);
+                $adjustedBgColor = hexToRgbaButton($adjustedBgColor, $backgroundColorAlpha / 100);
             }
             $blockStyle .= " background-color: {$adjustedBgColor};";
         } else if ($backgroundType === 'gradient') {
@@ -400,7 +400,7 @@
                         if ($backgroundType === 'color') {
                             // 투명도 적용
                             if ($backgroundColorAlpha < 100) {
-                                $bgColorRgba = hexToRgba($backgroundColor, $backgroundColorAlpha / 100);
+                                $bgColorRgba = hexToRgbaButton($backgroundColor, $backgroundColorAlpha / 100);
                                 $blockStyle .= " background-color: {$bgColorRgba};";
                             } else {
                                 $blockStyle .= " background-color: {$backgroundColor};";
@@ -572,7 +572,7 @@
                         if ($backgroundType === 'color') {
                             // 투명도 적용
                             if ($backgroundColorAlpha < 100) {
-                                $bgColorRgba = hexToRgba($backgroundColor, $backgroundColorAlpha / 100);
+                                $bgColorRgba = hexToRgbaButton($backgroundColor, $backgroundColorAlpha / 100);
                                 $blockStyle .= " background-color: {$bgColorRgba};";
                             } else {
                                 $blockStyle .= " background-color: {$backgroundColor};";
