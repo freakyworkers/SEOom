@@ -20,6 +20,12 @@ class MainWidgetContainer extends Model
         'widget_spacing',
         'margin_top',
         'margin_bottom',
+        'margin_left',
+        'margin_right',
+        'padding_top',
+        'padding_bottom',
+        'padding_left',
+        'padding_right',
         'background_type',
         'background_color',
         'background_gradient_start',
@@ -39,6 +45,12 @@ class MainWidgetContainer extends Model
         'widget_spacing' => 'integer',
         'margin_top' => 'integer',
         'margin_bottom' => 'integer',
+        'margin_left' => 'integer',
+        'margin_right' => 'integer',
+        'padding_top' => 'integer',
+        'padding_bottom' => 'integer',
+        'padding_left' => 'integer',
+        'padding_right' => 'integer',
     ];
 
     /**

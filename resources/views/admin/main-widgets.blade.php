@@ -101,15 +101,25 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-6">
-                                        <label for="container_margin_top" class="form-label">상단 마진 (px)</label>
-                                        <input type="number" class="form-control" id="container_margin_top" name="margin_top" value="0" min="0" max="500">
+                                        <button type="button" class="btn btn-outline-secondary w-100" onclick="openNewContainerMarginModal()">
+                                            <i class="bi bi-arrows-angle-expand"></i> 마진 설정
+                                        </button>
                                     </div>
                                     <div class="col-6">
-                                        <label for="container_margin_bottom" class="form-label">하단 마진 (px)</label>
-                                        <input type="number" class="form-control" id="container_margin_bottom" name="margin_bottom" value="24" min="0" max="500">
-                                        <small class="text-muted">기본값: 24px (mb-4)</small>
+                                        <button type="button" class="btn btn-outline-secondary w-100" onclick="openNewContainerPaddingModal()">
+                                            <i class="bi bi-arrows-fullscreen"></i> 패딩 설정
+                                        </button>
                                     </div>
                                 </div>
+                                <!-- Hidden inputs for new container margin/padding -->
+                                <input type="hidden" id="new_container_margin_top" name="margin_top" value="0">
+                                <input type="hidden" id="new_container_margin_bottom" name="margin_bottom" value="24">
+                                <input type="hidden" id="new_container_margin_left" name="margin_left" value="0">
+                                <input type="hidden" id="new_container_margin_right" name="margin_right" value="0">
+                                <input type="hidden" id="new_container_padding_top" name="padding_top" value="0">
+                                <input type="hidden" id="new_container_padding_bottom" name="padding_bottom" value="0">
+                                <input type="hidden" id="new_container_padding_left" name="padding_left" value="0">
+                                <input type="hidden" id="new_container_padding_right" name="padding_right" value="0">
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="bi bi-plus-circle me-2"></i>컨테이너 추가
                                 </button>
@@ -251,24 +261,27 @@
                                                             <option value="4" {{ ($container->widget_spacing ?? 3) == 4 ? 'selected' : '' }}>넓음</option>
                                                             <option value="5" {{ ($container->widget_spacing ?? 3) == 5 ? 'selected' : '' }}>매우 넓음</option>
                                                         </select>
-                                                        <label class="mb-0 small ms-2">상단:</label>
-                                                        <input type="number" 
-                                                               class="form-control form-control-sm" 
-                                                               style="width: 70px;" 
-                                                               id="container_margin_top_{{ $container->id }}"
-                                                               value="{{ $container->margin_top ?? 0 }}"
-                                                               min="0" max="500"
-                                                               onchange="updateContainerMargin({{ $container->id }})"
-                                                               placeholder="px">
-                                                        <label class="mb-0 small">하단:</label>
-                                                        <input type="number" 
-                                                               class="form-control form-control-sm" 
-                                                               style="width: 70px;" 
-                                                               id="container_margin_bottom_{{ $container->id }}"
-                                                               value="{{ $container->margin_bottom ?? 24 }}"
-                                                               min="0" max="500"
-                                                               onchange="updateContainerMargin({{ $container->id }})"
-                                                               placeholder="px">
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-outline-secondary ms-2"
+                                                                onclick="openContainerMarginModal({{ $container->id }})"
+                                                                title="마진 설정">
+                                                            <i class="bi bi-arrows-angle-expand"></i> 마진
+                                                        </button>
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-outline-secondary"
+                                                                onclick="openContainerPaddingModal({{ $container->id }})"
+                                                                title="패딩 설정">
+                                                            <i class="bi bi-arrows-fullscreen"></i> 패딩
+                                                        </button>
+                                                        <!-- Hidden inputs for margin/padding values -->
+                                                        <input type="hidden" id="container_margin_top_{{ $container->id }}" value="{{ $container->margin_top ?? 0 }}">
+                                                        <input type="hidden" id="container_margin_bottom_{{ $container->id }}" value="{{ $container->margin_bottom ?? 24 }}">
+                                                        <input type="hidden" id="container_margin_left_{{ $container->id }}" value="{{ $container->margin_left ?? 0 }}">
+                                                        <input type="hidden" id="container_margin_right_{{ $container->id }}" value="{{ $container->margin_right ?? 0 }}">
+                                                        <input type="hidden" id="container_padding_top_{{ $container->id }}" value="{{ $container->padding_top ?? 0 }}">
+                                                        <input type="hidden" id="container_padding_bottom_{{ $container->id }}" value="{{ $container->padding_bottom ?? 0 }}">
+                                                        <input type="hidden" id="container_padding_left_{{ $container->id }}" value="{{ $container->padding_left ?? 0 }}">
+                                                        <input type="hidden" id="container_padding_right_{{ $container->id }}" value="{{ $container->padding_right ?? 0 }}">
                                                         <label class="mb-0 small ms-2">배경:</label>
                                                         <select class="form-select form-select-sm" 
                                                                 style="width: auto; min-width: 100px;" 
@@ -481,22 +494,20 @@
                                                         </select>
                                                     </div>
                                                     <div class="col-6">
-                                                        <label class="form-label small mb-1">상단 마진 (px)</label>
-                                                        <input type="number" 
-                                                               class="form-control form-control-sm" 
-                                                               id="container_margin_top_mobile_{{ $container->id }}"
-                                                               value="{{ $container->margin_top ?? 0 }}"
-                                                               min="0" max="500"
-                                                               onchange="updateContainerMargin({{ $container->id }})">
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-outline-secondary w-100"
+                                                                onclick="openContainerMarginModal({{ $container->id }})"
+                                                                title="마진 설정">
+                                                            <i class="bi bi-arrows-angle-expand"></i> 마진
+                                                        </button>
                                                     </div>
                                                     <div class="col-6">
-                                                        <label class="form-label small mb-1">하단 마진 (px)</label>
-                                                        <input type="number" 
-                                                               class="form-control form-control-sm" 
-                                                               id="container_margin_bottom_mobile_{{ $container->id }}"
-                                                               value="{{ $container->margin_bottom ?? 24 }}"
-                                                               min="0" max="500"
-                                                               onchange="updateContainerMargin({{ $container->id }})">
+                                                        <button type="button" 
+                                                                class="btn btn-sm btn-outline-secondary w-100"
+                                                                onclick="openContainerPaddingModal({{ $container->id }})"
+                                                                title="패딩 설정">
+                                                            <i class="bi bi-arrows-fullscreen"></i> 패딩
+                                                        </button>
                                                     </div>
                                                     <div class="col-12">
                                                         <label class="form-label small mb-1">배경</label>
@@ -2280,8 +2291,176 @@ function updateContainerWidgetSpacing(containerId, widgetSpacing) {
     }
 }
 
-// 컨테이너 상단/하단 마진 업데이트
-function updateContainerMargin(containerId) {
+// 컨테이너 마진 모달 열기
+function openContainerMarginModal(containerId) {
+    document.getElementById('margin_modal_container_id').value = containerId;
+    document.getElementById('margin_modal_is_new').value = 'false';
+    
+    // 현재 값 로드
+    document.getElementById('margin_modal_top').value = document.getElementById(`container_margin_top_${containerId}`)?.value || 0;
+    document.getElementById('margin_modal_bottom').value = document.getElementById(`container_margin_bottom_${containerId}`)?.value || 24;
+    document.getElementById('margin_modal_left').value = document.getElementById(`container_margin_left_${containerId}`)?.value || 0;
+    document.getElementById('margin_modal_right').value = document.getElementById(`container_margin_right_${containerId}`)?.value || 0;
+    
+    updateMarginPreview();
+    
+    const modal = new bootstrap.Modal(document.getElementById('containerMarginModal'));
+    modal.show();
+}
+
+// 새 컨테이너용 마진 모달 열기
+function openNewContainerMarginModal() {
+    document.getElementById('margin_modal_container_id').value = '';
+    document.getElementById('margin_modal_is_new').value = 'true';
+    
+    document.getElementById('margin_modal_top').value = document.getElementById('new_container_margin_top')?.value || 0;
+    document.getElementById('margin_modal_bottom').value = document.getElementById('new_container_margin_bottom')?.value || 24;
+    document.getElementById('margin_modal_left').value = document.getElementById('new_container_margin_left')?.value || 0;
+    document.getElementById('margin_modal_right').value = document.getElementById('new_container_margin_right')?.value || 0;
+    
+    updateMarginPreview();
+    
+    const modal = new bootstrap.Modal(document.getElementById('containerMarginModal'));
+    modal.show();
+}
+
+// 마진 미리보기 업데이트
+function updateMarginPreview() {
+    document.getElementById('margin_preview_top').textContent = document.getElementById('margin_modal_top').value + 'px';
+    document.getElementById('margin_preview_bottom').textContent = document.getElementById('margin_modal_bottom').value + 'px';
+    document.getElementById('margin_preview_left').textContent = document.getElementById('margin_modal_left').value + 'px';
+    document.getElementById('margin_preview_right').textContent = document.getElementById('margin_modal_right').value + 'px';
+}
+
+// 컨테이너 마진 저장
+function saveContainerMargin() {
+    const isNew = document.getElementById('margin_modal_is_new').value === 'true';
+    const containerId = document.getElementById('margin_modal_container_id').value;
+    
+    const marginTop = document.getElementById('margin_modal_top').value;
+    const marginBottom = document.getElementById('margin_modal_bottom').value;
+    const marginLeft = document.getElementById('margin_modal_left').value;
+    const marginRight = document.getElementById('margin_modal_right').value;
+    
+    if (isNew) {
+        // 새 컨테이너용 hidden input 업데이트
+        document.getElementById('new_container_margin_top').value = marginTop;
+        document.getElementById('new_container_margin_bottom').value = marginBottom;
+        document.getElementById('new_container_margin_left').value = marginLeft;
+        document.getElementById('new_container_margin_right').value = marginRight;
+        
+        bootstrap.Modal.getInstance(document.getElementById('containerMarginModal')).hide();
+        
+        // 성공 메시지
+        showToast('마진 설정이 저장되었습니다. 컨테이너 추가 시 적용됩니다.');
+    } else {
+        // 기존 컨테이너 hidden input 업데이트
+        document.getElementById(`container_margin_top_${containerId}`).value = marginTop;
+        document.getElementById(`container_margin_bottom_${containerId}`).value = marginBottom;
+        document.getElementById(`container_margin_left_${containerId}`).value = marginLeft;
+        document.getElementById(`container_margin_right_${containerId}`).value = marginRight;
+        
+        // 서버에 저장
+        updateContainerMarginAndPadding(containerId);
+        
+        bootstrap.Modal.getInstance(document.getElementById('containerMarginModal')).hide();
+    }
+}
+
+// 컨테이너 패딩 모달 열기
+function openContainerPaddingModal(containerId) {
+    document.getElementById('padding_modal_container_id').value = containerId;
+    document.getElementById('padding_modal_is_new').value = 'false';
+    
+    // 현재 값 로드
+    document.getElementById('padding_modal_top').value = document.getElementById(`container_padding_top_${containerId}`)?.value || 0;
+    document.getElementById('padding_modal_bottom').value = document.getElementById(`container_padding_bottom_${containerId}`)?.value || 0;
+    document.getElementById('padding_modal_left').value = document.getElementById(`container_padding_left_${containerId}`)?.value || 0;
+    document.getElementById('padding_modal_right').value = document.getElementById(`container_padding_right_${containerId}`)?.value || 0;
+    
+    updatePaddingPreview();
+    
+    const modal = new bootstrap.Modal(document.getElementById('containerPaddingModal'));
+    modal.show();
+}
+
+// 새 컨테이너용 패딩 모달 열기
+function openNewContainerPaddingModal() {
+    document.getElementById('padding_modal_container_id').value = '';
+    document.getElementById('padding_modal_is_new').value = 'true';
+    
+    document.getElementById('padding_modal_top').value = document.getElementById('new_container_padding_top')?.value || 0;
+    document.getElementById('padding_modal_bottom').value = document.getElementById('new_container_padding_bottom')?.value || 0;
+    document.getElementById('padding_modal_left').value = document.getElementById('new_container_padding_left')?.value || 0;
+    document.getElementById('padding_modal_right').value = document.getElementById('new_container_padding_right')?.value || 0;
+    
+    updatePaddingPreview();
+    
+    const modal = new bootstrap.Modal(document.getElementById('containerPaddingModal'));
+    modal.show();
+}
+
+// 패딩 미리보기 업데이트
+function updatePaddingPreview() {
+    document.getElementById('padding_preview_top').textContent = document.getElementById('padding_modal_top').value + 'px';
+    document.getElementById('padding_preview_bottom').textContent = document.getElementById('padding_modal_bottom').value + 'px';
+    document.getElementById('padding_preview_left').textContent = document.getElementById('padding_modal_left').value + 'px';
+    document.getElementById('padding_preview_right').textContent = document.getElementById('padding_modal_right').value + 'px';
+}
+
+// 컨테이너 패딩 저장
+function saveContainerPadding() {
+    const isNew = document.getElementById('padding_modal_is_new').value === 'true';
+    const containerId = document.getElementById('padding_modal_container_id').value;
+    
+    const paddingTop = document.getElementById('padding_modal_top').value;
+    const paddingBottom = document.getElementById('padding_modal_bottom').value;
+    const paddingLeft = document.getElementById('padding_modal_left').value;
+    const paddingRight = document.getElementById('padding_modal_right').value;
+    
+    if (isNew) {
+        // 새 컨테이너용 hidden input 업데이트
+        document.getElementById('new_container_padding_top').value = paddingTop;
+        document.getElementById('new_container_padding_bottom').value = paddingBottom;
+        document.getElementById('new_container_padding_left').value = paddingLeft;
+        document.getElementById('new_container_padding_right').value = paddingRight;
+        
+        bootstrap.Modal.getInstance(document.getElementById('containerPaddingModal')).hide();
+        
+        // 성공 메시지
+        showToast('패딩 설정이 저장되었습니다. 컨테이너 추가 시 적용됩니다.');
+    } else {
+        // 기존 컨테이너 hidden input 업데이트
+        document.getElementById(`container_padding_top_${containerId}`).value = paddingTop;
+        document.getElementById(`container_padding_bottom_${containerId}`).value = paddingBottom;
+        document.getElementById(`container_padding_left_${containerId}`).value = paddingLeft;
+        document.getElementById(`container_padding_right_${containerId}`).value = paddingRight;
+        
+        // 서버에 저장
+        updateContainerMarginAndPadding(containerId);
+        
+        bootstrap.Modal.getInstance(document.getElementById('containerPaddingModal')).hide();
+    }
+}
+
+// 토스트 메시지 표시
+function showToast(message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.innerHTML = `
+        <i class="bi bi-check-circle me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
+}
+
+// 컨테이너 마진/패딩 업데이트 (서버 저장)
+function updateContainerMarginAndPadding(containerId) {
     try {
         const formData = new FormData();
         
@@ -2307,14 +2486,18 @@ function updateContainerMargin(containerId) {
         const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
         if (widgetSpacingSelect) formData.append('widget_spacing', widgetSpacingSelect.value);
 
-        // 상단/하단 마진 값 가져오기 (데스크탑 또는 모바일 중 하나에서)
-        let marginTop = document.getElementById(`container_margin_top_${containerId}`)?.value || 
-                         document.getElementById(`container_margin_top_mobile_${containerId}`)?.value || 0;
-        let marginBottom = document.getElementById(`container_margin_bottom_${containerId}`)?.value || 
-                            document.getElementById(`container_margin_bottom_mobile_${containerId}`)?.value || 24;
+        // 마진 값
+        formData.append('margin_top', document.getElementById(`container_margin_top_${containerId}`)?.value || 0);
+        formData.append('margin_bottom', document.getElementById(`container_margin_bottom_${containerId}`)?.value || 24);
+        formData.append('margin_left', document.getElementById(`container_margin_left_${containerId}`)?.value || 0);
+        formData.append('margin_right', document.getElementById(`container_margin_right_${containerId}`)?.value || 0);
         
-        formData.append('margin_top', marginTop);
-        formData.append('margin_bottom', marginBottom);
+        // 패딩 값
+        formData.append('padding_top', document.getElementById(`container_padding_top_${containerId}`)?.value || 0);
+        formData.append('padding_bottom', document.getElementById(`container_padding_bottom_${containerId}`)?.value || 0);
+        formData.append('padding_left', document.getElementById(`container_padding_left_${containerId}`)?.value || 0);
+        formData.append('padding_right', document.getElementById(`container_padding_right_${containerId}`)?.value || 0);
+        
         formData.append('_method', 'PUT');
         
         fetch('{{ route("admin.main-widgets.containers.update", ["site" => $site->slug, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
@@ -2328,31 +2511,24 @@ function updateContainerMargin(containerId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // 성공 메시지 표시
-                const alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
-                alertDiv.style.zIndex = '9999';
-                alertDiv.innerHTML = `
-                    <i class="bi bi-check-circle me-2"></i>컨테이너 마진이 저장되었습니다.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                `;
-                document.body.appendChild(alertDiv);
-                
-                setTimeout(() => {
-                    alertDiv.remove();
-                }, 3000);
+                showToast('컨테이너 설정이 저장되었습니다.');
             } else {
-                alert('컨테이너 마진 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                alert('컨테이너 설정 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('컨테이너 마진 업데이트 중 오류가 발생했습니다: ' + error.message);
+            alert('컨테이너 설정 업데이트 중 오류가 발생했습니다: ' + error.message);
         });
     } catch (error) {
-        console.error('Error in updateContainerMargin:', error);
-        alert('컨테이너 마진 업데이트 중 오류가 발생했습니다: ' + error.message);
+        console.error('Error in updateContainerMarginAndPadding:', error);
+        alert('컨테이너 설정 업데이트 중 오류가 발생했습니다: ' + error.message);
     }
+}
+
+// 컨테이너 상단/하단 마진 업데이트 (하위 호환성 유지)
+function updateContainerMargin(containerId) {
+    updateContainerMarginAndPadding(containerId);
 }
 
 // 컨테이너 배경 타입 변경 핸들러
@@ -9881,6 +10057,148 @@ function hexToRgb(hex) {
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                 <button type="button" class="btn btn-primary" onclick="saveGradient()">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 컨테이너 마진 설정 모달 -->
+<div class="modal fade" id="containerMarginModal" tabindex="-1" aria-labelledby="containerMarginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="containerMarginModalLabel">
+                    <i class="bi bi-arrows-angle-expand me-2"></i>컨테이너 마진 설정
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="margin_modal_container_id">
+                <input type="hidden" id="margin_modal_is_new" value="false">
+                
+                <!-- 마진 시각화 박스 -->
+                <div class="d-flex justify-content-center mb-4">
+                    <div style="position: relative; width: 200px; height: 200px;">
+                        <!-- 외곽 박스 (마진 영역) -->
+                        <div style="position: absolute; inset: 0; background: rgba(255, 193, 7, 0.3); border: 2px dashed #ffc107; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+                            <!-- 상단 마진 표시 -->
+                            <div class="text-center py-1">
+                                <small class="text-warning fw-bold" id="margin_preview_top">0px</small>
+                            </div>
+                            <!-- 중앙 (내부 박스) -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                <div class="text-center px-1">
+                                    <small class="text-warning fw-bold" id="margin_preview_left">0px</small>
+                                </div>
+                                <div style="width: 80px; height: 80px; background: #6c757d; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                    <small class="text-white">컨텐츠</small>
+                                </div>
+                                <div class="text-center px-1">
+                                    <small class="text-warning fw-bold" id="margin_preview_right">0px</small>
+                                </div>
+                            </div>
+                            <!-- 하단 마진 표시 -->
+                            <div class="text-center py-1">
+                                <small class="text-warning fw-bold" id="margin_preview_bottom">24px</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="form-label">상단 마진 (px)</label>
+                        <input type="number" class="form-control" id="margin_modal_top" value="0" min="0" max="500" onchange="updateMarginPreview()">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">하단 마진 (px)</label>
+                        <input type="number" class="form-control" id="margin_modal_bottom" value="24" min="0" max="500" onchange="updateMarginPreview()">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">좌측 마진 (px)</label>
+                        <input type="number" class="form-control" id="margin_modal_left" value="0" min="0" max="500" onchange="updateMarginPreview()">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">우측 마진 (px)</label>
+                        <input type="number" class="form-control" id="margin_modal_right" value="0" min="0" max="500" onchange="updateMarginPreview()">
+                    </div>
+                </div>
+                <small class="text-muted mt-2 d-block">마진은 컨테이너 외부 여백입니다. 기본 하단 마진: 24px</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="saveContainerMargin()">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 컨테이너 패딩 설정 모달 -->
+<div class="modal fade" id="containerPaddingModal" tabindex="-1" aria-labelledby="containerPaddingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="containerPaddingModalLabel">
+                    <i class="bi bi-arrows-fullscreen me-2"></i>컨테이너 패딩 설정
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="padding_modal_container_id">
+                <input type="hidden" id="padding_modal_is_new" value="false">
+                
+                <!-- 패딩 시각화 박스 -->
+                <div class="d-flex justify-content-center mb-4">
+                    <div style="position: relative; width: 200px; height: 200px;">
+                        <!-- 외곽 박스 (패딩 영역) -->
+                        <div style="position: absolute; inset: 0; background: rgba(13, 110, 253, 0.3); border: 2px dashed #0d6efd; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+                            <!-- 상단 패딩 표시 -->
+                            <div class="text-center py-1">
+                                <small class="text-primary fw-bold" id="padding_preview_top">0px</small>
+                            </div>
+                            <!-- 중앙 (내부 박스) -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                <div class="text-center px-1">
+                                    <small class="text-primary fw-bold" id="padding_preview_left">0px</small>
+                                </div>
+                                <div style="width: 80px; height: 80px; background: #6c757d; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                    <small class="text-white">컨텐츠</small>
+                                </div>
+                                <div class="text-center px-1">
+                                    <small class="text-primary fw-bold" id="padding_preview_right">0px</small>
+                                </div>
+                            </div>
+                            <!-- 하단 패딩 표시 -->
+                            <div class="text-center py-1">
+                                <small class="text-primary fw-bold" id="padding_preview_bottom">0px</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="form-label">상단 패딩 (px)</label>
+                        <input type="number" class="form-control" id="padding_modal_top" value="0" min="0" max="500" onchange="updatePaddingPreview()">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">하단 패딩 (px)</label>
+                        <input type="number" class="form-control" id="padding_modal_bottom" value="0" min="0" max="500" onchange="updatePaddingPreview()">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">좌측 패딩 (px)</label>
+                        <input type="number" class="form-control" id="padding_modal_left" value="0" min="0" max="500" onchange="updatePaddingPreview()">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">우측 패딩 (px)</label>
+                        <input type="number" class="form-control" id="padding_modal_right" value="0" min="0" max="500" onchange="updatePaddingPreview()">
+                    </div>
+                </div>
+                <small class="text-muted mt-2 d-block">패딩은 컨테이너 내부 여백입니다.</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="saveContainerPadding()">저장</button>
             </div>
         </div>
     </div>

@@ -3654,12 +3654,32 @@ class AdminController extends Controller
             }
         }
         
-        // margin_top, margin_bottom 처리
+        // margin_top, margin_bottom, margin_left, margin_right 처리
         if ($request->has('margin_top')) {
             $container->margin_top = (int) $request->margin_top;
         }
         if ($request->has('margin_bottom')) {
             $container->margin_bottom = (int) $request->margin_bottom;
+        }
+        if ($request->has('margin_left')) {
+            $container->margin_left = (int) $request->margin_left;
+        }
+        if ($request->has('margin_right')) {
+            $container->margin_right = (int) $request->margin_right;
+        }
+        
+        // padding_top, padding_bottom, padding_left, padding_right 처리
+        if ($request->has('padding_top')) {
+            $container->padding_top = (int) $request->padding_top;
+        }
+        if ($request->has('padding_bottom')) {
+            $container->padding_bottom = (int) $request->padding_bottom;
+        }
+        if ($request->has('padding_left')) {
+            $container->padding_left = (int) $request->padding_left;
+        }
+        if ($request->has('padding_right')) {
+            $container->padding_right = (int) $request->padding_right;
         }
         
         // column_merges 처리
@@ -4446,12 +4466,32 @@ class AdminController extends Controller
             }
         }
         
-        // margin_top, margin_bottom 처리
+        // margin_top, margin_bottom, margin_left, margin_right 처리
         if ($request->has('margin_top')) {
             $container->margin_top = (int) $request->margin_top;
         }
         if ($request->has('margin_bottom')) {
             $container->margin_bottom = (int) $request->margin_bottom;
+        }
+        if ($request->has('margin_left')) {
+            $container->margin_left = (int) $request->margin_left;
+        }
+        if ($request->has('margin_right')) {
+            $container->margin_right = (int) $request->margin_right;
+        }
+        
+        // padding_top, padding_bottom, padding_left, padding_right 처리
+        if ($request->has('padding_top')) {
+            $container->padding_top = (int) $request->padding_top;
+        }
+        if ($request->has('padding_bottom')) {
+            $container->padding_bottom = (int) $request->padding_bottom;
+        }
+        if ($request->has('padding_left')) {
+            $container->padding_left = (int) $request->padding_left;
+        }
+        if ($request->has('padding_right')) {
+            $container->padding_right = (int) $request->padding_right;
         }
         
         // column_merges 처리

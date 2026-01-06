@@ -92,14 +92,40 @@
                 $containerStyle .= ($containerStyle ? ' ' : '') . $backgroundStyle;
             }
             
-            // 컨테이너 상단/하단 마진 추가 (0 포함 항상 적용)
+            // 컨테이너 마진 추가 (상/하/좌/우)
             $marginTop = $container->margin_top ?? 0;
             $marginBottom = $container->margin_bottom ?? 24;
+            $marginLeft = $container->margin_left ?? 0;
+            $marginRight = $container->margin_right ?? 0;
             if ($marginTop > 0) {
                 $containerStyle .= ' margin-top: ' . $marginTop . 'px !important;';
             }
             // margin_bottom은 0일 때도 적용해야 함
             $containerStyle .= ' margin-bottom: ' . $marginBottom . 'px !important;';
+            if ($marginLeft > 0) {
+                $containerStyle .= ' margin-left: ' . $marginLeft . 'px !important;';
+            }
+            if ($marginRight > 0) {
+                $containerStyle .= ' margin-right: ' . $marginRight . 'px !important;';
+            }
+            
+            // 컨테이너 패딩 추가 (상/하/좌/우)
+            $paddingTop = $container->padding_top ?? 0;
+            $paddingBottom = $container->padding_bottom ?? 0;
+            $paddingLeft = $container->padding_left ?? 0;
+            $paddingRight = $container->padding_right ?? 0;
+            if ($paddingTop > 0) {
+                $containerStyle .= ' padding-top: ' . $paddingTop . 'px !important;';
+            }
+            if ($paddingBottom > 0) {
+                $containerStyle .= ' padding-bottom: ' . $paddingBottom . 'px !important;';
+            }
+            if ($paddingLeft > 0) {
+                $containerStyle .= ' padding-left: ' . $paddingLeft . 'px !important;';
+            }
+            if ($paddingRight > 0) {
+                $containerStyle .= ' padding-right: ' . $paddingRight . 'px !important;';
+            }
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">
             <div class="row custom-page-widget-container {{ $alignClass }}{{ $fixedWidthColumns ? ' container mx-auto' : '' }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
