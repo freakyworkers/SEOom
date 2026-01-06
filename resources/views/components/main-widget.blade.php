@@ -4292,56 +4292,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const numberItems = document.querySelectorAll('.countdown-number-item');
     
     numberItems.forEach(function(item) {
-        const targetNumber = parseInt(item.dataset.itemNumber) || 0;
+        const targetNumber = parseFloat(item.dataset.itemNumber) || 0;
         const animationEnabled = item.dataset.animation === 'true';
         const displayElement = item.querySelector('.countdown-number-display');
         
         if (!displayElement) return;
         
+        // 소수점 자릿수 계산
+        const decimalPlaces = (targetNumber.toString().split('.')[1] || '').length;
+        
         if (animationEnabled) {
-            // 슬롯 애니메이션: 0부터 목표 숫자까지 증가하면서 각 자릿수가 0~9를 돌아가는 효과
-            const targetString = targetNumber.toString();
-            const digits = targetString.length;
+            // 애니메이션: 0부터 목표 숫자까지 부드럽게 증가
             let currentNumber = 0;
             const duration = 2000; // 2초 동안 애니메이션
-            const steps = Math.min(targetNumber, 100); // 최대 100단계
+            const steps = 60; // 60 프레임
             const stepDuration = duration / steps;
+            const increment = targetNumber / steps;
             let step = 0;
             
             function animateNumber() {
                 if (step < steps) {
                     step++;
-                    currentNumber = Math.floor((targetNumber * step) / steps);
+                    currentNumber = Math.min(increment * step, targetNumber);
                     
-                    // 각 자릿수를 0~9 사이에서 순환시키면서 표시
-                    const currentString = currentNumber.toString().padStart(digits, '0');
-                    let displayString = '';
-                    
-                    for (let i = 0; i < digits; i++) {
-                        const targetDigit = parseInt(targetString[i]);
-                        const currentDigit = parseInt(currentString[i]);
-                        
-                        if (currentNumber >= targetNumber) {
-                            // 목표 숫자에 도달했으면 목표 자릿수 표시
-                            displayString += targetDigit;
-                        } else {
-                            // 아직 도달하지 않았으면 현재 자릿수 표시 (0~9 순환)
-                            displayString += currentDigit;
-                        }
+                    // 소수점 자릿수에 맞춰 표시
+                    if (decimalPlaces > 0) {
+                        displayElement.textContent = currentNumber.toFixed(decimalPlaces);
+                    } else {
+                        displayElement.textContent = Math.floor(currentNumber);
                     }
                     
-                    displayElement.textContent = parseInt(displayString);
                     setTimeout(animateNumber, stepDuration);
                 } else {
                     // 최종적으로 목표 숫자 표시
-                    displayElement.textContent = targetNumber;
+                    if (decimalPlaces > 0) {
+                        displayElement.textContent = targetNumber.toFixed(decimalPlaces);
+                    } else {
+                        displayElement.textContent = targetNumber;
+                    }
                 }
             }
             
             animateNumber();
         } else {
             // 애니메이션 없이 바로 표시
-            displayElement.textContent = targetNumber;
+            if (decimalPlaces > 0) {
+                displayElement.textContent = targetNumber.toFixed(decimalPlaces);
+            } else {
+                displayElement.textContent = targetNumber;
+            }
         }
     });
 });

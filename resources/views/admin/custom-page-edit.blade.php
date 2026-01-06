@@ -3014,7 +3014,7 @@ function addCustomPageWidget() {
                 if (itemName && itemNumber) {
                     numberItems.push({
                         name: itemName,
-                        number: parseInt(itemNumber) || 0,
+                        number: parseFloat(itemNumber) || 0,
                         unit: itemUnit
                     });
                 }
@@ -6825,8 +6825,9 @@ function addCountdownNumberItem() {
                     <input type="number" 
                            class="form-control" 
                            name="countdown_number[${itemIndex}][number]" 
-                           placeholder="예: 48"
-                           min="0">
+                           placeholder="예: 48.5"
+                           min="0"
+                           step="any">
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">단위</label>

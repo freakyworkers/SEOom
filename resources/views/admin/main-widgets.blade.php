@@ -3525,7 +3525,7 @@ function addMainWidget() {
                 if (nameInput && numberInput && unitInput) {
                     numberItems.push({
                         name: nameInput.value || '',
-                        number: parseInt(numberInput.value) || 0,
+                        number: parseFloat(numberInput.value) || 0,
                         unit: unitInput.value || ''
                     });
                 }
@@ -6399,7 +6399,7 @@ function saveMainWidgetSettings() {
                 if (nameInput && numberInput && unitInput) {
                     numberItems.push({
                         name: nameInput.value || '',
-                        number: parseInt(numberInput.value) || 0,
+                        number: parseFloat(numberInput.value) || 0,
                         unit: unitInput.value || ''
                     });
                 }
@@ -8031,8 +8031,9 @@ function addCountdownNumberItem() {
                     <input type="number" 
                            class="form-control" 
                            name="countdown_number[${itemIndex}][number]" 
-                           placeholder="예: 48"
-                           min="0">
+                           placeholder="예: 48.5"
+                           min="0"
+                           step="any">
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">단위</label>
