@@ -1008,11 +1008,10 @@
         
         // 카운트다운 위젯 전용 그림자/라운드 적용 (가로/세로 100%여도 적용)
         $countdownShadowClass = $widgetShadow ? 'shadow-sm' : '';
-        $countdownRoundClass = $isOriginalRoundTheme ? '' : 'rounded-0';
-        $countdownStyle = 'display: flex; flex-direction: column; flex: 1; justify-content: center; padding: 1.5rem; margin-top: 0 !important; margin-bottom: 0 !important;';
-        if ($isOriginalRoundTheme) {
-            $countdownStyle .= ' border-radius: 0.5rem;';
-        }
+        
+        // 라운드 스타일 설정 - 명시적으로 border-radius 적용
+        $countdownBorderRadius = $isOriginalRoundTheme ? 'border-radius: 0.5rem !important; overflow: hidden;' : 'border-radius: 0 !important;';
+        $countdownStyle = 'display: flex; flex-direction: column; flex: 1; justify-content: center; padding: 1.5rem; margin-top: 0 !important; margin-bottom: 0 !important; ' . $countdownBorderRadius;
         
         // 컨테이너 정렬에 따라 justify-content 설정
         if ($verticalAlign === 'top') {
@@ -1024,7 +1023,7 @@
         // 다크모드 배경색 처리
         $countdownBgColor = $isDark ? 'rgb(43, 43, 43)' : '#ffffff';
     @endphp
-    <div class="card {{ $countdownShadowClass }} {{ $animationClass }} mb-0 {{ $countdownRoundClass }}" style="{{ $countdownStyle }} background-color: {{ $countdownBgColor }}; {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
+    <div class="card {{ $countdownShadowClass }} {{ $animationClass }} mb-0" style="{{ $countdownStyle }} background-color: {{ $countdownBgColor }}; {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
         <div class="countdown-widget text-center" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
             @if($countdownTitle)
                 <h4 class="mb-3">{{ $countdownTitle }}</h4>
