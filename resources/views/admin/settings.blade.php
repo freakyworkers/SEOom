@@ -981,12 +981,12 @@
                                     $isPaidPlan = $plan->billing_type !== 'free';
                                 }
                             } elseif ($plan) {
-                                // subscription은 없지만 plan이 있는 경우 (하위 호환성)
-                                // billing_type이 free가 아니고 price가 0보다 크면 유료 플랜
-                                $isPaidPlan = $plan->billing_type !== 'free' && $plan->price > 0;
+                                // subscription은 없지만 plan이 있는 경우 (마스터 콘솔에서 직접 생성한 사이트)
+                                // billing_type이 free가 아니면 유료 플랜 (price 조건 제거)
+                                $isPaidPlan = $plan->billing_type !== 'free';
                             } else {
                                 // planModel이 없으면 site의 plan 필드로 체크 (하위 호환성)
-                                $isPaidPlan = $site->plan && $site->plan !== 'free' && $site->plan !== 'Free';
+                                $isPaidPlan = $site->plan && $site->plan !== 'free' && $site->plan !== 'Free' && !str_contains(strtolower($site->plan), 'free');
                             }
                         @endphp
                         <div class="form-check mt-3">
@@ -1714,12 +1714,12 @@
             $isPaidPlan = $plan->billing_type !== 'free';
         }
     } elseif ($plan) {
-        // subscription은 없지만 plan이 있는 경우 (하위 호환성)
-        // billing_type이 free가 아니고 price가 0보다 크면 유료 플랜
-        $isPaidPlan = $plan->billing_type !== 'free' && $plan->price > 0;
+        // subscription은 없지만 plan이 있는 경우 (마스터 콘솔에서 직접 생성한 사이트)
+        // billing_type이 free가 아니면 유료 플랜 (price 조건 제거)
+        $isPaidPlan = $plan->billing_type !== 'free';
     } else {
         // planModel이 없으면 site의 plan 필드로 체크 (하위 호환성)
-        $isPaidPlan = $site->plan && $site->plan !== 'free' && $site->plan !== 'Free';
+        $isPaidPlan = $site->plan && $site->plan !== 'free' && $site->plan !== 'Free' && !str_contains(strtolower($site->plan), 'free');
     }
     
     $canUseDomain = $isPaidPlan;
