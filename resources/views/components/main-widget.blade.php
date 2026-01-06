@@ -3225,8 +3225,8 @@
                         ->value('value') : null;
                 @endphp
                 @if($map && $map->site_id === $site->id)
-                    <div class="map-widget-container">
-                        <div class="map-widget" style="width: 100%; height: 400px; border: 1px solid #dee2e6; border-radius: 0.375rem; overflow: hidden;">
+                    <div class="map-widget-container" style="display: flex; flex-direction: column; height: 100%; min-height: 400px;">
+                        <div class="map-widget" style="width: 100%; flex: 1; min-height: 300px; border: 1px solid #dee2e6; border-radius: 0.375rem; overflow: hidden;">
                             @if($map->map_type === 'google' && !empty($googleApiKey))
                                 <div id="google-map-{{ $map->id }}" style="width: 100%; height: 100%;"></div>
                                 @push('scripts')
@@ -3434,7 +3434,7 @@
                         </div>
                         {{-- 지도 하단 주소 표시 --}}
                         @if($map->address)
-                        <div class="map-address-info" style="padding: 0.75rem 1rem; background-color: #f8f9fa; border: 1px solid #dee2e6; border-top: none; border-radius: 0 0 0.375rem 0.375rem; display: block;">
+                        <div class="map-address-info" style="padding: 0.75rem 1rem; background-color: #f8f9fa; border: 1px solid #dee2e6; border-top: none; border-radius: 0 0 0.375rem 0.375rem; display: block; flex-shrink: 0;">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-geo-alt-fill me-2 text-primary" style="font-size: 1.1rem;"></i>
                                 <span style="font-size: 0.95rem; color: #495057; font-weight: 500;">{{ $map->address }}</span>
