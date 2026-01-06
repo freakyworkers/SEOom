@@ -3376,8 +3376,8 @@ function addWidget() {
         const blockContent = formData.get('block_content');
         const textAlign = formData.get('block_text_align') || 'left';
         const backgroundType = formData.get('block_background_type') || 'color';
-        const paddingTop = formData.get('block_padding_top') || '20';
-        const paddingLeft = formData.get('block_padding_left') || '20';
+        const paddingTop = formData.get('block_padding_top');
+        const paddingLeft = formData.get('block_padding_left');
         const blockLink = formData.get('block_link');
         const openNewTab = document.getElementById('widget_block_open_new_tab').checked;
         const titleFontSize = formData.get('block_title_font_size') || '16';
@@ -3419,8 +3419,8 @@ function addWidget() {
             }
         }
         
-        settings.padding_top = parseInt(paddingTop);
-        settings.padding_left = parseInt(paddingLeft);
+        settings.padding_top = paddingTop !== '' && paddingTop !== null ? parseInt(paddingTop) : 20;
+        settings.padding_left = paddingLeft !== '' && paddingLeft !== null ? parseInt(paddingLeft) : 20;
         
         const fontColor = document.getElementById('widget_block_font_color')?.value || '#ffffff';
         const showButton = document.getElementById('widget_block_show_button')?.checked || false;
@@ -3455,8 +3455,10 @@ function addWidget() {
             const textAlignRadio = item.querySelector(`input[name="block_slide[${itemIndex}][text_align]"]:checked`);
             const textAlign = textAlignRadio ? textAlignRadio.value : 'left';
             const backgroundType = item.querySelector('.block-slide-background-type')?.value || 'color';
-            const paddingTop = item.querySelector('.block-slide-padding-top')?.value || '20';
-            const paddingLeft = item.querySelector('.block-slide-padding-left')?.value || '20';
+            const paddingTopVal = item.querySelector('.block-slide-padding-top')?.value;
+            const paddingTop = paddingTopVal !== '' && paddingTopVal !== null && paddingTopVal !== undefined ? paddingTopVal : '20';
+            const paddingLeftVal = item.querySelector('.block-slide-padding-left')?.value;
+            const paddingLeft = paddingLeftVal !== '' && paddingLeftVal !== null && paddingLeftVal !== undefined ? paddingLeftVal : '20';
             const link = item.querySelector('.block-slide-link')?.value || '';
             const openNewTab = item.querySelector('.block-slide-open-new-tab')?.checked || false;
             const fontColor = item.querySelector('.block-slide-font-color')?.value || '#ffffff';
@@ -3995,10 +3997,10 @@ function editWidget(widgetId) {
                         }
                         
                         if (document.getElementById('edit_widget_block_padding_top')) {
-                            document.getElementById('edit_widget_block_padding_top').value = settings.padding_top || 20;
+                            document.getElementById('edit_widget_block_padding_top').value = settings.padding_top !== undefined && settings.padding_top !== null ? settings.padding_top : 20;
                         }
                         if (document.getElementById('edit_widget_block_padding_left')) {
-                            document.getElementById('edit_widget_block_padding_left').value = settings.padding_left || 20;
+                            document.getElementById('edit_widget_block_padding_left').value = settings.padding_left !== undefined && settings.padding_left !== null ? settings.padding_left : 20;
                         }
                         if (document.getElementById('edit_widget_block_font_color')) {
                             document.getElementById('edit_widget_block_font_color').value = settings.font_color || '#ffffff';
@@ -4422,8 +4424,8 @@ function saveWidgetSettings() {
         const textAlignRadio = document.querySelector('input[name="edit_block_text_align"]:checked');
         const textAlign = textAlignRadio ? textAlignRadio.value : 'left';
         const backgroundType = document.getElementById('edit_widget_block_background_type').value || 'color';
-                        const paddingTop = document.getElementById('edit_widget_block_padding_top').value || '20';
-                        const paddingLeft = document.getElementById('edit_widget_block_padding_left').value || '20';
+                        const paddingTop = document.getElementById('edit_widget_block_padding_top').value;
+                        const paddingLeft = document.getElementById('edit_widget_block_padding_left').value;
                         const blockLink = document.getElementById('edit_widget_block_link').value;
                         const openNewTab = document.getElementById('edit_widget_block_open_new_tab').checked;
                         const fontColor = document.getElementById('edit_widget_block_font_color')?.value || '#ffffff';
@@ -4479,8 +4481,8 @@ function saveWidgetSettings() {
                             }
                         }
                         
-                        settings.padding_top = parseInt(paddingTop);
-                        settings.padding_left = parseInt(paddingLeft);
+                        settings.padding_top = paddingTop !== '' && paddingTop !== null && paddingTop !== undefined ? parseInt(paddingTop) : 20;
+                        settings.padding_left = paddingLeft !== '' && paddingLeft !== null && paddingLeft !== undefined ? parseInt(paddingLeft) : 20;
                         
                         if (blockLink) {
                             settings.link = blockLink;
@@ -4507,8 +4509,10 @@ function saveWidgetSettings() {
                             const textAlignRadio = item.querySelector(`input[name="edit_block_slide[${itemIndex}][text_align]"]:checked`);
                             const textAlign = textAlignRadio ? textAlignRadio.value : 'left';
                             const backgroundType = item.querySelector('.edit-block-slide-background-type')?.value || 'color';
-                            const paddingTop = item.querySelector('.edit-block-slide-padding-top')?.value || '20';
-                            const paddingLeft = item.querySelector('.edit-block-slide-padding-left')?.value || '20';
+                            const paddingTopVal = item.querySelector('.edit-block-slide-padding-top')?.value;
+                            const paddingTop = paddingTopVal !== '' && paddingTopVal !== null && paddingTopVal !== undefined ? paddingTopVal : '20';
+                            const paddingLeftVal = item.querySelector('.edit-block-slide-padding-left')?.value;
+                            const paddingLeft = paddingLeftVal !== '' && paddingLeftVal !== null && paddingLeftVal !== undefined ? paddingLeftVal : '20';
                             const link = item.querySelector('.edit-block-slide-link')?.value || '';
                             const openNewTab = item.querySelector('.edit-block-slide-open-new-tab')?.checked || false;
                             const fontColor = item.querySelector('.edit-block-slide-font-color')?.value || '#ffffff';

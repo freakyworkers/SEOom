@@ -2920,12 +2920,12 @@ async function addCustomPageWidget() {
         const blockContent = formData.get('block_content');
         const textAlign = formData.get('block_text_align') || 'left';
         const backgroundType = formData.get('block_background_type') || 'color';
-        const paddingTop = formData.get('block_padding_top') || '20';
-        const paddingBottom = formData.get('block_padding_bottom') || '20';
-        const paddingLeft = formData.get('block_padding_left') || '20';
-        const paddingRight = formData.get('block_padding_right') || '20';
-        const titleContentGap = formData.get('block_title_content_gap') || '8';
-        const buttonTopMargin = formData.get('block_button_top_margin') || '12';
+        const paddingTop = formData.get('block_padding_top');
+        const paddingBottom = formData.get('block_padding_bottom');
+        const paddingLeft = formData.get('block_padding_left');
+        const paddingRight = formData.get('block_padding_right');
+        const titleContentGap = formData.get('block_title_content_gap');
+        const buttonTopMargin = formData.get('block_button_top_margin');
         const blockLink = formData.get('block_link');
         const openNewTab = document.getElementById('widget_block_open_new_tab')?.checked || false;
         const fontColor = formData.get('block_font_color') || '#ffffff';
@@ -3001,8 +3001,8 @@ async function addCustomPageWidget() {
         settings.title_font_size = titleFontSize;
         settings.content_font_size = contentFontSize;
         settings.buttons = buttons;
-        settings.title_content_gap = parseInt(titleContentGap) || 8;
-        settings.button_top_margin = parseInt(buttonTopMargin) || 12;
+        settings.title_content_gap = titleContentGap !== '' && titleContentGap !== null ? parseInt(titleContentGap) : 8;
+        settings.button_top_margin = buttonTopMargin !== '' && buttonTopMargin !== null ? parseInt(buttonTopMargin) : 12;
         
         if (backgroundType === 'color') {
             const backgroundColor = formData.get('block_background_color') || '#007bff';
@@ -3025,10 +3025,10 @@ async function addCustomPageWidget() {
             }
         }
         
-        settings.padding_top = parseInt(paddingTop) || 20;
-        settings.padding_bottom = parseInt(paddingBottom) || 20;
-        settings.padding_left = parseInt(paddingLeft) || 20;
-        settings.padding_right = parseInt(paddingRight) || 20;
+        settings.padding_top = paddingTop !== '' && paddingTop !== null ? parseInt(paddingTop) : 20;
+        settings.padding_bottom = paddingBottom !== '' && paddingBottom !== null ? parseInt(paddingBottom) : 20;
+        settings.padding_left = paddingLeft !== '' && paddingLeft !== null ? parseInt(paddingLeft) : 20;
+        settings.padding_right = paddingRight !== '' && paddingRight !== null ? parseInt(paddingRight) : 20;
         
         if (blockLink) {
             settings.link = blockLink;
@@ -3056,12 +3056,18 @@ async function addCustomPageWidget() {
             const textAlignRadio = item.querySelector(`input[name="block_slide[${itemIndex}][text_align]"]:checked`);
             const textAlign = textAlignRadio ? textAlignRadio.value : 'left';
             const backgroundType = item.querySelector('.block-slide-background-type')?.value || 'color';
-            const paddingTop = item.querySelector('.block-slide-padding-top')?.value || '20';
-            const paddingBottom = item.querySelector('.block-slide-padding-bottom')?.value || '20';
-            const paddingLeft = item.querySelector('.block-slide-padding-left')?.value || '20';
-            const paddingRight = item.querySelector('.block-slide-padding-right')?.value || '20';
-            const titleContentGap = item.querySelector('.block-slide-title-content-gap')?.value || '8';
-            const buttonTopMargin = item.querySelector('.block-slide-button-top-margin')?.value || '12';
+            const paddingTopVal = item.querySelector('.block-slide-padding-top')?.value;
+            const paddingTop = paddingTopVal !== '' && paddingTopVal !== null && paddingTopVal !== undefined ? paddingTopVal : '20';
+            const paddingBottomVal = item.querySelector('.block-slide-padding-bottom')?.value;
+            const paddingBottom = paddingBottomVal !== '' && paddingBottomVal !== null && paddingBottomVal !== undefined ? paddingBottomVal : '20';
+            const paddingLeftVal = item.querySelector('.block-slide-padding-left')?.value;
+            const paddingLeft = paddingLeftVal !== '' && paddingLeftVal !== null && paddingLeftVal !== undefined ? paddingLeftVal : '20';
+            const paddingRightVal = item.querySelector('.block-slide-padding-right')?.value;
+            const paddingRight = paddingRightVal !== '' && paddingRightVal !== null && paddingRightVal !== undefined ? paddingRightVal : '20';
+            const titleContentGapVal = item.querySelector('.block-slide-title-content-gap')?.value;
+            const titleContentGap = titleContentGapVal !== '' && titleContentGapVal !== null && titleContentGapVal !== undefined ? titleContentGapVal : '8';
+            const buttonTopMarginVal = item.querySelector('.block-slide-button-top-margin')?.value;
+            const buttonTopMargin = buttonTopMarginVal !== '' && buttonTopMarginVal !== null && buttonTopMarginVal !== undefined ? buttonTopMarginVal : '12';
             const link = item.querySelector('.block-slide-link')?.value || '';
             const openNewTab = item.querySelector('.block-slide-open-new-tab')?.checked || false;
             const fontColor = item.querySelector('.block-slide-font-color')?.value || '#ffffff';
@@ -3130,12 +3136,12 @@ async function addCustomPageWidget() {
                 content: content,
                 text_align: textAlign,
                 background_type: backgroundType,
-                padding_top: parseInt(paddingTop) || 20,
-                padding_bottom: parseInt(paddingBottom) || 20,
-                padding_left: parseInt(paddingLeft) || 20,
-                padding_right: parseInt(paddingRight) || 20,
-                title_content_gap: parseInt(titleContentGap) || 8,
-                button_top_margin: parseInt(buttonTopMargin) || 12,
+                padding_top: parseInt(paddingTop),
+                padding_bottom: parseInt(paddingBottom),
+                padding_left: parseInt(paddingLeft),
+                padding_right: parseInt(paddingRight),
+                title_content_gap: parseInt(titleContentGap),
+                button_top_margin: parseInt(buttonTopMargin),
                 link: link,
                 open_new_tab: openNewTab,
                 font_color: fontColor,
@@ -3732,22 +3738,22 @@ function editCustomPageWidget(widgetId) {
                 }
                 
                 if (document.getElementById('edit_custom_page_widget_block_padding_top')) {
-                    document.getElementById('edit_custom_page_widget_block_padding_top').value = settings.padding_top || 20;
+                    document.getElementById('edit_custom_page_widget_block_padding_top').value = settings.padding_top !== undefined && settings.padding_top !== null ? settings.padding_top : 20;
                 }
                 if (document.getElementById('edit_custom_page_widget_block_padding_bottom')) {
-                    document.getElementById('edit_custom_page_widget_block_padding_bottom').value = settings.padding_bottom || 20;
+                    document.getElementById('edit_custom_page_widget_block_padding_bottom').value = settings.padding_bottom !== undefined && settings.padding_bottom !== null ? settings.padding_bottom : 20;
                 }
                 if (document.getElementById('edit_custom_page_widget_block_padding_left')) {
-                    document.getElementById('edit_custom_page_widget_block_padding_left').value = settings.padding_left || 20;
+                    document.getElementById('edit_custom_page_widget_block_padding_left').value = settings.padding_left !== undefined && settings.padding_left !== null ? settings.padding_left : 20;
                 }
                 if (document.getElementById('edit_custom_page_widget_block_padding_right')) {
-                    document.getElementById('edit_custom_page_widget_block_padding_right').value = settings.padding_right || 20;
+                    document.getElementById('edit_custom_page_widget_block_padding_right').value = settings.padding_right !== undefined && settings.padding_right !== null ? settings.padding_right : 20;
                 }
                 if (document.getElementById('edit_custom_page_widget_block_title_content_gap')) {
-                    document.getElementById('edit_custom_page_widget_block_title_content_gap').value = settings.title_content_gap || 8;
+                    document.getElementById('edit_custom_page_widget_block_title_content_gap').value = settings.title_content_gap !== undefined && settings.title_content_gap !== null ? settings.title_content_gap : 8;
                 }
                 if (document.getElementById('edit_custom_page_widget_block_button_top_margin')) {
-                    document.getElementById('edit_custom_page_widget_block_button_top_margin').value = settings.button_top_margin || 12;
+                    document.getElementById('edit_custom_page_widget_block_button_top_margin').value = settings.button_top_margin !== undefined && settings.button_top_margin !== null ? settings.button_top_margin : 12;
                 }
                 if (document.getElementById('edit_custom_page_widget_block_link')) {
                     document.getElementById('edit_custom_page_widget_block_link').value = settings.link || '';
@@ -5044,17 +5050,17 @@ function saveCustomPageWidgetSettings() {
         const textAlignRadio = document.querySelector('input[name="edit_custom_page_block_text_align"]:checked');
         const textAlign = textAlignRadio ? textAlignRadio.value : 'left';
         const backgroundType = document.getElementById('edit_custom_page_widget_block_background_type')?.value || 'color';
-        const paddingTop = document.getElementById('edit_custom_page_widget_block_padding_top')?.value || '20';
-        const paddingBottom = document.getElementById('edit_custom_page_widget_block_padding_bottom')?.value || '20';
-        const paddingLeft = document.getElementById('edit_custom_page_widget_block_padding_left')?.value || '20';
-        const paddingRight = document.getElementById('edit_custom_page_widget_block_padding_right')?.value || '20';
-        const titleContentGap = document.getElementById('edit_custom_page_widget_block_title_content_gap')?.value || '8';
+        const paddingTop = document.getElementById('edit_custom_page_widget_block_padding_top')?.value;
+        const paddingBottom = document.getElementById('edit_custom_page_widget_block_padding_bottom')?.value;
+        const paddingLeft = document.getElementById('edit_custom_page_widget_block_padding_left')?.value;
+        const paddingRight = document.getElementById('edit_custom_page_widget_block_padding_right')?.value;
+        const titleContentGap = document.getElementById('edit_custom_page_widget_block_title_content_gap')?.value;
         const blockLink = document.getElementById('edit_custom_page_widget_block_link')?.value;
         const openNewTab = document.getElementById('edit_custom_page_widget_block_open_new_tab')?.checked;
         const fontColor = document.getElementById('edit_custom_page_widget_block_font_color')?.value || '#ffffff';
         const titleFontSize = document.getElementById('edit_custom_page_widget_block_title_font_size')?.value || '16';
         const contentFontSize = document.getElementById('edit_custom_page_widget_block_content_font_size')?.value || '14';
-        const buttonTopMargin = document.getElementById('edit_custom_page_widget_block_button_top_margin')?.value || '12';
+        const buttonTopMargin = document.getElementById('edit_custom_page_widget_block_button_top_margin')?.value;
         // 버튼 데이터 수집
         const buttons = [];
         const buttonInputs = document.querySelectorAll('.edit-custom-page-block-button-text');
@@ -5125,7 +5131,7 @@ function saveCustomPageWidgetSettings() {
         settings.title_font_size = titleFontSize;
         settings.content_font_size = contentFontSize;
         settings.buttons = buttons;
-        settings.button_top_margin = parseInt(buttonTopMargin) || 12;
+        settings.button_top_margin = buttonTopMargin !== '' && buttonTopMargin !== null && buttonTopMargin !== undefined ? parseInt(buttonTopMargin) : 12;
         
         // 디버깅: 버튼 투명도 값 확인
         if (buttons.length > 0) {
@@ -5749,7 +5755,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-padding-top" 
                    name="edit_custom_page_block_slide[${itemIndex}][padding_top]" 
-                   value="${blockData ? (blockData.padding_top || '20') : '20'}"
+                   value="${blockData && (blockData.padding_top !== undefined && blockData.padding_top !== null) ? blockData.padding_top : '20'}"
                    min="0"
                    max="200"
                    step="1"
@@ -5773,7 +5779,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-padding-left" 
                    name="edit_custom_page_block_slide[${itemIndex}][padding_left]" 
-                   value="${blockData ? (blockData.padding_left || '20') : '20'}"
+                   value="${blockData && (blockData.padding_left !== undefined && blockData.padding_left !== null) ? blockData.padding_left : '20'}"
                    min="0"
                    max="200"
                    step="1"
@@ -5797,7 +5803,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-title-content-gap" 
                    name="edit_custom_page_block_slide[${itemIndex}][title_content_gap]" 
-                   value="${blockData ? (blockData.title_content_gap || '8') : '8'}"
+                   value="${blockData && (blockData.title_content_gap !== undefined && blockData.title_content_gap !== null) ? blockData.title_content_gap : '8'}"
                    min="0"
                    max="100"
                    step="1"
@@ -5818,7 +5824,7 @@ function addEditMainBlockSlideItem(blockData = null) {
             <input type="number" 
                    class="form-control edit-custom-page-block-slide-button-top-margin" 
                    name="edit_custom_page_block_slide[${itemIndex}][button_top_margin]" 
-                   value="${blockData ? (blockData.button_top_margin || '12') : '12'}"
+                   value="${blockData && (blockData.button_top_margin !== undefined && blockData.button_top_margin !== null) ? blockData.button_top_margin : '12'}"
                    min="0"
                    max="100"
                    step="1"
