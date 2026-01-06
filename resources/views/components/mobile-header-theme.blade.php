@@ -30,6 +30,9 @@
     $mobileHeaderTransparentSetting = $site->getSetting('mobile_header_transparent', '0') == '1';
     $mobileHeaderTransparent = $pcHeaderTransparent || $mobileHeaderTransparentSetting;
     
+    // 헤더 고정 설정
+    $headerSticky = $site->getSetting('header_sticky', '0') == '1';
+    
     // 사이드바 설정 확인 (투명헤더는 사이드바가 없을 때만 적용 가능)
     $themeSidebar = $site->getSetting('theme_sidebar', 'left');
     $hasSidebar = $themeSidebar !== 'none';
@@ -86,8 +89,13 @@
         }
     }
     
-    // 헤더 클래스 추가
-    $headerClass = $mobileHeaderTransparent ? 'mobile-header-transparent' : '';
+    // 헤더 클래스 추가 (고정+투명일 때와 투명만일 때 구분)
+    $headerClass = '';
+    if ($headerSticky && $mobileHeaderTransparent && $isHomePage) {
+        $headerClass = 'mobile-header-transparent mobile-header-transparent-sticky';
+    } elseif ($mobileHeaderTransparent && $isHomePage) {
+        $headerClass = 'mobile-header-transparent';
+    }
     
     // 로고 설정: 다크 모드일 때 다크 모드 로고 사용
     $siteName = $site->getSetting('site_name', $site->name ?? 'SEOom Builder');
@@ -2224,11 +2232,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-{{-- 모바일 투명헤더 스크롤 시 글래스모피즘 스타일 --}}
-@if($mobileHeaderTransparent && $isHomePage)
+{{-- 모바일 투명헤더 스크롤 시 글래스모피즘 스타일 (고정헤더가 활성화된 경우에만) --}}
+@if($headerSticky && $mobileHeaderTransparent && $isHomePage)
 <style>
-/* 모바일 투명헤더 스크롤 시 글래스모피즘 배경 */
-.mobile-header-transparent.scrolled {
+/* 모바일 투명헤더+고정헤더 스크롤 시 글래스모피즘 배경 */
+.mobile-header-transparent-sticky.scrolled {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
     backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
     -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
@@ -2242,17 +2250,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* 다크 모드일 때 글래스모피즘 */
 @if($isDark)
-.mobile-header-transparent.scrolled {
+.mobile-header-transparent-sticky.scrolled {
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2)) !important;
     backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
     -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 @endif
+
+/* 다크 모드 테마 클래스 대응 */
+[data-theme="dark"] .mobile-header-transparent-sticky.scrolled,
+.theme-dark .mobile-header-transparent-sticky.scrolled {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2)) !important;
+    backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const mobileHeader = document.querySelector('.mobile-header-transparent');
+    const mobileHeader = document.querySelector('.mobile-header-transparent-sticky');
     if (mobileHeader) {
         function handleMobileScroll() {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
