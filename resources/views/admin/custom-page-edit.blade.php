@@ -90,12 +90,13 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-6">
-                                        <label for="container_padding_top" class="form-label">상단 여백 (px)</label>
-                                        <input type="number" class="form-control" id="container_padding_top" name="padding_top" value="0" min="0" max="500">
+                                        <label for="container_margin_top" class="form-label">상단 마진 (px)</label>
+                                        <input type="number" class="form-control" id="container_margin_top" name="margin_top" value="0" min="0" max="500">
                                     </div>
                                     <div class="col-6">
-                                        <label for="container_padding_bottom" class="form-label">하단 여백 (px)</label>
-                                        <input type="number" class="form-control" id="container_padding_bottom" name="padding_bottom" value="0" min="0" max="500">
+                                        <label for="container_margin_bottom" class="form-label">하단 마진 (px)</label>
+                                        <input type="number" class="form-control" id="container_margin_bottom" name="margin_bottom" value="24" min="0" max="500">
+                                        <small class="text-muted">기본값: 24px (mb-4)</small>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary w-100">
@@ -242,19 +243,19 @@
                                                         <input type="number" 
                                                                class="form-control form-control-sm" 
                                                                style="width: 70px;" 
-                                                               id="container_padding_top_{{ $container->id }}"
-                                                               value="{{ $container->padding_top ?? 0 }}"
+                                                               id="container_margin_top_{{ $container->id }}"
+                                                               value="{{ $container->margin_top ?? 0 }}"
                                                                min="0" max="500"
-                                                               onchange="updateContainerPadding({{ $container->id }})"
+                                                               onchange="updateContainerMargin({{ $container->id }})"
                                                                placeholder="px">
                                                         <label class="mb-0 small">하단:</label>
                                                         <input type="number" 
                                                                class="form-control form-control-sm" 
                                                                style="width: 70px;" 
-                                                               id="container_padding_bottom_{{ $container->id }}"
-                                                               value="{{ $container->padding_bottom ?? 0 }}"
+                                                               id="container_margin_bottom_{{ $container->id }}"
+                                                               value="{{ $container->margin_bottom ?? 24 }}"
                                                                min="0" max="500"
-                                                               onchange="updateContainerPadding({{ $container->id }})"
+                                                               onchange="updateContainerMargin({{ $container->id }})"
                                                                placeholder="px">
                                                         <label class="mb-0 small ms-2">배경:</label>
                                                         <select class="form-select form-select-sm" 
@@ -1940,8 +1941,8 @@ function updateContainerFixedWidthColumns(containerId, fixedWidthColumns) {
     }
 }
 
-// 컨테이너 상단/하단 여백 업데이트
-function updateContainerPadding(containerId) {
+// 컨테이너 상단/하단 마진 업데이트
+function updateContainerMargin(containerId) {
     try {
         const formData = new FormData();
         const containerItem = document.querySelector(`.container-item[data-container-id="${containerId}"]`);
@@ -1964,11 +1965,11 @@ function updateContainerPadding(containerId) {
         const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
         if (widgetSpacingSelect) formData.append('widget_spacing', widgetSpacingSelect.value);
 
-        let paddingTop = document.getElementById(`container_padding_top_${containerId}`)?.value || 0;
-        let paddingBottom = document.getElementById(`container_padding_bottom_${containerId}`)?.value || 0;
+        let marginTop = document.getElementById(`container_margin_top_${containerId}`)?.value || 0;
+        let marginBottom = document.getElementById(`container_margin_bottom_${containerId}`)?.value || 24;
         
-        formData.append('padding_top', paddingTop);
-        formData.append('padding_bottom', paddingBottom);
+        formData.append('margin_top', marginTop);
+        formData.append('margin_bottom', marginBottom);
         formData.append('_method', 'PUT');
 
         fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "page" => $page->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
@@ -1985,20 +1986,20 @@ function updateContainerPadding(containerId) {
                 const alertDiv = document.createElement('div');
                 alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
                 alertDiv.style.zIndex = '9999';
-                alertDiv.innerHTML = `<i class="bi bi-check-circle me-2"></i>컨테이너 여백이 저장되었습니다.<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+                alertDiv.innerHTML = `<i class="bi bi-check-circle me-2"></i>컨테이너 마진이 저장되었습니다.<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
                 document.body.appendChild(alertDiv);
                 setTimeout(() => { alertDiv.remove(); }, 3000);
             } else {
-                alert('컨테이너 여백 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                alert('컨테이너 마진 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('컨테이너 여백 업데이트 중 오류가 발생했습니다: ' + error.message);
+            alert('컨테이너 마진 업데이트 중 오류가 발생했습니다: ' + error.message);
         });
     } catch (error) {
-        console.error('Error in updateContainerPadding:', error);
-        alert('컨테이너 여백 업데이트 중 오류가 발생했습니다: ' + error.message);
+        console.error('Error in updateContainerMargin:', error);
+        alert('컨테이너 마진 업데이트 중 오류가 발생했습니다: ' + error.message);
     }
 }
 

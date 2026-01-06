@@ -101,12 +101,13 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-6">
-                                        <label for="container_padding_top" class="form-label">상단 여백 (px)</label>
-                                        <input type="number" class="form-control" id="container_padding_top" name="padding_top" value="0" min="0" max="500">
+                                        <label for="container_margin_top" class="form-label">상단 마진 (px)</label>
+                                        <input type="number" class="form-control" id="container_margin_top" name="margin_top" value="0" min="0" max="500">
                                     </div>
                                     <div class="col-6">
-                                        <label for="container_padding_bottom" class="form-label">하단 여백 (px)</label>
-                                        <input type="number" class="form-control" id="container_padding_bottom" name="padding_bottom" value="0" min="0" max="500">
+                                        <label for="container_margin_bottom" class="form-label">하단 마진 (px)</label>
+                                        <input type="number" class="form-control" id="container_margin_bottom" name="margin_bottom" value="24" min="0" max="500">
+                                        <small class="text-muted">기본값: 24px (mb-4)</small>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary w-100">
@@ -254,19 +255,19 @@
                                                         <input type="number" 
                                                                class="form-control form-control-sm" 
                                                                style="width: 70px;" 
-                                                               id="container_padding_top_{{ $container->id }}"
-                                                               value="{{ $container->padding_top ?? 0 }}"
+                                                               id="container_margin_top_{{ $container->id }}"
+                                                               value="{{ $container->margin_top ?? 0 }}"
                                                                min="0" max="500"
-                                                               onchange="updateContainerPadding({{ $container->id }})"
+                                                               onchange="updateContainerMargin({{ $container->id }})"
                                                                placeholder="px">
                                                         <label class="mb-0 small">하단:</label>
                                                         <input type="number" 
                                                                class="form-control form-control-sm" 
                                                                style="width: 70px;" 
-                                                               id="container_padding_bottom_{{ $container->id }}"
-                                                               value="{{ $container->padding_bottom ?? 0 }}"
+                                                               id="container_margin_bottom_{{ $container->id }}"
+                                                               value="{{ $container->margin_bottom ?? 24 }}"
                                                                min="0" max="500"
-                                                               onchange="updateContainerPadding({{ $container->id }})"
+                                                               onchange="updateContainerMargin({{ $container->id }})"
                                                                placeholder="px">
                                                         <label class="mb-0 small ms-2">배경:</label>
                                                         <select class="form-select form-select-sm" 
@@ -480,22 +481,22 @@
                                                         </select>
                                                     </div>
                                                     <div class="col-6">
-                                                        <label class="form-label small mb-1">상단 여백 (px)</label>
+                                                        <label class="form-label small mb-1">상단 마진 (px)</label>
                                                         <input type="number" 
                                                                class="form-control form-control-sm" 
-                                                               id="container_padding_top_mobile_{{ $container->id }}"
-                                                               value="{{ $container->padding_top ?? 0 }}"
+                                                               id="container_margin_top_mobile_{{ $container->id }}"
+                                                               value="{{ $container->margin_top ?? 0 }}"
                                                                min="0" max="500"
-                                                               onchange="updateContainerPadding({{ $container->id }})">
+                                                               onchange="updateContainerMargin({{ $container->id }})">
                                                     </div>
                                                     <div class="col-6">
-                                                        <label class="form-label small mb-1">하단 여백 (px)</label>
+                                                        <label class="form-label small mb-1">하단 마진 (px)</label>
                                                         <input type="number" 
                                                                class="form-control form-control-sm" 
-                                                               id="container_padding_bottom_mobile_{{ $container->id }}"
-                                                               value="{{ $container->padding_bottom ?? 0 }}"
+                                                               id="container_margin_bottom_mobile_{{ $container->id }}"
+                                                               value="{{ $container->margin_bottom ?? 24 }}"
                                                                min="0" max="500"
-                                                               onchange="updateContainerPadding({{ $container->id }})">
+                                                               onchange="updateContainerMargin({{ $container->id }})">
                                                     </div>
                                                     <div class="col-12">
                                                         <label class="form-label small mb-1">배경</label>
@@ -1432,21 +1433,21 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col-6">
-                                <label for="edit_main_widget_image_padding_top" class="form-label">상단 여백 (px)</label>
+                                <label for="edit_main_widget_image_margin_top" class="form-label">상단 마진 (px)</label>
                                 <input type="number" 
                                        class="form-control" 
-                                       id="edit_main_widget_image_padding_top" 
-                                       name="image_padding_top" 
+                                       id="edit_main_widget_image_margin_top" 
+                                       name="image_margin_top" 
                                        min="0" max="500" 
                                        value="0"
                                        placeholder="0">
                             </div>
                             <div class="col-6">
-                                <label for="edit_main_widget_image_padding_bottom" class="form-label">하단 여백 (px)</label>
+                                <label for="edit_main_widget_image_margin_bottom" class="form-label">하단 마진 (px)</label>
                                 <input type="number" 
                                        class="form-control" 
-                                       id="edit_main_widget_image_padding_bottom" 
-                                       name="image_padding_bottom" 
+                                       id="edit_main_widget_image_margin_bottom" 
+                                       name="image_margin_bottom" 
                                        min="0" max="500" 
                                        value="0"
                                        placeholder="0">
@@ -2279,8 +2280,8 @@ function updateContainerWidgetSpacing(containerId, widgetSpacing) {
     }
 }
 
-// 컨테이너 상단/하단 여백 업데이트
-function updateContainerPadding(containerId) {
+// 컨테이너 상단/하단 마진 업데이트
+function updateContainerMargin(containerId) {
     try {
         const formData = new FormData();
         
@@ -2306,14 +2307,14 @@ function updateContainerPadding(containerId) {
         const widgetSpacingSelect = containerItem.querySelector('select[onchange*="updateContainerWidgetSpacing"]');
         if (widgetSpacingSelect) formData.append('widget_spacing', widgetSpacingSelect.value);
 
-        // 상단/하단 여백 값 가져오기 (데스크탑 또는 모바일 중 하나에서)
-        let paddingTop = document.getElementById(`container_padding_top_${containerId}`)?.value || 
-                         document.getElementById(`container_padding_top_mobile_${containerId}`)?.value || 0;
-        let paddingBottom = document.getElementById(`container_padding_bottom_${containerId}`)?.value || 
-                            document.getElementById(`container_padding_bottom_mobile_${containerId}`)?.value || 0;
+        // 상단/하단 마진 값 가져오기 (데스크탑 또는 모바일 중 하나에서)
+        let marginTop = document.getElementById(`container_margin_top_${containerId}`)?.value || 
+                         document.getElementById(`container_margin_top_mobile_${containerId}`)?.value || 0;
+        let marginBottom = document.getElementById(`container_margin_bottom_${containerId}`)?.value || 
+                            document.getElementById(`container_margin_bottom_mobile_${containerId}`)?.value || 24;
         
-        formData.append('padding_top', paddingTop);
-        formData.append('padding_bottom', paddingBottom);
+        formData.append('margin_top', marginTop);
+        formData.append('margin_bottom', marginBottom);
         formData.append('_method', 'PUT');
         
         fetch('{{ route("admin.main-widgets.containers.update", ["site" => $site->slug, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
@@ -2332,7 +2333,7 @@ function updateContainerPadding(containerId) {
                 alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
                 alertDiv.style.zIndex = '9999';
                 alertDiv.innerHTML = `
-                    <i class="bi bi-check-circle me-2"></i>컨테이너 여백이 저장되었습니다.
+                    <i class="bi bi-check-circle me-2"></i>컨테이너 마진이 저장되었습니다.
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 `;
                 document.body.appendChild(alertDiv);
@@ -2341,16 +2342,16 @@ function updateContainerPadding(containerId) {
                     alertDiv.remove();
                 }, 3000);
             } else {
-                alert('컨테이너 여백 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                alert('컨테이너 마진 업데이트에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('컨테이너 여백 업데이트 중 오류가 발생했습니다: ' + error.message);
+            alert('컨테이너 마진 업데이트 중 오류가 발생했습니다: ' + error.message);
         });
     } catch (error) {
-        console.error('Error in updateContainerPadding:', error);
-        alert('컨테이너 여백 업데이트 중 오류가 발생했습니다: ' + error.message);
+        console.error('Error in updateContainerMargin:', error);
+        alert('컨테이너 마진 업데이트 중 오류가 발생했습니다: ' + error.message);
     }
 }
 
@@ -4512,12 +4513,12 @@ function editMainWidget(widgetId) {
                 if (document.getElementById('edit_main_widget_image_open_new_tab')) {
                     document.getElementById('edit_main_widget_image_open_new_tab').checked = settings.image_open_new_tab || false;
                 }
-                // 상단/하단 여백 로드
-                if (document.getElementById('edit_main_widget_image_padding_top')) {
-                    document.getElementById('edit_main_widget_image_padding_top').value = settings.padding_top || 0;
+                // 상단/하단 마진 로드
+                if (document.getElementById('edit_main_widget_image_margin_top')) {
+                    document.getElementById('edit_main_widget_image_margin_top').value = settings.margin_top || 0;
                 }
-                if (document.getElementById('edit_main_widget_image_padding_bottom')) {
-                    document.getElementById('edit_main_widget_image_padding_bottom').value = settings.padding_bottom || 0;
+                if (document.getElementById('edit_main_widget_image_margin_bottom')) {
+                    document.getElementById('edit_main_widget_image_margin_bottom').value = settings.margin_bottom || 0;
                 }
             } else if (widgetType === 'image_slide') {
                 if (imageSlideContainer) imageSlideContainer.style.display = 'block';
@@ -6700,11 +6701,11 @@ function saveMainWidgetSettings() {
         const imageOpenNewTab = document.getElementById('edit_main_widget_image_open_new_tab')?.checked;
         settings.image_open_new_tab = imageOpenNewTab || false;
         
-        // 상단/하단 여백
-        const imagePaddingTop = document.getElementById('edit_main_widget_image_padding_top')?.value || '0';
-        const imagePaddingBottom = document.getElementById('edit_main_widget_image_padding_bottom')?.value || '0';
-        settings.padding_top = parseInt(imagePaddingTop) || 0;
-        settings.padding_bottom = parseInt(imagePaddingBottom) || 0;
+        // 상단/하단 마진
+        const imageMarginTop = document.getElementById('edit_main_widget_image_margin_top')?.value || '0';
+        const imageMarginBottom = document.getElementById('edit_main_widget_image_margin_bottom')?.value || '0';
+        settings.margin_top = parseInt(imageMarginTop) || 0;
+        settings.margin_bottom = parseInt(imageMarginBottom) || 0;
     } else if (widgetType === 'image_slide') {
         const slideDirection = document.querySelector('input[name="edit_main_image_slide_direction"]:checked')?.value || 'left';
         settings.slide_direction = slideDirection;

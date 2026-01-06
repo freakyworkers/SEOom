@@ -91,14 +91,14 @@
                 $containerStyle .= ($containerStyle ? ' ' : '') . $backgroundStyle;
             }
             
-            // 컨테이너 상단/하단 여백 추가
-            $paddingTop = $container->padding_top ?? 0;
-            $paddingBottom = $container->padding_bottom ?? 0;
-            if ($paddingTop > 0) {
-                $containerStyle .= ' padding-top: ' . $paddingTop . 'px !important;';
+            // 컨테이너 상단/하단 마진 추가
+            $marginTop = $container->margin_top ?? 0;
+            $marginBottom = $container->margin_bottom ?? 24;
+            if ($marginTop > 0) {
+                $containerStyle .= ' margin-top: ' . $marginTop . 'px !important;';
             }
-            if ($paddingBottom > 0) {
-                $containerStyle .= ' padding-bottom: ' . $paddingBottom . 'px !important;';
+            if ($marginBottom > 0) {
+                $containerStyle .= ' margin-bottom: ' . $marginBottom . 'px !important;';
             }
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}">

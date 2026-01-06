@@ -3491,8 +3491,8 @@ class AdminController extends Controller
             'fixed_width_columns' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
             'widget_spacing' => 'nullable|integer|min:0|max:5',
-            'padding_top' => 'nullable|integer|min:0|max:500',
-            'padding_bottom' => 'nullable|integer|min:0|max:500',
+            'margin_top' => 'nullable|integer|min:0|max:500',
+            'margin_bottom' => 'nullable|integer|min:0|max:500',
         ]);
 
         $maxOrder = MainWidgetContainer::where('site_id', $site->id)->max('order') ?? 0;
@@ -3527,8 +3527,8 @@ class AdminController extends Controller
             'fixed_width_columns' => $fixedWidthColumns,
             'full_height' => $fullHeight,
             'widget_spacing' => $request->widget_spacing ?? 3,
-            'padding_top' => $request->padding_top ?? 0,
-            'padding_bottom' => $request->padding_bottom ?? 0,
+            'margin_top' => $request->margin_top ?? 0,
+            'margin_bottom' => $request->margin_bottom ?? 0,
             'order' => $maxOrder + 1,
         ]);
 
@@ -3557,8 +3557,8 @@ class AdminController extends Controller
             'fixed_width_columns' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
             'widget_spacing' => 'nullable|integer|min:0|max:5',
-            'padding_top' => 'nullable|integer|min:0|max:500',
-            'padding_bottom' => 'nullable|integer|min:0|max:500',
+            'margin_top' => 'nullable|integer|min:0|max:500',
+            'margin_bottom' => 'nullable|integer|min:0|max:500',
             'background_type' => 'nullable|string|in:none,color,gradient,image',
             'background_color' => 'nullable|string|max:7',
             'background_gradient_start' => 'nullable|string|max:7',
@@ -3654,12 +3654,12 @@ class AdminController extends Controller
             }
         }
         
-        // padding_top, padding_bottom 처리
-        if ($request->has('padding_top')) {
-            $container->padding_top = (int) $request->padding_top;
+        // margin_top, margin_bottom 처리
+        if ($request->has('margin_top')) {
+            $container->margin_top = (int) $request->margin_top;
         }
-        if ($request->has('padding_bottom')) {
-            $container->padding_bottom = (int) $request->padding_bottom;
+        if ($request->has('margin_bottom')) {
+            $container->margin_bottom = (int) $request->margin_bottom;
         }
         
         // column_merges 처리
@@ -4294,8 +4294,8 @@ class AdminController extends Controller
             'full_width' => 'nullable|boolean',
             'fixed_width_columns' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
-            'padding_top' => 'nullable|integer|min:0|max:500',
-            'padding_bottom' => 'nullable|integer|min:0|max:500',
+            'margin_top' => 'nullable|integer|min:0|max:500',
+            'margin_bottom' => 'nullable|integer|min:0|max:500',
         ]);
 
         $maxOrder = CustomPageWidgetContainer::where('custom_page_id', $customPage->id)->max('order') ?? 0;
@@ -4329,8 +4329,8 @@ class AdminController extends Controller
             'full_width' => $fullWidth,
             'fixed_width_columns' => $fixedWidthColumns,
             'full_height' => $fullHeight,
-            'padding_top' => $request->padding_top ?? 0,
-            'padding_bottom' => $request->padding_bottom ?? 0,
+            'margin_top' => $request->margin_top ?? 0,
+            'margin_bottom' => $request->margin_bottom ?? 0,
             'order' => $maxOrder + 1,
         ]);
 
@@ -4358,8 +4358,8 @@ class AdminController extends Controller
             'full_width' => 'nullable|boolean',
             'fixed_width_columns' => 'nullable|boolean',
             'full_height' => 'nullable|boolean',
-            'padding_top' => 'nullable|integer|min:0|max:500',
-            'padding_bottom' => 'nullable|integer|min:0|max:500',
+            'margin_top' => 'nullable|integer|min:0|max:500',
+            'margin_bottom' => 'nullable|integer|min:0|max:500',
             'background_type' => 'nullable|string|in:none,color,gradient,image',
             'background_color' => 'nullable|string|max:7',
             'background_gradient_start' => 'nullable|string|max:7',
@@ -4446,12 +4446,12 @@ class AdminController extends Controller
             }
         }
         
-        // padding_top, padding_bottom 처리
-        if ($request->has('padding_top')) {
-            $container->padding_top = (int) $request->padding_top;
+        // margin_top, margin_bottom 처리
+        if ($request->has('margin_top')) {
+            $container->margin_top = (int) $request->margin_top;
         }
-        if ($request->has('padding_bottom')) {
-            $container->padding_bottom = (int) $request->padding_bottom;
+        if ($request->has('margin_bottom')) {
+            $container->margin_bottom = (int) $request->margin_bottom;
         }
         
         // column_merges 처리

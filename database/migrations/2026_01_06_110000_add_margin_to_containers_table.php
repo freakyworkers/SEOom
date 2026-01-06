@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // MainWidgetContainer에 상단/하단 여백 추가
+        // MainWidgetContainer에 상단/하단 마진 추가 (기본 하단 마진: 24px = Bootstrap mb-4)
         Schema::table('main_widget_containers', function (Blueprint $table) {
-            $table->integer('padding_top')->default(0)->after('widget_spacing');
-            $table->integer('padding_bottom')->default(0)->after('padding_top');
+            $table->integer('margin_top')->default(0)->after('widget_spacing');
+            $table->integer('margin_bottom')->default(24)->after('margin_top');
         });
 
-        // CustomPageWidgetContainer에 상단/하단 여백과 fixed_width_columns 추가
+        // CustomPageWidgetContainer에 상단/하단 마진과 fixed_width_columns 추가
         Schema::table('custom_page_widget_containers', function (Blueprint $table) {
             $table->boolean('fixed_width_columns')->default(false)->after('full_width');
-            $table->integer('padding_top')->default(0)->after('full_height');
-            $table->integer('padding_bottom')->default(0)->after('padding_top');
+            $table->integer('margin_top')->default(0)->after('full_height');
+            $table->integer('margin_bottom')->default(24)->after('margin_top');
         });
     }
 
@@ -31,11 +31,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('main_widget_containers', function (Blueprint $table) {
-            $table->dropColumn(['padding_top', 'padding_bottom']);
+            $table->dropColumn(['margin_top', 'margin_bottom']);
         });
 
         Schema::table('custom_page_widget_containers', function (Blueprint $table) {
-            $table->dropColumn(['fixed_width_columns', 'padding_top', 'padding_bottom']);
+            $table->dropColumn(['fixed_width_columns', 'margin_top', 'margin_bottom']);
         });
     }
 };
