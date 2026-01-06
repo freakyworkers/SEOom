@@ -82,7 +82,13 @@
             $fixedWidthColumns = ($container->fixed_width_columns ?? false) && $isFullWidth;
             
             $containerClass = $isFullWidth ? 'container-fluid px-0' : '';
-            $containerStyle = $isFullWidth ? 'width: 100vw; position: relative; left: 50%; transform: translateX(-50%); padding: 0;' : '';
+            // 패럴랙스가 활성화되면 transform 대신 margin으로 센터링 (transform은 fixed 배경을 깨뜨림)
+            $hasParallax = ($container->background_type === 'image' && ($container->background_parallax ?? false));
+            if ($isFullWidth && $hasParallax) {
+                $containerStyle = 'width: 100vw; margin-left: calc(-50vw + 50%); padding: 0;';
+            } else {
+                $containerStyle = $isFullWidth ? 'width: 100vw; position: relative; left: 50%; transform: translateX(-50%); padding: 0;' : '';
+            }
             
             // 투명헤더가 활성화된 경우 또는 첫 번째 컨테이너가 세로 100%일 경우 상단 마진과 패딩 제거
             // 가로 100% 컨테이너의 경우 상단 여백 제거

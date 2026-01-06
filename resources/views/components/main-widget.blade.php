@@ -1076,16 +1076,44 @@
             $countdownStyle = str_replace('justify-content: center;', 'justify-content: flex-end;', $countdownStyle);
         }
         
-        // 다크모드 배경색 처리
-        $countdownBgColor = $isDark ? 'rgb(43, 43, 43)' : '#ffffff';
+        // 배경 스타일 처리
+        $countdownBackgroundType = $countdownSettings['background_type'] ?? 'none';
+        $countdownBgStyle = '';
+        if ($countdownBackgroundType === 'color') {
+            $countdownBgColor = $countdownSettings['background_color'] ?? '#007bff';
+            $countdownBgOpacity = isset($countdownSettings['background_opacity']) ? $countdownSettings['background_opacity'] : 100;
+            if ($countdownBgOpacity < 100) {
+                $countdownBgStyle = 'background-color: ' . hexToRgbaButton($countdownBgColor, $countdownBgOpacity / 100) . ';';
+            } else {
+                $countdownBgStyle = 'background-color: ' . $countdownBgColor . ';';
+            }
+        } elseif ($countdownBackgroundType === 'gradient') {
+            $gradientStart = $countdownSettings['background_gradient_start'] ?? '#ffffff';
+            $gradientEnd = $countdownSettings['background_gradient_end'] ?? '#000000';
+            $gradientAngle = $countdownSettings['background_gradient_angle'] ?? 90;
+            $gradientOpacity = isset($countdownSettings['background_gradient_opacity']) ? $countdownSettings['background_gradient_opacity'] : 100;
+            if ($gradientOpacity < 100) {
+                $gradientStartRgba = hexToRgbaButton($gradientStart, $gradientOpacity / 100);
+                $gradientEndRgba = hexToRgbaButton($gradientEnd, $gradientOpacity / 100);
+                $countdownBgStyle = 'background: linear-gradient(' . $gradientAngle . 'deg, ' . $gradientStartRgba . ', ' . $gradientEndRgba . ');';
+            } else {
+                $countdownBgStyle = 'background: linear-gradient(' . $gradientAngle . 'deg, ' . $gradientStart . ', ' . $gradientEnd . ');';
+            }
+        } else {
+            // 배경 없음일 때 - 다크모드 대응
+            $countdownBgStyle = 'background-color: ' . ($isDark ? 'rgb(43, 43, 43)' : '#ffffff') . ';';
+        }
+        
+        // 폰트 색상 처리
+        $countdownFontColor = $countdownSettings['font_color'] ?? ($isDark ? '#ffffff' : '#333333');
     @endphp
-    <div class="card {{ $countdownShadowClass }} {{ $animationClass }} mb-0" style="{{ $countdownStyle }} background-color: {{ $countdownBgColor }}; {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
-        <div class="countdown-widget text-center" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+    <div class="card {{ $countdownShadowClass }} {{ $animationClass }} mb-0" style="{{ $countdownStyle }} {{ $countdownBgStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
+        <div class="countdown-widget text-center" style="flex: 1; display: flex; flex-direction: column; justify-content: center; color: {{ $countdownFontColor }};">
             @if($countdownTitle)
-                <h4 class="mb-3">{{ $countdownTitle }}</h4>
+                <h4 class="mb-3" style="color: {{ $countdownFontColor }};">{{ $countdownTitle }}</h4>
             @endif
             @if($countdownContent)
-                <p class="mb-3">{{ $countdownContent }}</p>
+                <p class="mb-3" style="color: {{ $countdownFontColor }};">{{ $countdownContent }}</p>
             @endif
             
             @if($countdownType === 'dday')
