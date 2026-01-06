@@ -361,7 +361,7 @@ class Site extends Model
             $customFeaturesArray = is_array($customFeatures) ? $customFeatures : json_decode($customFeatures, true);
             if (is_array($customFeaturesArray) && isset($customFeaturesArray['limits'])) {
                 $customLimits = $customFeaturesArray['limits'];
-                if (isset($customLimits[$limitKey])) {
+                if (array_key_exists($limitKey, $customLimits)) {
                     return $customLimits[$limitKey]; // null이면 무제한
                 }
             }
@@ -370,11 +370,18 @@ class Site extends Model
         // 플랜의 limits 확인
         $planModel = $this->planModel();
         if (!$planModel) {
-            return $default;
+            return $default; // 플랜이 없으면 기본값 사용
         }
 
         $limits = $planModel->limits ?? [];
-        return $limits[$limitKey] ?? $default;
+        
+        // 플랜이 있는 경우: limits에 키가 있으면 그 값 반환, 없으면 무제한(null)
+        if (array_key_exists($limitKey, $limits)) {
+            return $limits[$limitKey];
+        }
+        
+        // 플랜은 있지만 limits에 해당 키가 없으면 무제한
+        return null;
     }
 
     /**
@@ -661,13 +668,8 @@ public function hasMainWidgetType(string $widgetType): bool
      */
     public function getBoardLimit(): ?int
     {
-        $plan = $this->planModel();
-        if (!$plan) {
-            return 2; // 기본값
-        }
-        
-        $limits = $plan->limits ?? [];
-        return $limits['boards'] ?? null;
+        // getLimit()을 사용하여 custom_features도 확인
+        return $this->getLimit('boards', 2);
     }
 
     /**
@@ -676,13 +678,8 @@ public function hasMainWidgetType(string $widgetType): bool
      */
     public function getWidgetLimit(): ?int
     {
-        $plan = $this->planModel();
-        if (!$plan) {
-            return 3; // 기본값
-        }
-        
-        $limits = $plan->limits ?? [];
-        return $limits['widgets'] ?? null;
+        // getLimit()을 사용하여 custom_features도 확인
+        return $this->getLimit('widgets', 3);
     }
 
     /**
@@ -691,13 +688,8 @@ public function hasMainWidgetType(string $widgetType): bool
      */
     public function getCustomPageLimit(): ?int
     {
-        $plan = $this->planModel();
-        if (!$plan) {
-            return 2; // 기본값
-        }
-        
-        $limits = $plan->limits ?? [];
-        return $limits['custom_pages'] ?? null;
+        // getLimit()을 사용하여 custom_features도 확인
+        return $this->getLimit('custom_pages', 2);
     }
 
     /**
@@ -706,13 +698,8 @@ public function hasMainWidgetType(string $widgetType): bool
      */
     public function getUserLimit(): ?int
     {
-        $plan = $this->planModel();
-        if (!$plan) {
-            return 20; // 기본값
-        }
-        
-        $limits = $plan->limits ?? [];
-        return $limits['users'] ?? null;
+        // getLimit()을 사용하여 custom_features도 확인
+        return $this->getLimit('users', 20);
     }
 
     /**
