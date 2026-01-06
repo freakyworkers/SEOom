@@ -1168,7 +1168,8 @@
     @endif
     @php
         $cardBodyStyle = ($widget->type === 'tab_menu' || $widget->type === 'user_ranking' || $widget->type === 'toggle_menu') ? 'padding-top: 0 !important;' : '';
-        if ($isFullHeight) {
+        if ($isFullHeight || $widget->type === 'map') {
+            // 세로 100% 또는 지도 위젯일 때는 항상 flex 적용
             $cardBodyStyle .= ($cardBodyStyle ? ' ' : '') . 'flex: 1; display: flex; flex-direction: column; min-height: 0;';
         }
         // 라운드 테마일 때 card-body에 하단 라운드 추가 (card-header가 없는 경우)
