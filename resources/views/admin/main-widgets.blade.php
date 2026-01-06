@@ -4065,9 +4065,9 @@ async function addMainWidget() {
             
             if (backgroundType === 'color') {
                 const backgroundColor = item.querySelector('.block-slide-background-color')?.value || '#007bff';
-                const backgroundColorAlpha = item.querySelector('.block-slide-background-color-alpha')?.value || 100;
+                const backgroundColorAlphaValue = item.querySelector('.block-slide-background-color-alpha')?.value;
                 blockItem.background_color = backgroundColor;
-                blockItem.background_color_alpha = parseInt(backgroundColorAlpha) || 100;
+                blockItem.background_color_alpha = backgroundColorAlphaValue !== '' && backgroundColorAlphaValue !== null ? parseInt(backgroundColorAlphaValue) : 100;
             } else if (backgroundType === 'gradient') {
                 const gradientStart = item.querySelector('.block-slide-background-gradient-start')?.value || '#ffffff';
                 const gradientEnd = item.querySelector('.block-slide-background-gradient-end')?.value || '#000000';
@@ -4081,11 +4081,12 @@ async function addMainWidget() {
                     formData.append(`block_slide[${itemIndex}][background_image_file]`, imageFile);
                 }
                 const imageUrl = item.querySelector(`#block_slide_${itemIndex}_background_image_url`)?.value;
-                const imageAlpha = item.querySelector('.block-slide-background-image-alpha')?.value || 100;
+                const imageAlphaValue = item.querySelector('.block-slide-background-image-alpha')?.value;
+                const imageAlpha = imageAlphaValue !== '' && imageAlphaValue !== null ? parseInt(imageAlphaValue) : 100;
                 if (imageUrl) {
                     blockItem.background_image_url = imageUrl;
                 }
-                blockItem.background_image_alpha = parseInt(imageAlpha) || 100;
+                blockItem.background_image_alpha = imageAlpha;
             }
             
             blockItems.push(blockItem);
@@ -4590,6 +4591,9 @@ function editMainWidget(widgetId) {
                     if (document.getElementById('edit_main_widget_block_background_color')) {
                         document.getElementById('edit_main_widget_block_background_color').value = settings.background_color || '#007bff';
                     }
+                    if (document.getElementById('edit_main_widget_block_background_color_alpha')) {
+                        document.getElementById('edit_main_widget_block_background_color_alpha').value = settings.background_color_alpha !== undefined && settings.background_color_alpha !== null ? settings.background_color_alpha : 100;
+                    }
                 } else if (backgroundType === 'gradient') {
                     const gradientStartInput = document.getElementById('edit_main_widget_block_gradient_start');
                     const gradientEndInput = document.getElementById('edit_main_widget_block_gradient_end');
@@ -4618,6 +4622,9 @@ function editMainWidget(widgetId) {
                         document.getElementById('edit_main_widget_block_image_preview_img').src = settings.background_image_url;
                         document.getElementById('edit_main_widget_block_image_preview').style.display = 'block';
                         document.getElementById('edit_main_widget_block_background_image').value = settings.background_image_url;
+                    }
+                    if (document.getElementById('edit_main_widget_block_background_image_alpha')) {
+                        document.getElementById('edit_main_widget_block_background_image_alpha').value = settings.background_image_alpha !== undefined && settings.background_image_alpha !== null ? settings.background_image_alpha : 100;
                     }
                 }
                 
@@ -6868,9 +6875,10 @@ function saveMainWidgetSettings() {
         
         if (backgroundType === 'color') {
             const backgroundColor = document.getElementById('edit_main_widget_block_background_color')?.value || '#007bff';
-            const backgroundColorAlpha = document.getElementById('edit_main_widget_block_background_color_alpha')?.value || '100';
+            const backgroundColorAlphaValue = document.getElementById('edit_main_widget_block_background_color_alpha')?.value;
+            const backgroundColorAlpha = backgroundColorAlphaValue !== '' && backgroundColorAlphaValue !== null ? parseInt(backgroundColorAlphaValue) : 100;
             settings.background_color = backgroundColor;
-            settings.background_color_alpha = parseInt(backgroundColorAlpha) || 100;
+            settings.background_color_alpha = backgroundColorAlpha;
         } else if (backgroundType === 'gradient') {
             // 두 가지 필드명 모두 확인
             const gradientStartInput = document.getElementById('edit_main_widget_block_gradient_start') || 
@@ -6899,8 +6907,9 @@ function saveMainWidgetSettings() {
             if (imageUrl) {
                 settings.background_image_url = imageUrl;
             }
-            const imageAlpha = document.getElementById('edit_main_widget_block_background_image_alpha')?.value || '100';
-            settings.background_image_alpha = parseInt(imageAlpha) || 100;
+            const imageAlphaValue = document.getElementById('edit_main_widget_block_background_image_alpha')?.value;
+            const imageAlpha = imageAlphaValue !== '' && imageAlphaValue !== null ? parseInt(imageAlphaValue) : 100;
+            settings.background_image_alpha = imageAlpha;
         }
         
         settings.padding_top = paddingTop !== '' && paddingTop !== null && paddingTop !== undefined ? parseInt(paddingTop) : 20;
@@ -6987,7 +6996,7 @@ function saveMainWidgetSettings() {
                 const backgroundColorInput = item.querySelector('.edit-main-block-slide-background-color');
                 const backgroundColorAlphaInput = item.querySelector('.edit-main-block-slide-background-color-alpha');
                 blockItem.background_color = backgroundColorInput ? backgroundColorInput.value : '#007bff';
-                blockItem.background_color_alpha = backgroundColorAlphaInput ? parseInt(backgroundColorAlphaInput.value) || 100 : 100;
+                blockItem.background_color_alpha = backgroundColorAlphaInput && backgroundColorAlphaInput.value !== '' ? parseInt(backgroundColorAlphaInput.value) : 100;
             } else if (blockItem.background_type === 'gradient') {
                 // hidden input에서 그라데이션 값 가져오기 (두 가지 필드명 모두 확인)
                 const gradientStartInput = document.getElementById(`edit_main_block_slide_${itemIndex}_gradient_start`) || 
@@ -7012,7 +7021,7 @@ function saveMainWidgetSettings() {
                 if (imageUrlInput && imageUrlInput.value) {
                     blockItem.background_image_url = imageUrlInput.value;
                 }
-                blockItem.background_image_alpha = imageAlphaInput ? parseInt(imageAlphaInput.value) || 100 : 100;
+                blockItem.background_image_alpha = imageAlphaInput && imageAlphaInput.value !== '' ? parseInt(imageAlphaInput.value) : 100;
             }
             
             blockItems.push(blockItem);
@@ -7567,11 +7576,11 @@ function addEditMainBlockSlideItem(blockData = null) {
                    name="edit_main_block_slide[${itemIndex}][background_color_alpha]"
                    min="0" 
                    max="100" 
-                   value="${blockData ? (blockData.background_color_alpha || 100) : 100}"
+                   value="${blockData && blockData.background_color_alpha !== undefined && blockData.background_color_alpha !== null ? blockData.background_color_alpha : 100}"
                    onchange="document.getElementById('edit_main_block_slide_${itemIndex}_background_color_alpha_value').textContent = this.value + '%'">
             <div class="d-flex justify-content-between">
                 <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                <small class="text-muted" id="edit_main_block_slide_${itemIndex}_background_color_alpha_value" style="font-size: 0.7rem;">${blockData ? (blockData.background_color_alpha || 100) : 100}%</small>
+                <small class="text-muted" id="edit_main_block_slide_${itemIndex}_background_color_alpha_value" style="font-size: 0.7rem;">${blockData && blockData.background_color_alpha !== undefined && blockData.background_color_alpha !== null ? blockData.background_color_alpha : 100}%</small>
                 <small class="text-muted" style="font-size: 0.7rem;">100%</small>
             </div>
         </div>
@@ -7634,11 +7643,11 @@ function addEditMainBlockSlideItem(blockData = null) {
                    name="edit_main_block_slide[${itemIndex}][background_image_alpha]"
                    min="0" 
                    max="100" 
-                   value="${blockData ? (blockData.background_image_alpha || 100) : 100}"
+                   value="${blockData && blockData.background_image_alpha !== undefined && blockData.background_image_alpha !== null ? blockData.background_image_alpha : 100}"
                    onchange="document.getElementById('edit_main_block_slide_${itemIndex}_background_image_alpha_value').textContent = this.value + '%'">
             <div class="d-flex justify-content-between">
                 <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                <small class="text-muted" id="edit_main_block_slide_${itemIndex}_background_image_alpha_value" style="font-size: 0.7rem;">${blockData ? (blockData.background_image_alpha || 100) : 100}%</small>
+                <small class="text-muted" id="edit_main_block_slide_${itemIndex}_background_image_alpha_value" style="font-size: 0.7rem;">${blockData && blockData.background_image_alpha !== undefined && blockData.background_image_alpha !== null ? blockData.background_image_alpha : 100}%</small>
                 <small class="text-muted" style="font-size: 0.7rem;">100%</small>
             </div>
         </div>
