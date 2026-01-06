@@ -2544,26 +2544,39 @@ function hideAddWidgetForm() {
 }
 
 // 위젯 추가 - 사이드 위젯의 addWidget 함수 로직을 참조
-function addCustomPageWidget() {
+async function addCustomPageWidget() {
     const form = document.getElementById('addWidgetForm');
-    const formData = new FormData(form);
+    const addButton = form.querySelector('button[onclick="addCustomPageWidget()"]');
     
-    // 이미지 파일 크기 체크 (최대 50MB)
-    const maxFileSize = 50 * 1024 * 1024; // 50MB
-    const fileInputs = form.querySelectorAll('input[type="file"]');
-    for (const fileInput of fileInputs) {
-        if (fileInput.files && fileInput.files.length > 0) {
-            for (const file of fileInput.files) {
-                if (file.size > maxFileSize) {
-                    const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
-                    alert('이미지 파일 크기가 너무 큽니다.\n\n파일명: ' + file.name + '\n파일 크기: ' + fileSizeMB + 'MB\n최대 허용 크기: 50MB\n\n이미지 파일 크기를 줄여서 다시 시도해주세요.');
-                    return;
+    // 로딩 상태 표시
+    if (addButton) {
+        addButton.disabled = true;
+        addButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>업로드 중...';
+    }
+    
+    try {
+        const formData = new FormData(form);
+        
+        // 이미지 파일 크기 체크 (최대 50MB)
+        const maxFileSize = 50 * 1024 * 1024; // 50MB
+        const fileInputs = form.querySelectorAll('input[type="file"]');
+        for (const fileInput of fileInputs) {
+            if (fileInput.files && fileInput.files.length > 0) {
+                for (const file of fileInput.files) {
+                    if (file.size > maxFileSize) {
+                        const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+                        alert('이미지 파일 크기가 너무 큽니다.\n\n파일명: ' + file.name + '\n파일 크기: ' + fileSizeMB + 'MB\n최대 허용 크기: 50MB\n\n이미지 파일 크기를 줄여서 다시 시도해주세요.');
+                        if (addButton) {
+                            addButton.disabled = false;
+                            addButton.innerHTML = '<i class="bi bi-plus-circle me-2"></i>추가';
+                        }
+                        return;
+                    }
                 }
             }
         }
-    }
-    
-    // container_id와 column_index 확인 및 추가
+        
+        // container_id와 column_index 확인 및 추가
     const containerId = document.getElementById('widget_container_id')?.value;
     const columnIndex = document.getElementById('widget_column_index')?.value;
     
@@ -3109,7 +3122,23 @@ function addCustomPageWidget() {
         } else {
             alert('위젯 추가 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
         }
+    })
+    .finally(() => {
+        // 로딩 상태 해제
+        if (addButton) {
+            addButton.disabled = false;
+            addButton.innerHTML = '<i class="bi bi-plus-circle me-2"></i>추가';
+        }
     });
+    } catch (error) {
+        console.error('Error:', error);
+        alert('위젯 추가 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
+        // 로딩 상태 해제
+        if (addButton) {
+            addButton.disabled = false;
+            addButton.innerHTML = '<i class="bi bi-plus-circle me-2"></i>추가';
+        }
+    }
 }
 
 // 위젯 수정
