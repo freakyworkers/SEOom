@@ -1097,8 +1097,8 @@
                 $countdownBgStyle = 'background: linear-gradient(' . $gradientAngle . 'deg, ' . $gradientStart . ', ' . $gradientEnd . ');';
             }
         } else {
-            // 배경 없음일 때 - 다크모드 대응
-            $countdownBgStyle = 'background-color: ' . ($isDark ? 'rgb(43, 43, 43)' : '#ffffff') . ';';
+            // 배경 없음일 때 - 투명 배경
+            $countdownBgStyle = 'background: transparent; border: none;';
         }
         
         // 폰트 색상 처리
