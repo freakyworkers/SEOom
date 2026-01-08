@@ -191,6 +191,49 @@
 </div>
 <div class="mb-3" id="widget_block_container" style="display: none;">
     <div class="mb-3">
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="widget_block_enable_image" onchange="toggleBlockImageFields('widget_block')">
+            <label class="form-check-label" for="widget_block_enable_image">
+                블록 위에 이미지 활성화
+            </label>
+        </div>
+    </div>
+    <div class="mb-3" id="widget_block_image_container" style="display: none;">
+        <label for="widget_block_image" class="form-label">이미지 선택</label>
+        <input type="file" 
+               class="form-control" 
+               id="widget_block_image" 
+               name="block_image"
+               accept="image/*"
+               onchange="previewBlockImage(this, 'widget_block_image_preview')">
+        <input type="hidden" id="widget_block_image_url" name="block_image_url">
+        <div class="mt-2" id="widget_block_image_preview_container" style="display: none;">
+            <img id="widget_block_image_preview" src="" alt="미리보기" style="max-width: 100%; height: auto; border-radius: 4px;">
+            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeBlockImage('widget_block')">이미지 삭제</button>
+        </div>
+        <div class="mt-3">
+            <label class="form-label">이미지 패딩</label>
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="form-label small">좌 (px)</label>
+                    <input type="number" class="form-control" id="widget_block_image_padding_left" value="0" min="0" max="200">
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">우 (px)</label>
+                    <input type="number" class="form-control" id="widget_block_image_padding_right" value="0" min="0" max="200">
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">상 (px)</label>
+                    <input type="number" class="form-control" id="widget_block_image_padding_top" value="0" min="0" max="200">
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">하 (px)</label>
+                    <input type="number" class="form-control" id="widget_block_image_padding_bottom" value="0" min="0" max="200">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
         <label for="widget_block_title" class="form-label">제목</label>
         <input type="text" 
                class="form-control" 

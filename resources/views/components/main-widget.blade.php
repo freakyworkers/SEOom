@@ -144,6 +144,14 @@
         // 반응형 폰트 사이즈 계산 - clamp(최소, 선호, 최대)
         $responsiveTitleFontSize = "clamp(" . round($titleFontSize * 0.65) . "px, " . round($titleFontSize / 8, 1) . "vw, " . $titleFontSize . "px)";
         $responsiveContentFontSize = "clamp(" . round($contentFontSize * 0.65) . "px, " . round($contentFontSize / 8, 1) . "vw, " . $contentFontSize . "px)";
+        
+        // 블록 이미지 설정
+        $enableImage = $blockSettings['enable_image'] ?? false;
+        $blockImageUrl = $blockSettings['block_image_url'] ?? '';
+        $blockImagePaddingLeft = $blockSettings['block_image_padding_left'] ?? 0;
+        $blockImagePaddingRight = $blockSettings['block_image_padding_right'] ?? 0;
+        $blockImagePaddingTop = $blockSettings['block_image_padding_top'] ?? 0;
+        $blockImagePaddingBottom = $blockSettings['block_image_padding_bottom'] ?? 0;
         // 버튼 데이터 (하위 호환성: 기존 단일 버튼 데이터도 지원)
         $buttons = $blockSettings['buttons'] ?? [];
         if (!is_array($buttons)) {
@@ -225,6 +233,11 @@
             <a href="{{ $link }}" 
                style="color: {{ $fontColor }}; text-decoration: none; display: block;"
                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
+        @endif
+        @if($enableImage && $blockImageUrl)
+            <div style="width: 100%; padding: {{ $blockImagePaddingTop }}px {{ $blockImagePaddingRight }}px {{ $blockImagePaddingBottom }}px {{ $blockImagePaddingLeft }}px;">
+                <img src="{{ $blockImageUrl }}" alt="블록 이미지" style="width: 100%; height: auto; display: block;">
+            </div>
         @endif
         @if($blockTitle)
             <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }}; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>

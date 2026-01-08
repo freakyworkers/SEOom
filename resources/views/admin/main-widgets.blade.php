@@ -1125,6 +1125,49 @@
                     </div>
                     <div class="mb-3" id="edit_main_widget_block_container" style="display: none;">
                         <div class="mb-3">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="edit_main_widget_block_enable_image" onchange="toggleBlockImageFields('edit_main_widget_block')">
+                                <label class="form-check-label" for="edit_main_widget_block_enable_image">
+                                    블록 위에 이미지 활성화
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3" id="edit_main_widget_block_image_container" style="display: none;">
+                            <label for="edit_main_widget_block_image" class="form-label">이미지 선택</label>
+                            <input type="file" 
+                                   class="form-control" 
+                                   id="edit_main_widget_block_image" 
+                                   name="block_image"
+                                   accept="image/*"
+                                   onchange="previewBlockImage(this, 'edit_main_widget_block_image_preview')">
+                            <input type="hidden" id="edit_main_widget_block_image_url" name="block_image_url">
+                            <div class="mt-2" id="edit_main_widget_block_image_preview_container" style="display: none;">
+                                <img id="edit_main_widget_block_image_preview" src="" alt="미리보기" style="max-width: 100%; height: auto; border-radius: 4px;">
+                                <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeBlockImage('edit_main_widget_block')">이미지 삭제</button>
+                            </div>
+                            <div class="mt-3">
+                                <label class="form-label">이미지 패딩</label>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label class="form-label small">좌 (px)</label>
+                                        <input type="number" class="form-control" id="edit_main_widget_block_image_padding_left" value="0" min="0" max="200">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">우 (px)</label>
+                                        <input type="number" class="form-control" id="edit_main_widget_block_image_padding_right" value="0" min="0" max="200">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">상 (px)</label>
+                                        <input type="number" class="form-control" id="edit_main_widget_block_image_padding_top" value="0" min="0" max="200">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">하 (px)</label>
+                                        <input type="number" class="form-control" id="edit_main_widget_block_image_padding_bottom" value="0" min="0" max="200">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
                             <label for="edit_main_widget_block_title" class="form-label">제목</label>
                             <input type="text" 
                                    class="form-control" 
@@ -3949,6 +3992,29 @@ async function addMainWidget() {
         const fontColor = formData.get('block_font_color') || '#ffffff';
         const titleFontSize = formData.get('block_title_font_size') || '16';
         const contentFontSize = formData.get('block_content_font_size') || '14';
+        
+        // 블록 이미지 데이터 수집
+        const enableImage = document.getElementById('widget_block_enable_image')?.checked || false;
+        const blockImageFile = document.getElementById('widget_block_image')?.files[0];
+        const blockImageUrl = document.getElementById('widget_block_image_url')?.value || '';
+        const blockImagePaddingLeft = document.getElementById('widget_block_image_padding_left')?.value || '0';
+        const blockImagePaddingRight = document.getElementById('widget_block_image_padding_right')?.value || '0';
+        const blockImagePaddingTop = document.getElementById('widget_block_image_padding_top')?.value || '0';
+        const blockImagePaddingBottom = document.getElementById('widget_block_image_padding_bottom')?.value || '0';
+        
+        if (enableImage) {
+            settings.enable_image = true;
+            if (blockImageFile) {
+                formData.append('block_image_file', blockImageFile);
+            }
+            if (blockImageUrl) {
+                settings.block_image_url = blockImageUrl;
+            }
+            settings.block_image_padding_left = parseInt(blockImagePaddingLeft) || 0;
+            settings.block_image_padding_right = parseInt(blockImagePaddingRight) || 0;
+            settings.block_image_padding_top = parseInt(blockImagePaddingTop) || 0;
+            settings.block_image_padding_bottom = parseInt(blockImagePaddingBottom) || 0;
+        }
         // 버튼 데이터 수집
         const buttons = [];
         const buttonInputs = document.querySelectorAll('.block-button-text');
@@ -4733,6 +4799,41 @@ function editMainWidget(widgetId) {
             } else if (widgetType === 'block') {
                 if (blockContainer) blockContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'none';
+                
+                // 블록 이미지 설정 로드
+                const enableImage = settings.enable_image || false;
+                const blockImageUrl = settings.block_image_url || '';
+                const blockImagePaddingLeft = settings.block_image_padding_left || 0;
+                const blockImagePaddingRight = settings.block_image_padding_right || 0;
+                const blockImagePaddingTop = settings.block_image_padding_top || 0;
+                const blockImagePaddingBottom = settings.block_image_padding_bottom || 0;
+                
+                if (document.getElementById('edit_main_widget_block_enable_image')) {
+                    document.getElementById('edit_main_widget_block_enable_image').checked = enableImage;
+                    toggleBlockImageFields('edit_main_widget_block');
+                }
+                
+                if (enableImage && blockImageUrl) {
+                    const imageUrlInput = document.getElementById('edit_main_widget_block_image_url');
+                    const previewContainer = document.getElementById('edit_main_widget_block_image_preview_container');
+                    const previewImg = document.getElementById('edit_main_widget_block_image_preview');
+                    if (imageUrlInput) imageUrlInput.value = blockImageUrl;
+                    if (previewImg) previewImg.src = blockImageUrl;
+                    if (previewContainer) previewContainer.style.display = 'block';
+                }
+                
+                if (document.getElementById('edit_main_widget_block_image_padding_left')) {
+                    document.getElementById('edit_main_widget_block_image_padding_left').value = blockImagePaddingLeft;
+                }
+                if (document.getElementById('edit_main_widget_block_image_padding_right')) {
+                    document.getElementById('edit_main_widget_block_image_padding_right').value = blockImagePaddingRight;
+                }
+                if (document.getElementById('edit_main_widget_block_image_padding_top')) {
+                    document.getElementById('edit_main_widget_block_image_padding_top').value = blockImagePaddingTop;
+                }
+                if (document.getElementById('edit_main_widget_block_image_padding_bottom')) {
+                    document.getElementById('edit_main_widget_block_image_padding_bottom').value = blockImagePaddingBottom;
+                }
                 
                 if (document.getElementById('edit_main_widget_block_title')) {
                     document.getElementById('edit_main_widget_block_title').value = settings.block_title || '';
@@ -7144,6 +7245,29 @@ function saveMainWidgetSettings() {
         const fontColor = document.getElementById('edit_main_widget_block_font_color')?.value || '#ffffff';
         const titleFontSize = document.getElementById('edit_main_widget_block_title_font_size')?.value || '16';
         const contentFontSize = document.getElementById('edit_main_widget_block_content_font_size')?.value || '14';
+        
+        // 블록 이미지 데이터 수집
+        const enableImage = document.getElementById('edit_main_widget_block_enable_image')?.checked || false;
+        const blockImageFile = document.getElementById('edit_main_widget_block_image')?.files[0];
+        const blockImageUrl = document.getElementById('edit_main_widget_block_image_url')?.value || '';
+        const blockImagePaddingLeft = document.getElementById('edit_main_widget_block_image_padding_left')?.value || '0';
+        const blockImagePaddingRight = document.getElementById('edit_main_widget_block_image_padding_right')?.value || '0';
+        const blockImagePaddingTop = document.getElementById('edit_main_widget_block_image_padding_top')?.value || '0';
+        const blockImagePaddingBottom = document.getElementById('edit_main_widget_block_image_padding_bottom')?.value || '0';
+        
+        if (enableImage) {
+            settings.enable_image = true;
+            if (blockImageFile) {
+                formData.append('block_image_file', blockImageFile);
+            }
+            if (blockImageUrl) {
+                settings.block_image_url = blockImageUrl;
+            }
+            settings.block_image_padding_left = parseInt(blockImagePaddingLeft) || 0;
+            settings.block_image_padding_right = parseInt(blockImagePaddingRight) || 0;
+            settings.block_image_padding_top = parseInt(blockImagePaddingTop) || 0;
+            settings.block_image_padding_bottom = parseInt(blockImagePaddingBottom) || 0;
+        }
         // 버튼 데이터 수집
         const buttons = [];
         const buttonInputs = document.querySelectorAll('.edit-main-block-button-text');
@@ -11029,6 +11153,68 @@ function hexToRgb(hex) {
         </div>
     </div>
 </div>
+
+<script>
+// 블록 이미지 필드 토글 함수
+function toggleBlockImageFields(prefix) {
+    const enableCheckbox = document.getElementById(prefix === 'widget_block' ? 'widget_block_enable_image' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_enable_image' : 'edit_custom_page_widget_block_enable_image'));
+    const imageContainer = document.getElementById(prefix === 'widget_block' ? 'widget_block_image_container' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image_container' : 'edit_custom_page_widget_block_image_container'));
+    
+    if (enableCheckbox && imageContainer) {
+        imageContainer.style.display = enableCheckbox.checked ? 'block' : 'none';
+        if (!enableCheckbox.checked) {
+            // 이미지 필드 초기화
+            const imageInput = document.getElementById(prefix === 'widget_block' ? 'widget_block_image' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image' : 'edit_custom_page_widget_block_image'));
+            const imageUrlInput = document.getElementById(prefix === 'widget_block' ? 'widget_block_image_url' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image_url' : 'edit_custom_page_widget_block_image_url'));
+            const previewContainer = document.getElementById(prefix === 'widget_block' ? 'widget_block_image_preview_container' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image_preview_container' : 'edit_custom_page_widget_block_image_preview_container'));
+            if (imageInput) imageInput.value = '';
+            if (imageUrlInput) imageUrlInput.value = '';
+            if (previewContainer) previewContainer.style.display = 'none';
+        }
+    }
+}
+
+// 블록 이미지 미리보기 함수
+function previewBlockImage(input, previewId) {
+    const previewContainer = document.getElementById(input.id.replace('_image', '_image_preview_container'));
+    const previewImg = document.getElementById(previewId);
+    const imageUrlInput = document.getElementById(input.id.replace('_image', '_image_url'));
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            if (previewImg) {
+                previewImg.src = e.target.result;
+            }
+            if (previewContainer) {
+                previewContainer.style.display = 'block';
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else if (imageUrlInput && imageUrlInput.value) {
+        // URL이 있는 경우
+        if (previewImg) {
+            previewImg.src = imageUrlInput.value;
+        }
+        if (previewContainer) {
+            previewContainer.style.display = 'block';
+        }
+    }
+}
+
+// 블록 이미지 삭제 함수
+function removeBlockImage(prefix) {
+    const imageInput = document.getElementById(prefix === 'widget_block' ? 'widget_block_image' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image' : 'edit_custom_page_widget_block_image'));
+    const imageUrlInput = document.getElementById(prefix === 'widget_block' ? 'widget_block_image_url' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image_url' : 'edit_custom_page_widget_block_image_url'));
+    const previewContainer = document.getElementById(prefix === 'widget_block' ? 'widget_block_image_preview_container' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image_preview_container' : 'edit_custom_page_widget_block_image_preview_container'));
+    const previewImg = document.getElementById(prefix === 'widget_block' ? 'widget_block_image_preview' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image_preview' : 'edit_custom_page_widget_block_image_preview'));
+    
+    if (imageInput) imageInput.value = '';
+    if (imageUrlInput) imageUrlInput.value = '';
+    if (previewImg) previewImg.src = '';
+    if (previewContainer) previewContainer.style.display = 'none';
+}
+</script>
 
 @endsection
 

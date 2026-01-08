@@ -3272,6 +3272,14 @@ class AdminController extends Controller
             $settings['background_image_url'] = asset('storage/' . $result['file_path']);
         }
         
+        // 블록 위 이미지 업로드 처리
+        if ($request->type === 'block' && $request->hasFile('block_image_file')) {
+            $image = $request->file('block_image_file');
+            $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+            $result = $this->fileUploadService->upload($image, $directory);
+            $settings['block_image_url'] = asset('storage/' . $result['file_path']);
+        }
+        
         // 블록 슬라이드 타입 이미지 업로드 처리
         if ($request->type === 'block_slide' && isset($settings['blocks']) && is_array($settings['blocks'])) {
             foreach ($settings['blocks'] as $index => &$block) {
@@ -3367,6 +3375,14 @@ class AdminController extends Controller
             $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
             $result = $this->fileUploadService->upload($image, $directory);
             $settings['background_image_url'] = asset('storage/' . $result['file_path']);
+        }
+        
+        // 블록 위 이미지 업로드 처리
+        if ($widget->type === 'block' && $request->hasFile('block_image_file')) {
+            $image = $request->file('block_image_file');
+            $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+            $result = $this->fileUploadService->upload($image, $directory);
+            $settings['block_image_url'] = asset('storage/' . $result['file_path']);
         }
         
         // 블록 슬라이드 타입 이미지 업로드 처리
@@ -3926,6 +3942,14 @@ class AdminController extends Controller
                 $settings['background_image_url'] = asset('storage/' . $result['file_path']);
             }
             
+            // 블록 위 이미지 업로드 처리
+            if ($request->type === 'block' && $request->hasFile('block_image_file')) {
+                $image = $request->file('block_image_file');
+                $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+                $result = $this->fileUploadService->upload($image, $directory);
+                $settings['block_image_url'] = asset('storage/' . $result['file_path']);
+            }
+            
             // 블록 슬라이드 타입 이미지 업로드 처리
             if ($request->type === 'block_slide' && isset($settings['blocks']) && is_array($settings['blocks'])) {
                 foreach ($settings['blocks'] as $index => &$block) {
@@ -4038,6 +4062,14 @@ class AdminController extends Controller
             $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
             $result = $this->fileUploadService->upload($image, $directory);
             $settings['background_image_url'] = asset('storage/' . $result['file_path']);
+        }
+        
+        // 블록 위 이미지 업로드 처리
+        if ($widget->type === 'block' && $request->hasFile('block_image_file')) {
+            $image = $request->file('block_image_file');
+            $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+            $result = $this->fileUploadService->upload($image, $directory);
+            $settings['block_image_url'] = asset('storage/' . $result['file_path']);
         }
         
         // 블록 슬라이드 타입 이미지 업로드 처리
@@ -4742,6 +4774,14 @@ class AdminController extends Controller
             $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
             $result = $this->fileUploadService->upload($image, $directory);
             $settings['background_image_url'] = asset('storage/' . $result['file_path']);
+        }
+        
+        // 블록 위 이미지 업로드 처리
+        if ($request->type === 'block' && $request->hasFile('block_image_file')) {
+            $image = $request->file('block_image_file');
+            $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+            $result = $this->fileUploadService->upload($image, $directory);
+            $settings['block_image_url'] = asset('storage/' . $result['file_path']);
         }
         
         // 블록 슬라이드 타입 이미지 업로드 처리
