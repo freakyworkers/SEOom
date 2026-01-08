@@ -4089,11 +4089,6 @@ function editCustomPageWidget(widgetId) {
                 // 블록 이미지 설정 로드
                 const enableImage = settings.enable_image || false;
                 const blockImageUrl = settings.block_image_url || '';
-                const blockImagePaddingLeft = settings.block_image_padding_left || 0;
-                const blockImagePaddingRight = settings.block_image_padding_right || 0;
-                const blockImagePaddingTop = settings.block_image_padding_top || 0;
-                const blockImagePaddingBottom = settings.block_image_padding_bottom || 0;
-                
                 if (document.getElementById('edit_custom_page_widget_block_enable_image')) {
                     document.getElementById('edit_custom_page_widget_block_enable_image').checked = enableImage;
                     toggleBlockImageFields('edit_custom_page_widget_block');

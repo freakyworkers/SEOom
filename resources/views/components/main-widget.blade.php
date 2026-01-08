@@ -148,10 +148,6 @@
         // 블록 이미지 설정
         $enableImage = $blockSettings['enable_image'] ?? false;
         $blockImageUrl = $blockSettings['block_image_url'] ?? '';
-        $blockImagePaddingLeft = $blockSettings['block_image_padding_left'] ?? 0;
-        $blockImagePaddingRight = $blockSettings['block_image_padding_right'] ?? 0;
-        $blockImagePaddingTop = $blockSettings['block_image_padding_top'] ?? 0;
-        $blockImagePaddingBottom = $blockSettings['block_image_padding_bottom'] ?? 0;
         // 버튼 데이터 (하위 호환성: 기존 단일 버튼 데이터도 지원)
         $buttons = $blockSettings['buttons'] ?? [];
         if (!is_array($buttons)) {
