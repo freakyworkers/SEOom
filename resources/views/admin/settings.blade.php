@@ -822,6 +822,19 @@
                         </select>
                     </div>
                 </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label for="menu_font_color" class="form-label">전체 메뉴 폰트 컬러 (선택)</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="color" class="form-control form-control-color theme-preview-select" id="menu_font_color_picker" name="menu_font_color_picker" value="{{ $settings['menu_font_color'] ?? $headerTextColor }}" data-type="header" style="width: 60px; height: 38px; cursor: pointer;">
+                            <input type="text" class="form-control theme-preview-select" id="menu_font_color" name="menu_font_color" value="{{ $settings['menu_font_color'] ?? '' }}" placeholder="#000000" data-type="header" maxlength="20">
+                            <button type="button" class="btn btn-outline-secondary" id="menu_font_color_reset" title="초기화">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">비워두면 헤더 텍스트 컬러 사용</small>
+                    </div>
+                </div>
             </div>
             
             <!-- 상단 헤더 -->
@@ -2746,12 +2759,17 @@ function updateThemePreview(type, theme) {
         var menuFontSizeEl2 = document.getElementById('menu_font_size');
         var menuFontPaddingEl2 = document.getElementById('menu_font_padding');
         var menuFontWeightEl2 = document.getElementById('menu_font_weight');
+        var menuFontColorEl2 = document.getElementById('menu_font_color');
         const menuFontSize = (menuFontSizeEl2 && menuFontSizeEl2.value) ? menuFontSizeEl2.value : '1.25rem';
         const menuFontPadding = (menuFontPaddingEl2 && menuFontPaddingEl2.value) ? menuFontPaddingEl2.value : '0.5rem';
         const menuFontWeight = (menuFontWeightEl2 && menuFontWeightEl2.value) ? menuFontWeightEl2.value : '700';
+        const menuFontColor = (menuFontColorEl2 && menuFontColorEl2.value) ? menuFontColorEl2.value : '';
         params.append('menu_font_size', menuFontSize);
         params.append('menu_font_padding', menuFontPadding);
         params.append('menu_font_weight', menuFontWeight);
+        if (menuFontColor) {
+            params.append('menu_font_color', menuFontColor);
+        }
     } else {
         if (isDark) {
             var darkFooterTextEl = document.querySelector('input[name="color_dark_footer_text"]');
@@ -3005,6 +3023,42 @@ $(document).ready(function() {
             updateThemePreview('header', headerSelect.value);
         }
     });
+    
+    // 메뉴 폰트 컬러 피커 연동
+    const menuFontColorPicker = document.getElementById('menu_font_color_picker');
+    const menuFontColor = document.getElementById('menu_font_color');
+    const menuFontColorReset = document.getElementById('menu_font_color_reset');
+    
+    if (menuFontColorPicker && menuFontColor) {
+        menuFontColorPicker.addEventListener('input', function() {
+            menuFontColor.value = this.value;
+            const headerSelect = document.getElementById('theme_top');
+            if (headerSelect && headerSelect.value) {
+                updateThemePreview('header', headerSelect.value);
+            }
+        });
+        
+        menuFontColor.addEventListener('input', function() {
+            if (this.value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                menuFontColorPicker.value = this.value;
+            }
+            const headerSelect = document.getElementById('theme_top');
+            if (headerSelect && headerSelect.value) {
+                updateThemePreview('header', headerSelect.value);
+            }
+        });
+        
+        if (menuFontColorReset) {
+            menuFontColorReset.addEventListener('click', function() {
+                menuFontColor.value = '';
+                menuFontColorPicker.value = '{{ $headerTextColor }}';
+                const headerSelect = document.getElementById('theme_top');
+                if (headerSelect && headerSelect.value) {
+                    updateThemePreview('header', headerSelect.value);
+                }
+            });
+        }
+    }
     
     // 그림자 체크박스 변경 시 미리보기 업데이트
     $('#header_shadow').on('change', function() {

@@ -31,6 +31,7 @@
     $menuFontSize = $site->getSetting('menu_font_size', '1.25rem');
     $menuFontPadding = $site->getSetting('menu_font_padding', '0.5rem');
     $menuFontWeight = $site->getSetting('menu_font_weight', '700');
+    $menuFontColor = $site->getSetting('menu_font_color', null); // 전체 메뉴 폰트 컬러 (null이면 헤더 텍스트 컬러 사용)
     
     // 가로100% 설정
     $themeFullWidth = $site->getSetting('theme_full_width', '0') == '1';
@@ -176,7 +177,7 @@
             <div class="collapse navbar-collapse" id="navbarNav1">
                 <ul class="navbar-nav ms-auto align-items-center">
                     @if($menus->count() > 0)
-                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                     @endif
                     @if($site->isMasterSite())
                         <li class="nav-item dropdown" style="margin-right: {{ $menuFontPadding }};">
@@ -271,7 +272,7 @@
             <div class="collapse navbar-collapse" id="navbarNav2">
                 <ul class="navbar-nav mx-auto">
                     @if($menus->count() > 0)
-                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                     @endif
                     @if($site->isMasterSite())
                         <li class="nav-item dropdown" style="margin-right: {{ $menuFontPadding }};">
@@ -371,7 +372,7 @@
             <div class="d-none d-lg-flex align-items-center" style="flex: 1; justify-content: flex-start;">
                 <ul class="navbar-nav">
                     @if($menus->count() > 0)
-                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                     @endif
                     @if($site->isMasterSite())
                         <li class="nav-item dropdown" style="margin-right: {{ $menuFontPadding }};">
@@ -548,7 +549,7 @@
                 <div class="d-flex justify-content-center border-top pt-2" style="border-color: rgba(255,255,255,0.2) !important;">
                     <ul class="navbar-nav flex-row">
                         @if($menus->count() > 0)
-                            @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                            @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                         @else
                             <li class="nav-item me-3">
                                 <a class="nav-link {{ request()->routeIs('boards.index') ? 'active' : '' }}" href="{{ route('boards.index', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
@@ -593,7 +594,7 @@
                 <div class="d-flex justify-content-center align-items-center">
                     <ul class="navbar-nav flex-row">
                         @if($menus->count() > 0)
-                            @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                            @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                         @else
                             <li class="nav-item me-3">
                                 <a class="nav-link {{ request()->routeIs('boards.index') ? 'active' : '' }}" href="{{ route('boards.index', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important;">
@@ -745,7 +746,7 @@
                     @endauth
                     @endif
                     @if($menus->count() > 0)
-                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                     @endif
                     @if($site->isMasterSite())
                         <li class="nav-item dropdown" style="margin-right: {{ $menuFontPadding }};">

@@ -37,7 +37,7 @@
             <span style="color: {{ $menu->font_color }}; font-weight: 500;">{{ $menu->name }}</span>
             <span class="badge bg-light text-dark ms-1" style="font-size: 10px;">{{ $menu->font_color }}</span>
         @else
-            {{ $menu->name }}
+        {{ $menu->name }}
         @endif
     </td>
     <td>{{ $linkTypeLabels[$menu->link_type] ?? $menu->link_type }}</td>

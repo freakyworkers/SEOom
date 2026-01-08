@@ -197,6 +197,7 @@ class SiteSettingController extends Controller
             'menu_font_size' => 'nullable|string',
             'menu_font_padding' => 'nullable|string',
             'menu_font_weight' => 'nullable|in:300,400,700',
+            'menu_font_color' => 'nullable|string|max:20',
             // 모바일 상단 설정
             'mobile_header_theme' => 'nullable|in:theme1,theme2,theme3,theme4,theme5,theme6,theme7,theme8',
             'mobile_menu_icon' => 'nullable|string',
@@ -348,7 +349,7 @@ class SiteSettingController extends Controller
                 $newSettings[$key] = ($value == '1') ? '1' : '0';
             }
             // 메뉴 폰트 설정 필드는 빈 값이어도 포함 (0도 유효한 값일 수 있음)
-            elseif (in_array($key, ['menu_font_size', 'menu_font_padding', 'menu_font_weight', 'mobile_header_theme', 'mobile_menu_icon', 'mobile_menu_direction'])) {
+            elseif (in_array($key, ['menu_font_size', 'menu_font_padding', 'menu_font_weight', 'menu_font_color', 'mobile_header_theme', 'mobile_menu_icon', 'mobile_menu_direction'])) {
                 $newSettings[$key] = $value ?? '';
             }
             // 로고 관련 필드는 빈 값이어도 포함 (이미지 URL이 명시적으로 설정될 수 있음)
@@ -650,6 +651,7 @@ class SiteSettingController extends Controller
             $menuFontSize = $request->get('menu_font_size', $settings['menu_font_size'] ?? '1.25rem');
             $menuFontPadding = $request->get('menu_font_padding', $settings['menu_font_padding'] ?? '0.5rem');
             $menuFontWeight = $request->get('menu_font_weight', $settings['menu_font_weight'] ?? '700');
+            $menuFontColor = $request->get('menu_font_color', $settings['menu_font_color'] ?? null);
             
             // 포인트 컬러 설정
             $pointColor = $isDark ? ($request->get('color_dark_point_main', $settings['color_dark_point_main'] ?? '#ffffff')) : ($request->get('color_light_point_main', $settings['color_light_point_main'] ?? '#0d6efd'));
@@ -702,6 +704,7 @@ class SiteSettingController extends Controller
                     'menuFontSize' => $menuFontSize,
                     'menuFontPadding' => $menuFontPadding,
                     'menuFontWeight' => $menuFontWeight,
+                    'menuFontColor' => $menuFontColor,
                 ])->render();
                 
                 // 빈 HTML 체크

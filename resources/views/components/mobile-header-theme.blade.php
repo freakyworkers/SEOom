@@ -2323,31 +2323,31 @@ document.addEventListener('DOMContentLoaded', function() {
         bottomMenu.style.top = headerHeight + 'px';
     }
     
-    function handleMobileScroll() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        if (scrollTop > 10) {
-            // 스크롤 시 글래스모피즘 배경 적용
-            mobileHeader.classList.add('scrolled');
+        function handleMobileScroll() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > 10) {
+                // 스크롤 시 글래스모피즘 배경 적용
+                mobileHeader.classList.add('scrolled');
             // 하단 메뉴 바 숨김
             if (bottomMenu) {
                 bottomMenu.classList.add('scrolled-hide');
             }
-        } else {
-            // 상단일 때 투명 배경
-            mobileHeader.classList.remove('scrolled');
+            } else {
+                // 상단일 때 투명 배경
+                mobileHeader.classList.remove('scrolled');
             // 하단 메뉴 바 표시
             if (bottomMenu) {
                 bottomMenu.classList.remove('scrolled-hide');
             }
+            }
         }
-    }
-    
-    // 초기 스크롤 위치 확인
-    handleMobileScroll();
-    
-    // 스크롤 이벤트 리스너
-    window.addEventListener('scroll', handleMobileScroll, { passive: true });
+        
+        // 초기 스크롤 위치 확인
+        handleMobileScroll();
+        
+        // 스크롤 이벤트 리스너
+        window.addEventListener('scroll', handleMobileScroll, { passive: true });
     
     // 리사이즈 이벤트 (PC로 전환 시 클래스 제거)
     window.addEventListener('resize', function() {

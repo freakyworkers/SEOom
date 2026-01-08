@@ -55,6 +55,7 @@
     $menuFontSize = isset($menuFontSize) ? $menuFontSize : ($settings['menu_font_size'] ?? '1.25rem');
     $menuFontPadding = isset($menuFontPadding) ? $menuFontPadding : ($settings['menu_font_padding'] ?? '0.5rem');
     $menuFontWeight = isset($menuFontWeight) ? $menuFontWeight : ($settings['menu_font_weight'] ?? '700');
+    $menuFontColor = isset($menuFontColor) ? $menuFontColor : ($settings['menu_font_color'] ?? null);
     
     // rem 단위가 아닌 경우 기본값 사용
     if (!preg_match('/^\d+(\.\d+)?rem$/', $menuFontSize)) {
@@ -223,7 +224,7 @@
                 </a>
                 <ul class="navbar-nav ms-auto">
                     @if($menus->count() > 0)
-                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                     @else
                     <li class="nav-item me-2">
                         <a class="nav-link" href="#" style="color: {{ $headerTextColor }} !important;">
@@ -261,7 +262,7 @@
                 </a>
                 <ul class="navbar-nav mx-auto">
                     @if($menus->count() > 0)
-                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                     @else
                     <li class="nav-item me-3">
                         <a class="nav-link" href="#" style="color: {{ $headerTextColor }} !important;">
@@ -303,7 +304,7 @@
             <div class="container-fluid px-3">
                 <ul class="navbar-nav flex-row me-3">
                     @if($menus->count() > 0)
-                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                     @else
                     <li class="nav-item me-2">
                         <a class="nav-link" href="#" style="color: {{ $headerTextColor }} !important;">
@@ -382,7 +383,7 @@
                     <div class="d-flex justify-content-center border-top pt-2" style="border-color: rgba(255,255,255,0.2) !important;">
                         <ul class="navbar-nav flex-row">
                             @if($menus->count() > 0)
-                                @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                                @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                             @else
                             <li class="nav-item me-3">
                                 <a class="nav-link" href="#" style="color: {{ $headerTextColor }} !important;">
@@ -418,7 +419,7 @@
                     <div class="d-flex justify-content-center align-items-center">
                         <ul class="navbar-nav flex-row">
                             @if($menus->count() > 0)
-                                @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                                @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                             @else
                             <li class="nav-item me-3">
                                 <a class="nav-link" href="#" style="color: {{ $headerTextColor }} !important;">
@@ -459,7 +460,7 @@
                     </li>
                     @endif
                     @if($menus->count() > 0)
-                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight])
+                        @include('components.menu-items', ['menus' => $menus, 'headerTextColor' => $headerTextColor, 'pointColor' => $pointColor, 'headerBorder' => $headerBorder, 'headerBorderWidth' => $headerBorderWidth, 'headerBorderColor' => $headerBorderColor, 'menuFontSize' => $menuFontSize, 'menuFontPadding' => $menuFontPadding, 'menuFontWeight' => $menuFontWeight, 'menuFontColor' => $menuFontColor])
                     @else
                     <li class="nav-item me-2">
                         <a class="nav-link" href="#" style="color: {{ $headerTextColor }} !important;">

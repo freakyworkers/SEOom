@@ -670,7 +670,7 @@ class AdminController extends Controller
                 $table->foreign('parent_id')->references('id')->on('menus')->onDelete('cascade');
             });
         }
-
+        
         // font_color 컬럼이 없으면 추가
         if (\Illuminate\Support\Facades\Schema::hasTable('menus') && 
             !\Illuminate\Support\Facades\Schema::hasColumn('menus', 'font_color')) {

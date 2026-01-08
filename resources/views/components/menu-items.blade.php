@@ -10,6 +10,9 @@
     $menuFontPadding = $menuFontPadding ?? '0.5rem';
     $menuFontWeight = $menuFontWeight ?? '700';
     
+    // 전체 메뉴 폰트 컬러 (설정되어 있으면 사용, 없으면 헤더 텍스트 컬러)
+    $defaultMenuFontColor = $menuFontColor ?? $headerTextColor;
+    
     // 현재 URL 가져오기
     $currentUrl = request()->url();
     $currentPath = request()->path();
@@ -126,12 +129,12 @@
                 $isActive = true;
             }
         }
-        // 메뉴별 폰트 컬러 (설정되어 있으면 사용, 없으면 기본 헤더 텍스트 컬러)
-        $menuFontColor = $menu->font_color ?? $headerTextColor;
+        // 메뉴별 폰트 컬러 (개별 메뉴에 설정되어 있으면 사용, 없으면 전체 메뉴 폰트 컬러, 그것도 없으면 헤더 텍스트 컬러)
+        $menuItemFontColor = $menu->font_color ?? $defaultMenuFontColor;
     @endphp
     @if($menu->children && $menu->children->count() > 0)
         <li class="nav-item dropdown" style="margin-right: {{ $menuFontPadding }};">
-            <a class="nav-link dropdown-toggle {{ $isActive ? 'active' : '' }}" href="#" id="menu{{ $menu->id }}Dropdown" role="button" data-bs-toggle="dropdown" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ $isActive ? $pointColor : $menuFontColor }}; border-bottom: none !important; text-decoration: none !important;">
+            <a class="nav-link dropdown-toggle {{ $isActive ? 'active' : '' }}" href="#" id="menu{{ $menu->id }}Dropdown" role="button" data-bs-toggle="dropdown" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ $isActive ? $pointColor : $menuItemFontColor }}; border-bottom: none !important; text-decoration: none !important;">
                 {{ $menu->name }}
             </a>
             <ul class="dropdown-menu" aria-labelledby="menu{{ $menu->id }}Dropdown">
@@ -172,7 +175,7 @@
         </li>
     @else
         <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
-            <a class="nav-link {{ $isActive ? 'active' : '' }}" href="{{ $menu->url }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ $isActive ? $pointColor : $menuFontColor }};">
+            <a class="nav-link {{ $isActive ? 'active' : '' }}" href="{{ $menu->url }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ $isActive ? $pointColor : $menuItemFontColor }};">
                 {{ $menu->name }}
             </a>
         </li>
