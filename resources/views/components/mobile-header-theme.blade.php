@@ -2235,6 +2235,19 @@ document.addEventListener('DOMContentLoaded', function() {
 {{-- 모바일 투명헤더 스크롤 시 글래스모피즘 스타일 (고정헤더가 활성화된 경우에만) --}}
 @if($headerSticky && $mobileHeaderTransparent && $isHomePage)
 <style>
+/* 모바일 투명헤더+고정헤더 기본 스타일 - position: fixed로 고정 */
+@media (max-width: 999px) {
+    .mobile-header-transparent-sticky {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1040 !important;
+        width: 100% !important;
+        transition: background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease !important;
+    }
+}
+
 /* 모바일 투명헤더+고정헤더 스크롤 시 글래스모피즘 배경 */
 .mobile-header-transparent-sticky.scrolled {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
