@@ -3160,21 +3160,25 @@ $(document).ready(function() {
 
     // 게시판 form 제출 시 체크박스 처리
     $('#boardForm').on('submit', function(e) {
+        // 모바일 버전 체크박스를 disabled로 설정하여 폼에서 제외
+        $('#show_views_mobile').prop('disabled', true);
+        $('#show_datetime_mobile').prop('disabled', true);
+        
         // 기존 hidden input 모두 제거
         $('input[name="show_views"][type="hidden"]').remove();
         $('input[name="show_datetime"][type="hidden"]').remove();
         
-        // 체크되지 않은 체크박스만 hidden input으로 값 전달 (데스크탑 또는 모바일 중 하나라도 체크되어 있으면 체크된 것으로 간주)
-        const showViewsChecked = $('#show_views').is(':checked') || $('#show_views_mobile').is(':checked');
-        const showDatetimeChecked = $('#show_datetime').is(':checked') || $('#show_datetime_mobile').is(':checked');
+        // 데스크탑 체크박스 값을 기준으로 명시적으로 전송 (항상 hidden input 사용)
+        const showViewsChecked = $('#show_views').is(':checked');
+        const showDatetimeChecked = $('#show_datetime').is(':checked');
         
-        if (!showViewsChecked) {
-            $(this).append('<input type="hidden" name="show_views" value="0">');
-        }
+        // 데스크탑 체크박스도 disabled로 설정
+        $('#show_views').prop('disabled', true);
+        $('#show_datetime').prop('disabled', true);
         
-        if (!showDatetimeChecked) {
-            $(this).append('<input type="hidden" name="show_datetime" value="0">');
-        }
+        // hidden input으로 값 전달 (체크: '1', 미체크: '0')
+        $(this).append('<input type="hidden" name="show_views" value="' + (showViewsChecked ? '1' : '0') + '">');
+        $(this).append('<input type="hidden" name="show_datetime" value="' + (showDatetimeChecked ? '1' : '0') + '">');
     });
 
     // 게시판 설정 데스크탑과 모바일 동기화
@@ -3242,27 +3246,30 @@ $(document).ready(function() {
 
     // 기능 ON/OFF form 제출 시 체크박스 처리
     $('#featureForm').on('submit', function(e) {
+        // 모바일 버전 체크박스를 disabled로 설정하여 폼에서 제외
+        $('#show_visitor_count_mobile').prop('disabled', true);
+        $('#email_notification_mobile').prop('disabled', true);
+        $('#general_login_mobile').prop('disabled', true);
+        
         // 기존 hidden input 모두 제거
         $('input[name="show_visitor_count"][type="hidden"]').remove();
         $('input[name="email_notification"][type="hidden"]').remove();
         $('input[name="general_login"][type="hidden"]').remove();
         
-        // 체크되지 않은 체크박스만 hidden input으로 값 전달 (데스크탑 또는 모바일 중 하나라도 체크되어 있으면 체크된 것으로 간주)
-        const showVisitorCountChecked = $('#show_visitor_count').is(':checked') || $('#show_visitor_count_mobile').is(':checked');
-        const emailNotificationChecked = $('#email_notification').is(':checked') || $('#email_notification_mobile').is(':checked');
-        const generalLoginChecked = $('#general_login').is(':checked') || $('#general_login_mobile').is(':checked');
+        // 데스크탑 체크박스 값을 기준으로 명시적으로 전송 (항상 hidden input 사용)
+        const showVisitorCountChecked = $('#show_visitor_count').is(':checked');
+        const emailNotificationChecked = $('#email_notification').is(':checked');
+        const generalLoginChecked = $('#general_login').is(':checked');
         
-        if (!showVisitorCountChecked) {
-            $(this).append('<input type="hidden" name="show_visitor_count" value="0">');
-        }
+        // 데스크탑 체크박스도 disabled로 설정
+        $('#show_visitor_count').prop('disabled', true);
+        $('#email_notification').prop('disabled', true);
+        $('#general_login').prop('disabled', true);
         
-        if (!emailNotificationChecked) {
-            $(this).append('<input type="hidden" name="email_notification" value="0">');
-        }
-        
-        if (!generalLoginChecked) {
-            $(this).append('<input type="hidden" name="general_login" value="0">');
-        }
+        // hidden input으로 값 전달 (체크: '1', 미체크: '0')
+        $(this).append('<input type="hidden" name="show_visitor_count" value="' + (showVisitorCountChecked ? '1' : '0') + '">');
+        $(this).append('<input type="hidden" name="email_notification" value="' + (emailNotificationChecked ? '1' : '0') + '">');
+        $(this).append('<input type="hidden" name="general_login" value="' + (generalLoginChecked ? '1' : '0') + '">');
     });
 
     // 방문자수 증가 버튼 클릭 (데스크탑)
