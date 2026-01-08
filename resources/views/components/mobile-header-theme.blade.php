@@ -664,6 +664,8 @@
         text-decoration: none;
         white-space: nowrap;
         flex-shrink: 0;
+        line-height: 1.5;
+        vertical-align: middle;
     }
     
     .mobile-header-bottom-menu-item:first-child {
@@ -1515,7 +1517,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: none; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -1668,7 +1670,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: none; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -1821,7 +1823,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: none; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -1979,7 +1981,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: none; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -2347,9 +2349,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 하단 메뉴 바 위치 계산 및 설정
     if (bottomMenu) {
-        const headerHeight = mobileHeader.offsetHeight;
-        // 헤더 바로 아래에 위치 (padding-top은 하단 메뉴 내부 여백)
-        bottomMenu.style.top = headerHeight + 'px';
+        const headerRect = mobileHeader.getBoundingClientRect();
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        const headerBottom = headerRect.bottom - scrollY;
+        // 헤더 하단에서 약간의 여백을 두고 위치 (nav와 겹치지 않도록)
+        bottomMenu.style.top = (headerBottom + 1) + 'px';
     }
     
         function handleMobileScroll() {
@@ -2389,9 +2393,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (isTransparent) {
             mobileHeader.classList.add('mobile-transparent-header-fixed');
             if (bottomMenu) {
-                const headerHeight = mobileHeader.offsetHeight;
-                // 헤더 바로 아래에 위치 (padding-top은 하단 메뉴 내부 여백)
-                bottomMenu.style.top = headerHeight + 'px';
+                const headerRect = mobileHeader.getBoundingClientRect();
+                const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                const headerBottom = headerRect.bottom - scrollY;
+                // 헤더 하단에서 약간의 여백을 두고 위치 (nav와 겹치지 않도록)
+                bottomMenu.style.top = (headerBottom + 1) + 'px';
             }
             handleMobileScroll();
         }
