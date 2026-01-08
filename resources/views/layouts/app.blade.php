@@ -845,26 +845,43 @@
             box-shadow: none !important;
         }
         
-        /* 위젯 애니메이션 스타일 */
+        /* 위젯 애니메이션 스타일 - 스크롤 시 트리거 */
         .widget-animate {
             opacity: 0;
-            animation-fill-mode: forwards;
         }
         
+        /* 초기 상태 - 애니메이션 방향에 따른 시작 위치 */
         .widget-animate-left {
-            animation: slideInLeft 0.6s ease-out;
+            transform: translateX(-50px);
         }
         
         .widget-animate-right {
-            animation: slideInRight 0.6s ease-out;
+            transform: translateX(50px);
         }
         
         .widget-animate-up {
-            animation: slideInUp 0.6s ease-out;
+            transform: translateY(50px);
         }
         
         .widget-animate-down {
-            animation: slideInDown 0.6s ease-out;
+            transform: translateY(-50px);
+        }
+        
+        /* 화면에 보일 때 애니메이션 실행 */
+        .widget-animate-left.widget-animate-visible {
+            animation: slideInLeft 0.6s ease-out forwards;
+        }
+        
+        .widget-animate-right.widget-animate-visible {
+            animation: slideInRight 0.6s ease-out forwards;
+        }
+        
+        .widget-animate-up.widget-animate-visible {
+            animation: slideInUp 0.6s ease-out forwards;
+        }
+        
+        .widget-animate-down.widget-animate-visible {
+            animation: slideInDown 0.6s ease-out forwards;
         }
         
         @keyframes slideInLeft {
@@ -2618,7 +2635,7 @@
         if (animatedWidgets.length > 0) {
             const observerOptions = {
                 root: null,
-                rootMargin: '0px',
+                rootMargin: '0px 0px -50px 0px', // 하단 50px 여유를 두고 트리거
                 threshold: 0.1 // 위젯이 10% 보이면 트리거
             };
             
@@ -2626,15 +2643,14 @@
                 entries.forEach(function(entry) {
                     if (entry.isIntersecting) {
                         // 위젯이 화면에 나타나면 애니메이션 클래스 추가
-                        entry.target.style.opacity = '1';
+                        entry.target.classList.add('widget-animate-visible');
                         observer.unobserve(entry.target); // 한 번만 실행
                     }
                 });
             }, observerOptions);
             
-            // 초기 상태: 모든 애니메이션 위젯을 투명하게 설정
+            // 모든 애니메이션 위젯을 관찰
             animatedWidgets.forEach(function(widget) {
-                widget.style.opacity = '0';
                 observer.observe(widget);
             });
         }
