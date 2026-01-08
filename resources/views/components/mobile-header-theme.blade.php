@@ -80,13 +80,9 @@
     } else {
         $headerStyle .= " background-color: {$headerBgColor};";
     }
-    // 하단 메뉴가 있는 테마(5,6,7,8)는 헤더 하단에 헤더 테두리 설정이 있으면 적용, 없으면 회색 구분선 적용
+    // 하단 메뉴가 있는 테마(5,6,7,8)는 헤더 하단에 회색 구분선만 적용 (헤더 테두리는 하단 메뉴에만 적용)
     if (in_array($theme, ['theme5', 'theme6', 'theme7', 'theme8'])) {
-        if ($headerBorder) {
-            $headerStyle .= " border-bottom: {$headerBorderWidth}px solid {$headerBorderColor};";
-        } else {
-            $headerStyle .= " border-bottom: 1px solid #dee2e6;";
-        }
+        $headerStyle .= " border-bottom: 1px solid #dee2e6;";
         // 그림자는 하단 메뉴에 적용되므로 헤더에는 그림자 제거
     } else {
         if ($headerShadow) {
@@ -645,6 +641,10 @@
         background-color: {{ $headerBgColor }};
         padding-left: 0.9375rem;
         padding-right: 0.9375rem;
+        min-height: auto;
+        height: auto;
+        max-height: 60px;
+        overflow-y: hidden;
     }
     @endif
     
@@ -2267,7 +2267,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     /* 하단 메뉴 아이템에 상단 여백 추가 */
     .mobile-bottom-menu-transparent .mobile-header-bottom-menu-item {
-        padding-top: 1rem !important;
+        padding-top: 0.5rem !important;
         padding-bottom: 0.5rem !important;
     }
     
