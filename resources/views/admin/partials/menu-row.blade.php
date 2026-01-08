@@ -25,7 +25,9 @@
     }
     
     $rowClass = $level > 0 ? 'submenu-row' : 'menu-row';
-    $fontColorDisplay = $menu->font_color ?? '';
+    // 전체 메뉴 폰트 컬러 또는 개별 메뉴 폰트 컬러
+    $displayFontColor = $menu->font_color ?? ($globalMenuFontColor ?? null);
+    $fontColorDisplay = $displayFontColor ?? '';
 @endphp
 
 <tr class="{{ $rowClass }} menu-row" data-menu-id="{{ $menu->id }}" data-parent-id="{{ $menu->parent_id }}">
@@ -33,9 +35,9 @@
         @if($level > 0)
             <span class="text-muted">└─</span>
         @endif
-        @if($menu->font_color)
-            <span style="color: {{ $menu->font_color }}; font-weight: 500;">{{ $menu->name }}</span>
-            <span class="badge bg-light text-dark ms-1" style="font-size: 10px;">{{ $menu->font_color }}</span>
+        @if($displayFontColor)
+            <span style="color: {{ $displayFontColor }}; font-weight: 500;">{{ $menu->name }}</span>
+            <span class="badge bg-light text-dark ms-1" style="font-size: 10px;">{{ $displayFontColor }}</span>
         @else
         {{ $menu->name }}
         @endif

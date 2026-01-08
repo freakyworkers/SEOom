@@ -731,7 +731,10 @@ class AdminController extends Controller
             }
         }
 
-        return view('admin.menus', compact('site', 'menus', 'boards', 'customPages', 'mobileMenus', 'mobileMenuDesignType', 'siteFeatures', 'containerAnchors'));
+        // 전체 메뉴 폰트 컬러 설정
+        $globalMenuFontColor = $site->getSetting('menu_font_color', null);
+        
+        return view('admin.menus', compact('site', 'menus', 'boards', 'customPages', 'mobileMenus', 'mobileMenuDesignType', 'siteFeatures', 'containerAnchors', 'globalMenuFontColor'));
     }
 
     /**

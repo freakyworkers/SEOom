@@ -43,6 +43,8 @@
     .order-buttons {
         display: flex;
         gap: 0.25rem;
+        justify-content: center;
+        align-items: center;
     }
     .order-btn {
         width: 32px;
@@ -1841,6 +1843,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     alert('전체 메뉴 폰트 컬러가 저장되었습니다.');
+                    // 페이지 새로고침하여 메뉴 목록에 반영
+                    location.reload();
                 } else {
                     alert(data.message || '저장에 실패했습니다.');
                 }
