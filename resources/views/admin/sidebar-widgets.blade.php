@@ -379,6 +379,10 @@
                                                 <label for="widget_block_background_type" class="form-label">배경</label>
                                                 <select class="form-select" id="widget_block_background_type" name="block_background_type" onchange="handleBlockBackgroundTypeChange()">
                                                     <option value="none">배경 없음</option>
+                                                    <option value="color" selected>컬러</option>
+                                                    <option value="gradient">그라데이션</option>
+                                                </select>
+                                                    <option value="none">배경 없음</option>
                                                     <option value="color">컬러</option>
                                                     <option value="gradient">그라데이션</option>
                                                     <option value="image">이미지</option>
@@ -2171,24 +2175,16 @@ function handleBlockBackgroundTypeChange() {
     const backgroundType = document.getElementById('widget_block_background_type').value;
     const colorContainer = document.getElementById('widget_block_color_container');
     const gradientContainer = document.getElementById('widget_block_gradient_container');
-    const imageContainer = document.getElementById('widget_block_image_container');
     
     if (backgroundType === 'none') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'gradient') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'block';
-        if (imageContainer) imageContainer.style.display = 'none';
-    } else if (backgroundType === 'image') {
-        if (colorContainer) colorContainer.style.display = 'none';
-        if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'block';
     }
 }
 
@@ -2223,24 +2219,16 @@ function handleEditBlockBackgroundTypeChange() {
     const backgroundType = document.getElementById('edit_widget_block_background_type').value;
     const colorContainer = document.getElementById('edit_widget_block_color_container');
     const gradientContainer = document.getElementById('edit_widget_block_gradient_container');
-    const imageContainer = document.getElementById('edit_widget_block_image_container');
     
     if (backgroundType === 'none') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'gradient') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'block';
-        if (imageContainer) imageContainer.style.display = 'none';
-    } else if (backgroundType === 'image') {
-        if (colorContainer) colorContainer.style.display = 'none';
-        if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'block';
     }
 }
 
@@ -2516,20 +2504,17 @@ function handleBlockSlideBackgroundTypeChange(itemIndex) {
     const backgroundType = document.querySelector(`#block_slide_item_${itemIndex}_body .block-slide-background-type`).value;
     const colorContainer = document.getElementById(`block_slide_${itemIndex}_color_container`);
     const gradientContainer = document.getElementById(`block_slide_${itemIndex}_gradient_container`);
-    const imageContainer = document.getElementById(`block_slide_${itemIndex}_image_container`);
     
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'gradient') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'block';
-        if (imageContainer) imageContainer.style.display = 'none';
-    } else if (backgroundType === 'image') {
+    } else {
+        // none
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'block';
     }
 }
 
@@ -3127,9 +3112,9 @@ function addEditBlockSlideItem(blockData = null) {
         <div class="mb-3">
             <label class="form-label">배경</label>
             <select class="form-select edit-block-slide-background-type" name="edit_block_slide[${itemIndex}][background_type]" onchange="handleEditBlockSlideBackgroundTypeChange(${itemIndex})">
+                <option value="none" ${blockData && blockData.background_type === 'none' ? 'selected' : ''}>배경 없음</option>
                 <option value="color" ${!blockData || blockData.background_type === 'color' ? 'selected' : ''}>컬러</option>
                 <option value="gradient" ${blockData && blockData.background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
-                <option value="image" ${blockData && blockData.background_type === 'image' ? 'selected' : ''}>이미지</option>
             </select>
         </div>
         <div class="mb-3 edit-block-slide-color-container" id="edit_block_slide_${itemIndex}_color_container" style="${blockData && (blockData.background_type === 'image' || blockData.background_type === 'gradient') ? 'display: none;' : ''}">

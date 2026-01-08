@@ -1031,7 +1031,6 @@
                                 <option value="none">배경 없음</option>
                                 <option value="color">컬러</option>
                                 <option value="gradient">그라데이션</option>
-                                <option value="image">이미지</option>
                             </select>
                         </div>
                         <div class="mb-3" id="edit_custom_page_widget_block_color_container" style="display: none;">
@@ -4663,24 +4662,16 @@ function handleBlockBackgroundTypeChange() {
     const backgroundType = document.getElementById('widget_block_background_type')?.value;
     const colorContainer = document.getElementById('widget_block_color_container');
     const gradientContainer = document.getElementById('widget_block_gradient_container');
-    const imageContainer = document.getElementById('widget_block_image_container');
     
     if (backgroundType === 'none') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'gradient') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'block';
-        if (imageContainer) imageContainer.style.display = 'none';
-    } else if (backgroundType === 'image') {
-        if (colorContainer) colorContainer.style.display = 'none';
-        if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'block';
     }
 }
 
@@ -5227,19 +5218,16 @@ function handleBlockSlideBackgroundTypeChange(itemIndex) {
     const backgroundType = document.querySelector(`#block_slide_item_${itemIndex}_body .block-slide-background-type`)?.value;
     const colorContainer = document.getElementById(`block_slide_${itemIndex}_color_container`);
     const gradientContainer = document.getElementById(`block_slide_${itemIndex}_gradient_container`);
-    const imageContainer = document.getElementById(`block_slide_${itemIndex}_image_container`);
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'gradient') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'block';
-        if (imageContainer) imageContainer.style.display = 'none';
-    } else if (backgroundType === 'image') {
+    } else {
+        // none
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'block';
     }
 }
 
@@ -6341,7 +6329,6 @@ function addEditMainBlockSlideItem(blockData = null) {
                 <option value="none" ${blockData && blockData.background_type === 'none' ? 'selected' : ''}>배경 없음</option>
                 <option value="color" ${!blockData || blockData.background_type === 'color' ? 'selected' : ''}>컬러</option>
                 <option value="gradient" ${blockData && blockData.background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
-                <option value="image" ${blockData && blockData.background_type === 'image' ? 'selected' : ''}>이미지</option>
             </select>
         </div>
         <div class="mb-3 edit-custom-page-block-slide-color-container" id="edit_custom_page_block_slide_${itemIndex}_color_container" style="${!blockData || (blockData.background_type !== 'color' && blockData.background_type !== 'none') ? 'display: none;' : ''}">
@@ -6831,25 +6818,17 @@ function handleEditCustomPageBlockSlideBackgroundTypeChange(itemIndex) {
     const backgroundType = document.querySelector(`#edit_custom_page_block_slide_item_${itemIndex} .edit-custom-page-block-slide-background-type`)?.value;
     const colorContainer = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_color_container`);
     const gradientContainer = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_gradient_container`);
-    const imageContainer = document.getElementById(`edit_custom_page_block_slide_${itemIndex}_image_container`);
     
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'gradient') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'block';
-        if (imageContainer) imageContainer.style.display = 'none';
-    } else if (backgroundType === 'image') {
-        if (colorContainer) colorContainer.style.display = 'none';
-        if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'block';
     } else {
         // none
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     }
 }
 
@@ -7028,24 +7007,17 @@ function handleEditCustomPageBlockBackgroundTypeChange() {
     const backgroundType = document.getElementById('edit_custom_page_widget_block_background_type')?.value;
     const colorContainer = document.getElementById('edit_custom_page_widget_block_color_container');
     const gradientContainer = document.getElementById('edit_custom_page_widget_block_gradient_container');
-    const imageContainer = document.getElementById('edit_custom_page_widget_block_image_container');
     
     if (backgroundType === 'none') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
-    } else if (backgroundType === 'image') {
-        if (colorContainer) colorContainer.style.display = 'none';
-        if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'block';
     } else if (backgroundType === 'gradient') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'block';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else {
+        // color
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     }
 }
 

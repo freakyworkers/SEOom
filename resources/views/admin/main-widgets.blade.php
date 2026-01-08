@@ -1232,7 +1232,6 @@
                                 <option value="none">배경 없음</option>
                                 <option value="color">컬러</option>
                                 <option value="gradient">그라데이션</option>
-                                <option value="image">이미지</option>
                             </select>
                         </div>
                         <div class="mb-3" id="edit_main_widget_block_color_container" style="display: none;">
@@ -5845,24 +5844,16 @@ function handleBlockBackgroundTypeChange() {
     const backgroundType = document.getElementById('widget_block_background_type')?.value;
     const colorContainer = document.getElementById('widget_block_color_container');
     const gradientContainer = document.getElementById('widget_block_gradient_container');
-    const imageContainer = document.getElementById('widget_block_image_container');
     
     if (backgroundType === 'none') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
         if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'none';
     } else if (backgroundType === 'gradient') {
         if (colorContainer) colorContainer.style.display = 'none';
         if (gradientContainer) gradientContainer.style.display = 'block';
-        if (imageContainer) imageContainer.style.display = 'none';
-    } else if (backgroundType === 'image') {
-        if (colorContainer) colorContainer.style.display = 'none';
-        if (gradientContainer) gradientContainer.style.display = 'none';
-        if (imageContainer) imageContainer.style.display = 'block';
     }
 }
 
@@ -6028,7 +6019,6 @@ function addBlockSlideItem() {
                 <option value="none">배경 없음</option>
                 <option value="color">컬러</option>
                 <option value="gradient">그라데이션</option>
-                <option value="image">이미지</option>
             </select>
         </div>
         <div class="mb-3 block-slide-color-container" id="block_slide_${itemIndex}_color_container" style="display: none;">
@@ -6480,20 +6470,16 @@ function handleBlockSlideBackgroundTypeChange(itemIndex) {
     const backgroundType = document.querySelector(`#block_slide_item_${itemIndex}_body .block-slide-background-type`)?.value;
     const colorContainer = document.getElementById(`block_slide_${itemIndex}_color_container`);
     const gradientContainer = document.getElementById(`block_slide_${itemIndex}_gradient_container`);
-    const imageContainer = document.getElementById(`block_slide_${itemIndex}_image_container`);
     
     // 모든 컨테이너 숨기기
     if (colorContainer) colorContainer.style.display = 'none';
     if (gradientContainer) gradientContainer.style.display = 'none';
-    if (imageContainer) imageContainer.style.display = 'none';
     
     // 선택된 타입에 따라 해당 컨테이너 표시
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
     } else if (backgroundType === 'gradient') {
         if (gradientContainer) gradientContainer.style.display = 'block';
-    } else if (backgroundType === 'image') {
-        if (imageContainer) imageContainer.style.display = 'block';
     }
     // 'none'인 경우 모든 컨테이너 숨김
 }
@@ -8120,7 +8106,6 @@ function addEditMainBlockSlideItem(blockData = null) {
                 <option value="none" ${blockData && blockData.background_type === 'none' ? 'selected' : ''}>배경 없음</option>
                 <option value="color" ${!blockData || blockData.background_type === 'color' ? 'selected' : ''}>컬러</option>
                 <option value="gradient" ${blockData && blockData.background_type === 'gradient' ? 'selected' : ''}>그라데이션</option>
-                <option value="image" ${blockData && blockData.background_type === 'image' ? 'selected' : ''}>이미지</option>
             </select>
         </div>
         <div class="mb-3 edit-main-block-slide-color-container" id="edit_main_block_slide_${itemIndex}_color_container" style="${!blockData || (blockData.background_type !== 'color' && blockData.background_type !== 'none') ? 'display: none;' : ''}">
@@ -8413,20 +8398,16 @@ function handleEditMainBlockSlideBackgroundTypeChange(itemIndex) {
     const backgroundType = document.querySelector(`#edit_main_block_slide_item_${itemIndex} .edit-main-block-slide-background-type`)?.value;
     const colorContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_color_container`);
     const gradientContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_gradient_container`);
-    const imageContainer = document.getElementById(`edit_main_block_slide_${itemIndex}_image_container`);
     
     // 모든 컨테이너 숨기기
     if (colorContainer) colorContainer.style.display = 'none';
     if (gradientContainer) gradientContainer.style.display = 'none';
-    if (imageContainer) imageContainer.style.display = 'none';
     
     // 선택된 타입에 따라 해당 컨테이너 표시
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
     } else if (backgroundType === 'gradient') {
         if (gradientContainer) gradientContainer.style.display = 'block';
-    } else if (backgroundType === 'image') {
-        if (imageContainer) imageContainer.style.display = 'block';
     }
     // 'none'인 경우 모든 컨테이너 숨김
 }
@@ -8990,20 +8971,16 @@ function handleEditMainBlockBackgroundTypeChange() {
     const backgroundType = document.getElementById('edit_main_widget_block_background_type')?.value;
     const colorContainer = document.getElementById('edit_main_widget_block_color_container');
     const gradientContainer = document.getElementById('edit_main_widget_block_gradient_container');
-    const imageContainer = document.getElementById('edit_main_widget_block_image_container');
     
     // 모든 컨테이너 숨기기
     if (colorContainer) colorContainer.style.display = 'none';
     if (gradientContainer) gradientContainer.style.display = 'none';
-    if (imageContainer) imageContainer.style.display = 'none';
     
     // 선택된 타입에 따라 해당 컨테이너 표시
     if (backgroundType === 'color') {
         if (colorContainer) colorContainer.style.display = 'block';
     } else if (backgroundType === 'gradient') {
         if (gradientContainer) gradientContainer.style.display = 'block';
-    } else if (backgroundType === 'image') {
-        if (imageContainer) imageContainer.style.display = 'block';
     }
     // 'none'인 경우 모든 컨테이너 숨김
 }

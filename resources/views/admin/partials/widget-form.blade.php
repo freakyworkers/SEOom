@@ -300,7 +300,6 @@
             <option value="none">배경 없음</option>
             <option value="color" selected>컬러</option>
             <option value="gradient">그라데이션</option>
-            <option value="image">이미지</option>
         </select>
     </div>
     <div class="mb-3" id="widget_block_color_container">
