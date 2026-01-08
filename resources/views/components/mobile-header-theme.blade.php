@@ -25,6 +25,10 @@
     $mobileMenuIconBorder = $site->getSetting('mobile_menu_icon_border', '0') == '1';
     $mobileMenuLoginWidget = $site->getSetting('mobile_menu_login_widget', '0') == '1';
     
+    // 모바일 메뉴 폰트 컬러 설정 (하단 메뉴용)
+    $mobileMenuFontColor = $site->getSetting('mobile_menu_font_color', null);
+    $bottomMenuFontColor = $mobileMenuFontColor ?? $headerTextColor;
+    
     // 투명헤더 설정 - PC 투명헤더 또는 모바일 투명헤더가 활성화되면 적용
     $pcHeaderTransparent = $site->getSetting('header_transparent', '0') == '1';
     $mobileHeaderTransparentSetting = $site->getSetting('mobile_header_transparent', '0') == '1';
@@ -644,7 +648,7 @@
         display: inline-block;
         padding: 0.5rem 1rem;
         margin-right: 0.5rem;
-        color: {{ $headerTextColor }};
+        color: {{ $bottomMenuFontColor }};
         text-decoration: none;
         white-space: nowrap;
     }
@@ -2254,6 +2258,7 @@ document.addEventListener('DOMContentLoaded', function() {
         z-index: 1039 !important;
         width: 100% !important;
         transition: transform 0.3s ease, opacity 0.3s ease !important;
+        padding-top: 1rem !important;
     }
     
     /* 스크롤 시 하단 메뉴 바 숨김 */
@@ -2320,7 +2325,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 하단 메뉴 바 위치 계산 및 설정
     if (bottomMenu) {
         const headerHeight = mobileHeader.offsetHeight;
-        bottomMenu.style.top = headerHeight + 'px';
+        // padding-top(1rem = 16px)을 고려하여 위치 설정
+        bottomMenu.style.top = (headerHeight + 16) + 'px';
     }
     
         function handleMobileScroll() {
@@ -2361,7 +2367,8 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileHeader.classList.add('mobile-transparent-header-fixed');
             if (bottomMenu) {
                 const headerHeight = mobileHeader.offsetHeight;
-                bottomMenu.style.top = headerHeight + 'px';
+                // padding-top(1rem = 16px)을 고려하여 위치 설정
+                bottomMenu.style.top = (headerHeight + 16) + 'px';
             }
             handleMobileScroll();
         }
