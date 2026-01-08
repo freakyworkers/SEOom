@@ -1957,7 +1957,7 @@ function updateContainerFixedWidthColumns(containerId, fixedWidthColumns) {
         formData.append('fixed_width_columns', fixedWidthColumns ? '1' : '0');
         formData.append('_method', 'PUT');
 
-        fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "page" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -2194,7 +2194,7 @@ function updateContainerMarginAndPadding(containerId) {
         
         formData.append('_method', 'PUT');
 
-        fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "page" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "customPage" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
