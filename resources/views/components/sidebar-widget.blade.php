@@ -78,6 +78,7 @@
         $backgroundType = $blockSettings['background_type'] ?? 'color';
         $backgroundColor = $blockSettings['background_color'] ?? '#007bff';
         $backgroundImageUrl = $blockSettings['background_image_url'] ?? '';
+        $backgroundImageFullWidth = $blockSettings['background_image_full_width'] ?? false;
         $paddingTop = $blockSettings['padding_top'] ?? 20;
         $paddingBottom = $blockSettings['padding_bottom'] ?? ($blockSettings['padding_top'] ?? 20);
         $paddingLeft = $blockSettings['padding_left'] ?? 20;
@@ -114,7 +115,8 @@
             $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
             $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
         } else if ($backgroundType === 'image' && $backgroundImageUrl) {
-            $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
+            $bgSize = $backgroundImageFullWidth ? '100% auto' : 'cover';
+            $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: {$bgSize}; background-position: center top; background-repeat: no-repeat;";
         }
         
         // 배경색이 없음(none)인 경우 그림자 제거

@@ -130,6 +130,7 @@
         $backgroundColorAlpha = isset($blockSettings['background_color_alpha']) ? $blockSettings['background_color_alpha'] : 100;
         $backgroundImageUrl = $blockSettings['background_image_url'] ?? '';
         $backgroundImageAlpha = isset($blockSettings['background_image_alpha']) ? $blockSettings['background_image_alpha'] : 100;
+        $backgroundImageFullWidth = $blockSettings['background_image_full_width'] ?? false;
         $paddingTop = $blockSettings['padding_top'] ?? 20;
         $paddingBottom = $blockSettings['padding_bottom'] ?? ($blockSettings['padding_top'] ?? 20);
         $paddingLeft = $blockSettings['padding_left'] ?? 20;
@@ -189,7 +190,8 @@
             $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
             $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
         } else if ($backgroundType === 'image' && $backgroundImageUrl) {
-            $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
+            $bgSize = $backgroundImageFullWidth ? '100% auto' : 'cover';
+            $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: {$bgSize}; background-position: center top; background-repeat: no-repeat;";
             // 이미지 투명도 적용
             if ($backgroundImageAlpha < 100) {
                 $blockStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
@@ -362,6 +364,7 @@
                         $backgroundColorAlpha = isset($block['background_color_alpha']) ? $block['background_color_alpha'] : 100;
                         $backgroundImageUrl = $block['background_image_url'] ?? '';
                         $backgroundImageAlpha = isset($block['background_image_alpha']) ? $block['background_image_alpha'] : 100;
+                        $backgroundImageFullWidth = $block['background_image_full_width'] ?? false;
                         $paddingTop = $block['padding_top'] ?? 20;
                         $paddingBottom = $block['padding_bottom'] ?? ($block['padding_top'] ?? 20);
                         $paddingLeft = $block['padding_left'] ?? 20;
@@ -411,7 +414,8 @@
                             $gradientAngle = $block['background_gradient_angle'] ?? 90;
                             $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
                         } else if ($backgroundType === 'image' && $backgroundImageUrl) {
-                            $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
+                            $bgSize = $backgroundImageFullWidth ? '100% auto' : 'cover';
+                            $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: {$bgSize}; background-position: center top; background-repeat: no-repeat;";
                             // 이미지 투명도 적용
                             if ($backgroundImageAlpha < 100) {
                                 $blockStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
@@ -560,6 +564,7 @@
                         $backgroundColorAlpha = isset($block['background_color_alpha']) ? $block['background_color_alpha'] : 100;
                         $backgroundImageUrl = $block['background_image_url'] ?? '';
                         $backgroundImageAlpha = isset($block['background_image_alpha']) ? $block['background_image_alpha'] : 100;
+                        $backgroundImageFullWidth = $block['background_image_full_width'] ?? false;
                         $paddingTop = $block['padding_top'] ?? 20;
                         $paddingLeft = $block['padding_left'] ?? 20;
                         $link = $block['link'] ?? '';
@@ -583,7 +588,8 @@
                             $gradientAngle = $block['background_gradient_angle'] ?? 90;
                             $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
                         } else if ($backgroundType === 'image' && $backgroundImageUrl) {
-                            $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
+                            $bgSize = $backgroundImageFullWidth ? '100% auto' : 'cover';
+                            $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: {$bgSize}; background-position: center top; background-repeat: no-repeat;";
                             // 이미지 투명도 적용
                             if ($backgroundImageAlpha < 100) {
                                 $blockStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
@@ -3014,6 +3020,7 @@
                     $backgroundType = $blockSettings['background_type'] ?? 'color';
                     $backgroundColor = $blockSettings['background_color'] ?? '#007bff';
                     $backgroundImageUrl = $blockSettings['background_image_url'] ?? '';
+                    $backgroundImageFullWidth = $blockSettings['background_image_full_width'] ?? false;
                     $paddingTop = $blockSettings['padding_top'] ?? 20;
                     $paddingLeft = $blockSettings['padding_left'] ?? 20;
                     $link = $blockSettings['link'] ?? '';
@@ -3039,7 +3046,8 @@
                         $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
                         $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
                     } else if ($backgroundType === 'image' && $backgroundImageUrl) {
-                        $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: cover; background-position: center;";
+                        $bgSize = $backgroundImageFullWidth ? '100% auto' : 'cover';
+                        $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: {$bgSize}; background-position: center top; background-repeat: no-repeat;";
                     }
                     
                     // 세로 100%일 때 위젯이 전체 높이를 차지하도록

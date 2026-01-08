@@ -1284,6 +1284,16 @@
                                 </div>
                             </div>
                             <small class="text-muted">0~100 사이의 값을 입력하세요. 0은 완전 투명, 100은 불투명입니다.</small>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="edit_main_widget_block_background_image_full_width" 
+                                       name="block_background_image_full_width">
+                                <label class="form-check-label" for="edit_main_widget_block_background_image_full_width">
+                                    이미지 가로 100% (비율 유지)
+                                </label>
+                            </div>
+                            <small class="text-muted">활성화 시 이미지가 블록 너비에 맞게 확장되고 높이는 비율에 맞게 자동 조절됩니다.</small>
                         </div>
                         <div class="mb-3">
                             <label for="edit_main_widget_block_padding_top" class="form-label">상단 여백 (px)</label>
@@ -4181,6 +4191,8 @@ async function addMainWidget() {
                     blockItem.background_image_url = imageUrl;
                 }
                 blockItem.background_image_alpha = imageAlpha;
+                const imageFullWidth = item.querySelector('.block-slide-background-image-full-width')?.checked;
+                blockItem.background_image_full_width = imageFullWidth || false;
             }
             
             blockItems.push(blockItem);
@@ -4719,6 +4731,9 @@ function editMainWidget(widgetId) {
                     }
                     if (document.getElementById('edit_main_widget_block_background_image_alpha')) {
                         document.getElementById('edit_main_widget_block_background_image_alpha').value = settings.background_image_alpha !== undefined && settings.background_image_alpha !== null ? settings.background_image_alpha : 100;
+                    }
+                    if (document.getElementById('edit_main_widget_block_background_image_full_width')) {
+                        document.getElementById('edit_main_widget_block_background_image_full_width').checked = settings.background_image_full_width || false;
                     }
                 }
                 
@@ -5905,6 +5920,15 @@ function addBlockSlideItem() {
                 <small class="text-muted" style="font-size: 0.7rem;">0%</small>
                 <small class="text-muted" id="block_slide_${itemIndex}_background_image_alpha_value" style="font-size: 0.7rem;">100%</small>
             </div>
+            <div class="form-check mt-2">
+                <input class="form-check-input block-slide-background-image-full-width" 
+                       type="checkbox" 
+                       id="block_slide_${itemIndex}_background_image_full_width" 
+                       name="block_slide[${itemIndex}][background_image_full_width]">
+                <label class="form-check-label" for="block_slide_${itemIndex}_background_image_full_width">
+                    이미지 가로 100% (비율 유지)
+                </label>
+            </div>
         </div>
         <div class="mb-3">
             <label class="form-label">상단 여백 (px)</label>
@@ -7004,6 +7028,8 @@ function saveMainWidgetSettings() {
             const imageAlphaValue = document.getElementById('edit_main_widget_block_background_image_alpha')?.value;
             const imageAlpha = imageAlphaValue !== '' && imageAlphaValue !== null ? parseInt(imageAlphaValue) : 100;
             settings.background_image_alpha = imageAlpha;
+            const imageFullWidth = document.getElementById('edit_main_widget_block_background_image_full_width')?.checked;
+            settings.background_image_full_width = imageFullWidth || false;
         }
         
         settings.padding_top = paddingTop !== '' && paddingTop !== null && paddingTop !== undefined ? parseInt(paddingTop) : 20;

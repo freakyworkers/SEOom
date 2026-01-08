@@ -436,6 +436,15 @@
                                                         <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeBlockImage()">삭제</button>
                                                     </div>
                                                 </div>
+                                                <div class="form-check mt-2">
+                                                    <input class="form-check-input" 
+                                                           type="checkbox" 
+                                                           id="widget_block_background_image_full_width" 
+                                                           name="block_background_image_full_width">
+                                                    <label class="form-check-label" for="widget_block_background_image_full_width">
+                                                        이미지 가로 100% (비율 유지)
+                                                    </label>
+                                                </div>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="widget_block_padding_top" class="form-label">상하 여백</label>
@@ -1129,6 +1138,15 @@
                                     <img id="edit_widget_block_image_preview_img" src="" alt="미리보기" style="max-width: 100px; max-height: 100px; object-fit: cover;">
                                     <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeEditBlockImage()">삭제</button>
                                 </div>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="edit_widget_block_background_image_full_width" 
+                                       name="block_background_image_full_width">
+                                <label class="form-check-label" for="edit_widget_block_background_image_full_width">
+                                    이미지 가로 100% (비율 유지)
+                                </label>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -3417,6 +3435,8 @@ function addWidget() {
             if (imageUrl) {
                 settings.background_image_url = imageUrl;
             }
+            const imageFullWidth = document.getElementById('widget_block_background_image_full_width')?.checked;
+            settings.background_image_full_width = imageFullWidth || false;
         }
         
         settings.padding_top = paddingTop !== '' && paddingTop !== null ? parseInt(paddingTop) : 20;
@@ -3994,6 +4014,9 @@ function editWidget(widgetId) {
                                 document.getElementById('edit_widget_block_image_preview').style.display = 'block';
                                 document.getElementById('edit_widget_block_background_image').value = settings.background_image_url;
                             }
+                            if (document.getElementById('edit_widget_block_background_image_full_width')) {
+                                document.getElementById('edit_widget_block_background_image_full_width').checked = settings.background_image_full_width || false;
+                            }
                         }
                         
                         if (document.getElementById('edit_widget_block_padding_top')) {
@@ -4479,6 +4502,8 @@ function saveWidgetSettings() {
                             if (imageUrl) {
                                 settings.background_image_url = imageUrl;
                             }
+                            const imageFullWidth = document.getElementById('edit_widget_block_background_image_full_width')?.checked;
+                            settings.background_image_full_width = imageFullWidth || false;
                         }
                         
                         settings.padding_top = paddingTop !== '' && paddingTop !== null && paddingTop !== undefined ? parseInt(paddingTop) : 20;

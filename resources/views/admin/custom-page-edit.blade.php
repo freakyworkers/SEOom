@@ -1083,6 +1083,16 @@
                                 </div>
                             </div>
                             <small class="text-muted">0~100 사이의 값을 입력하세요. 0은 완전 투명, 100은 불투명입니다.</small>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="edit_custom_page_widget_block_background_image_full_width" 
+                                       name="block_background_image_full_width">
+                                <label class="form-check-label" for="edit_custom_page_widget_block_background_image_full_width">
+                                    이미지 가로 100% (비율 유지)
+                                </label>
+                            </div>
+                            <small class="text-muted">활성화 시 이미지가 블록 너비에 맞게 확장되고 높이는 비율에 맞게 자동 조절됩니다.</small>
                         </div>
                         <div class="mb-3">
                             <label for="edit_custom_page_widget_block_padding_top" class="form-label">상단 여백 (px)</label>
@@ -4033,6 +4043,9 @@ function editCustomPageWidget(widgetId) {
                     if (document.getElementById('edit_custom_page_widget_block_background_image_alpha')) {
                         document.getElementById('edit_custom_page_widget_block_background_image_alpha').value = settings.background_image_alpha !== undefined && settings.background_image_alpha !== null ? settings.background_image_alpha : 100;
                     }
+                    if (document.getElementById('edit_custom_page_widget_block_background_image_full_width')) {
+                        document.getElementById('edit_custom_page_widget_block_background_image_full_width').checked = settings.background_image_full_width || false;
+                    }
                 }
                 
                 if (document.getElementById('edit_custom_page_widget_block_font_color')) {
@@ -5483,6 +5496,8 @@ function saveCustomPageWidgetSettings() {
             const imageAlphaValue = document.getElementById('edit_custom_page_widget_block_background_image_alpha')?.value;
             const imageAlpha = imageAlphaValue !== '' && imageAlphaValue !== null ? parseInt(imageAlphaValue) : 100;
             settings.background_image_alpha = imageAlpha;
+            const imageFullWidth = document.getElementById('edit_custom_page_widget_block_background_image_full_width')?.checked;
+            settings.background_image_full_width = imageFullWidth || false;
         }
         
         settings.padding_top = parseInt(paddingTop);
