@@ -2705,6 +2705,31 @@ function addImageSlideItem() {
                     <label class="form-label">버튼 텍스트 색상</label>
                     <input type="color" class="form-control form-control-color image-slide-button-text-color" value="#ffffff" title="버튼 텍스트 색상 선택">
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 테두리 색상</label>
+                    <input type="color" class="form-control form-control-color image-slide-button-border-color" value="#0d6efd" title="버튼 테두리 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 배경 투명도</label>
+                    <input type="range" class="form-range image-slide-button-opacity" min="0" max="100" value="100" oninput="document.getElementById('image_slide_${itemIndex}_button_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small>0%</small>
+                        <small id="image_slide_${itemIndex}_button_opacity_value">100%</small>
+                        <small>100%</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 호버 배경 색상</label>
+                    <input type="color" class="form-control form-control-color image-slide-button-hover-bg-color" value="#0b5ed7" title="버튼 호버 배경 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 호버 텍스트 색상</label>
+                    <input type="color" class="form-control form-control-color image-slide-button-hover-text-color" value="#ffffff" title="버튼 호버 텍스트 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 호버 테두리 색상</label>
+                    <input type="color" class="form-control form-control-color image-slide-button-hover-border-color" value="#0a58ca" title="버튼 호버 테두리 색상 선택">
+                </div>
             </div>
         </div>
         <div class="mb-3" id="image_slide_${itemIndex}_link_container">
@@ -3765,6 +3790,11 @@ function addWidget() {
             const buttonNewTab = item.querySelector('.image-slide-button-new-tab')?.checked || false;
             const buttonColor = item.querySelector('.image-slide-button-color')?.value || '#0d6efd';
             const buttonTextColor = item.querySelector('.image-slide-button-text-color')?.value || '#ffffff';
+            const buttonBorderColor = item.querySelector('.image-slide-button-border-color')?.value || '#0d6efd';
+            const buttonOpacity = item.querySelector('.image-slide-button-opacity')?.value || 100;
+            const buttonHoverBgColor = item.querySelector('.image-slide-button-hover-bg-color')?.value || '#0b5ed7';
+            const buttonHoverTextColor = item.querySelector('.image-slide-button-hover-text-color')?.value || '#ffffff';
+            const buttonHoverBorderColor = item.querySelector('.image-slide-button-hover-border-color')?.value || '#0a58ca';
             
             const imageItem = {
                 link: link,
@@ -3783,7 +3813,12 @@ function addWidget() {
                 button_link: buttonLink,
                 button_new_tab: buttonNewTab,
                 button_color: buttonColor,
-                button_text_color: buttonTextColor
+                button_text_color: buttonTextColor,
+                button_border_color: buttonBorderColor,
+                button_opacity: parseInt(buttonOpacity) || 100,
+                button_hover_bg_color: buttonHoverBgColor,
+                button_hover_text_color: buttonHoverTextColor,
+                button_hover_border_color: buttonHoverBorderColor
             };
             
             if (imageFile) {

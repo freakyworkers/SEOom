@@ -809,15 +809,94 @@
                             $imageUrl = $image['image_url'] ?? '';
                             $link = $image['link'] ?? '';
                             $openNewTab = $image['open_new_tab'] ?? false;
+                            $textOverlay = $image['text_overlay'] ?? false;
+                            $title = $image['title'] ?? '';
+                            $titleFontSize = $image['title_font_size'] ?? 24;
+                            $content = $image['content'] ?? '';
+                            $contentFontSize = $image['content_font_size'] ?? 16;
+                            $titleContentGap = $image['title_content_gap'] ?? 10;
+                            $alignH = $image['align_h'] ?? 'left';
+                            $alignV = $image['align_v'] ?? 'middle';
+                            $textColor = $image['text_color'] ?? '#ffffff';
+                            $hasButton = $image['has_button'] ?? false;
+                            $buttonText = $image['button_text'] ?? '';
+                            $buttonLink = $image['button_link'] ?? '';
+                            $buttonNewTab = $image['button_new_tab'] ?? false;
+                            $buttonColor = $image['button_color'] ?? '#0d6efd';
+                            $buttonTextColor = $image['button_text_color'] ?? '#ffffff';
+                            $buttonBorderColor = $image['button_border_color'] ?? '#0d6efd';
+                            $buttonOpacity = $image['button_opacity'] ?? 100;
+                            $buttonHoverBgColor = $image['button_hover_bg_color'] ?? '#0b5ed7';
+                            $buttonHoverTextColor = $image['button_hover_text_color'] ?? '#ffffff';
+                            $buttonHoverBorderColor = $image['button_hover_border_color'] ?? '#0a58ca';
+                            
+                            // 정렬 스타일 생성
+                            $textAlignStyle = '';
+                            $justifyContent = 'center';
+                            $alignItems = 'center';
+                            if ($alignH === 'left') $justifyContent = 'flex-start';
+                            if ($alignH === 'right') $justifyContent = 'flex-end';
+                            if ($alignV === 'top') $alignItems = 'flex-start';
+                            if ($alignV === 'bottom') $alignItems = 'flex-end';
+                            
+                            // 버튼 스타일 생성
+                            $buttonStyle = '';
+                            $buttonHoverStyle = '';
+                            if ($hasButton && $buttonText) {
+                                $rgbaColor = $buttonColor;
+                                if (strlen($buttonColor) === 7) {
+                                    $hex = str_replace('#', '', $buttonColor);
+                                    $r = hexdec(substr($hex, 0, 2));
+                                    $g = hexdec(substr($hex, 2, 2));
+                                    $b = hexdec(substr($hex, 4, 2));
+                                    $alpha = $buttonOpacity / 100;
+                                    $rgbaColor = "rgba({$r}, {$g}, {$b}, {$alpha})";
+                                }
+                                $buttonStyle = "background-color: {$rgbaColor}; color: {$buttonTextColor}; border-color: {$buttonBorderColor};";
+                                $buttonHoverStyle = "background-color: {$buttonHoverBgColor}; color: {$buttonHoverTextColor}; border-color: {$buttonHoverBorderColor};";
+                            }
                         @endphp
                         @if($imageUrl)
-                            <div class="image-slide-item" style="width: 100%; flex-shrink: 0; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 100%;' : '' }}">
-                                @if($link)
-                                    <a href="{{ $link }}" 
-                                       @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
-                                @endif
+                            <div class="image-slide-item" style="width: 100%; flex-shrink: 0; position: relative; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 100%;' : '' }}">
                                 <img src="{{ $imageUrl }}" alt="이미지 {{ $index + 1 }}" style="width: 100%; height: auto; display: block;">
-                                @if($link)
+                                @if($textOverlay && ($title || $content))
+                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
+                                        <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
+                                            @if($title)
+                                                <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
+                                            @endif
+                                            @if($content)
+                                                <p style="color: {{ $textColor }}; font-size: {{ $contentFontSize }}px; margin: 0;">{{ $content }}</p>
+                                            @endif
+                                            @if($hasButton && $buttonText)
+                                                <a href="{{ $buttonLink }}" 
+                                                   @if($buttonNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                                   class="image-slide-button"
+                                                   style="{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 15px; transition: all 0.3s ease;"
+                                                   onmouseover="this.style.cssText += '{{ $buttonHoverStyle }}'"
+                                                   onmouseout="this.style.cssText = '{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 15px; transition: all 0.3s ease;'">
+                                                    {{ $buttonText }}
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @elseif($hasButton && $buttonText)
+                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
+                                        <div style="pointer-events: auto;">
+                                            <a href="{{ $buttonLink }}" 
+                                               @if($buttonNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                               class="image-slide-button"
+                                               style="{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease;"
+                                               onmouseover="this.style.cssText += '{{ $buttonHoverStyle }}'"
+                                               onmouseout="this.style.cssText = '{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease;'">
+                                                {{ $buttonText }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                @elseif($link && !$hasButton)
+                                    <a href="{{ $link }}" 
+                                       @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                       style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block;">
                                     </a>
                                 @endif
                             </div>
@@ -829,15 +908,93 @@
                             $imageUrl = $image['image_url'] ?? '';
                             $link = $image['link'] ?? '';
                             $openNewTab = $image['open_new_tab'] ?? false;
+                            $textOverlay = $image['text_overlay'] ?? false;
+                            $title = $image['title'] ?? '';
+                            $titleFontSize = $image['title_font_size'] ?? 24;
+                            $content = $image['content'] ?? '';
+                            $contentFontSize = $image['content_font_size'] ?? 16;
+                            $titleContentGap = $image['title_content_gap'] ?? 10;
+                            $alignH = $image['align_h'] ?? 'left';
+                            $alignV = $image['align_v'] ?? 'middle';
+                            $textColor = $image['text_color'] ?? '#ffffff';
+                            $hasButton = $image['has_button'] ?? false;
+                            $buttonText = $image['button_text'] ?? '';
+                            $buttonLink = $image['button_link'] ?? '';
+                            $buttonNewTab = $image['button_new_tab'] ?? false;
+                            $buttonColor = $image['button_color'] ?? '#0d6efd';
+                            $buttonTextColor = $image['button_text_color'] ?? '#ffffff';
+                            $buttonBorderColor = $image['button_border_color'] ?? '#0d6efd';
+                            $buttonOpacity = $image['button_opacity'] ?? 100;
+                            $buttonHoverBgColor = $image['button_hover_bg_color'] ?? '#0b5ed7';
+                            $buttonHoverTextColor = $image['button_hover_text_color'] ?? '#ffffff';
+                            $buttonHoverBorderColor = $image['button_hover_border_color'] ?? '#0a58ca';
+                            
+                            // 정렬 스타일 생성
+                            $justifyContent = 'center';
+                            $alignItems = 'center';
+                            if ($alignH === 'left') $justifyContent = 'flex-start';
+                            if ($alignH === 'right') $justifyContent = 'flex-end';
+                            if ($alignV === 'top') $alignItems = 'flex-start';
+                            if ($alignV === 'bottom') $alignItems = 'flex-end';
+                            
+                            // 버튼 스타일 생성
+                            $buttonStyle = '';
+                            $buttonHoverStyle = '';
+                            if ($hasButton && $buttonText) {
+                                $rgbaColor = $buttonColor;
+                                if (strlen($buttonColor) === 7) {
+                                    $hex = str_replace('#', '', $buttonColor);
+                                    $r = hexdec(substr($hex, 0, 2));
+                                    $g = hexdec(substr($hex, 2, 2));
+                                    $b = hexdec(substr($hex, 4, 2));
+                                    $alpha = $buttonOpacity / 100;
+                                    $rgbaColor = "rgba({$r}, {$g}, {$b}, {$alpha})";
+                                }
+                                $buttonStyle = "background-color: {$rgbaColor}; color: {$buttonTextColor}; border-color: {$buttonBorderColor};";
+                                $buttonHoverStyle = "background-color: {$buttonHoverBgColor}; color: {$buttonHoverTextColor}; border-color: {$buttonHoverBorderColor};";
+                            }
                         @endphp
                         @if($imageUrl)
-                            <div class="image-slide-item image-slide-item-clone" style="width: 100%; flex-shrink: 0; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 100%;' : '' }}">
-                                @if($link)
-                                    <a href="{{ $link }}" 
-                                       @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
-                                @endif
+                            <div class="image-slide-item image-slide-item-clone" style="width: 100%; flex-shrink: 0; position: relative; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 100%;' : '' }}">
                                 <img src="{{ $imageUrl }}" alt="이미지 {{ $index + 1 }}" style="width: 100%; height: auto; display: block;">
-                                @if($link)
+                                @if($textOverlay && ($title || $content))
+                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
+                                        <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
+                                            @if($title)
+                                                <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
+                                            @endif
+                                            @if($content)
+                                                <p style="color: {{ $textColor }}; font-size: {{ $contentFontSize }}px; margin: 0;">{{ $content }}</p>
+                                            @endif
+                                            @if($hasButton && $buttonText)
+                                                <a href="{{ $buttonLink }}" 
+                                                   @if($buttonNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                                   class="image-slide-button"
+                                                   style="{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 15px; transition: all 0.3s ease;"
+                                                   onmouseover="this.style.cssText += '{{ $buttonHoverStyle }}'"
+                                                   onmouseout="this.style.cssText = '{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 15px; transition: all 0.3s ease;'">
+                                                    {{ $buttonText }}
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @elseif($hasButton && $buttonText)
+                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
+                                        <div style="pointer-events: auto;">
+                                            <a href="{{ $buttonLink }}" 
+                                               @if($buttonNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                               class="image-slide-button"
+                                               style="{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease;"
+                                               onmouseover="this.style.cssText += '{{ $buttonHoverStyle }}'"
+                                               onmouseout="this.style.cssText = '{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease;'">
+                                                {{ $buttonText }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                @elseif($link && !$hasButton)
+                                    <a href="{{ $link }}" 
+                                       @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                       style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block;">
                                     </a>
                                 @endif
                             </div>
@@ -851,15 +1008,93 @@
                                 $imageUrl = $image['image_url'] ?? '';
                                 $link = $image['link'] ?? '';
                                 $openNewTab = $image['open_new_tab'] ?? false;
+                                $textOverlay = $image['text_overlay'] ?? false;
+                                $title = $image['title'] ?? '';
+                                $titleFontSize = $image['title_font_size'] ?? 24;
+                                $content = $image['content'] ?? '';
+                                $contentFontSize = $image['content_font_size'] ?? 16;
+                                $titleContentGap = $image['title_content_gap'] ?? 10;
+                                $alignH = $image['align_h'] ?? 'left';
+                                $alignV = $image['align_v'] ?? 'middle';
+                                $textColor = $image['text_color'] ?? '#ffffff';
+                                $hasButton = $image['has_button'] ?? false;
+                                $buttonText = $image['button_text'] ?? '';
+                                $buttonLink = $image['button_link'] ?? '';
+                                $buttonNewTab = $image['button_new_tab'] ?? false;
+                                $buttonColor = $image['button_color'] ?? '#0d6efd';
+                                $buttonTextColor = $image['button_text_color'] ?? '#ffffff';
+                                $buttonBorderColor = $image['button_border_color'] ?? '#0d6efd';
+                                $buttonOpacity = $image['button_opacity'] ?? 100;
+                                $buttonHoverBgColor = $image['button_hover_bg_color'] ?? '#0b5ed7';
+                                $buttonHoverTextColor = $image['button_hover_text_color'] ?? '#ffffff';
+                                $buttonHoverBorderColor = $image['button_hover_border_color'] ?? '#0a58ca';
+                                
+                                // 정렬 스타일 생성
+                                $justifyContent = 'center';
+                                $alignItems = 'center';
+                                if ($alignH === 'left') $justifyContent = 'flex-start';
+                                if ($alignH === 'right') $justifyContent = 'flex-end';
+                                if ($alignV === 'top') $alignItems = 'flex-start';
+                                if ($alignV === 'bottom') $alignItems = 'flex-end';
+                                
+                                // 버튼 스타일 생성
+                                $buttonStyle = '';
+                                $buttonHoverStyle = '';
+                                if ($hasButton && $buttonText) {
+                                    $rgbaColor = $buttonColor;
+                                    if (strlen($buttonColor) === 7) {
+                                        $hex = str_replace('#', '', $buttonColor);
+                                        $r = hexdec(substr($hex, 0, 2));
+                                        $g = hexdec(substr($hex, 2, 2));
+                                        $b = hexdec(substr($hex, 4, 2));
+                                        $alpha = $buttonOpacity / 100;
+                                        $rgbaColor = "rgba({$r}, {$g}, {$b}, {$alpha})";
+                                    }
+                                    $buttonStyle = "background-color: {$rgbaColor}; color: {$buttonTextColor}; border-color: {$buttonBorderColor};";
+                                    $buttonHoverStyle = "background-color: {$buttonHoverBgColor}; color: {$buttonHoverTextColor}; border-color: {$buttonHoverBorderColor};";
+                                }
                             @endphp
                             @if($imageUrl)
-                                <div class="image-slide-item" style="width: calc((100% - {{ $imageGap * ($visibleCount - 1) }}px) / {{ $visibleCount }}); flex-shrink: 0;{{ $imageGap > 0 ? ' margin-right: ' . $imageGap . 'px;' : '' }}">
-                                    @if($link)
-                                        <a href="{{ $link }}" 
-                                           @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
-                                    @endif
+                                <div class="image-slide-item" style="width: calc((100% - {{ $imageGap * ($visibleCount - 1) }}px) / {{ $visibleCount }}); flex-shrink: 0; position: relative;{{ $imageGap > 0 ? ' margin-right: ' . $imageGap . 'px;' : '' }}">
                                     <img src="{{ $imageUrl }}" alt="이미지 {{ $index + 1 }}" style="width: 100%; height: auto; display: block;">
-                                    @if($link)
+                                    @if($textOverlay && ($title || $content))
+                                        <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
+                                            <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
+                                                @if($title)
+                                                    <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
+                                                @endif
+                                                @if($content)
+                                                    <p style="color: {{ $textColor }}; font-size: {{ $contentFontSize }}px; margin: 0;">{{ $content }}</p>
+                                                @endif
+                                                @if($hasButton && $buttonText)
+                                                    <a href="{{ $buttonLink }}" 
+                                                       @if($buttonNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                                       class="image-slide-button"
+                                                       style="{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 15px; transition: all 0.3s ease;"
+                                                       onmouseover="this.style.cssText += '{{ $buttonHoverStyle }}'"
+                                                       onmouseout="this.style.cssText = '{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 15px; transition: all 0.3s ease;'">
+                                                        {{ $buttonText }}
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @elseif($hasButton && $buttonText)
+                                        <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
+                                            <div style="pointer-events: auto;">
+                                                <a href="{{ $buttonLink }}" 
+                                                   @if($buttonNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                                   class="image-slide-button"
+                                                   style="{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease;"
+                                                   onmouseover="this.style.cssText += '{{ $buttonHoverStyle }}'"
+                                                   onmouseout="this.style.cssText = '{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease;'">
+                                                    {{ $buttonText }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    @elseif($link && !$hasButton)
+                                        <a href="{{ $link }}" 
+                                           @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                           style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block;">
                                         </a>
                                     @endif
                                 </div>

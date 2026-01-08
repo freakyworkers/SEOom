@@ -4267,6 +4267,11 @@ async function addMainWidget() {
             const buttonNewTab = item.querySelector('.image-slide-button-new-tab')?.checked || false;
             const buttonColor = item.querySelector('.image-slide-button-color')?.value || '#0d6efd';
             const buttonTextColor = item.querySelector('.image-slide-button-text-color')?.value || '#ffffff';
+            const buttonBorderColor = item.querySelector('.image-slide-button-border-color')?.value || '#0d6efd';
+            const buttonOpacity = item.querySelector('.image-slide-button-opacity')?.value || 100;
+            const buttonHoverBgColor = item.querySelector('.image-slide-button-hover-bg-color')?.value || '#0b5ed7';
+            const buttonHoverTextColor = item.querySelector('.image-slide-button-hover-text-color')?.value || '#ffffff';
+            const buttonHoverBorderColor = item.querySelector('.image-slide-button-hover-border-color')?.value || '#0a58ca';
             
             const imageItem = {
                 link: link,
@@ -4285,7 +4290,12 @@ async function addMainWidget() {
                 button_link: buttonLink,
                 button_new_tab: buttonNewTab,
                 button_color: buttonColor,
-                button_text_color: buttonTextColor
+                button_text_color: buttonTextColor,
+                button_border_color: buttonBorderColor,
+                button_opacity: parseInt(buttonOpacity) || 100,
+                button_hover_bg_color: buttonHoverBgColor,
+                button_hover_text_color: buttonHoverTextColor,
+                button_hover_border_color: buttonHoverBorderColor
             };
             
             if (imageFile) {
@@ -6478,8 +6488,8 @@ function addImageSlideItem() {
             <div class="mb-3">
                 <label class="form-label">텍스트 색상</label>
                 <input type="color" class="form-control form-control-color image-slide-text-color" value="#ffffff" title="텍스트 색상 선택">
-            </div>
-            <div class="mb-3">
+        </div>
+        <div class="mb-3">
                 <div class="form-check">
                     <input class="form-check-input image-slide-has-button" type="checkbox" id="image_slide_${itemIndex}_has_button" onchange="toggleImageSlideButton(${itemIndex})">
                     <label class="form-check-label" for="image_slide_${itemIndex}_has_button">버튼 추가</label>
@@ -6507,6 +6517,31 @@ function addImageSlideItem() {
                 <div class="mb-3">
                     <label class="form-label">버튼 텍스트 색상</label>
                     <input type="color" class="form-control form-control-color image-slide-button-text-color" value="#ffffff" title="버튼 텍스트 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 테두리 색상</label>
+                    <input type="color" class="form-control form-control-color image-slide-button-border-color" value="#0d6efd" title="버튼 테두리 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 배경 투명도</label>
+                    <input type="range" class="form-range image-slide-button-opacity" min="0" max="100" value="100" oninput="document.getElementById('image_slide_${itemIndex}_button_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small>0%</small>
+                        <small id="image_slide_${itemIndex}_button_opacity_value">100%</small>
+                        <small>100%</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 호버 배경 색상</label>
+                    <input type="color" class="form-control form-control-color image-slide-button-hover-bg-color" value="#0b5ed7" title="버튼 호버 배경 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 호버 텍스트 색상</label>
+                    <input type="color" class="form-control form-control-color image-slide-button-hover-text-color" value="#ffffff" title="버튼 호버 텍스트 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 호버 테두리 색상</label>
+                    <input type="color" class="form-control form-control-color image-slide-button-hover-border-color" value="#0a58ca" title="버튼 호버 테두리 색상 선택">
                 </div>
             </div>
         </div>
@@ -7385,6 +7420,11 @@ function saveMainWidgetSettings() {
             const buttonNewTab = item.querySelector('.edit-main-image-slide-button-new-tab')?.checked || false;
             const buttonColor = item.querySelector('.edit-main-image-slide-button-color')?.value || '#0d6efd';
             const buttonTextColor = item.querySelector('.edit-main-image-slide-button-text-color')?.value || '#ffffff';
+            const buttonBorderColor = item.querySelector('.edit-main-image-slide-button-border-color')?.value || '#0d6efd';
+            const buttonOpacity = item.querySelector('.edit-main-image-slide-button-opacity')?.value || 100;
+            const buttonHoverBgColor = item.querySelector('.edit-main-image-slide-button-hover-bg-color')?.value || '#0b5ed7';
+            const buttonHoverTextColor = item.querySelector('.edit-main-image-slide-button-hover-text-color')?.value || '#ffffff';
+            const buttonHoverBorderColor = item.querySelector('.edit-main-image-slide-button-hover-border-color')?.value || '#0a58ca';
             
             const imageItem = {
                 image_url: imageUrlInput ? imageUrlInput.value : '',
@@ -7404,7 +7444,12 @@ function saveMainWidgetSettings() {
                 button_link: buttonLink,
                 button_new_tab: buttonNewTab,
                 button_color: buttonColor,
-                button_text_color: buttonTextColor
+                button_text_color: buttonTextColor,
+                button_border_color: buttonBorderColor,
+                button_opacity: parseInt(buttonOpacity) || 100,
+                button_hover_bg_color: buttonHoverBgColor,
+                button_hover_text_color: buttonHoverTextColor,
+                button_hover_border_color: buttonHoverBorderColor
             };
             
             if (imageFileInput && imageFileInput.files[0]) {
@@ -8499,6 +8544,31 @@ function addEditMainImageSlideItem(imageData = null) {
                 <div class="mb-3">
                     <label class="form-label">버튼 텍스트 색상</label>
                     <input type="color" class="form-control form-control-color edit-main-image-slide-button-text-color" value="${imageData ? (imageData.button_text_color || '#ffffff') : '#ffffff'}" title="버튼 텍스트 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 테두리 색상</label>
+                    <input type="color" class="form-control form-control-color edit-main-image-slide-button-border-color" value="${imageData ? (imageData.button_border_color || '#0d6efd') : '#0d6efd'}" title="버튼 테두리 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 배경 투명도</label>
+                    <input type="range" class="form-range edit-main-image-slide-button-opacity" min="0" max="100" value="${imageData ? (imageData.button_opacity || 100) : 100}" oninput="document.getElementById('edit_main_image_slide_${itemIndex}_button_opacity_value').textContent = this.value + '%'">
+                    <div class="d-flex justify-content-between">
+                        <small>0%</small>
+                        <small id="edit_main_image_slide_${itemIndex}_button_opacity_value">${imageData ? (imageData.button_opacity || 100) : 100}%</small>
+                        <small>100%</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 호버 배경 색상</label>
+                    <input type="color" class="form-control form-control-color edit-main-image-slide-button-hover-bg-color" value="${imageData ? (imageData.button_hover_bg_color || '#0b5ed7') : '#0b5ed7'}" title="버튼 호버 배경 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 호버 텍스트 색상</label>
+                    <input type="color" class="form-control form-control-color edit-main-image-slide-button-hover-text-color" value="${imageData ? (imageData.button_hover_text_color || '#ffffff') : '#ffffff'}" title="버튼 호버 텍스트 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 호버 테두리 색상</label>
+                    <input type="color" class="form-control form-control-color edit-main-image-slide-button-hover-border-color" value="${imageData ? (imageData.button_hover_border_color || '#0a58ca') : '#0a58ca'}" title="버튼 호버 테두리 색상 선택">
                 </div>
             </div>
         </div>
