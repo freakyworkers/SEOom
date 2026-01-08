@@ -3435,6 +3435,9 @@ function addWidget() {
             if (imageUrl) {
                 settings.background_image_url = imageUrl;
             }
+            const imageAlphaValue = document.getElementById('widget_block_background_image_alpha')?.value;
+            const imageAlpha = imageAlphaValue !== '' && imageAlphaValue !== null ? parseInt(imageAlphaValue) : 100;
+            settings.background_image_alpha = imageAlpha;
             const imageFullWidth = document.getElementById('widget_block_background_image_full_width')?.checked;
             settings.background_image_full_width = imageFullWidth || false;
         }
@@ -4502,6 +4505,9 @@ function saveWidgetSettings() {
                             if (imageUrl) {
                                 settings.background_image_url = imageUrl;
                             }
+                            const imageAlphaValue = document.getElementById('edit_widget_block_background_image_alpha')?.value;
+                            const imageAlpha = imageAlphaValue !== '' && imageAlphaValue !== null ? parseInt(imageAlphaValue) : 100;
+                            settings.background_image_alpha = imageAlpha;
                             const imageFullWidth = document.getElementById('edit_widget_block_background_image_full_width')?.checked;
                             settings.background_image_full_width = imageFullWidth || false;
                         }
