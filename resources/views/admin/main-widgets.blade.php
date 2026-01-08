@@ -1581,6 +1581,18 @@
                                    title="3초마다 이미지가 1개씩 슬라이드됩니다." 
                                    style="cursor: help; font-size: 0.9rem;"></i>
                             </div>
+                            <div class="mb-3" id="edit_main_widget_image_slide_speed_container" style="display: block;">
+                                <label for="edit_main_widget_image_slide_speed" class="form-label">슬라이드 속도 (초)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="edit_main_widget_image_slide_speed" 
+                                       name="image_slide_speed" 
+                                       value="3.0"
+                                       min="0"
+                                       step="0.1"
+                                       placeholder="3.0">
+                                <small class="text-muted">이미지가 슬라이드되는 간격을 초 단위로 입력하세요. (기본값: 3.0초)</small>
+                            </div>
                             <div class="form-check">
                                 <input class="form-check-input" 
                                        type="checkbox" 
@@ -4295,11 +4307,15 @@ async function addMainWidget() {
         
         const singleSlide = document.getElementById('widget_image_slide_single')?.checked || false;
         const infiniteSlide = document.getElementById('widget_image_slide_infinite')?.checked || false;
+        const slideSpeed = document.getElementById('widget_image_slide_speed')?.value || '3.0';
         const visibleCount = document.getElementById('widget_image_slide_visible_count')?.value || '3';
         const visibleCountMobile = document.getElementById('widget_image_slide_visible_count_mobile')?.value || '2';
         const imageGap = document.getElementById('widget_image_slide_gap')?.value || '0';
         
         settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
+        if (singleSlide) {
+            settings.slide_speed = parseFloat(slideSpeed) || 3.0;
+        }
         if (infiniteSlide) {
             settings.visible_count = parseInt(visibleCount) || 3;
             settings.visible_count_mobile = parseInt(visibleCountMobile) || 2;
@@ -5130,6 +5146,11 @@ function editMainWidget(widgetId) {
                 } else {
                     if (singleCheckbox) singleCheckbox.checked = true;
                     if (infiniteCheckbox) infiniteCheckbox.checked = false;
+                    // 슬라이드 속도 로드
+                    const slideSpeedInput = document.getElementById('edit_main_widget_image_slide_speed');
+                    if (slideSpeedInput) {
+                        slideSpeedInput.value = settings.slide_speed || 3.0;
+                    }
                 }
                 
                 handleEditMainImageSlideModeChange();
@@ -6784,6 +6805,7 @@ function handleImageSlideModeChange(clickedType) {
     const visibleCountMobileContainer = document.getElementById('widget_image_slide_visible_count_mobile_container');
     const gapContainer = document.getElementById('widget_image_slide_gap_container');
     const backgroundContainer = document.getElementById('widget_image_slide_background_container');
+    const speedContainer = document.getElementById('widget_image_slide_speed_container');
     const directionGroup = document.getElementById('image_slide_direction_group');
     const upRadio = document.getElementById('image_slide_direction_up');
     const downRadio = document.getElementById('image_slide_direction_down');
@@ -6799,12 +6821,20 @@ function handleImageSlideModeChange(clickedType) {
         if (singleCheckbox) singleCheckbox.checked = false;
     }
     
+    // 1단 슬라이드가 체크되어 있는 경우
+    if (singleCheckbox && singleCheckbox.checked) {
+        if (speedContainer) speedContainer.style.display = 'block';
+    } else {
+        if (speedContainer) speedContainer.style.display = 'none';
+    }
+    
     // 무한루프가 체크되어 있는 경우
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
         if (visibleCountMobileContainer) visibleCountMobileContainer.style.display = 'block';
         if (gapContainer) gapContainer.style.display = 'block';
         if (backgroundContainer) backgroundContainer.style.display = 'block';
+        if (speedContainer) speedContainer.style.display = 'none';
         
         // 무한루프 슬라이드일 때 상하 방향 비활성화
         if (upRadio) {
@@ -7528,6 +7558,7 @@ function saveMainWidgetSettings() {
         
         const singleSlide = document.getElementById('edit_main_widget_image_slide_single')?.checked || false;
         const infiniteSlide = document.getElementById('edit_main_widget_image_slide_infinite')?.checked || false;
+        const slideSpeed = document.getElementById('edit_main_widget_image_slide_speed')?.value || '3.0';
         const visibleCount = document.getElementById('edit_main_widget_image_slide_visible_count')?.value || '3';
         const visibleCountMobile = document.getElementById('edit_main_widget_image_slide_visible_count_mobile')?.value || '2';
         const imageGap = document.getElementById('edit_main_widget_image_slide_gap')?.value || '0';
@@ -7535,6 +7566,9 @@ function saveMainWidgetSettings() {
         const backgroundColor = document.getElementById('edit_main_widget_image_slide_background_color')?.value || '#ffffff';
         
         settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
+        if (singleSlide) {
+            settings.slide_speed = parseFloat(slideSpeed) || 3.0;
+        }
         if (infiniteSlide) {
             settings.visible_count = parseInt(visibleCount) || 3;
             settings.visible_count_mobile = parseInt(visibleCountMobile) || 2;
@@ -8870,6 +8904,7 @@ function handleEditMainImageSlideModeChange(clickedType) {
     const visibleCountMobileContainer = document.getElementById('edit_main_widget_image_slide_visible_count_mobile_container');
     const gapContainer = document.getElementById('edit_main_widget_image_slide_gap_container');
     const backgroundContainer = document.getElementById('edit_main_widget_image_slide_background_container');
+    const speedContainer = document.getElementById('edit_main_widget_image_slide_speed_container');
     const directionGroup = document.getElementById('edit_main_image_slide_direction_group');
     const upRadio = document.getElementById('edit_main_image_slide_direction_up');
     const downRadio = document.getElementById('edit_main_image_slide_direction_down');
@@ -8885,12 +8920,20 @@ function handleEditMainImageSlideModeChange(clickedType) {
         if (singleCheckbox) singleCheckbox.checked = false;
     }
     
+    // 1단 슬라이드가 체크되어 있는 경우
+    if (singleCheckbox && singleCheckbox.checked) {
+        if (speedContainer) speedContainer.style.display = 'block';
+    } else {
+        if (speedContainer) speedContainer.style.display = 'none';
+    }
+    
     // 무한루프가 체크되어 있는 경우
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
         if (visibleCountMobileContainer) visibleCountMobileContainer.style.display = 'block';
         if (gapContainer) gapContainer.style.display = 'block';
         if (backgroundContainer) backgroundContainer.style.display = 'block';
+        if (speedContainer) speedContainer.style.display = 'none';
         
         // 무한루프 슬라이드일 때 상하 방향 비활성화
         if (upRadio) {

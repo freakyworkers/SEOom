@@ -617,6 +617,18 @@
                title="3초마다 이미지가 1개씩 슬라이드됩니다." 
                style="cursor: help; font-size: 0.9rem;"></i>
         </div>
+        <div class="mb-3" id="widget_image_slide_speed_container" style="display: block;">
+            <label for="widget_image_slide_speed" class="form-label">슬라이드 속도 (초)</label>
+            <input type="number" 
+                   class="form-control" 
+                   id="widget_image_slide_speed" 
+                   name="image_slide_speed" 
+                   value="3.0"
+                   min="0"
+                   step="0.1"
+                   placeholder="3.0">
+            <small class="text-muted">이미지가 슬라이드되는 간격을 초 단위로 입력하세요. (기본값: 3.0초)</small>
+        </div>
         <div class="form-check">
             <input class="form-check-input" 
                    type="checkbox" 

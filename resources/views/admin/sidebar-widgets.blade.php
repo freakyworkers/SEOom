@@ -646,6 +646,18 @@
                                                        title="3초마다 이미지가 1개씩 슬라이드됩니다." 
                                                        style="cursor: help; font-size: 0.9rem;"></i>
                                                 </div>
+                                                <div class="mb-3" id="widget_image_slide_speed_container" style="display: block;">
+                                                    <label for="widget_image_slide_speed" class="form-label">슬라이드 속도 (초)</label>
+                                                    <input type="number" 
+                                                           class="form-control" 
+                                                           id="widget_image_slide_speed" 
+                                                           name="image_slide_speed" 
+                                                           value="3.0"
+                                                           min="0"
+                                                           step="0.1"
+                                                           placeholder="3.0">
+                                                    <small class="text-muted">이미지가 슬라이드되는 간격을 초 단위로 입력하세요. (기본값: 3.0초)</small>
+                                                </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" 
                                                            type="checkbox" 
@@ -1373,6 +1385,18 @@
                                    data-bs-placement="top" 
                                    title="3초마다 이미지가 1개씩 슬라이드됩니다." 
                                    style="cursor: help; font-size: 0.9rem;"></i>
+                            </div>
+                            <div class="mb-3" id="edit_widget_image_slide_speed_container" style="display: block;">
+                                <label for="edit_widget_image_slide_speed" class="form-label">슬라이드 속도 (초)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="edit_widget_image_slide_speed" 
+                                       name="image_slide_speed" 
+                                       value="3.0"
+                                       min="0"
+                                       step="0.1"
+                                       placeholder="3.0">
+                                <small class="text-muted">이미지가 슬라이드되는 간격을 초 단위로 입력하세요. (기본값: 3.0초)</small>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" 
@@ -2873,6 +2897,7 @@ function handleImageSlideModeChange(clickedType) {
     const singleCheckbox = document.getElementById('widget_image_slide_single');
     const infiniteCheckbox = document.getElementById('widget_image_slide_infinite');
     const visibleCountContainer = document.getElementById('widget_image_slide_visible_count_container');
+    const speedContainer = document.getElementById('widget_image_slide_speed_container');
     const directionGroup = document.getElementById('image_slide_direction_group');
     const upRadio = document.getElementById('image_slide_direction_up');
     const downRadio = document.getElementById('image_slide_direction_down');
@@ -2888,11 +2913,19 @@ function handleImageSlideModeChange(clickedType) {
         if (singleCheckbox) singleCheckbox.checked = false;
     }
     
+    // 1단 슬라이드가 체크되어 있는 경우
+    if (singleCheckbox && singleCheckbox.checked) {
+        if (speedContainer) speedContainer.style.display = 'block';
+    } else {
+        if (speedContainer) speedContainer.style.display = 'none';
+    }
+    
     // 무한루프가 체크되어 있는 경우
     if (infiniteCheckbox && infiniteCheckbox.checked) {
         if (visibleCountContainer) visibleCountContainer.style.display = 'block';
         const visibleCountMobileContainer = document.getElementById('widget_image_slide_visible_count_mobile_container');
         if (visibleCountMobileContainer) visibleCountMobileContainer.style.display = 'block';
+        if (speedContainer) speedContainer.style.display = 'none';
         if (upRadio) {
             upRadio.disabled = true;
             if (upLabel) upLabel.classList.add('disabled');
@@ -3772,10 +3805,14 @@ function addWidget() {
         
         const singleSlide = document.getElementById('widget_image_slide_single')?.checked || false;
         const infiniteSlide = document.getElementById('widget_image_slide_infinite')?.checked || false;
+        const slideSpeed = document.getElementById('widget_image_slide_speed')?.value || '3.0';
         const visibleCount = document.getElementById('widget_image_slide_visible_count')?.value || '3';
         const imageGap = document.getElementById('widget_image_slide_gap')?.value || '0';
         
         settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
+        if (singleSlide) {
+            settings.slide_speed = parseFloat(slideSpeed) || 3.0;
+        }
         if (infiniteSlide) {
             settings.visible_count = parseInt(visibleCount) || 3;
             const visibleCountMobile = document.getElementById('widget_image_slide_visible_count_mobile')?.value || '2';
@@ -4862,6 +4899,7 @@ function saveWidgetSettings() {
                         
                         const singleSlide = document.getElementById('edit_widget_image_slide_single')?.checked || false;
                         const infiniteSlide = document.getElementById('edit_widget_image_slide_infinite')?.checked || false;
+                        const slideSpeed = document.getElementById('edit_widget_image_slide_speed')?.value || '3.0';
                         const visibleCount = document.getElementById('edit_widget_image_slide_visible_count')?.value || '3';
                         const visibleCountMobile = document.getElementById('edit_widget_image_slide_visible_count_mobile')?.value || '2';
                         const imageGap = document.getElementById('edit_widget_image_slide_gap')?.value || '0';
@@ -4869,6 +4907,9 @@ function saveWidgetSettings() {
                         const backgroundColor = document.getElementById('edit_widget_image_slide_background_color')?.value || '#ffffff';
                         
                         settings.slide_mode = infiniteSlide ? 'infinite' : 'single';
+                        if (singleSlide) {
+                            settings.slide_speed = parseFloat(slideSpeed) || 3.0;
+                        }
                         if (infiniteSlide) {
                             settings.visible_count = parseInt(visibleCount) || 3;
                             settings.visible_count_mobile = parseInt(visibleCountMobile) || 2;

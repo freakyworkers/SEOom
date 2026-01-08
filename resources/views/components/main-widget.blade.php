@@ -793,6 +793,7 @@
         $imageSlideSettings = $widgetSettings;
         $slideDirection = $imageSlideSettings['slide_direction'] ?? 'left';
         $slideMode = $imageSlideSettings['slide_mode'] ?? 'single';
+        $slideSpeed = $imageSlideSettings['slide_speed'] ?? 3.0;
         $visibleCount = $imageSlideSettings['visible_count'] ?? 3;
         $visibleCountMobile = $imageSlideSettings['visible_count_mobile'] ?? 2;
         $imageGap = $imageSlideSettings['image_gap'] ?? 0;
@@ -810,6 +811,7 @@
         <div class="mb-0 image-slide-wrapper {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" 
              data-direction="{{ $slideDirection }}" 
              data-mode="{{ $slideMode }}"
+             data-slide-speed="{{ $slideSpeed }}"
              data-visible-count="{{ $visibleCount }}"
              data-visible-count-mobile="{{ $visibleCountMobile }}"
              data-image-gap="{{ $imageGap }}"
@@ -1134,6 +1136,7 @@
             const direction = wrapper.dataset.direction;
             const mode = wrapper.dataset.mode || 'single';
             const visibleCount = parseInt(wrapper.dataset.visibleCount) || 3;
+            const slideSpeed = parseFloat(wrapper.dataset.slideSpeed) || 3.0;
             
             if (mode === 'single') {
                 // 1단 슬라이드 모드
@@ -1188,8 +1191,9 @@
                 // 초기 위치 설정
                 updatePosition();
                 
-                // 3초마다 슬라이드 전환
-                setInterval(nextSlide, 3000);
+                // 설정된 속도(초)마다 슬라이드 전환
+                const slideInterval = slideSpeed * 1000; // 초를 밀리초로 변환
+                setInterval(nextSlide, slideInterval);
             } else {
                 // 무한루프 슬라이드 모드
                 const items = wrapper.querySelectorAll('.image-slide-item');
