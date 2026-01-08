@@ -4108,19 +4108,6 @@ function editCustomPageWidget(widgetId) {
                     if (previewContainer) previewContainer.style.display = 'block';
                 }
                 
-                if (document.getElementById('edit_custom_page_widget_block_image_padding_left')) {
-                    document.getElementById('edit_custom_page_widget_block_image_padding_left').value = blockImagePaddingLeft;
-                }
-                if (document.getElementById('edit_custom_page_widget_block_image_padding_right')) {
-                    document.getElementById('edit_custom_page_widget_block_image_padding_right').value = blockImagePaddingRight;
-                }
-                if (document.getElementById('edit_custom_page_widget_block_image_padding_top')) {
-                    document.getElementById('edit_custom_page_widget_block_image_padding_top').value = blockImagePaddingTop;
-                }
-                if (document.getElementById('edit_custom_page_widget_block_image_padding_bottom')) {
-                    document.getElementById('edit_custom_page_widget_block_image_padding_bottom').value = blockImagePaddingBottom;
-                }
-                
                 if (document.getElementById('edit_custom_page_widget_block_title')) {
                     document.getElementById('edit_custom_page_widget_block_title').value = settings.block_title || '';
                 }
