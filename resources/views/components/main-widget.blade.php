@@ -170,36 +170,12 @@
         // 다크모드에서 텍스트 색상 조정
         $fontColor = darkModeTextColor($fontColor, $isDark);
         
-        // 스타일 생성
-        $blockStyle = "width: 100%; padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
+        // 외부 컨테이너 스타일 (패딩 없음, 그림자/애니메이션 등 유지)
+        $outerBlockStyle = "width: 100%;";
         
         // 가로 100%일 때 좌우 보더 레디우스 제거 (칸 고정너비일 때는 유지)
         if ($isActualFullWidth) {
-            $blockStyle .= " border-radius: 0 !important;";
-        }
-        
-        if ($backgroundType === 'color') {
-            $adjustedBgColor = darkModeBackground($backgroundColor, $isDark);
-            // 투명도 적용
-            if ($backgroundColorAlpha < 100) {
-                $adjustedBgColor = hexToRgbaButton($adjustedBgColor, $backgroundColorAlpha / 100);
-            }
-            $blockStyle .= " background-color: {$adjustedBgColor};";
-        } else if ($backgroundType === 'gradient') {
-            $gradientStart = $blockSettings['background_gradient_start'] ?? '#ffffff';
-            $gradientEnd = $blockSettings['background_gradient_end'] ?? '#000000';
-            // 다크모드에서 그라디언트 색상도 조정
-            $gradientStart = darkModeBackground($gradientStart, $isDark);
-            $gradientEnd = darkModeBackground($gradientEnd, $isDark);
-            $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
-            $blockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
-        } else if ($backgroundType === 'image' && $backgroundImageUrl) {
-            $bgSize = $backgroundImageFullWidth ? '100% auto' : 'cover';
-            $blockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: {$bgSize}; background-position: center top; background-repeat: no-repeat;";
-            // 이미지 투명도 적용
-            if ($backgroundImageAlpha < 100) {
-                $blockStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
-            }
+            $outerBlockStyle .= " border-radius: 0 !important;";
         }
         
         // 모든 위젯이 상하 영역을 꽉 차게 하기 위해 flex 적용
@@ -216,7 +192,37 @@
             $justifyContent = 'center';
         }
         // 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1과 height: 100% 적용
-        $blockStyle .= " flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column; justify-content: {$justifyContent}; margin-top: 0 !important; margin-bottom: 0 !important;";
+        $outerBlockStyle .= " flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column; justify-content: {$justifyContent}; margin-top: 0 !important; margin-bottom: 0 !important;";
+        
+        // 내용 컨테이너 스타일 (패딩 있음, 배경색/그라데이션/배경 이미지 적용)
+        $contentBlockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
+        
+        if ($backgroundType === 'color') {
+            $adjustedBgColor = darkModeBackground($backgroundColor, $isDark);
+            // 투명도 적용
+            if ($backgroundColorAlpha < 100) {
+                $adjustedBgColor = hexToRgbaButton($adjustedBgColor, $backgroundColorAlpha / 100);
+            }
+            $contentBlockStyle .= " background-color: {$adjustedBgColor};";
+        } else if ($backgroundType === 'gradient') {
+            $gradientStart = $blockSettings['background_gradient_start'] ?? '#ffffff';
+            $gradientEnd = $blockSettings['background_gradient_end'] ?? '#000000';
+            // 다크모드에서 그라디언트 색상도 조정
+            $gradientStart = darkModeBackground($gradientStart, $isDark);
+            $gradientEnd = darkModeBackground($gradientEnd, $isDark);
+            $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
+            $contentBlockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
+        } else if ($backgroundType === 'image' && $backgroundImageUrl) {
+            $bgSize = $backgroundImageFullWidth ? '100% auto' : 'cover';
+            $contentBlockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: {$bgSize}; background-position: center top; background-repeat: no-repeat;";
+            // 이미지 투명도 적용
+            if ($backgroundImageAlpha < 100) {
+                $contentBlockStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
+            }
+        }
+        
+        // 내용 컨테이너도 flex로 설정하여 내용 정렬
+        $contentBlockStyle .= " flex: 1; display: flex; flex-direction: column; justify-content: {$justifyContent};";
         
         // 위젯 자체의 하단 마진 제거
         $blockMarginBottom = 'mb-0';
@@ -224,122 +230,124 @@
         // 배경색이 없음(none)인 경우 그림자 제거
         $blockShadowClass = ($backgroundType === 'none') ? 'no-shadow-widget' : $shadowClass;
     @endphp
-    <div class="{{ $blockMarginBottom }} {{ $blockShadowClass }} {{ $animationClass }}" style="{{ $blockStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
-        @if($link && !$hasButtons)
-            <a href="{{ $link }}" 
-               style="color: {{ $fontColor }}; text-decoration: none; display: block;"
-               @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
-        @endif
+    <div class="{{ $blockMarginBottom }} {{ $blockShadowClass }} {{ $animationClass }}" style="{{ $outerBlockStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
         @if($enableImage && $blockImageUrl)
-            <div style="width: 100%; margin: 0; padding: 0; box-sizing: border-box; overflow: hidden;">
+            <div style="width: 100%; margin: 0; padding: 0; box-sizing: border-box; overflow: hidden; flex-shrink: 0;">
                 <img src="{{ $blockImageUrl }}" alt="블록 이미지" style="width: 100%; height: auto; display: block; margin: 0; padding: 0; box-sizing: border-box;">
             </div>
         @endif
-        @if($blockTitle)
-            <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }}; margin-top: {{ ($enableImage && $blockImageUrl) ? $titleContentGap : 0 }}px; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
-        @endif
-        @if($blockContent)
-            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
-        @endif
-        @if($link && !$hasButtons)
-            </a>
-        @endif
-        @if($hasButtons)
-            @php
-                $justifyContent = 'flex-start';
-                if ($textAlign === 'center') {
-                    $justifyContent = 'center';
-                } elseif ($textAlign === 'right') {
-                    $justifyContent = 'flex-end';
-                }
-            @endphp
-            <div style="margin-top: {{ $buttonTopMargin }}px; display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; justify-content: {{ $justifyContent }};">
-                @foreach($buttons as $button)
-                    @php
-                        $buttonText = $button['text'] ?? '';
-                        $buttonLink = $button['link'] ?? '';
-                        $buttonOpenNewTab = $button['open_new_tab'] ?? false;
-                        $buttonBackgroundColor = $button['background_color'] ?? '#007bff';
-                        $buttonTextColor = $button['text_color'] ?? '#ffffff';
-                        $buttonBorderColor = $button['border_color'] ?? $buttonBackgroundColor;
-                        $buttonBorderWidth = $button['border_width'] ?? '2';
-                        $buttonHoverBackgroundColor = $button['hover_background_color'] ?? '#0056b3';
-                        $buttonHoverTextColor = $button['hover_text_color'] ?? '#ffffff';
-                        $buttonHoverBorderColor = $button['hover_border_color'] ?? '#0056b3';
-                        
-                        // 버튼 배경 타입 및 그라데이션 설정
-                        $buttonBackgroundType = $button['background_type'] ?? 'color';
-                        $buttonGradientStart = $button['background_gradient_start'] ?? $buttonBackgroundColor;
-                        $buttonGradientEnd = $button['background_gradient_end'] ?? $buttonHoverBackgroundColor;
-                        $buttonGradientAngle = $button['background_gradient_angle'] ?? 90;
-                        $buttonOpacity = isset($button['opacity']) ? floatval($button['opacity']) : 1.0;
-                        
-                        // 버튼 배경 스타일 생성 (투명도는 배경색에만 적용)
-                        $buttonBackgroundStyle = '';
-                        if ($buttonBackgroundType === 'gradient') {
-                            // 그라데이션에 투명도 적용
-                            $gradientStartRgba = hexToRgbaButton($buttonGradientStart, $buttonOpacity);
-                            $gradientEndRgba = hexToRgbaButton($buttonGradientEnd, $buttonOpacity);
-                            $buttonBackgroundStyle = "background: linear-gradient({$buttonGradientAngle}deg, {$gradientStartRgba}, {$gradientEndRgba});";
-                        } else {
-                            // 단색 배경에 투명도 적용
-                            if ($buttonOpacity < 1.0) {
-                                $bgColorRgba = hexToRgbaButton($buttonBackgroundColor, $buttonOpacity);
-                                $buttonBackgroundStyle = "background-color: {$bgColorRgba};";
+        <div style="{{ $contentBlockStyle }}">
+            @if($link && !$hasButtons)
+                <a href="{{ $link }}" 
+                   style="color: {{ $fontColor }}; text-decoration: none; display: block;"
+                   @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
+            @endif
+            @if($blockTitle)
+                <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }}; margin-top: {{ ($enableImage && $blockImageUrl) ? $titleContentGap : 0 }}px; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
+            @endif
+            @if($blockContent)
+                <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
+            @endif
+            @if($link && !$hasButtons)
+                </a>
+            @endif
+            @if($hasButtons)
+                @php
+                    $justifyContent = 'flex-start';
+                    if ($textAlign === 'center') {
+                        $justifyContent = 'center';
+                    } elseif ($textAlign === 'right') {
+                        $justifyContent = 'flex-end';
+                    }
+                @endphp
+                <div style="margin-top: {{ $buttonTopMargin }}px; display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; justify-content: {{ $justifyContent }};">
+                    @foreach($buttons as $button)
+                        @php
+                            $buttonText = $button['text'] ?? '';
+                            $buttonLink = $button['link'] ?? '';
+                            $buttonOpenNewTab = $button['open_new_tab'] ?? false;
+                            $buttonBackgroundColor = $button['background_color'] ?? '#007bff';
+                            $buttonTextColor = $button['text_color'] ?? '#ffffff';
+                            $buttonBorderColor = $button['border_color'] ?? $buttonBackgroundColor;
+                            $buttonBorderWidth = $button['border_width'] ?? '2';
+                            $buttonHoverBackgroundColor = $button['hover_background_color'] ?? '#0056b3';
+                            $buttonHoverTextColor = $button['hover_text_color'] ?? '#ffffff';
+                            $buttonHoverBorderColor = $button['hover_border_color'] ?? '#0056b3';
+                            
+                            // 버튼 배경 타입 및 그라데이션 설정
+                            $buttonBackgroundType = $button['background_type'] ?? 'color';
+                            $buttonGradientStart = $button['background_gradient_start'] ?? $buttonBackgroundColor;
+                            $buttonGradientEnd = $button['background_gradient_end'] ?? $buttonHoverBackgroundColor;
+                            $buttonGradientAngle = $button['background_gradient_angle'] ?? 90;
+                            $buttonOpacity = isset($button['opacity']) ? floatval($button['opacity']) : 1.0;
+                            
+                            // 버튼 배경 스타일 생성 (투명도는 배경색에만 적용)
+                            $buttonBackgroundStyle = '';
+                            if ($buttonBackgroundType === 'gradient') {
+                                // 그라데이션에 투명도 적용
+                                $gradientStartRgba = hexToRgbaButton($buttonGradientStart, $buttonOpacity);
+                                $gradientEndRgba = hexToRgbaButton($buttonGradientEnd, $buttonOpacity);
+                                $buttonBackgroundStyle = "background: linear-gradient({$buttonGradientAngle}deg, {$gradientStartRgba}, {$gradientEndRgba});";
                             } else {
-                                $buttonBackgroundStyle = "background-color: {$buttonBackgroundColor};";
+                                // 단색 배경에 투명도 적용
+                                if ($buttonOpacity < 1.0) {
+                                    $bgColorRgba = hexToRgbaButton($buttonBackgroundColor, $buttonOpacity);
+                                    $buttonBackgroundStyle = "background-color: {$bgColorRgba};";
+                                } else {
+                                    $buttonBackgroundStyle = "background-color: {$buttonBackgroundColor};";
+                                }
                             }
-                        }
-                        
-                        // Hover 배경 스타일 생성
-                        $buttonHoverBackgroundType = $button['hover_background_type'] ?? 'color';
-                        $buttonHoverGradientStart = $button['hover_background_gradient_start'] ?? $buttonHoverBackgroundColor;
-                        $buttonHoverGradientEnd = $button['hover_background_gradient_end'] ?? $buttonHoverBackgroundColor;
-                        $buttonHoverGradientAngle = $button['hover_background_gradient_angle'] ?? 90;
-                        $buttonHoverOpacity = isset($button['hover_opacity']) ? floatval($button['hover_opacity']) : 1.0;
-                        
-                        // Hover 배경 스타일 (투명도는 배경색에만 적용)
-                        $buttonHoverBackgroundStyle = '';
-                        if ($buttonHoverBackgroundType === 'gradient') {
-                            $hoverGradientStartRgba = hexToRgbaButton($buttonHoverGradientStart, $buttonHoverOpacity);
-                            $hoverGradientEndRgba = hexToRgbaButton($buttonHoverGradientEnd, $buttonHoverOpacity);
-                            $buttonHoverBackgroundStyle = "background: linear-gradient({$buttonHoverGradientAngle}deg, {$hoverGradientStartRgba}, {$hoverGradientEndRgba});";
-                        } else {
-                            if ($buttonHoverOpacity < 1.0) {
-                                $hoverBgColorRgba = hexToRgbaButton($buttonHoverBackgroundColor, $buttonHoverOpacity);
-                                $buttonHoverBackgroundStyle = "background-color: {$hoverBgColorRgba};";
+                            
+                            // Hover 배경 스타일 생성
+                            $buttonHoverBackgroundType = $button['hover_background_type'] ?? 'color';
+                            $buttonHoverGradientStart = $button['hover_background_gradient_start'] ?? $buttonHoverBackgroundColor;
+                            $buttonHoverGradientEnd = $button['hover_background_gradient_end'] ?? $buttonHoverBackgroundColor;
+                            $buttonHoverGradientAngle = $button['hover_background_gradient_angle'] ?? 90;
+                            $buttonHoverOpacity = isset($button['hover_opacity']) ? floatval($button['hover_opacity']) : 1.0;
+                            
+                            // Hover 배경 스타일 (투명도는 배경색에만 적용)
+                            $buttonHoverBackgroundStyle = '';
+                            if ($buttonHoverBackgroundType === 'gradient') {
+                                $hoverGradientStartRgba = hexToRgbaButton($buttonHoverGradientStart, $buttonHoverOpacity);
+                                $hoverGradientEndRgba = hexToRgbaButton($buttonHoverGradientEnd, $buttonHoverOpacity);
+                                $buttonHoverBackgroundStyle = "background: linear-gradient({$buttonHoverGradientAngle}deg, {$hoverGradientStartRgba}, {$hoverGradientEndRgba});";
                             } else {
-                                $buttonHoverBackgroundStyle = "background-color: {$buttonHoverBackgroundColor};";
+                                if ($buttonHoverOpacity < 1.0) {
+                                    $hoverBgColorRgba = hexToRgbaButton($buttonHoverBackgroundColor, $buttonHoverOpacity);
+                                    $buttonHoverBackgroundStyle = "background-color: {$hoverBgColorRgba};";
+                                } else {
+                                    $buttonHoverBackgroundStyle = "background-color: {$buttonHoverBackgroundColor};";
+                                }
                             }
-                        }
-                        
-                        // 버튼 border-radius 설정 (원래 테마가 라운드인 경우 라운드 적용)
-                        $buttonBorderRadius = $isOriginalRoundTheme ? '0.5rem' : '4px';
-                    @endphp
-                    @if($buttonText)
-                        @if($buttonLink)
-                            <a href="{{ $buttonLink }}" 
-                               @if($buttonOpenNewTab) target="_blank" rel="noopener noreferrer" @endif
-                               style="text-decoration: none; display: inline-block;">
+                            
+                            // 버튼 border-radius 설정 (원래 테마가 라운드인 경우 라운드 적용)
+                            $buttonBorderRadius = $isOriginalRoundTheme ? '0.5rem' : '4px';
+                        @endphp
+                        @if($buttonText)
+                            @if($buttonLink)
+                                <a href="{{ $buttonLink }}" 
+                                   @if($buttonOpenNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                   style="text-decoration: none; display: inline-block;">
+                                    <button class="block-widget-button" 
+                                            style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
+                                            onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
+                                            onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
+                                        {{ $buttonText }}
+                                    </button>
+                                </a>
+                            @else
                                 <button class="block-widget-button" 
                                         style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
                                         onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
                                         onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
                                     {{ $buttonText }}
                                 </button>
-                            </a>
-                        @else
-                            <button class="block-widget-button" 
-                                    style="border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;"
-                                    onmouseover="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonHoverBorderColor }}; color: {{ $buttonHoverTextColor }}; {{ $buttonHoverBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';"
-                                    onmouseout="this.style.cssText = 'border: {{ $buttonBorderWidth }}px solid {{ $buttonBorderColor }}; color: {{ $buttonTextColor }}; {{ $buttonBackgroundStyle }} padding: 8px 20px; border-radius: {{ $buttonBorderRadius }}; font-weight: 500; transition: all 0.3s ease; cursor: pointer;';">
-                                {{ $buttonText }}
-                            </button>
+                            @endif
                         @endif
-                    @endif
-                @endforeach
-            </div>
-        @endif
+                    @endforeach
+                </div>
+            @endif
+        </div>
     </div>
 @elseif($widget->type === 'block_slide')
     @php
