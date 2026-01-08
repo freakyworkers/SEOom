@@ -2349,11 +2349,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 하단 메뉴 바 위치 계산 및 설정
     if (bottomMenu) {
-        const headerRect = mobileHeader.getBoundingClientRect();
-        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-        const headerBottom = headerRect.bottom - scrollY;
-        // 헤더 하단에서 약간의 여백을 두고 위치 (nav와 겹치지 않도록)
-        bottomMenu.style.top = (headerBottom + 1) + 'px';
+        const headerHeight = mobileHeader.offsetHeight;
+        // 헤더 높이를 그대로 사용 (헤더 하단 바로 아래 위치)
+        bottomMenu.style.top = headerHeight + 'px';
     }
     
         function handleMobileScroll() {
@@ -2393,11 +2391,9 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (isTransparent) {
             mobileHeader.classList.add('mobile-transparent-header-fixed');
             if (bottomMenu) {
-                const headerRect = mobileHeader.getBoundingClientRect();
-                const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-                const headerBottom = headerRect.bottom - scrollY;
-                // 헤더 하단에서 약간의 여백을 두고 위치 (nav와 겹치지 않도록)
-                bottomMenu.style.top = (headerBottom + 1) + 'px';
+                const headerHeight = mobileHeader.offsetHeight;
+                // 헤더 높이를 그대로 사용 (헤더 하단 바로 아래 위치)
+                bottomMenu.style.top = headerHeight + 'px';
             }
             handleMobileScroll();
         }
