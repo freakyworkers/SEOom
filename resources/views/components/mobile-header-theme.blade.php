@@ -2232,12 +2232,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-{{-- 모바일 투명헤더 스크롤 시 글래스모피즘 스타일 (고정헤더가 활성화된 경우에만) --}}
-@if($headerSticky && $mobileHeaderTransparent && $isHomePage)
+{{-- 모바일 투명헤더 스크롤 시 글래스모피즘 스타일 (JavaScript로 자동 감지) --}}
 <style>
 /* 모바일 투명헤더+고정헤더 기본 스타일 - position: fixed로 고정 */
 @media (max-width: 999px) {
-    .mobile-header-transparent-sticky {
+    .mobile-transparent-header-fixed {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
@@ -2248,61 +2247,83 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }
 
-/* 모바일 투명헤더+고정헤더 스크롤 시 글래스모피즘 배경 */
-.mobile-header-transparent-sticky.scrolled {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
-    backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
-    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
+/* 모바일 투명헤더 스크롤 시 글래스모피즘 배경 - 라이트 모드 */
+.mobile-transparent-header-fixed.scrolled {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08)) !important;
+    backdrop-filter: blur(12px) saturate(180%) brightness(1.02) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) brightness(1.02) !important;
     box-shadow: 
-        0 8px 32px 0 rgba(0, 0, 0, 0.15),
-        0 4px 16px 0 rgba(0, 0, 0, 0.08),
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
-        inset 0 -1px 1px 0 rgba(255, 255, 255, 0.1) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+        0 8px 32px 0 rgba(0, 0, 0, 0.12),
+        0 4px 16px 0 rgba(0, 0, 0, 0.06),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.25) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
-
-/* 다크 모드일 때 글래스모피즘 */
-@if($isDark)
-.mobile-header-transparent-sticky.scrolled {
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2)) !important;
-    backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
-    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-@endif
 
 /* 다크 모드 테마 클래스 대응 */
-[data-theme="dark"] .mobile-header-transparent-sticky.scrolled,
-.theme-dark .mobile-header-transparent-sticky.scrolled {
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2)) !important;
-    backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
-    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
+[data-theme="dark"] .mobile-transparent-header-fixed.scrolled,
+.theme-dark .mobile-transparent-header-fixed.scrolled,
+body.dark-mode .mobile-transparent-header-fixed.scrolled {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.25)) !important;
+    backdrop-filter: blur(12px) saturate(180%) brightness(0.85) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) brightness(0.85) !important;
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.25),
+        0 4px 16px 0 rgba(0, 0, 0, 0.15),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.08) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const mobileHeader = document.querySelector('.mobile-header-transparent-sticky');
-    if (mobileHeader) {
-        function handleMobileScroll() {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop > 10) {
-                // 스크롤 시 글래스모피즘 배경 적용
-                mobileHeader.classList.add('scrolled');
-            } else {
-                // 상단일 때 투명 배경
-                mobileHeader.classList.remove('scrolled');
-            }
+    // 모바일 화면에서만 실행 (1000px 미만)
+    if (window.innerWidth >= 1000) return;
+    
+    // 모바일 헤더 찾기
+    const mobileHeader = document.querySelector('nav.navbar.d-xl-none');
+    if (!mobileHeader) return;
+    
+    // 헤더의 배경색이 투명인지 확인
+    const headerStyle = mobileHeader.getAttribute('style') || '';
+    const computedStyle = window.getComputedStyle(mobileHeader);
+    const bgColor = computedStyle.backgroundColor;
+    
+    // 투명 배경 확인 (transparent 또는 rgba(0,0,0,0))
+    const isTransparent = headerStyle.includes('transparent') || 
+                          bgColor === 'transparent' || 
+                          bgColor === 'rgba(0, 0, 0, 0)';
+    
+    if (!isTransparent) return;
+    
+    // 투명 헤더인 경우 fixed 클래스 추가
+    mobileHeader.classList.add('mobile-transparent-header-fixed');
+    
+    function handleMobileScroll() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > 10) {
+            // 스크롤 시 글래스모피즘 배경 적용
+            mobileHeader.classList.add('scrolled');
+        } else {
+            // 상단일 때 투명 배경
+            mobileHeader.classList.remove('scrolled');
         }
-        
-        // 초기 스크롤 위치 확인
-        handleMobileScroll();
-        
-        // 스크롤 이벤트 리스너
-        window.addEventListener('scroll', handleMobileScroll, { passive: true });
     }
+    
+    // 초기 스크롤 위치 확인
+    handleMobileScroll();
+    
+    // 스크롤 이벤트 리스너
+    window.addEventListener('scroll', handleMobileScroll, { passive: true });
+    
+    // 리사이즈 이벤트 (PC로 전환 시 클래스 제거)
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 1000) {
+            mobileHeader.classList.remove('mobile-transparent-header-fixed', 'scrolled');
+        } else if (isTransparent) {
+            mobileHeader.classList.add('mobile-transparent-header-fixed');
+            handleMobileScroll();
+        }
+    });
 });
 </script>
-@endif
 
