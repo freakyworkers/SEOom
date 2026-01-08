@@ -2350,8 +2350,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 하단 메뉴 바 위치 계산 및 설정
     if (bottomMenu) {
         const headerHeight = mobileHeader.offsetHeight;
-        // 헤더 높이를 그대로 사용 (헤더 하단 바로 아래 위치)
-        bottomMenu.style.top = headerHeight + 'px';
+        const headerBorderBottom = parseFloat(window.getComputedStyle(mobileHeader).borderBottomWidth) || 0;
+        // 헤더 높이에서 border-bottom을 빼서 정확한 위치 계산 (67px 기준)
+        bottomMenu.style.top = (headerHeight - headerBorderBottom) + 'px';
     }
     
         function handleMobileScroll() {
@@ -2392,8 +2393,9 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileHeader.classList.add('mobile-transparent-header-fixed');
             if (bottomMenu) {
                 const headerHeight = mobileHeader.offsetHeight;
-                // 헤더 높이를 그대로 사용 (헤더 하단 바로 아래 위치)
-                bottomMenu.style.top = headerHeight + 'px';
+                const headerBorderBottom = parseFloat(window.getComputedStyle(mobileHeader).borderBottomWidth) || 0;
+                // 헤더 높이에서 border-bottom을 빼서 정확한 위치 계산 (67px 기준)
+                bottomMenu.style.top = (headerHeight - headerBorderBottom) + 'px';
             }
             handleMobileScroll();
         }
