@@ -617,16 +617,16 @@
         overflow-x: auto;
         overflow-y: hidden;
         white-space: nowrap;
-        width: 100vw;
+        width: 100vw !important;
         margin-left: calc(-50vw + 50%);
         margin-right: calc(-50vw + 50%);
-        padding-left: 0;
-        padding-right: 0;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         -ms-overflow-style: none;
-        display: flex;
-        align-items: center;
+        display: flex !important;
+        align-items: center !important;
         justify-content: flex-start;
     }
     
@@ -642,16 +642,17 @@
         bottom: 0;
         z-index: 1020;
         background-color: {{ $headerBgColor }};
-        padding-left: 0;
-        padding-right: 0;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
         min-height: auto;
         height: auto;
         max-height: 60px;
         overflow-y: hidden;
         overflow-x: auto;
-        display: flex;
-        align-items: center;
+        display: flex !important;
+        align-items: center !important;
         justify-content: flex-start;
+        width: 100vw !important;
     }
     @endif
     
@@ -1514,7 +1515,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100%;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -1667,7 +1668,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100%;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -1820,7 +1821,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100%;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -1978,7 +1979,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100%;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; @if($headerBorder) border-bottom: {{ $headerBorderWidth }}px solid {{ $headerBorderColor }}; @else border-bottom: 3px solid {{ $pointColor }}; @endif width: 100vw !important; display: flex !important; align-items: center !important; padding-left: 0 !important; padding-right: 0 !important;">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
