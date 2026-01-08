@@ -75,13 +75,13 @@
                     <label for="global_menu_font_color" class="form-label">전체 메뉴 폰트 컬러 (선택)</label>
                     <div class="d-flex align-items-center gap-2">
                         @php
-                            $settings = $site->getAllSettings();
-                            $themeDarkMode = $settings['theme_dark_mode'] ?? 'light';
+                            $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
                             $isDark = $themeDarkMode === 'dark';
-                            $defaultMenuFontColor = $settings['menu_font_color'] ?? ($isDark ? ($settings['color_dark_header_text'] ?? '#ffffff') : ($settings['color_light_header_text'] ?? '#000000'));
+                            $menuFontColor = $site->getSetting('menu_font_color', null);
+                            $defaultMenuFontColor = $menuFontColor ?? ($isDark ? ($site->getSetting('color_dark_header_text', '#ffffff')) : ($site->getSetting('color_light_header_text', '#000000')));
                         @endphp
                         <input type="color" class="form-control form-control-color" id="global_menu_font_color_picker" name="global_menu_font_color_picker" value="{{ $defaultMenuFontColor }}" style="width: 60px; height: 38px; cursor: pointer;">
-                        <input type="text" class="form-control" id="global_menu_font_color" name="global_menu_font_color" value="{{ $settings['menu_font_color'] ?? '' }}" placeholder="#000000" maxlength="20">
+                        <input type="text" class="form-control" id="global_menu_font_color" name="global_menu_font_color" value="{{ $menuFontColor ?? '' }}" placeholder="#000000" maxlength="20">
                         <button type="button" class="btn btn-outline-secondary" id="global_menu_font_color_reset" title="초기화">
                             <i class="bi bi-x-lg"></i>
                         </button>
