@@ -109,8 +109,13 @@
                         @endforeach
                     </select>
                     <input type="text" class="form-control link-target-input" id="new_link_target_external" placeholder="https://example.com" style="display: none;">
-                    <input type="text" class="form-control link-target-input" id="new_link_target_anchor" placeholder="section-about (앵커 ID)" style="display: none;">
-                    <small class="text-muted d-none" id="new_link_target_anchor_help">컨테이너에 설정한 앵커 ID를 입력하세요. 클릭 시 해당 컨테이너로 스크롤됩니다.</small>
+                    <select class="form-select link-target-select" id="new_link_target_anchor" style="display: none;">
+                        <option value="">앵커 선택</option>
+                        @foreach($containerAnchors ?? [] as $anchor)
+                            <option value="{{ $anchor['id'] }}">{{ $anchor['label'] }}</option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted d-none" id="new_link_target_anchor_help">컨테이너에 설정한 앵커 ID를 선택하세요. 클릭 시 해당 컨테이너로 스크롤됩니다.</small>
                     <div class="link-target-placeholder" style="display: none;"></div>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
@@ -746,7 +751,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                     @endforeach
                                 </select>
                                 <input type="text" class="form-control form-control-sm submenu-link-target-external" name="link_target_external" placeholder="https://example.com" style="display: none;">
-                                <input type="text" class="form-control form-control-sm submenu-link-target-anchor" name="link_target_anchor" placeholder="section-about (앵커 ID)" style="display: none;">
+                                <select class="form-select form-select-sm submenu-link-target-anchor" name="link_target_anchor" style="display: none;">
+                                    <option value="">앵커 선택</option>
+                                    @foreach($containerAnchors ?? [] as $anchor)
+                                        <option value="{{ $anchor['id'] }}">{{ $anchor['label'] }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-sm btn-primary">추가</button>
@@ -798,7 +808,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                         @endforeach
                                     </select>
                                     <input type="text" class="form-control submenu-link-target-external" name="link_target_external" placeholder="https://example.com" style="display: none;">
-                                    <input type="text" class="form-control submenu-link-target-anchor" name="link_target_anchor" placeholder="section-about (앵커 ID)" style="display: none;">
+                                    <select class="form-select submenu-link-target-anchor" name="link_target_anchor" style="display: none;">
+                                        <option value="">앵커 선택</option>
+                                        @foreach($containerAnchors ?? [] as $anchor)
+                                            <option value="{{ $anchor['id'] }}">{{ $anchor['label'] }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="col-md-2">
                                     <button type="submit" class="btn btn-sm btn-primary">추가</button>

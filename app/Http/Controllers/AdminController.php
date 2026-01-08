@@ -704,7 +704,26 @@ class AdminController extends Controller
             'event_application' => $site->hasFeature('event_application'),
         ];
 
-        return view('admin.menus', compact('site', 'menus', 'boards', 'customPages', 'mobileMenus', 'mobileMenuDesignType', 'siteFeatures'));
+        // 컨테이너 앵커 ID 목록 조회 (메인 위젯 컨테이너)
+        $containerAnchors = [];
+        if (\Illuminate\Support\Facades\Schema::hasTable('main_widget_containers') && 
+            \Illuminate\Support\Facades\Schema::hasColumn('main_widget_containers', 'anchor_id')) {
+            $mainContainers = MainWidgetContainer::where('site_id', $site->id)
+                ->whereNotNull('anchor_id')
+                ->where('anchor_id', '!=', '')
+                ->orderBy('order')
+                ->get(['id', 'anchor_id', 'order']);
+            
+            foreach ($mainContainers as $container) {
+                $containerAnchors[] = [
+                    'id' => $container->anchor_id,
+                    'label' => $container->anchor_id . ' (메인 컨테이너 #' . ($container->order + 1) . ')',
+                    'type' => 'main'
+                ];
+            }
+        }
+
+        return view('admin.menus', compact('site', 'menus', 'boards', 'customPages', 'mobileMenus', 'mobileMenuDesignType', 'siteFeatures', 'containerAnchors'));
     }
 
     /**
@@ -714,7 +733,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'link_type' => 'required|in:board,custom_page,external_link,attendance,point_exchange,event_application',
+            'link_type' => 'required|in:board,custom_page,external_link,anchor,attendance,point_exchange,event_application',
             'link_target' => 'nullable|string',
             'parent_id' => 'nullable|exists:menus,id',
         ]);
