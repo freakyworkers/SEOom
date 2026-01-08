@@ -4256,6 +4256,10 @@ async function addMainWidget() {
             const content = item.querySelector('.image-slide-content')?.value || '';
             const contentFontSize = item.querySelector('.image-slide-content-font-size')?.value || '16';
             const titleContentGap = item.querySelector('.image-slide-title-content-gap')?.value || '10';
+            const textPaddingLeft = item.querySelector('.image-slide-text-padding-left')?.value || '0';
+            const textPaddingRight = item.querySelector('.image-slide-text-padding-right')?.value || '0';
+            const textPaddingTop = item.querySelector('.image-slide-text-padding-top')?.value || '0';
+            const textPaddingBottom = item.querySelector('.image-slide-text-padding-bottom')?.value || '0';
             const alignH = item.querySelector('.image-slide-align-h:checked')?.value || 'left';
             const alignV = item.querySelector('.image-slide-align-v:checked')?.value || 'middle';
             const textColor = item.querySelector('.image-slide-text-color')?.value || '#ffffff';
@@ -4282,6 +4286,10 @@ async function addMainWidget() {
                 content: content,
                 content_font_size: parseInt(contentFontSize) || 16,
                 title_content_gap: parseInt(titleContentGap) || 10,
+                text_padding_left: parseInt(textPaddingLeft) || 0,
+                text_padding_right: parseInt(textPaddingRight) || 0,
+                text_padding_top: parseInt(textPaddingTop) || 0,
+                text_padding_bottom: parseInt(textPaddingBottom) || 0,
                 align_h: alignH,
                 align_v: alignV,
                 text_color: textColor,
@@ -6464,6 +6472,27 @@ function addImageSlideItem() {
                 <input type="number" class="form-control image-slide-title-content-gap" value="10" min="0" max="100">
             </div>
             <div class="mb-3">
+                <label class="form-label">패딩</label>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small">좌 (px)</label>
+                        <input type="number" class="form-control image-slide-text-padding-left" value="0" min="0" max="200">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">우 (px)</label>
+                        <input type="number" class="form-control image-slide-text-padding-right" value="0" min="0" max="200">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">상 (px)</label>
+                        <input type="number" class="form-control image-slide-text-padding-top" value="0" min="0" max="200">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">하 (px)</label>
+                        <input type="number" class="form-control image-slide-text-padding-bottom" value="10" min="0" max="200">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
                 <label class="form-label">수평 정렬</label>
                 <div class="btn-group w-100" role="group">
                     <input type="radio" class="btn-check image-slide-align-h" name="image_slide_${itemIndex}_align_h" id="image_slide_${itemIndex}_align_left" value="left" checked>
@@ -7409,6 +7438,10 @@ function saveMainWidgetSettings() {
             const content = item.querySelector('.edit-main-image-slide-content')?.value || '';
             const contentFontSize = item.querySelector('.edit-main-image-slide-content-font-size')?.value || '16';
             const titleContentGap = item.querySelector('.edit-main-image-slide-title-content-gap')?.value || '10';
+            const textPaddingLeft = item.querySelector('.edit-main-image-slide-text-padding-left')?.value || '0';
+            const textPaddingRight = item.querySelector('.edit-main-image-slide-text-padding-right')?.value || '0';
+            const textPaddingTop = item.querySelector('.edit-main-image-slide-text-padding-top')?.value || '0';
+            const textPaddingBottom = item.querySelector('.edit-main-image-slide-text-padding-bottom')?.value || '0';
             const alignH = item.querySelector('.edit-main-image-slide-align-h:checked')?.value || 'left';
             const alignV = item.querySelector('.edit-main-image-slide-align-v:checked')?.value || 'middle';
             const textColor = item.querySelector('.edit-main-image-slide-text-color')?.value || '#ffffff';
@@ -7436,6 +7469,10 @@ function saveMainWidgetSettings() {
                 content: content,
                 content_font_size: parseInt(contentFontSize) || 16,
                 title_content_gap: parseInt(titleContentGap) || 10,
+                text_padding_left: parseInt(textPaddingLeft) || 0,
+                text_padding_right: parseInt(textPaddingRight) || 0,
+                text_padding_top: parseInt(textPaddingTop) || 0,
+                text_padding_bottom: parseInt(textPaddingBottom) || 0,
                 align_h: alignH,
                 align_v: alignV,
                 text_color: textColor,
@@ -8489,6 +8526,27 @@ function addEditMainImageSlideItem(imageData = null) {
             <div class="mb-3">
                 <label class="form-label">제목과 내용 사이 여백 (px)</label>
                 <input type="number" class="form-control edit-main-image-slide-title-content-gap" value="${imageData ? (imageData.title_content_gap || 10) : 10}" min="0" max="100">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">패딩</label>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small">좌 (px)</label>
+                        <input type="number" class="form-control edit-main-image-slide-text-padding-left" value="${imageData ? (imageData.text_padding_left || 0) : 0}" min="0" max="200">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">우 (px)</label>
+                        <input type="number" class="form-control edit-main-image-slide-text-padding-right" value="${imageData ? (imageData.text_padding_right || 0) : 0}" min="0" max="200">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">상 (px)</label>
+                        <input type="number" class="form-control edit-main-image-slide-text-padding-top" value="${imageData ? (imageData.text_padding_top || 0) : 0}" min="0" max="200">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">하 (px)</label>
+                        <input type="number" class="form-control edit-main-image-slide-text-padding-bottom" value="${imageData ? (imageData.text_padding_bottom || 10) : 10}" min="0" max="200">
+                    </div>
+                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">수평 정렬</label>

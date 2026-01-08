@@ -815,6 +815,10 @@
                             $content = $image['content'] ?? '';
                             $contentFontSize = $image['content_font_size'] ?? 16;
                             $titleContentGap = $image['title_content_gap'] ?? 10;
+                            $textPaddingLeft = $image['text_padding_left'] ?? 0;
+                            $textPaddingRight = $image['text_padding_right'] ?? 0;
+                            $textPaddingTop = $image['text_padding_top'] ?? 0;
+                            $textPaddingBottom = $image['text_padding_bottom'] ?? 0;
                             $alignH = $image['align_h'] ?? 'left';
                             $alignV = $image['align_v'] ?? 'middle';
                             $textColor = $image['text_color'] ?? '#ffffff';
@@ -860,7 +864,7 @@
                             <div class="image-slide-item" style="width: 100%; flex-shrink: 0; position: relative; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 100%;' : '' }}">
                                 <img src="{{ $imageUrl }}" alt="이미지 {{ $index + 1 }}" style="width: 100%; height: auto; display: block;">
                                 @if($textOverlay && ($title || $content))
-                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
+                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
                                         <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
                                             @if($title)
                                                 <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
@@ -881,7 +885,7 @@
                                         </div>
                                     </div>
                                 @elseif($hasButton && $buttonText)
-                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
+                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
                                         <div style="pointer-events: auto;">
                                             <a href="{{ $buttonLink }}" 
                                                @if($buttonNewTab) target="_blank" rel="noopener noreferrer" @endif
@@ -914,6 +918,10 @@
                             $content = $image['content'] ?? '';
                             $contentFontSize = $image['content_font_size'] ?? 16;
                             $titleContentGap = $image['title_content_gap'] ?? 10;
+                            $textPaddingLeft = $image['text_padding_left'] ?? 0;
+                            $textPaddingRight = $image['text_padding_right'] ?? 0;
+                            $textPaddingTop = $image['text_padding_top'] ?? 0;
+                            $textPaddingBottom = $image['text_padding_bottom'] ?? 0;
                             $alignH = $image['align_h'] ?? 'left';
                             $alignV = $image['align_v'] ?? 'middle';
                             $textColor = $image['text_color'] ?? '#ffffff';
@@ -958,7 +966,7 @@
                             <div class="image-slide-item image-slide-item-clone" style="width: 100%; flex-shrink: 0; position: relative; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 100%;' : '' }}">
                                 <img src="{{ $imageUrl }}" alt="이미지 {{ $index + 1 }}" style="width: 100%; height: auto; display: block;">
                                 @if($textOverlay && ($title || $content))
-                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
+                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
                                         <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
                                             @if($title)
                                                 <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
@@ -979,7 +987,7 @@
                                         </div>
                                     </div>
                                 @elseif($hasButton && $buttonText)
-                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
+                                    <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
                                         <div style="pointer-events: auto;">
                                             <a href="{{ $buttonLink }}" 
                                                @if($buttonNewTab) target="_blank" rel="noopener noreferrer" @endif
@@ -1058,7 +1066,7 @@
                                 <div class="image-slide-item" style="width: calc((100% - {{ $imageGap * ($visibleCount - 1) }}px) / {{ $visibleCount }}); flex-shrink: 0; position: relative;{{ $imageGap > 0 ? ' margin-right: ' . $imageGap . 'px;' : '' }}">
                                     <img src="{{ $imageUrl }}" alt="이미지 {{ $index + 1 }}" style="width: 100%; height: auto; display: block;">
                                     @if($textOverlay && ($title || $content))
-                                        <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
+                                        <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none; z-index: 2;">
                                             <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
                                                 @if($title)
                                                     <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
