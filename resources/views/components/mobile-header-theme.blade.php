@@ -80,9 +80,9 @@
     } else {
         $headerStyle .= " background-color: {$headerBgColor};";
     }
-    // 하단 메뉴가 있는 테마(5,6,7,8)는 헤더 하단에 포인트 컬러 밑줄 적용하고 그림자 제거
+    // 하단 메뉴가 있는 테마(5,6,7,8)는 헤더 하단에 옅은 회색 구분선만 적용하고 그림자 제거
     if (in_array($theme, ['theme5', 'theme6', 'theme7', 'theme8'])) {
-        $headerStyle .= " border-bottom: 3px solid {$pointColor};";
+        $headerStyle .= " border-bottom: 1px solid #dee2e6;";
         // 그림자는 하단 메뉴에 적용되므로 헤더에는 그림자 제거
     } else {
         if ($headerShadow) {
@@ -1498,7 +1498,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: none;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: 3px solid {{ $pointColor }};">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -1651,7 +1651,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: none;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: 3px solid {{ $pointColor }};">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -1804,7 +1804,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: none;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: 3px solid {{ $pointColor }};">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -1962,7 +1962,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: none;">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: 3px solid {{ $pointColor }};">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
