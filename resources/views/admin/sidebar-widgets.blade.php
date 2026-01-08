@@ -1139,6 +1139,22 @@
                                     <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeEditBlockImage()">삭제</button>
                                 </div>
                             </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-auto">
+                                    <label for="edit_widget_block_background_image_alpha" class="form-label mb-0">투명도 (%)</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="edit_widget_block_background_image_alpha" 
+                                           name="block_background_image_alpha"
+                                           min="0" 
+                                           max="100" 
+                                           value="100"
+                                           style="width: 80px;">
+                                </div>
+                            </div>
+                            <small class="text-muted">0~100 사이의 값을 입력하세요. 0은 완전 투명, 100은 불투명입니다.</small>
                             <div class="form-check mt-2">
                                 <input class="form-check-input" 
                                        type="checkbox" 
@@ -1148,6 +1164,7 @@
                                     이미지 가로 100% (비율 유지)
                                 </label>
                             </div>
+                            <small class="text-muted">활성화 시 이미지가 블록 너비에 맞게 확장되고 높이는 비율에 맞게 자동 조절됩니다.</small>
                         </div>
                         <div class="mb-3">
                             <label for="edit_widget_block_font_color" class="form-label">폰트 컬러</label>
@@ -4016,6 +4033,9 @@ function editWidget(widgetId) {
                                 document.getElementById('edit_widget_block_image_preview_img').src = settings.background_image_url;
                                 document.getElementById('edit_widget_block_image_preview').style.display = 'block';
                                 document.getElementById('edit_widget_block_background_image').value = settings.background_image_url;
+                            }
+                            if (document.getElementById('edit_widget_block_background_image_alpha')) {
+                                document.getElementById('edit_widget_block_background_image_alpha').value = settings.background_image_alpha !== undefined && settings.background_image_alpha !== null ? settings.background_image_alpha : 100;
                             }
                             if (document.getElementById('edit_widget_block_background_image_full_width')) {
                                 document.getElementById('edit_widget_block_background_image_full_width').checked = settings.background_image_full_width || false;

@@ -7143,10 +7143,12 @@ function saveMainWidgetSettings() {
                 }
                 const imageUrlInput = item.querySelector(`#edit_main_block_slide_${itemIndex}_background_image_url`);
                 const imageAlphaInput = item.querySelector('.edit-main-block-slide-background-image-alpha');
+                const imageFullWidthInput = item.querySelector('.edit-main-block-slide-background-image-full-width');
                 if (imageUrlInput && imageUrlInput.value) {
                     blockItem.background_image_url = imageUrlInput.value;
                 }
                 blockItem.background_image_alpha = imageAlphaInput && imageAlphaInput.value !== '' ? parseInt(imageAlphaInput.value) : 100;
+                blockItem.background_image_full_width = imageFullWidthInput ? imageFullWidthInput.checked : false;
             }
             
             blockItems.push(blockItem);
@@ -7762,19 +7764,32 @@ function addEditMainBlockSlideItem(blockData = null) {
                     <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeEditMainBlockSlideImage(${itemIndex})">삭제</button>
                 </div>
             </div>
-            <label class="form-label">투명도</label>
-            <input type="range" 
-                   class="form-range edit-main-block-slide-background-image-alpha" 
-                   name="edit_main_block_slide[${itemIndex}][background_image_alpha]"
-                   min="0" 
-                   max="100" 
-                   value="${blockData && blockData.background_image_alpha !== undefined && blockData.background_image_alpha !== null ? blockData.background_image_alpha : 100}"
-                   onchange="document.getElementById('edit_main_block_slide_${itemIndex}_background_image_alpha_value').textContent = this.value + '%'">
-            <div class="d-flex justify-content-between">
-                <small class="text-muted" style="font-size: 0.7rem;">0%</small>
-                <small class="text-muted" id="edit_main_block_slide_${itemIndex}_background_image_alpha_value" style="font-size: 0.7rem;">${blockData && blockData.background_image_alpha !== undefined && blockData.background_image_alpha !== null ? blockData.background_image_alpha : 100}%</small>
-                <small class="text-muted" style="font-size: 0.7rem;">100%</small>
+            <div class="row align-items-center mt-2">
+                <div class="col-auto">
+                    <label class="form-label mb-0">투명도 (%)</label>
+                </div>
+                <div class="col-auto">
+                    <input type="number" 
+                           class="form-control form-control-sm edit-main-block-slide-background-image-alpha" 
+                           name="edit_main_block_slide[${itemIndex}][background_image_alpha]"
+                           min="0" 
+                           max="100" 
+                           value="${blockData && blockData.background_image_alpha !== undefined && blockData.background_image_alpha !== null ? blockData.background_image_alpha : 100}"
+                           style="width: 80px;">
+                </div>
             </div>
+            <small class="text-muted">0~100 사이의 값을 입력하세요. 0은 완전 투명, 100은 불투명입니다.</small>
+            <div class="form-check mt-2">
+                <input class="form-check-input edit-main-block-slide-background-image-full-width" 
+                       type="checkbox" 
+                       id="edit_main_block_slide_${itemIndex}_background_image_full_width" 
+                       name="edit_main_block_slide[${itemIndex}][background_image_full_width]"
+                       ${blockData && blockData.background_image_full_width ? 'checked' : ''}>
+                <label class="form-check-label" for="edit_main_block_slide_${itemIndex}_background_image_full_width">
+                    이미지 가로 100% (비율 유지)
+                </label>
+            </div>
+            <small class="text-muted">활성화 시 이미지가 블록 너비에 맞게 확장되고 높이는 비율에 맞게 자동 조절됩니다.</small>
         </div>
         <div class="mb-3">
             <label class="form-label">상단 여백 (px)</label>
