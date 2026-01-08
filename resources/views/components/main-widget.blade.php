@@ -173,9 +173,23 @@
         // 외부 컨테이너 스타일 (패딩 없음, 그림자/애니메이션 등 유지)
         $outerBlockStyle = "width: 100%;";
         
+        // 라운드 테마 적용
+        $imageContainerStyle = "width: 100%; margin: 0; padding: 0; box-sizing: border-box; overflow: hidden; flex-shrink: 0;";
+        $imageStyle = "width: 100%; height: auto; display: block; margin: 0; padding: 0; box-sizing: border-box;";
+        
+        if ($isRoundTheme && !$isActualFullWidth) {
+            // 라운드 테마일 때 이미지 상단 라운드 적용
+            if ($enableImage && $blockImageUrl) {
+                $imageContainerStyle .= " border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem;";
+                $imageStyle .= " border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem;";
+            }
+        }
+        
         // 가로 100%일 때 좌우 보더 레디우스 제거 (칸 고정너비일 때는 유지)
         if ($isActualFullWidth) {
             $outerBlockStyle .= " border-radius: 0 !important;";
+            $imageContainerStyle .= " border-radius: 0 !important;";
+            $imageStyle .= " border-radius: 0 !important;";
         }
         
         // 모든 위젯이 상하 영역을 꽉 차게 하기 위해 flex 적용
@@ -196,6 +210,17 @@
         
         // 내용 컨테이너 스타일 (패딩 있음, 배경색/그라데이션/배경 이미지 적용)
         $contentBlockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
+        
+        // 라운드 테마 적용 (이미지가 있으면 하단만, 없으면 전체)
+        if ($isRoundTheme && !$isActualFullWidth) {
+            if ($enableImage && $blockImageUrl) {
+                // 이미지가 있으면 하단만 라운드
+                $contentBlockStyle .= " border-bottom-left-radius: 0.5rem; border-bottom-right-radius: 0.5rem;";
+            } else {
+                // 이미지가 없으면 전체 라운드
+                $contentBlockStyle .= " border-radius: 0.5rem;";
+            }
+        }
         
         if ($backgroundType === 'color') {
             $adjustedBgColor = darkModeBackground($backgroundColor, $isDark);
@@ -229,11 +254,14 @@
         
         // 배경색이 없음(none)인 경우 그림자 제거
         $blockShadowClass = ($backgroundType === 'none') ? 'no-shadow-widget' : $shadowClass;
+        
+        // 외부 컨테이너에 라운드 테마 클래스 적용
+        $outerBlockClass = $isRoundTheme && !$isActualFullWidth ? '' : 'rounded-0';
     @endphp
-    <div class="{{ $blockMarginBottom }} {{ $blockShadowClass }} {{ $animationClass }}" style="{{ $outerBlockStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
+    <div class="{{ $blockMarginBottom }} {{ $blockShadowClass }} {{ $animationClass }} {{ $outerBlockClass }}" style="{{ $outerBlockStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
         @if($enableImage && $blockImageUrl)
-            <div style="width: 100%; margin: 0; padding: 0; box-sizing: border-box; overflow: hidden; flex-shrink: 0;">
-                <img src="{{ $blockImageUrl }}" alt="블록 이미지" style="width: 100%; height: auto; display: block; margin: 0; padding: 0; box-sizing: border-box;">
+            <div style="{{ $imageContainerStyle }}">
+                <img src="{{ $blockImageUrl }}" alt="블록 이미지" style="{{ $imageStyle }}">
             </div>
         @endif
         <div style="{{ $contentBlockStyle }}">
