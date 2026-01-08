@@ -1826,11 +1826,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const fontColor = globalMenuFontColor.value.trim();
             
             fetch('{{ route("admin.settings.update", ["site" => $site->slug]) }}', {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-HTTP-Method-Override': 'PUT'
                 },
                 body: JSON.stringify({
                     menu_font_color: fontColor || null
