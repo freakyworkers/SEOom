@@ -211,27 +211,6 @@
             <img id="widget_block_image_preview" src="" alt="미리보기" style="max-width: 100%; height: auto; border-radius: 4px;">
             <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeBlockImage('widget_block')">이미지 삭제</button>
         </div>
-        <div class="mt-3">
-            <label class="form-label">이미지 패딩</label>
-            <div class="row g-2">
-                <div class="col-6">
-                    <label class="form-label small">좌 (px)</label>
-                    <input type="number" class="form-control" id="widget_block_image_padding_left" value="0" min="0" max="200">
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">우 (px)</label>
-                    <input type="number" class="form-control" id="widget_block_image_padding_right" value="0" min="0" max="200">
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">상 (px)</label>
-                    <input type="number" class="form-control" id="widget_block_image_padding_top" value="0" min="0" max="200">
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">하 (px)</label>
-                    <input type="number" class="form-control" id="widget_block_image_padding_bottom" value="0" min="0" max="200">
-                </div>
-            </div>
-        </div>
     </div>
     <div class="mb-3">
         <label for="widget_block_title" class="form-label">제목</label>

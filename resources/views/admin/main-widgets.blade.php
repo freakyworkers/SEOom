@@ -1145,27 +1145,6 @@
                                 <img id="edit_main_widget_block_image_preview" src="" alt="미리보기" style="max-width: 100%; height: auto; border-radius: 4px;">
                                 <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeBlockImage('edit_main_widget_block')">이미지 삭제</button>
                             </div>
-                            <div class="mt-3">
-                                <label class="form-label">이미지 패딩</label>
-                                <div class="row g-2">
-                                    <div class="col-6">
-                                        <label class="form-label small">좌 (px)</label>
-                                        <input type="number" class="form-control" id="edit_main_widget_block_image_padding_left" value="0" min="0" max="200">
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-label small">우 (px)</label>
-                                        <input type="number" class="form-control" id="edit_main_widget_block_image_padding_right" value="0" min="0" max="200">
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-label small">상 (px)</label>
-                                        <input type="number" class="form-control" id="edit_main_widget_block_image_padding_top" value="0" min="0" max="200">
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-label small">하 (px)</label>
-                                        <input type="number" class="form-control" id="edit_main_widget_block_image_padding_bottom" value="0" min="0" max="200">
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="edit_main_widget_block_title" class="form-label">제목</label>
@@ -4008,11 +3987,6 @@ async function addMainWidget() {
         const enableImage = document.getElementById('widget_block_enable_image')?.checked || false;
         const blockImageFile = document.getElementById('widget_block_image')?.files[0];
         const blockImageUrl = document.getElementById('widget_block_image_url')?.value || '';
-        const blockImagePaddingLeft = document.getElementById('widget_block_image_padding_left')?.value || '0';
-        const blockImagePaddingRight = document.getElementById('widget_block_image_padding_right')?.value || '0';
-        const blockImagePaddingTop = document.getElementById('widget_block_image_padding_top')?.value || '0';
-        const blockImagePaddingBottom = document.getElementById('widget_block_image_padding_bottom')?.value || '0';
-        
         if (enableImage) {
             settings.enable_image = true;
             if (blockImageFile) {
@@ -4021,10 +3995,6 @@ async function addMainWidget() {
             if (blockImageUrl) {
                 settings.block_image_url = blockImageUrl;
             }
-            settings.block_image_padding_left = parseInt(blockImagePaddingLeft) || 0;
-            settings.block_image_padding_right = parseInt(blockImagePaddingRight) || 0;
-            settings.block_image_padding_top = parseInt(blockImagePaddingTop) || 0;
-            settings.block_image_padding_bottom = parseInt(blockImagePaddingBottom) || 0;
         }
         // 버튼 데이터 수집
         const buttons = [];
@@ -7266,11 +7236,6 @@ function saveMainWidgetSettings() {
         const enableImage = document.getElementById('edit_main_widget_block_enable_image')?.checked || false;
         const blockImageFile = document.getElementById('edit_main_widget_block_image')?.files[0];
         const blockImageUrl = document.getElementById('edit_main_widget_block_image_url')?.value || '';
-        const blockImagePaddingLeft = document.getElementById('edit_main_widget_block_image_padding_left')?.value || '0';
-        const blockImagePaddingRight = document.getElementById('edit_main_widget_block_image_padding_right')?.value || '0';
-        const blockImagePaddingTop = document.getElementById('edit_main_widget_block_image_padding_top')?.value || '0';
-        const blockImagePaddingBottom = document.getElementById('edit_main_widget_block_image_padding_bottom')?.value || '0';
-        
         if (enableImage) {
             settings.enable_image = true;
             if (blockImageFile) {
@@ -7279,10 +7244,6 @@ function saveMainWidgetSettings() {
             if (blockImageUrl) {
                 settings.block_image_url = blockImageUrl;
             }
-            settings.block_image_padding_left = parseInt(blockImagePaddingLeft) || 0;
-            settings.block_image_padding_right = parseInt(blockImagePaddingRight) || 0;
-            settings.block_image_padding_top = parseInt(blockImagePaddingTop) || 0;
-            settings.block_image_padding_bottom = parseInt(blockImagePaddingBottom) || 0;
         }
         // 버튼 데이터 수집
         const buttons = [];

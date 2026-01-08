@@ -235,12 +235,12 @@
                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
         @endif
         @if($enableImage && $blockImageUrl)
-            <div style="width: 100%; margin: 0; padding: {{ $blockImagePaddingTop }}px {{ $blockImagePaddingRight }}px {{ $blockImagePaddingBottom }}px {{ $blockImagePaddingLeft }}px; box-sizing: border-box; overflow: hidden;">
+            <div style="width: 100%; margin: 0; padding: 0; box-sizing: border-box; overflow: hidden;">
                 <img src="{{ $blockImageUrl }}" alt="블록 이미지" style="width: 100%; height: auto; display: block; margin: 0; padding: 0; box-sizing: border-box;">
             </div>
         @endif
         @if($blockTitle)
-            <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }}; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
+            <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }}; margin-top: {{ ($enableImage && $blockImageUrl) ? $titleContentGap : 0 }}px; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
         @endif
         @if($blockContent)
             <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
