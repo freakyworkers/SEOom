@@ -71,11 +71,11 @@
     <div class="card-body">
         <form id="newMenuForm">
             <div class="row g-3">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label for="new_menu_name" class="form-label">이름</label>
                     <input type="text" class="form-control" id="new_menu_name" placeholder="예) 뉴스" required>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label for="new_link_type" class="form-label">연결 타입</label>
                     <select class="form-select" id="new_link_type" required>
                         <option value="">선택하세요</option>
@@ -94,7 +94,7 @@
                         @endif
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="new_link_target" class="form-label">연결 대상</label>
                     <select class="form-select link-target-select" id="new_link_target_board" style="display: none;">
                         <option value="">게시판 선택</option>
@@ -117,6 +117,17 @@
                     </select>
                     <small class="text-muted d-none" id="new_link_target_anchor_help">컨테이너에 설정한 앵커 ID를 선택하세요. 클릭 시 해당 컨테이너로 스크롤됩니다.</small>
                     <div class="link-target-placeholder" style="display: none;"></div>
+                </div>
+                <div class="col-md-3">
+                    <label for="new_font_color" class="form-label">폰트 컬러 <small class="text-muted">(선택)</small></label>
+                    <div class="input-group">
+                        <input type="color" class="form-control form-control-color" id="new_font_color_picker" value="#000000" title="색상 선택">
+                        <input type="text" class="form-control" id="new_font_color" placeholder="기본값 사용" style="max-width: 120px;">
+                        <button type="button" class="btn btn-outline-secondary" id="new_font_color_reset" title="기본값으로 초기화">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    <small class="text-muted">비워두면 테마 기본 색상 사용</small>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">등록</button>
@@ -495,6 +506,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const newLinkTargetAnchor = document.getElementById('new_link_target_anchor');
     const newLinkTargetAnchorHelp = document.getElementById('new_link_target_anchor_help');
 
+    // 폰트 컬러 피커 연동
+    const newFontColorPicker = document.getElementById('new_font_color_picker');
+    const newFontColor = document.getElementById('new_font_color');
+    const newFontColorReset = document.getElementById('new_font_color_reset');
+
+    if (newFontColorPicker && newFontColor) {
+        newFontColorPicker.addEventListener('input', function() {
+            newFontColor.value = this.value;
+        });
+        
+        newFontColor.addEventListener('input', function() {
+            if (this.value && /^#[0-9A-Fa-f]{6}$/.test(this.value)) {
+                newFontColorPicker.value = this.value;
+            }
+        });
+        
+        newFontColorReset.addEventListener('click', function() {
+            newFontColor.value = '';
+            newFontColorPicker.value = '#000000';
+        });
+    }
+
     newLinkType.addEventListener('change', function() {
         // 모든 연결 대상 필드 숨김
         newLinkTargetBoard.style.display = 'none';
@@ -564,6 +597,8 @@ document.addEventListener('DOMContentLoaded', function() {
             linkTarget = document.getElementById('new_link_target_anchor').value;
         }
 
+        const fontColor = document.getElementById('new_font_color').value || null;
+
         fetch('{{ route("admin.menus.store", ["site" => $site->slug]) }}', {
             method: 'POST',
             headers: {
@@ -574,7 +609,8 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify({
                 name: name,
                 link_type: linkType,
-                link_target: linkTarget
+                link_target: linkTarget,
+                font_color: fontColor
             })
         })
         .then(response => response.json())

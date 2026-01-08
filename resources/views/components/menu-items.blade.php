@@ -126,10 +126,12 @@
                 $isActive = true;
             }
         }
+        // 메뉴별 폰트 컬러 (설정되어 있으면 사용, 없으면 기본 헤더 텍스트 컬러)
+        $menuFontColor = $menu->font_color ?? $headerTextColor;
     @endphp
     @if($menu->children && $menu->children->count() > 0)
         <li class="nav-item dropdown" style="margin-right: {{ $menuFontPadding }};">
-            <a class="nav-link dropdown-toggle {{ $isActive ? 'active' : '' }}" href="#" id="menu{{ $menu->id }}Dropdown" role="button" data-bs-toggle="dropdown" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ $isActive ? $pointColor : $headerTextColor }}; border-bottom: none !important; text-decoration: none !important;">
+            <a class="nav-link dropdown-toggle {{ $isActive ? 'active' : '' }}" href="#" id="menu{{ $menu->id }}Dropdown" role="button" data-bs-toggle="dropdown" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ $isActive ? $pointColor : $menuFontColor }}; border-bottom: none !important; text-decoration: none !important;">
                 {{ $menu->name }}
             </a>
             <ul class="dropdown-menu" aria-labelledby="menu{{ $menu->id }}Dropdown">
@@ -143,7 +145,7 @@
                     }
                 @endphp
                 <li>
-                    <a class="dropdown-item {{ $parentIsActive ? 'active' : '' }}" href="{{ $menu->url }}">
+                    <a class="dropdown-item {{ $parentIsActive ? 'active' : '' }}" href="{{ $menu->url }}" @if($menu->font_color) style="color: {{ $menu->font_color }};" @endif>
                         {{ $menu->name }}
                     </a>
                 </li>
@@ -158,9 +160,10 @@
                                 $childIsActive = true;
                             }
                         }
+                        $childFontColor = $child->font_color ?? null;
                     @endphp
                     <li>
-                        <a class="dropdown-item {{ $childIsActive ? 'active' : '' }}" href="{{ $childUrl }}">
+                        <a class="dropdown-item {{ $childIsActive ? 'active' : '' }}" href="{{ $childUrl }}" @if($childFontColor) style="color: {{ $childFontColor }};" @endif>
                             {{ $child->name }}
                         </a>
                     </li>
@@ -169,7 +172,7 @@
         </li>
     @else
         <li class="nav-item" style="margin-right: {{ $menuFontPadding }};">
-            <a class="nav-link {{ $isActive ? 'active' : '' }}" href="{{ $menu->url }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ $isActive ? $pointColor : $headerTextColor }};">
+            <a class="nav-link {{ $isActive ? 'active' : '' }}" href="{{ $menu->url }}" data-menu-hover="true" style="font-size: {{ $menuFontSize }}; font-weight: {{ $menuFontWeight }}; padding: {{ $menuFontPadding }}; color: {{ $isActive ? $pointColor : $menuFontColor }};">
                 {{ $menu->name }}
             </a>
         </li>

@@ -16,6 +16,7 @@ class Menu extends Model
         'link_target',
         'parent_id',
         'order',
+        'font_color',
     ];
 
     /**

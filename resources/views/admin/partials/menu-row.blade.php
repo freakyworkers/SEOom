@@ -25,6 +25,7 @@
     }
     
     $rowClass = $level > 0 ? 'submenu-row' : 'menu-row';
+    $fontColorDisplay = $menu->font_color ?? '';
 @endphp
 
 <tr class="{{ $rowClass }} menu-row" data-menu-id="{{ $menu->id }}" data-parent-id="{{ $menu->parent_id }}">
@@ -32,7 +33,12 @@
         @if($level > 0)
             <span class="text-muted">└─</span>
         @endif
-        {{ $menu->name }}
+        @if($menu->font_color)
+            <span style="color: {{ $menu->font_color }}; font-weight: 500;">{{ $menu->name }}</span>
+            <span class="badge bg-light text-dark ms-1" style="font-size: 10px;">{{ $menu->font_color }}</span>
+        @else
+            {{ $menu->name }}
+        @endif
     </td>
     <td>{{ $linkTypeLabels[$menu->link_type] ?? $menu->link_type }}</td>
     <td>{{ $linkTargetDisplay }}</td>

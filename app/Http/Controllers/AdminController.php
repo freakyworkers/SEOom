@@ -670,6 +670,14 @@ class AdminController extends Controller
                 $table->foreign('parent_id')->references('id')->on('menus')->onDelete('cascade');
             });
         }
+
+        // font_color 컬럼이 없으면 추가
+        if (\Illuminate\Support\Facades\Schema::hasTable('menus') && 
+            !\Illuminate\Support\Facades\Schema::hasColumn('menus', 'font_color')) {
+            \Illuminate\Support\Facades\Schema::table('menus', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->string('font_color')->nullable()->after('order');
+            });
+        }
         
         $menus = Menu::where('site_id', $site->id)
             ->whereNull('parent_id')
@@ -736,6 +744,7 @@ class AdminController extends Controller
             'link_type' => 'required|in:board,custom_page,external_link,anchor,attendance,point_exchange,event_application',
             'link_target' => 'nullable|string',
             'parent_id' => 'nullable|exists:menus,id',
+            'font_color' => 'nullable|string|max:20',
         ]);
 
         // 게시판 타입인 경우 link_target이 게시판 ID인지 확인
@@ -824,6 +833,7 @@ class AdminController extends Controller
             'link_target' => $request->link_target,
             'parent_id' => $request->parent_id,
             'order' => $maxOrder + 1,
+            'font_color' => $request->font_color,
         ]);
 
         return response()->json([
