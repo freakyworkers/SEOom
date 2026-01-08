@@ -123,13 +123,17 @@
                 <div class="col-md-3">
                     <label for="new_font_color" class="form-label">폰트 컬러 <small class="text-muted">(선택)</small></label>
                     <div class="input-group">
-                        <input type="color" class="form-control form-control-color" id="new_font_color_picker" value="#000000" title="색상 선택">
-                        <input type="text" class="form-control" id="new_font_color" placeholder="기본값 사용" style="max-width: 120px;">
+                        <input type="color" class="form-control form-control-color" id="new_font_color_picker" value="{{ $globalMenuFontColor ?? '#000000' }}" title="색상 선택">
+                        <input type="text" class="form-control" id="new_font_color" placeholder="{{ $globalMenuFontColor ?? '기본값' }}" style="max-width: 120px;">
                         <button type="button" class="btn btn-outline-secondary" id="new_font_color_reset" title="기본값으로 초기화">
                             <i class="bi bi-x-lg"></i>
                         </button>
                     </div>
-                    <small class="text-muted">비워두면 테마 기본 색상 사용</small>
+                    @if($globalMenuFontColor)
+                        <small class="text-info">전체설정: {{ $globalMenuFontColor }} (비워두면 자동 적용)</small>
+                    @else
+                        <small class="text-muted">비워두면 테마 기본 색상 사용</small>
+                    @endif
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">등록</button>

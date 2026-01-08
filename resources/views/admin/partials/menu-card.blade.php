@@ -23,6 +23,9 @@
     } else {
         $linkTargetDisplay = '-';
     }
+    
+    // 전체 메뉴 폰트 컬러 또는 개별 메뉴 폰트 컬러
+    $displayFontColor = $menu->font_color ?? ($globalMenuFontColor ?? null);
 @endphp
 
 <div class="card mb-3 menu-card" data-menu-id="{{ $menu->id }}" data-parent-id="{{ $menu->parent_id }}" style="{{ $level > 0 ? 'margin-left: 1.5rem; border-left: 3px solid #0d6efd;' : '' }}">
@@ -33,11 +36,25 @@
                     @if($level > 0)
                         <span class="text-muted">└─</span>
                     @endif
-                    {{ $menu->name }}
+                    @if($displayFontColor)
+                        <span style="color: {{ $displayFontColor }}; font-weight: 500;">{{ $menu->name }}</span>
+                        <span class="badge bg-light text-dark ms-1" style="font-size: 10px;">{{ $displayFontColor }}</span>
+                    @else
+                        {{ $menu->name }}
+                    @endif
                 </h6>
                 <div class="small text-muted">
                     <div><strong>연결 타입:</strong> {{ $linkTypeLabels[$menu->link_type] ?? $menu->link_type }}</div>
                     <div><strong>연결 대상:</strong> {{ $linkTargetDisplay }}</div>
+                    @if($displayFontColor)
+                        <div><strong>폰트 컬러:</strong> 
+                            <span style="background-color: {{ $displayFontColor }}; width: 12px; height: 12px; display: inline-block; border: 1px solid #dee2e6; border-radius: 2px; vertical-align: middle;"></span>
+                            {{ $displayFontColor }}
+                            @if(!$menu->font_color && $globalMenuFontColor)
+                                <span class="text-info">(전체설정)</span>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
