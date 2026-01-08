@@ -1957,7 +1957,7 @@ function updateContainerFixedWidthColumns(containerId, fixedWidthColumns) {
         formData.append('fixed_width_columns', fixedWidthColumns ? '1' : '0');
         formData.append('_method', 'PUT');
 
-        fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "page" => $page->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "page" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -2194,7 +2194,7 @@ function updateContainerMarginAndPadding(containerId) {
         
         formData.append('_method', 'PUT');
 
-        fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "page" => $page->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
+        fetch('{{ route("admin.custom-pages.containers.update", ["site" => $site->slug, "page" => $customPage->id, "container" => ":containerId"]) }}'.replace(':containerId', containerId), {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -3506,9 +3506,43 @@ async function addCustomPageWidget() {
             const link = item.querySelector('.image-slide-link')?.value || '';
             const openNewTab = item.querySelector('.image-slide-open-new-tab')?.checked || false;
             
+            // 텍스트 오버레이 관련 데이터
+            const textOverlay = item.querySelector('.image-slide-text-overlay')?.checked || false;
+            const title = item.querySelector('.image-slide-title')?.value || '';
+            const titleFontSize = item.querySelector('.image-slide-title-font-size')?.value || '24';
+            const content = item.querySelector('.image-slide-content')?.value || '';
+            const contentFontSize = item.querySelector('.image-slide-content-font-size')?.value || '16';
+            const titleContentGap = item.querySelector('.image-slide-title-content-gap')?.value || '10';
+            const alignH = item.querySelector('.image-slide-align-h:checked')?.value || 'left';
+            const alignV = item.querySelector('.image-slide-align-v:checked')?.value || 'middle';
+            const textColor = item.querySelector('.image-slide-text-color')?.value || '#ffffff';
+            
+            // 버튼 관련 데이터
+            const hasButton = item.querySelector('.image-slide-has-button')?.checked || false;
+            const buttonText = item.querySelector('.image-slide-button-text')?.value || '';
+            const buttonLink = item.querySelector('.image-slide-button-link')?.value || '';
+            const buttonNewTab = item.querySelector('.image-slide-button-new-tab')?.checked || false;
+            const buttonColor = item.querySelector('.image-slide-button-color')?.value || '#0d6efd';
+            const buttonTextColor = item.querySelector('.image-slide-button-text-color')?.value || '#ffffff';
+            
             const imageItem = {
                 link: link,
-                open_new_tab: openNewTab
+                open_new_tab: openNewTab,
+                text_overlay: textOverlay,
+                title: title,
+                title_font_size: parseInt(titleFontSize) || 24,
+                content: content,
+                content_font_size: parseInt(contentFontSize) || 16,
+                title_content_gap: parseInt(titleContentGap) || 10,
+                align_h: alignH,
+                align_v: alignV,
+                text_color: textColor,
+                has_button: hasButton,
+                button_text: buttonText,
+                button_link: buttonLink,
+                button_new_tab: buttonNewTab,
+                button_color: buttonColor,
+                button_text_color: buttonTextColor
             };
             
             if (imageFile) {
@@ -5158,10 +5192,94 @@ function addImageSlideItem() {
                 </div>
             </div>
         </div>
-        <div class="mb-3"><label class="form-label">링크 입력 <small class="text-muted">(선택사항)</small></label>
+        <div class="mb-3">
+            <div class="form-check">
+                <input class="form-check-input image-slide-text-overlay" type="checkbox" id="image_slide_${itemIndex}_text_overlay" onchange="toggleImageSlideTextOverlay(${itemIndex})">
+                <label class="form-check-label" for="image_slide_${itemIndex}_text_overlay">이미지 위 텍스트 활성화</label>
+            </div>
+        </div>
+        <div id="image_slide_${itemIndex}_text_overlay_container" style="display: none;">
+            <div class="mb-3">
+                <label class="form-label">제목</label>
+                <input type="text" class="form-control image-slide-title" placeholder="제목을 입력하세요">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">제목 폰트 크기 (px)</label>
+                <input type="number" class="form-control image-slide-title-font-size" value="24" min="10" max="100">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">내용</label>
+                <textarea class="form-control image-slide-content" rows="3" placeholder="내용을 입력하세요"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">내용 폰트 크기 (px)</label>
+                <input type="number" class="form-control image-slide-content-font-size" value="16" min="10" max="100">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">제목과 내용 사이 여백 (px)</label>
+                <input type="number" class="form-control image-slide-title-content-gap" value="10" min="0" max="100">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">수평 정렬</label>
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check image-slide-align-h" name="image_slide_${itemIndex}_align_h" id="image_slide_${itemIndex}_align_left" value="left" checked>
+                    <label class="btn btn-outline-primary" for="image_slide_${itemIndex}_align_left"><i class="bi bi-text-left"></i> 좌측</label>
+                    <input type="radio" class="btn-check image-slide-align-h" name="image_slide_${itemIndex}_align_h" id="image_slide_${itemIndex}_align_center" value="center">
+                    <label class="btn btn-outline-primary" for="image_slide_${itemIndex}_align_center"><i class="bi bi-text-center"></i> 중앙</label>
+                    <input type="radio" class="btn-check image-slide-align-h" name="image_slide_${itemIndex}_align_h" id="image_slide_${itemIndex}_align_right" value="right">
+                    <label class="btn btn-outline-primary" for="image_slide_${itemIndex}_align_right"><i class="bi bi-text-right"></i> 우측</label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">수직 정렬</label>
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check image-slide-align-v" name="image_slide_${itemIndex}_align_v" id="image_slide_${itemIndex}_align_top" value="top">
+                    <label class="btn btn-outline-primary" for="image_slide_${itemIndex}_align_top"><i class="bi bi-align-top"></i> 상단</label>
+                    <input type="radio" class="btn-check image-slide-align-v" name="image_slide_${itemIndex}_align_v" id="image_slide_${itemIndex}_align_middle" value="middle" checked>
+                    <label class="btn btn-outline-primary" for="image_slide_${itemIndex}_align_middle"><i class="bi bi-align-middle"></i> 중앙</label>
+                    <input type="radio" class="btn-check image-slide-align-v" name="image_slide_${itemIndex}_align_v" id="image_slide_${itemIndex}_align_bottom" value="bottom">
+                    <label class="btn btn-outline-primary" for="image_slide_${itemIndex}_align_bottom"><i class="bi bi-align-bottom"></i> 하단</label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">텍스트 색상</label>
+                <input type="color" class="form-control form-control-color image-slide-text-color" value="#ffffff" title="텍스트 색상 선택">
+            </div>
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input image-slide-has-button" type="checkbox" id="image_slide_${itemIndex}_has_button" onchange="toggleImageSlideButton(${itemIndex})">
+                    <label class="form-check-label" for="image_slide_${itemIndex}_has_button">버튼 추가</label>
+                </div>
+            </div>
+            <div id="image_slide_${itemIndex}_button_container" style="display: none;">
+                <div class="mb-3">
+                    <label class="form-label">버튼 텍스트</label>
+                    <input type="text" class="form-control image-slide-button-text" placeholder="자세히 보기">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 링크</label>
+                    <input type="url" class="form-control image-slide-button-link" placeholder="https://example.com">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input image-slide-button-new-tab" type="checkbox" id="image_slide_${itemIndex}_button_new_tab">
+                        <label class="form-check-label" for="image_slide_${itemIndex}_button_new_tab">새창에서 열기</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 색상</label>
+                    <input type="color" class="form-control form-control-color image-slide-button-color" value="#0d6efd" title="버튼 색상 선택">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">버튼 텍스트 색상</label>
+                    <input type="color" class="form-control form-control-color image-slide-button-text-color" value="#ffffff" title="버튼 텍스트 색상 선택">
+                </div>
+            </div>
+        </div>
+        <div class="mb-3" id="image_slide_${itemIndex}_link_container"><label class="form-label">링크 입력 <small class="text-muted">(선택사항)</small></label>
             <input type="url" class="form-control image-slide-link" name="image_slide[${itemIndex}][link]" placeholder="https://example.com">
         </div>
-        <div class="mb-3">
+        <div class="mb-3" id="image_slide_${itemIndex}_new_tab_container">
             <div class="form-check">
                 <input class="form-check-input image-slide-open-new-tab" type="checkbox" name="image_slide[${itemIndex}][open_new_tab]" id="image_slide_${itemIndex}_open_new_tab">
                 <label class="form-check-label" for="image_slide_${itemIndex}_open_new_tab">새창에서 열기</label>
@@ -5174,6 +5292,43 @@ function addImageSlideItem() {
     item.appendChild(body);
     container.appendChild(item);
     body.style.display = 'block';
+}
+
+function toggleImageSlideTextOverlay(itemIndex) {
+    const checkbox = document.getElementById(`image_slide_${itemIndex}_text_overlay`);
+    const container = document.getElementById(`image_slide_${itemIndex}_text_overlay_container`);
+    const linkContainer = document.getElementById(`image_slide_${itemIndex}_link_container`);
+    const newTabContainer = document.getElementById(`image_slide_${itemIndex}_new_tab_container`);
+    const hasButtonCheckbox = document.getElementById(`image_slide_${itemIndex}_has_button`);
+    
+    if (checkbox && container) {
+        container.style.display = checkbox.checked ? 'block' : 'none';
+        if (checkbox.checked && hasButtonCheckbox && hasButtonCheckbox.checked) {
+            if (linkContainer) linkContainer.style.display = 'none';
+            if (newTabContainer) newTabContainer.style.display = 'none';
+        } else {
+            if (linkContainer) linkContainer.style.display = 'block';
+            if (newTabContainer) newTabContainer.style.display = 'block';
+        }
+    }
+}
+
+function toggleImageSlideButton(itemIndex) {
+    const checkbox = document.getElementById(`image_slide_${itemIndex}_has_button`);
+    const container = document.getElementById(`image_slide_${itemIndex}_button_container`);
+    const linkContainer = document.getElementById(`image_slide_${itemIndex}_link_container`);
+    const newTabContainer = document.getElementById(`image_slide_${itemIndex}_new_tab_container`);
+    
+    if (checkbox && container) {
+        container.style.display = checkbox.checked ? 'block' : 'none';
+        if (checkbox.checked) {
+            if (linkContainer) linkContainer.style.display = 'none';
+            if (newTabContainer) newTabContainer.style.display = 'none';
+        } else {
+            if (linkContainer) linkContainer.style.display = 'block';
+            if (newTabContainer) newTabContainer.style.display = 'block';
+        }
+    }
 }
 
 function toggleImageSlideItem(itemIndex) {

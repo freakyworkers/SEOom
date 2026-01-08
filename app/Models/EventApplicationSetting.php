@@ -66,3 +66,4 @@ class EventApplicationSetting extends Model
 
 
 
+

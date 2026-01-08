@@ -242,3 +242,4 @@ php artisan migrate
 
 
 
+

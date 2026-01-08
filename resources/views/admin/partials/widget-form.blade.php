@@ -564,7 +564,7 @@
                    id="widget_image_slide_single" 
                    name="image_slide_single"
                    checked
-                   onchange="handleImageSlideModeChange()">
+                   onchange="handleImageSlideModeChange('single')">
             <label class="form-check-label" for="widget_image_slide_single">
                 1단 슬라이드
             </label>
@@ -579,7 +579,7 @@
                    type="checkbox" 
                    id="widget_image_slide_infinite" 
                    name="image_slide_infinite"
-                   onchange="handleImageSlideModeChange()">
+                   onchange="handleImageSlideModeChange('infinite')">
             <label class="form-check-label" for="widget_image_slide_infinite">
                 무한루프 슬라이드
             </label>
