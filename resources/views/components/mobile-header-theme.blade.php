@@ -638,8 +638,9 @@
     /* 하단 메뉴가 있는 테마(5,6,7,8)의 하단 메뉴 스타일 */
     .mobile-header-bottom-menu {
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        position: sticky;
-        bottom: 0;
+        position: fixed;
+        top: 67px !important;
+        bottom: auto;
         z-index: 1020;
         background-color: {{ $headerBgColor }};
         padding-left: 0 !important;
