@@ -1348,7 +1348,7 @@
 
 @elseif($theme === 'theme5')
     {{-- 테마 5: 로고 중앙 메뉴 아이콘 우측 + 하단 메뉴 --}}
-    <nav class="navbar navbar-expand-lg d-xl-none" style="{{ $headerStyle }} position: relative;">
+    <nav class="navbar navbar-expand-lg d-xl-none {{ $headerClass }}" style="{{ $headerStyle }} position: relative;" data-bg-color="{{ $headerBgColor }}">
         <div class="container-fluid" style="padding-left: 0.9375rem; padding-right: 0.9375rem;">
             <a class="navbar-brand" href="{{ route('home', ['site' => $site->slug ?? 'default']) }}" style="color: {{ $headerTextColor }} !important; position: absolute; left: 50%; transform: translateX(-50%);">
                 @if($logoType === 'text' || empty($siteLogo))
@@ -1494,14 +1494,14 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none" style="background-color: {{ $headerBgColor }}; border-top: none; border-bottom: 3px solid {{ $pointColor }};">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: 3px solid {{ $pointColor }};">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
     </div>
 @elseif($theme === 'theme6')
     {{-- 테마 6: 로고 중앙 메뉴 아이콘 좌측 + 하단 메뉴 --}}
-    <nav class="navbar navbar-expand-lg d-xl-none" style="{{ $headerStyle }} position: relative;">
+    <nav class="navbar navbar-expand-lg d-xl-none {{ $headerClass }}" style="{{ $headerStyle }} position: relative;" data-bg-color="{{ $headerBgColor }}">
         <div class="container-fluid" style="padding-left: 0.9375rem; padding-right: 0.9375rem;">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavbar6" aria-controls="mobileNavbar6" aria-expanded="false" aria-label="Toggle navigation" style="@if($mobileMenuIconBorder)border: 1px solid {{ $headerTextColor }};@else border: none;@endif">
                 <i class="bi {{ $mobileMenuIcon }}" style="color: {{ $headerTextColor }}; font-size: 1.5rem;"></i>
@@ -1647,7 +1647,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none" style="background-color: {{ $headerBgColor }}; border-top: none; border-bottom: 3px solid {{ $pointColor }};">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: 3px solid {{ $pointColor }};">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -1800,7 +1800,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none" style="background-color: {{ $headerBgColor }}; border-top: none; border-bottom: 3px solid {{ $pointColor }};">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: 3px solid {{ $pointColor }};">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -1958,7 +1958,7 @@
             @endif
         </div>
     </nav>
-    <div class="mobile-header-bottom-menu d-xl-none" style="background-color: {{ $headerBgColor }}; border-top: none; border-bottom: 3px solid {{ $pointColor }};">
+    <div class="mobile-header-bottom-menu d-xl-none @if($mobileHeaderTransparent && $isHomePage) mobile-bottom-menu-transparent @endif" style="@if($mobileHeaderTransparent && $isHomePage) background-color: transparent; @else background-color: {{ $headerBgColor }}; @endif border-top: none; border-bottom: 3px solid {{ $pointColor }};">
         @foreach($menus as $menu)
             <a href="{{ $menu->url }}" class="mobile-header-bottom-menu-item">{{ $menu->name }}</a>
         @endforeach
@@ -2245,6 +2245,23 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 100% !important;
         transition: background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease !important;
     }
+    
+    /* 하단 메뉴 바 - 투명헤더일 때 fixed로 고정 */
+    .mobile-bottom-menu-transparent {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1039 !important;
+        width: 100% !important;
+        transition: transform 0.3s ease, opacity 0.3s ease !important;
+    }
+    
+    /* 스크롤 시 하단 메뉴 바 숨김 */
+    .mobile-bottom-menu-transparent.scrolled-hide {
+        transform: translateY(-100%) !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
 }
 
 /* 모바일 투명헤더 스크롤 시 글래스모피즘 배경 - 라이트 모드 */
@@ -2282,6 +2299,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileHeader = document.querySelector('nav.navbar.d-xl-none');
     if (!mobileHeader) return;
     
+    // 하단 메뉴 바 찾기 (theme5,6,7,8)
+    const bottomMenu = document.querySelector('.mobile-header-bottom-menu.mobile-bottom-menu-transparent');
+    
     // 헤더의 배경색이 투명인지 확인
     const headerStyle = mobileHeader.getAttribute('style') || '';
     const computedStyle = window.getComputedStyle(mobileHeader);
@@ -2297,15 +2317,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // 투명 헤더인 경우 fixed 클래스 추가
     mobileHeader.classList.add('mobile-transparent-header-fixed');
     
+    // 하단 메뉴 바 위치 계산 및 설정
+    if (bottomMenu) {
+        const headerHeight = mobileHeader.offsetHeight;
+        bottomMenu.style.top = headerHeight + 'px';
+    }
+    
     function handleMobileScroll() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         
         if (scrollTop > 10) {
             // 스크롤 시 글래스모피즘 배경 적용
             mobileHeader.classList.add('scrolled');
+            // 하단 메뉴 바 숨김
+            if (bottomMenu) {
+                bottomMenu.classList.add('scrolled-hide');
+            }
         } else {
             // 상단일 때 투명 배경
             mobileHeader.classList.remove('scrolled');
+            // 하단 메뉴 바 표시
+            if (bottomMenu) {
+                bottomMenu.classList.remove('scrolled-hide');
+            }
         }
     }
     
@@ -2319,8 +2353,16 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', function() {
         if (window.innerWidth >= 1000) {
             mobileHeader.classList.remove('mobile-transparent-header-fixed', 'scrolled');
+            if (bottomMenu) {
+                bottomMenu.classList.remove('scrolled-hide');
+                bottomMenu.style.top = '';
+            }
         } else if (isTransparent) {
             mobileHeader.classList.add('mobile-transparent-header-fixed');
+            if (bottomMenu) {
+                const headerHeight = mobileHeader.offsetHeight;
+                bottomMenu.style.top = headerHeight + 'px';
+            }
             handleMobileScroll();
         }
     });
