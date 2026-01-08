@@ -43,6 +43,15 @@
     <td>{{ $linkTypeLabels[$menu->link_type] ?? $menu->link_type }}</td>
     <td>{{ $linkTargetDisplay }}</td>
     <td>
+        <div class="d-flex align-items-center gap-1 justify-content-center">
+            <input type="color" class="form-control form-control-color menu-font-color-picker" data-menu-id="{{ $menu->id }}" value="{{ $menu->font_color ?? '#000000' }}" style="width: 40px; height: 32px; cursor: pointer;">
+            <input type="text" class="form-control form-control-sm menu-font-color-input" data-menu-id="{{ $menu->id }}" value="{{ $menu->font_color ?? '' }}" placeholder="#000000" maxlength="20" style="width: 80px;">
+            <button type="button" class="btn btn-sm btn-outline-secondary menu-font-color-reset" data-menu-id="{{ $menu->id }}" title="초기화">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </td>
+    <td>
         <div class="order-buttons">
             <button type="button" class="btn btn-sm btn-outline-secondary order-up-btn order-btn" title="위로">
                 <i class="bi bi-arrow-up"></i>

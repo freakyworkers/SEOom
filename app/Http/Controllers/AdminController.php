@@ -844,6 +844,38 @@ class AdminController extends Controller
     }
 
     /**
+     * Update a menu item.
+     */
+    public function updateMenu(Site $site, Request $request)
+    {
+        $request->validate([
+            'menu_id' => 'required|exists:menus,id',
+            'font_color' => 'nullable|string|max:20',
+        ]);
+
+        $menu = Menu::where('site_id', $site->id)
+            ->where('id', $request->menu_id)
+            ->first();
+
+        if (!$menu) {
+            return response()->json([
+                'success' => false,
+                'message' => '메뉴를 찾을 수 없습니다.',
+            ], 404);
+        }
+
+        $menu->update([
+            'font_color' => $request->font_color ?: null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => '메뉴가 업데이트되었습니다.',
+            'menu' => $menu,
+        ]);
+    }
+
+    /**
      * Update menu order.
      */
     public function updateMenuOrder(Site $site, Request $request)

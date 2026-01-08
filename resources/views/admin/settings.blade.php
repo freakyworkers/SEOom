@@ -826,7 +826,13 @@
                     <div class="col-md-6">
                         <label for="menu_font_color" class="form-label">전체 메뉴 폰트 컬러 (선택)</label>
                         <div class="d-flex align-items-center gap-2">
-                            <input type="color" class="form-control form-control-color theme-preview-select" id="menu_font_color_picker" name="menu_font_color_picker" value="{{ $settings['menu_font_color'] ?? $headerTextColor }}" data-type="header" style="width: 60px; height: 38px; cursor: pointer;">
+                            @php
+                                $defaultMenuFontColor = $settings['menu_font_color'] ?? ($settings['color_light_header_text'] ?? '#000000');
+                                if (($settings['theme_dark_mode'] ?? 'light') === 'dark') {
+                                    $defaultMenuFontColor = $settings['menu_font_color'] ?? ($settings['color_dark_header_text'] ?? '#ffffff');
+                                }
+                            @endphp
+                            <input type="color" class="form-control form-control-color theme-preview-select" id="menu_font_color_picker" name="menu_font_color_picker" value="{{ $defaultMenuFontColor }}" data-type="header" style="width: 60px; height: 38px; cursor: pointer;">
                             <input type="text" class="form-control theme-preview-select" id="menu_font_color" name="menu_font_color" value="{{ $settings['menu_font_color'] ?? '' }}" placeholder="#000000" data-type="header" maxlength="20">
                             <button type="button" class="btn btn-outline-secondary" id="menu_font_color_reset" title="초기화">
                                 <i class="bi bi-x-lg"></i>
@@ -3051,7 +3057,14 @@ $(document).ready(function() {
         if (menuFontColorReset) {
             menuFontColorReset.addEventListener('click', function() {
                 menuFontColor.value = '';
-                menuFontColorPicker.value = '{{ $headerTextColor }}';
+                // 헤더 텍스트 컬러 가져오기
+                const themeDarkModeEl = document.getElementById('theme_dark_mode');
+                const isDark = themeDarkModeEl && themeDarkModeEl.value === 'dark';
+                const headerTextColorEl = isDark ? 
+                    document.querySelector('input[name="color_dark_header_text"]') : 
+                    document.querySelector('input[name="color_light_header_text"]');
+                const defaultColor = headerTextColorEl ? headerTextColorEl.value : (isDark ? '#ffffff' : '#000000');
+                menuFontColorPicker.value = defaultColor;
                 const headerSelect = document.getElementById('theme_top');
                 if (headerSelect && headerSelect.value) {
                     updateThemePreview('header', headerSelect.value);

@@ -2033,6 +2033,7 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
         // Menu management routes
         Route::get('/menus', [AdminController::class, 'menus'])->name('admin.menus');
         Route::post('/menus', [AdminController::class, 'storeMenu'])->name('admin.menus.store');
+        Route::post('/menus/update', [AdminController::class, 'updateMenu'])->name('admin.menus.update');
         Route::put('/menus/order', [AdminController::class, 'updateMenuOrder'])->name('admin.menus.update-order');
         Route::delete('/menus/{menu}', [AdminController::class, 'deleteMenu'])->name('admin.menus.delete');
         

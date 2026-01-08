@@ -63,6 +63,37 @@
 @endpush
 
 @section('content')
+<!-- 전체 메뉴 폰트 컬러 설정 -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">전체 메뉴 폰트 컬러 설정</h5>
+    </div>
+    <div class="card-body">
+        <form id="global_menu_font_color_form">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="global_menu_font_color" class="form-label">전체 메뉴 폰트 컬러 (선택)</label>
+                    <div class="d-flex align-items-center gap-2">
+                        @php
+                            $settings = $site->getAllSettings();
+                            $themeDarkMode = $settings['theme_dark_mode'] ?? 'light';
+                            $isDark = $themeDarkMode === 'dark';
+                            $defaultMenuFontColor = $settings['menu_font_color'] ?? ($isDark ? ($settings['color_dark_header_text'] ?? '#ffffff') : ($settings['color_light_header_text'] ?? '#000000'));
+                        @endphp
+                        <input type="color" class="form-control form-control-color" id="global_menu_font_color_picker" name="global_menu_font_color_picker" value="{{ $defaultMenuFontColor }}" style="width: 60px; height: 38px; cursor: pointer;">
+                        <input type="text" class="form-control" id="global_menu_font_color" name="global_menu_font_color" value="{{ $settings['menu_font_color'] ?? '' }}" placeholder="#000000" maxlength="20">
+                        <button type="button" class="btn btn-outline-secondary" id="global_menu_font_color_reset" title="초기화">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                        <button type="submit" class="btn btn-primary">저장</button>
+                    </div>
+                    <small class="text-muted">비워두면 헤더 텍스트 컬러 사용</small>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- 새로 생성 섹션 -->
 <div class="card mb-4 shadow-sm">
     <div class="card-header bg-white">
@@ -149,11 +180,12 @@
                 <table class="table menu-table">
                     <thead>
                         <tr>
-                            <th style="width: 20%;">이름</th>
-                            <th style="width: 15%;">연결 타입</th>
-                            <th style="width: 25%;">연결 대상</th>
+                            <th style="width: 15%;">이름</th>
+                            <th style="width: 12%;">연결 타입</th>
+                            <th style="width: 20%;">연결 대상</th>
+                            <th style="width: 15%;">폰트 컬러</th>
                             <th style="width: 10%;">표시 순서</th>
-                            <th style="width: 30%;">작업</th>
+                            <th style="width: 28%;">작업</th>
                         </tr>
                     </thead>
                     <tbody id="menuListBody">
@@ -1762,6 +1794,148 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // 전체 메뉴 폰트 컬러 저장
+    const globalMenuFontColorForm = document.getElementById('global_menu_font_color_form');
+    const globalMenuFontColorPicker = document.getElementById('global_menu_font_color_picker');
+    const globalMenuFontColor = document.getElementById('global_menu_font_color');
+    const globalMenuFontColorReset = document.getElementById('global_menu_font_color_reset');
+    
+    if (globalMenuFontColorPicker && globalMenuFontColor) {
+        globalMenuFontColorPicker.addEventListener('input', function() {
+            globalMenuFontColor.value = this.value;
+        });
+        
+        globalMenuFontColor.addEventListener('input', function() {
+            if (this.value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                globalMenuFontColorPicker.value = this.value;
+            }
+        });
+        
+        if (globalMenuFontColorReset) {
+            globalMenuFontColorReset.addEventListener('click', function() {
+                globalMenuFontColor.value = '';
+                globalMenuFontColorPicker.value = '#000000';
+            });
+        }
+    }
+    
+    if (globalMenuFontColorForm) {
+        globalMenuFontColorForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fontColor = globalMenuFontColor.value.trim();
+            
+            fetch('{{ route("admin.settings.update", ["site" => $site->slug]) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    menu_font_color: fontColor || null
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('전체 메뉴 폰트 컬러가 저장되었습니다.');
+                } else {
+                    alert(data.message || '저장에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('저장 중 오류가 발생했습니다.');
+            });
+        });
+    }
+    
+    // 개별 메뉴 폰트 컬러 수정
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('menu-font-color-picker') || e.target.classList.contains('menu-font-color-input')) {
+            const menuId = e.target.dataset.menuId;
+            const picker = document.querySelector(`.menu-font-color-picker[data-menu-id="${menuId}"]`);
+            const input = document.querySelector(`.menu-font-color-input[data-menu-id="${menuId}"]`);
+            
+            if (e.target.classList.contains('menu-font-color-picker')) {
+                input.value = e.target.value;
+            } else if (e.target.classList.contains('menu-font-color-input')) {
+                if (e.target.value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                    picker.value = e.target.value;
+                }
+            }
+            
+            const fontColor = input.value.trim();
+            
+            // 디바운스: 입력이 끝난 후 저장
+            clearTimeout(window.menuFontColorTimeout);
+            window.menuFontColorTimeout = setTimeout(function() {
+                fetch('{{ route("admin.menus.update", ["site" => $site->slug]) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        menu_id: menuId,
+                        font_color: fontColor || null
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        console.error('메뉴 폰트 컬러 저장 실패:', data.message);
+                        alert(data.message || '저장에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('저장 중 오류가 발생했습니다.');
+                });
+            }, 500);
+        }
+    });
+    
+    // 개별 메뉴 폰트 컬러 초기화
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.menu-font-color-reset')) {
+            const resetBtn = e.target.closest('.menu-font-color-reset');
+            const menuId = resetBtn.dataset.menuId;
+            const picker = document.querySelector(`.menu-font-color-picker[data-menu-id="${menuId}"]`);
+            const input = document.querySelector(`.menu-font-color-input[data-menu-id="${menuId}"]`);
+            
+            input.value = '';
+            picker.value = '#000000';
+            
+            // 저장
+            fetch('{{ route("admin.menus.update", ["site" => $site->slug]) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    menu_id: menuId,
+                    font_color: null
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error('메뉴 폰트 컬러 초기화 실패:', data.message);
+                    alert(data.message || '초기화에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('초기화 중 오류가 발생했습니다.');
+            });
+        }
+    });
+    
     // Bootstrap Tooltip 초기화
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
