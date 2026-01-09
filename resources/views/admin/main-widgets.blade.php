@@ -2186,6 +2186,72 @@ let currentEditWidgetId = null;
 let successModalReloadHandler = null;
 let mainWidgetSortables = {}; // 각 위젯 리스트의 Sortable 인스턴스 저장
 
+// 이미지 압축 함수
+async function compressImage(file, maxWidth = 1920, maxHeight = 1080, quality = 0.85) {
+    return new Promise((resolve) => {
+        // 이미지가 아닌 경우 원본 반환
+        if (!file.type.startsWith('image/')) {
+            resolve(file);
+            return;
+        }
+        
+        // 파일 크기가 500KB 미만이면 압축하지 않음
+        if (file.size < 500 * 1024) {
+            resolve(file);
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // 비율 유지하면서 크기 조정
+                if (width > maxWidth || height > maxHeight) {
+                    if (width > height) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    } else {
+                        width = (width * maxHeight) / height;
+                        height = maxHeight;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                canvas.toBlob(function(blob) {
+                    if (blob && blob.size < file.size) {
+                        // 압축된 파일이 원본보다 작으면 압축된 파일 사용
+                        const compressedFile = new File([blob], file.name, {
+                            type: file.type,
+                            lastModified: Date.now()
+                        });
+                        resolve(compressedFile);
+                    } else {
+                        // 압축 실패 또는 압축 효과가 없으면 원본 사용
+                        resolve(file);
+                    }
+                }, file.type, quality);
+            };
+            img.onerror = function() {
+                resolve(file);
+            };
+            img.src = e.target.result;
+        };
+        reader.onerror = function() {
+            resolve(file);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 // 컨테이너 추가 폼: 가로 100% 체크시 칸 고정너비 옵션 표시
 function toggleAddContainerFixedWidthColumns() {
     const fullWidthCheckbox = document.getElementById('container_full_width');
@@ -4356,7 +4422,7 @@ async function addMainWidget() {
         
         const imageItems = [];
         const imageSlideItems = document.querySelectorAll('.image-slide-item');
-        imageSlideItems.forEach((item, index) => {
+        for (const item of imageSlideItems) {
             const itemIndex = item.dataset.itemIndex;
             const imageFile = item.querySelector(`#image_slide_${itemIndex}_image_input`)?.files[0];
             const imageUrl = item.querySelector(`#image_slide_${itemIndex}_image_url`)?.value;
@@ -4421,14 +4487,21 @@ async function addMainWidget() {
             };
             
             if (imageFile) {
-                formData.append(`image_slide[${itemIndex}][image_file]`, imageFile);
+                // 이미지 압축 처리
+                const compressedFile = await compressImage(imageFile);
+                if (compressedFile) {
+                    formData.append(`image_slide[${itemIndex}][image_file]`, compressedFile, compressedFile.name);
+                } else {
+                    // 압축 실패 시 원본 파일 사용
+                    formData.append(`image_slide[${itemIndex}][image_file]`, imageFile);
+                }
             }
             if (imageUrl) {
                 imageItem.image_url = imageUrl;
             }
             
             imageItems.push(imageItem);
-        });
+        }
         
         settings.images = imageItems;
     } else if (widgetType === 'countdown') {
@@ -7078,20 +7151,29 @@ function saveMainWidgetAnimation() {
     });
 }
 
-function saveMainWidgetSettings() {
+async function saveMainWidgetSettings() {
     const form = document.getElementById('editMainWidgetForm');
     if (!form) {
         alert('폼을 찾을 수 없습니다.');
         return;
     }
     
-    // 저장 버튼 비활성화 및 텍스트 변경
+    // 저장 버튼 비활성화 및 텍스트 변경 (모든 저장 버튼에 적용)
     const saveButton = document.getElementById('edit_main_widget_save_btn') || form.querySelector('button[onclick="saveMainWidgetSettings()"]');
+    const saveButtonFooter = document.getElementById('edit_main_widget_save_btn_footer');
     let originalButtonText = '';
+    let originalButtonFooterText = '';
+    
     if (saveButton) {
         saveButton.disabled = true;
         originalButtonText = saveButton.innerHTML;
         saveButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>저장 중...';
+    }
+    
+    if (saveButtonFooter) {
+        saveButtonFooter.disabled = true;
+        originalButtonFooterText = saveButtonFooter.innerHTML;
+        saveButtonFooter.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>저장 중...';
     }
     
     // 에러 발생 시 버튼 복원을 위한 함수
@@ -7099,6 +7181,10 @@ function saveMainWidgetSettings() {
         if (saveButton && originalButtonText) {
             saveButton.disabled = false;
             saveButton.innerHTML = originalButtonText;
+        }
+        if (saveButtonFooter && originalButtonFooterText) {
+            saveButtonFooter.disabled = false;
+            saveButtonFooter.innerHTML = originalButtonFooterText;
         }
     };
     
@@ -7602,7 +7688,7 @@ function saveMainWidgetSettings() {
         // 이미지 아이템들 수집
         const imageItems = [];
         const imageSlideItems = document.querySelectorAll('.edit-main-image-slide-item');
-        imageSlideItems.forEach((item) => {
+        for (const item of imageSlideItems) {
             const itemIndex = item.dataset.itemIndex;
             const imageFileInput = item.querySelector(`#edit_main_image_slide_${itemIndex}_image_input`);
             const imageUrlInput = item.querySelector(`#edit_main_image_slide_${itemIndex}_image_url`);
@@ -7668,7 +7754,14 @@ function saveMainWidgetSettings() {
             };
             
             if (imageFileInput && imageFileInput.files[0]) {
-                formData.append(`edit_image_slide[${itemIndex}][image_file]`, imageFileInput.files[0]);
+                // 이미지 압축 처리
+                const compressedFile = await compressImage(imageFileInput.files[0]);
+                if (compressedFile) {
+                    formData.append(`edit_image_slide[${itemIndex}][image_file]`, compressedFile, compressedFile.name);
+                } else {
+                    // 압축 실패 시 원본 파일 사용
+                    formData.append(`edit_image_slide[${itemIndex}][image_file]`, imageFileInput.files[0]);
+                }
             }
             
             imageItems.push(imageItem);
@@ -7838,6 +7931,16 @@ function saveMainWidgetSettings() {
     .then(data => {
         console.log('Processing response data:', data);
         if (data && data.success) {
+            // 저장 버튼 복원
+            if (saveButton && originalButtonText) {
+                saveButton.disabled = false;
+                saveButton.innerHTML = originalButtonText;
+            }
+            if (saveButtonFooter && originalButtonFooterText) {
+                saveButtonFooter.disabled = false;
+                saveButtonFooter.innerHTML = originalButtonFooterText;
+            }
+            
             // 위젯 설정 모달 닫기
             const settingsModal = bootstrap.Modal.getInstance(document.getElementById('mainWidgetSettingsModal'));
             if (settingsModal) {
