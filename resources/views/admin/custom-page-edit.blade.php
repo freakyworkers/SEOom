@@ -3336,6 +3336,11 @@ async function addCustomPageWidget() {
         if (sortOrder) {
             settings.sort_order = sortOrder;
         }
+    } else if (widgetType === 'board_viewer') {
+        const boardId = formData.get('board_id');
+        if (boardId) {
+            settings.board_id = parseInt(boardId);
+        }
     } else if (widgetType === 'marquee_board') {
         if (!formData.get('title') || formData.get('title') === '') {
             formData.set('title', '게시글 전광판');
@@ -4161,6 +4166,15 @@ function editCustomPageWidget(widgetId) {
                 if (document.getElementById('edit_custom_page_widget_title')) {
                     document.getElementById('edit_custom_page_widget_title').value = title;
                 }
+            } else if (widgetType === 'board_viewer') {
+                if (boardContainer) boardContainer.style.display = 'block';
+                if (titleContainer) titleContainer.style.display = 'block';
+                if (document.getElementById('edit_custom_page_widget_board_id')) {
+                    document.getElementById('edit_custom_page_widget_board_id').value = settings.board_id || '';
+                }
+                if (document.getElementById('edit_custom_page_widget_title')) {
+                    document.getElementById('edit_custom_page_widget_title').value = title;
+                }
             } else if (widgetType === 'marquee_board') {
                 if (limitContainer) limitContainer.style.display = 'block';
                 if (boardContainer) boardContainer.style.display = 'block';
@@ -4772,6 +4786,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (sortOrderContainer) sortOrderContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'block';
                 if (titleInput) titleInput.required = true;
+            } else if (widgetType === 'board_viewer') {
+                if (boardContainer) boardContainer.style.display = 'block';
+                if (titleContainer) titleContainer.style.display = 'block';
+                if (titleInput) titleInput.required = false;
             } else if (widgetType === 'marquee_board') {
                 if (limitContainer) limitContainer.style.display = 'block';
                 if (boardContainer) boardContainer.style.display = 'block';
@@ -5831,6 +5849,11 @@ function saveCustomPageWidgetSettings() {
         }
         if (sortOrder) {
             settings.sort_order = sortOrder;
+        }
+    } else if (widgetType === 'board_viewer') {
+        const boardId = document.getElementById('edit_custom_page_widget_board_id')?.value;
+        if (boardId) {
+            settings.board_id = parseInt(boardId);
         }
     } else if (widgetType === 'marquee_board') {
         const boardId = document.getElementById('edit_custom_page_widget_board_id')?.value;

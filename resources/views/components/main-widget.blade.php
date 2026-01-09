@@ -2599,6 +2599,316 @@
                 @endif
                 @break
 
+            @case('board_viewer')
+                {{-- 게시판 뷰어 위젯 --}}
+                @php
+                    $boardId = $widgetSettings['board_id'] ?? null;
+                    if ($boardId) {
+                        $board = \App\Models\Board::where('site_id', $site->id)
+                            ->where('id', $boardId)
+                            ->first();
+                        
+                        if ($board) {
+                            // PostService를 사용하여 게시글 가져오기
+                            $postService = app(\App\Services\PostService::class);
+                            $randomOrder = $board->type === 'bookmark' && $board->random_order;
+                            $topicId = request()->query('topic');
+                            $searchKeyword = request()->query('search');
+                            $searchType = request()->query('search_type', 'title_content');
+                            $perPage = $board->posts_per_page ?? 20;
+                            $posts = $postService->getPostsByBoard($board->id, $perPage, $randomOrder, $topicId, $site->id, $searchKeyword, $searchType);
+                            
+                            // 질의응답 게시판인 경우 기존 게시글에 qa_status가 없으면 기본값 설정
+                            if ($board->type === 'qa') {
+                                $qaStatuses = $board->qa_statuses ?? [];
+                                if (!empty($qaStatuses)) {
+                                    $defaultStatus = $qaStatuses[0]['name'] ?? null;
+                                    if ($defaultStatus) {
+                                        foreach ($posts->items() as $post) {
+                                            if (empty($post->qa_status)) {
+                                                $post->update(['qa_status' => $defaultStatus]);
+                                                $post->qa_status = $defaultStatus;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            $posts->appends(request()->query());
+                            
+                            // 추천 기능 활성화 여부 확인
+                            $showLikes = $board->enable_likes && \Illuminate\Support\Facades\Schema::hasTable('post_likes');
+                            $hasPostLikesTable = \Illuminate\Support\Facades\Schema::hasTable('post_likes');
+                            
+                            // 저장된 게시글 ID 목록 가져오기 (로그인한 경우)
+                            $savedPostIds = [];
+                            if (auth()->check() && $board->saved_posts_enabled && \Illuminate\Support\Facades\Schema::hasTable('saved_posts')) {
+                                $savedPostIds = \App\Models\SavedPost::where('user_id', auth()->id())
+                                    ->where('site_id', $site->id)
+                                    ->whereIn('post_id', $posts->pluck('id'))
+                                    ->pluck('post_id')
+                                    ->toArray();
+                            }
+                            
+                            // 테마 설정
+                            $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
+                            $pointColor = $themeDarkMode === 'dark' 
+                                ? $site->getSetting('color_dark_point_main', '#ffffff')
+                                : $site->getSetting('color_light_point_main', '#0d6efd');
+                            
+                            $showViews = $site->getSetting('show_views', '1') == '1';
+                            $showDatetime = $site->getSetting('show_datetime', '1') == '1';
+                            $newPostHours = (int) $site->getSetting('new_post_hours', 24);
+                        }
+                    }
+                @endphp
+                @if(isset($board) && $board)
+                    {{-- 게시판 헤더 이미지 --}}
+                    @if($board->header_image_path)
+                        <div class="mb-3">
+                            <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: auto;">
+                        </div>
+                    @endif
+                    
+                    {{-- 게시판 제목 및 설명 --}}
+                    @php
+                        $hideTitleDescription = $board->hide_title_description ?? false;
+                    @endphp
+                    @if(!$hideTitleDescription)
+                        <div class="bg-white p-3 rounded shadow-sm mb-3">
+                            <h2 class="mb-1"><i class="bi bi-file-text"></i> {{ $board->name }}</h2>
+                        </div>
+                    @endif
+                    
+                    {{-- 주제 필터 --}}
+                    @if($board->topics()->count() > 0)
+                        <div class="mb-3">
+                            <div class="topic-filter-container d-flex gap-2 align-items-center" style="overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: thin;">
+                                <a href="{{ route('posts.index', ['site' => $site->slug, 'boardSlug' => $board->slug]) }}" 
+                                   class="btn btn-sm {{ !isset($topicId) ? 'btn-primary' : 'btn-outline-secondary' }}" 
+                                   style="flex-shrink: 0; {{ !isset($topicId) ? 'background-color: ' . $pointColor . '; border-color: ' . $pointColor . ';' : '' }}">
+                                    전체
+                                </a>
+                                @foreach($board->topics()->ordered()->get() as $topic)
+                                    <a href="{{ route('posts.index', ['site' => $site->slug, 'boardSlug' => $board->slug, 'topic' => $topic->id]) }}" 
+                                       class="btn btn-sm"
+                                       style="background-color: {{ (isset($topicId) && $topicId == $topic->id) ? $pointColor : 'transparent' }}; border-color: {{ $pointColor }}; color: {{ (isset($topicId) && $topicId == $topic->id) ? 'white' : $pointColor }}; flex-shrink: 0;">
+                                        {{ $topic->name }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                    
+                    {{-- 검색 결과 표시 --}}
+                    @if(request('search'))
+                        @php
+                            $searchTypeLabel = request('search_type', 'title_content') == 'author' ? '작성자' : '제목 또는 내용';
+                        @endphp
+                        <div class="alert alert-info mb-3">
+                            <i class="bi bi-search me-2"></i>
+                            <strong>{{ $searchTypeLabel }}</strong>에서 <strong>"{{ request('search') }}"</strong> 검색 결과: <strong>{{ $posts->total() }}</strong>개
+                            <a href="{{ route('posts.index', array_merge(['site' => $site->slug, 'boardSlug' => $board->slug], request()->except(['search', 'search_type', 'page']))) }}" 
+                               class="btn btn-sm btn-outline-primary ms-2">
+                                <i class="bi bi-x-lg me-1"></i>검색 초기화
+                            </a>
+                        </div>
+                    @endif
+                    
+                    {{-- 게시글 목록 --}}
+                    @if($posts->count() > 0)
+                        {{-- 일반 게시판 레이아웃 (심플 리스트 형태) --}}
+                        <div class="card bg-white shadow-sm">
+                            <div class="list-group list-group-flush">
+                            @foreach($posts as $post)
+                                @php
+                                    $hasImage = false;
+                                    if ($post->content) {
+                                        $hasImage = preg_match('/<img[^>]+>/i', $post->content);
+                                    }
+                                    $isToday = $post->created_at->isToday();
+                                @endphp
+                                <div class="list-group-item list-group-item-action border-start-0 border-end-0 {{ !$loop->last ? 'border-bottom' : '' }} position-relative" style="padding: 1rem;">
+                                    @auth
+                                        @if($board->saved_posts_enabled && \Illuminate\Support\Facades\Schema::hasTable('saved_posts'))
+                                            @php
+                                                $isSaved = in_array($post->id, $savedPostIds ?? []);
+                                            @endphp
+                                            <button type="button" 
+                                                    class="btn btn-link p-2 position-absolute" 
+                                                    style="bottom: 0.5rem; right: 0.5rem; z-index: 10; color: #6c757d; text-decoration: none;"
+                                                    onclick="toggleSave({{ $post->id }})"
+                                                    id="save-btn-{{ $post->id }}">
+                                                <i class="bi {{ $isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' }}" style="font-size: 1.25rem;"></i>
+                                            </button>
+                                        @endif
+                                    @endauth
+                                    <div class="d-flex align-items-start gap-2 mb-2">
+                                        @if($post->topics->count() > 0)
+                                            @foreach($post->topics as $topic)
+                                                <span class="badge" style="background-color: {{ $topic->color }}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: normal; flex-shrink: 0;">
+                                                    {{ $topic->name }}
+                                                </span>
+                                            @endforeach
+                                        @endif
+                                        <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
+                                           class="text-decoration-none text-dark flex-grow-1" style="line-height: 1.5;">
+                                            <span>
+                                                @if($post->is_pinned)
+                                                    <i class="bi bi-pin-angle-fill me-1" style="color: {{ $pointColor }}; font-size: 1.1em;"></i>
+                                                @endif
+                                                @if($post->is_notice)
+                                                    <i class="bi bi-megaphone me-1" style="color: {{ $pointColor }}; font-size: 1.1em;"></i>
+                                                @endif
+                                                @php
+                                                    $isSecret = $board->force_secret || ($board->enable_secret && $post->is_secret);
+                                                    $canViewSecret = false;
+                                                    if ($isSecret && auth()->check()) {
+                                                        $canViewSecret = (auth()->id() === $post->user_id || auth()->user()->canManage());
+                                                    }
+                                                @endphp
+                                                @if($isSecret)
+                                                    @if($canViewSecret)
+                                                        <i class="bi bi-lock me-1"></i>{{ $post->title }}
+                                                    @else
+                                                        <i class="bi bi-lock me-1"></i>비밀 글입니다.
+                                                    @endif
+                                                @else
+                                                    {{ $post->title }}
+                                                @endif
+                                                @if($post->comments->count() > 0)
+                                                    <span class="fw-bold ms-1" style="color: {{ $pointColor }};">+{{ $post->comments->count() }}</span>
+                                                @endif
+                                                @if($board->enable_likes && $post->like_count > 0)
+                                                    <span class="ms-1" style="color: #0d6efd;">
+                                                        <i class="bi bi-hand-thumbs-up"></i> {{ $post->like_count }}
+                                                    </span>
+                                                @endif
+                                                @if($isToday)
+                                                    <span class="text-warning ms-1" style="font-size: 0.75rem; font-weight: bold;">N</span>
+                                                @endif
+                                                @if($hasImage)
+                                                    <i class="bi bi-image ms-1 text-muted" style="font-size: 0.875rem;"></i>
+                                                @endif
+                                            </span>
+                                        </a>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 text-muted" style="font-size: 0.875rem;">
+                                        <span>
+                                            @if($board->enable_anonymous)
+                                                익명
+                                            @else
+                                                <x-user-rank :user="$post->user" :site="$site" />
+                                                {{ $post->user->nickname ?? $post->user->name }}
+                                            @endif
+                                        </span>
+                                        @if($showViews)
+                                            <span>·</span>
+                                            <span>조회수 {{ number_format($post->views) }}</span>
+                                        @endif
+                                        @if($showDatetime)
+                                            <span>·</span>
+                                            <span>{{ $post->created_at->format('Y.m.d H:i') }}</span>
+                                        @endif
+                                    </div>
+                                    @if($post->replies->count() > 0)
+                                        <div class="mt-2 pt-2 border-top" style="font-size: 0.8rem;">
+                                            <div class="text-muted">
+                                                <i class="bi bi-reply"></i> 답글:
+                                                @foreach($post->replies as $reply)
+                                                    <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $reply->id]) }}" 
+                                                       class="text-decoration-none ms-1">
+                                                        @if($board->enable_secret && $reply->is_secret)
+                                                            @php
+                                                                $canViewSecret = false;
+                                                                if (auth()->check()) {
+                                                                    $canViewSecret = (auth()->id() === $reply->user_id || auth()->user()->canManage());
+                                                                }
+                                                            @endphp
+                                                            @if($canViewSecret)
+                                                                {{ Str::limit($reply->title, 30) }}
+                                                            @else
+                                                                비밀 글입니다.
+                                                            @endif
+                                                        @else
+                                                            {{ Str::limit($reply->title, 30) }}
+                                                        @endif
+                                                    </a>
+                                                    @if(!$loop->last)
+                                                        <span class="text-muted">|</span>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                            </div>
+                        </div>
+                        
+                        {{-- 페이지네이션 --}}
+                        @if($posts->hasPages())
+                            <div class="mt-4">
+                                {{ $posts->appends(request()->query())->links('pagination::bootstrap-4', ['pointColor' => $pointColor]) }}
+                            </div>
+                        @endif
+                    @else
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>게시글이 없습니다.
+                        </div>
+                    @endif
+                    
+                    {{-- 검색 폼 --}}
+                    <div class="mt-4 d-flex justify-content-center">
+                        <form method="GET" action="{{ route('posts.index', ['site' => $site->slug, 'boardSlug' => $board->slug]) }}" class="d-flex gap-2 align-items-center">
+                            <input type="hidden" name="topic" value="{{ request('topic') }}">
+                            <select name="search_type" class="form-select form-select-sm" style="width: auto; min-width: 140px;">
+                                <option value="title_content" {{ request('search_type', 'title_content') == 'title_content' ? 'selected' : '' }}>제목 또는 내용</option>
+                                <option value="author" {{ request('search_type') == 'author' ? 'selected' : '' }}>작성자</option>
+                            </select>
+                            <input type="text" 
+                                   name="search" 
+                                   class="form-control form-control-sm" 
+                                   placeholder="검색어를 입력하세요..." 
+                                   value="{{ request('search') }}"
+                                   style="max-width: 300px;">
+                            <button type="submit" class="btn btn-sm btn-primary" style="background-color: {{ $pointColor }}; border-color: {{ $pointColor }}; height: 31px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ route('posts.index', array_merge(['site' => $site->slug, 'boardSlug' => $board->slug], request()->except(['search', 'search_type', 'page']))) }}" 
+                                   class="btn btn-sm btn-outline-secondary" style="height: 31px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
+                            @endif
+                        </form>
+                    </div>
+                    
+                    {{-- 글쓰기 버튼 --}}
+                    @if(auth()->check() && ($board->write_permission === 'user' || ($board->write_permission === 'admin' && auth()->user()->canManage())))
+                        <div class="mt-3 text-end">
+                            <a href="{{ route('posts.create', ['site' => $site->slug, 'boardSlug' => $board->slug]) }}" 
+                               class="btn btn-primary"
+                               style="background-color: {{ $pointColor }}; border-color: {{ $pointColor }};">
+                                <i class="bi bi-pencil me-1"></i> 글쓰기
+                            </a>
+                        </div>
+                    @elseif($board->write_permission === 'guest')
+                        <div class="mt-3 text-end">
+                            <a href="{{ route('posts.create', ['site' => $site->slug, 'boardSlug' => $board->slug]) }}" 
+                               class="btn btn-primary"
+                               style="background-color: {{ $pointColor }}; border-color: {{ $pointColor }};">
+                                <i class="bi bi-pencil me-1"></i> 글쓰기
+                            </a>
+                        </div>
+                    @endif
+                @else
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>게시판을 선택해주세요.
+                    </div>
+                @endif
+                @break
+
             @case('search')
                 {{-- 검색 위젯 --}}
                 <form action="{{ route('search', ['site' => $site->slug]) }}" method="GET" class="d-flex">

@@ -61,6 +61,7 @@ class SidebarWidget extends Model
             'chat' => '채팅',
             'create_site' => '사이트 생성 (마스터 전용)',
             'countdown' => '카운트다운',
+            'board_viewer' => '게시판 뷰어',
         ];
     }
 }
