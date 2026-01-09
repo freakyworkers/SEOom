@@ -165,23 +165,23 @@
                         // 위젯 간격 설정 (컨테이너별)
                         $widgetSpacing = $container->widget_spacing ?? 3;
                         $widgetSpacingValue = min(max($widgetSpacing, 0), 5);
-                        // 첫 번째 위젯이 아닐 때만 상단 마진 적용, 하단 마진은 제거
-                        $widgetSpacingClass = $isFullHeight ? 'mb-0 mt-0' : 'mb-0';
-                        $widgetSpacingTopClass = $isFullHeight ? 'mt-0' : 'mt-' . $widgetSpacingValue;
+                        // Bootstrap spacing 값을 px로 변환 (0=0px, 1=0.25rem=4px, 2=0.5rem=8px, 3=1rem=16px, 4=1.5rem=24px, 5=3rem=48px)
+                        $spacingMap = [0 => '0px', 1 => '4px', 2 => '8px', 3 => '16px', 4 => '24px', 5 => '48px'];
+                        $widgetGap = $spacingMap[$widgetSpacingValue] ?? '16px';
                     @endphp
                     @if(!$isHidden)
                         @php
-                            // 세로 정렬을 위해 컬럼을 flex 컨테이너로 만들기
+                            // 위젯들이 상하를 꽉 차게 하기 위해 컬럼을 항상 flex 컨테이너로 만들기
                             $colFlexStyle = $colStyle;
-                            if ($verticalAlign === 'center' || $verticalAlign === 'bottom' || $verticalAlign === 'top') {
-                                $colFlexStyle .= ($colFlexStyle ? ' ' : '') . 'display: flex; flex-direction: column;';
-                                if ($verticalAlign === 'center') {
-                                    $colFlexStyle .= ' justify-content: center;';
-                                } elseif ($verticalAlign === 'bottom') {
-                                    $colFlexStyle .= ' justify-content: flex-end;';
-                                } elseif ($verticalAlign === 'top') {
-                                    $colFlexStyle .= ' justify-content: flex-start;';
-                                }
+                            $colFlexStyle .= ($colFlexStyle ? ' ' : '') . 'display: flex; flex-direction: column;';
+                            // 위젯들 사이에 여백 추가
+                            $colFlexStyle .= ' gap: ' . $widgetGap . ';';
+                            if ($verticalAlign === 'center') {
+                                $colFlexStyle .= ' justify-content: center;';
+                            } elseif ($verticalAlign === 'bottom') {
+                                $colFlexStyle .= ' justify-content: flex-end;';
+                            } elseif ($verticalAlign === 'top') {
+                                $colFlexStyle .= ' justify-content: flex-start;';
                             }
                         @endphp
                         <div class="col-md-{{ $colWidth }} {{ $colMarginBottom }}" style="{{ $colFlexStyle }}">
@@ -196,42 +196,32 @@
                                     'is_active' => $widget->is_active,
                                     'order' => $widget->order,
                                 ];
-                                // 블록 위젯, 지도 위젯인 경우 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1 적용
+                                // 블록 위젯, 이미지 위젯, 지도 위젯인 경우 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1 적용
                                 $isBlockWidget = $widget->type === 'block';
+                                $isImageWidget = $widget->type === 'image';
                                 $isMapWidget = $widget->type === 'map';
                                 $widgetWrapperStyle = 'display: flex; flex-direction: column; width: 100%; max-width: 100%; margin-top: 0 !important; margin-bottom: 0 !important;';
                                 if ($isFullHeight || $isBlockWidget || $isMapWidget) {
                                     // 세로 100%이거나 블록 위젯, 지도 위젯일 때는 항상 flex: 1 적용하여 위젯이 높이를 꽉 채우도록
                                     $widgetWrapperStyle .= ' flex: 1;';
-                                } elseif ($verticalAlign === 'center') {
-                                    // 중앙 정렬일 때만 flex: 1 적용
+                                } elseif ($verticalAlign === 'center' || $isImageWidget) {
+                                    // 중앙 정렬이거나 이미지 위젯일 때 flex: 1 적용
                                     $widgetWrapperStyle .= ' flex: 1;';
+                                    // 이미지 위젯의 경우 justify-content도 설정
+                                    if ($isImageWidget) {
+                                        if ($verticalAlign === 'top') {
+                                            $widgetWrapperStyle .= ' justify-content: flex-start;';
+                                        } elseif ($verticalAlign === 'bottom') {
+                                            $widgetWrapperStyle .= ' justify-content: flex-end;';
+                                        } else {
+                                            $widgetWrapperStyle .= ' justify-content: center;';
+                                        }
+                                    }
                                 }
-                                // 첫 번째 위젯과 마지막 위젯의 마진 처리
                                 $isFirstWidget = $index === 0;
                                 $isLastWidget = $index === $columnWidgets->count() - 1;
-                                $widgetMarginClass = '';
-                                $widgetWrapperStyleMargin = '';
-                                if (!$isFullHeight) {
-                                    // 첫 번째 위젯은 상단 마진 0
-                                    if ($isFirstWidget) {
-                                        $widgetMarginClass = 'mt-0';
-                                        $widgetWrapperStyleMargin = 'margin-top: 0 !important;';
-                                    } else {
-                                        // 첫 번째가 아닌 위젯은 상단 간격 적용
-                                        $widgetMarginClass = $widgetSpacingTopClass;
-                                    }
-                                    // 마지막 위젯은 하단 마진 0
-                                    if ($isLastWidget) {
-                                        $widgetMarginClass .= ($widgetMarginClass ? ' ' : '') . 'mb-0';
-                                        $widgetWrapperStyleMargin .= ($widgetWrapperStyleMargin ? ' ' : '') . 'margin-bottom: 0 !important;';
-                                    }
-                                }
-                                if ($widgetWrapperStyleMargin) {
-                                    $widgetWrapperStyle .= ($widgetWrapperStyle ? ' ' : '') . $widgetWrapperStyleMargin;
-                                }
                             @endphp
-                            <div class="{{ $widgetMarginClass }}" style="{{ $widgetWrapperStyle }}">
+                            <div style="{{ $widgetWrapperStyle }}">
                                 <x-main-widget :widget="$widgetData" :site="$site" :isFullHeight="$isFullHeight" :isFullWidth="$isFullWidth" :isFirstWidget="$isFirstWidget" :isLastWidget="$isLastWidget" :verticalAlign="$verticalAlign" />
                             </div>
                         @endforeach
