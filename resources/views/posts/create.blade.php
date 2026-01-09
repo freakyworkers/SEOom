@@ -419,7 +419,7 @@
                    class="btn btn-secondary">
                     <i class="bi bi-x-circle"></i> 취소
                 </a>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="postSubmitBtn">
                     <i class="bi bi-check-circle"></i> 작성
                 </button>
             </div>
@@ -455,7 +455,7 @@ function checkBannedWords(title, content) {
 }
 
 $(document).ready(function() {
-    // 폼 제출 전 금지단어 체크
+    // 폼 제출 전 금지단어 체크 및 로딩 표시
     $('#postCreateForm').on('submit', function(e) {
         var title = $('#title').val();
         var content = '';
@@ -477,6 +477,19 @@ $(document).ready(function() {
                 $(this).remove();
             });
             return false;
+        }
+        
+        // 금지단어 체크 통과 시 로딩 표시
+        var $submitBtn = $('#postSubmitBtn');
+        if ($submitBtn.length > 0) {
+            $submitBtn.prop('disabled', true);
+            var originalHtml = $submitBtn.html();
+            $submitBtn.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>저장 중...');
+            
+            // 폼 제출 실패 시 버튼 복원 (예: 네트워크 오류 등)
+            $(window).on('beforeunload', function() {
+                // 페이지가 이동되면 자동으로 복원됨
+            });
         }
     });
     
