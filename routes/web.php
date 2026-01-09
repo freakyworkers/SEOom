@@ -1465,7 +1465,7 @@ Route::middleware(['block.ip', 'verify.site.user'])->group(function () {
                 abort(404);
             }
             return app(\App\Http\Controllers\AdminController::class)->storeMainWidget($request, $site);
-        });
+        })->name('admin.main-widgets.store');
         Route::put('/main-widgets/{widget}', function (Request $request, \App\Models\MainWidget $widget) {
             $site = $request->attributes->get('site');
             if (!$site) {
