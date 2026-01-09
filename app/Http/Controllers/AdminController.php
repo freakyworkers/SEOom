@@ -3876,9 +3876,26 @@ class AdminController extends Controller
     /**
      * Store a new main widget.
      */
-    public function storeMainWidget(Site $site, Request $request)
+    public function storeMainWidget(Request $request, Site $site = null)
     {
         try {
+            // 서브도메인 기반 라우트에서 사이트를 가져오는 경우
+            if (!$site) {
+                $site = $request->attributes->get('site');
+            }
+            
+            // 라우트 파라미터에서 사이트를 가져오는 경우
+            if (!$site) {
+                $site = $request->route('site');
+            }
+            
+            if (!$site) {
+                return response()->json([
+                    'success' => false,
+                    'message' => '사이트를 찾을 수 없습니다.',
+                ], 404);
+            }
+            
             // 위젯 생성 제한 확인
             if (!$site->canCreateWidget()) {
                 $limit = $site->getWidgetLimit();
