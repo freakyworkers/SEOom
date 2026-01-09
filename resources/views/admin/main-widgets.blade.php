@@ -7755,17 +7755,23 @@ async function saveMainWidgetSettings() {
             
             if (imageFileInput && imageFileInput.files[0]) {
                 // 이미지 압축 처리
-                const compressedFile = await compressImage(imageFileInput.files[0]);
-                if (compressedFile) {
-                    formData.append(`edit_image_slide[${itemIndex}][image_file]`, compressedFile, compressedFile.name);
-                } else {
-                    // 압축 실패 시 원본 파일 사용
+                try {
+                    const compressedFile = await compressImage(imageFileInput.files[0]);
+                    if (compressedFile) {
+                        formData.append(`edit_image_slide[${itemIndex}][image_file]`, compressedFile, compressedFile.name);
+                    } else {
+                        // 압축 실패 시 원본 파일 사용
+                        formData.append(`edit_image_slide[${itemIndex}][image_file]`, imageFileInput.files[0]);
+                    }
+                } catch (error) {
+                    console.error('이미지 압축 오류:', error);
+                    // 오류 발생 시 원본 파일 사용
                     formData.append(`edit_image_slide[${itemIndex}][image_file]`, imageFileInput.files[0]);
                 }
             }
             
             imageItems.push(imageItem);
-        });
+        }
         
         settings.images = imageItems;
     } else if (widgetType === 'contact_form') {
