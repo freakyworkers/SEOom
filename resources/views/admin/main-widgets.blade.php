@@ -1551,6 +1551,142 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input edit-main-widget-image-text-overlay" 
+                                       type="checkbox" 
+                                       id="edit_main_widget_image_text_overlay" 
+                                       name="image_text_overlay"
+                                       onchange="toggleEditMainWidgetImageTextOverlay()">
+                                <label class="form-check-label" for="edit_main_widget_image_text_overlay">
+                                    이미지 위 텍스트 활성화
+                                </label>
+                            </div>
+                        </div>
+                        <div id="edit_main_widget_image_text_overlay_container" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label">제목</label>
+                                <input type="text" class="form-control edit-main-widget-image-title" id="edit_main_widget_image_title" name="image_title" placeholder="제목을 입력하세요">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">제목 폰트 크기 (px)</label>
+                                <input type="number" class="form-control edit-main-widget-image-title-font-size" id="edit_main_widget_image_title_font_size" name="image_title_font_size" value="24" min="10" max="100">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">내용</label>
+                                <textarea class="form-control edit-main-widget-image-content" id="edit_main_widget_image_content" name="image_content" rows="3" placeholder="내용을 입력하세요"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">내용 폰트 크기 (px)</label>
+                                <input type="number" class="form-control edit-main-widget-image-content-font-size" id="edit_main_widget_image_content_font_size" name="image_content_font_size" value="16" min="10" max="100">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">제목과 내용 사이 여백 (px)</label>
+                                <input type="number" class="form-control edit-main-widget-image-title-content-gap" id="edit_main_widget_image_title_content_gap" name="image_title_content_gap" value="10" min="0" max="100">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">패딩</label>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label class="form-label small">좌 (px)</label>
+                                        <input type="number" class="form-control edit-main-widget-image-text-padding-left" id="edit_main_widget_image_text_padding_left" name="image_text_padding_left" value="0" min="0" max="200">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">우 (px)</label>
+                                        <input type="number" class="form-control edit-main-widget-image-text-padding-right" id="edit_main_widget_image_text_padding_right" name="image_text_padding_right" value="0" min="0" max="200">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">상 (px)</label>
+                                        <input type="number" class="form-control edit-main-widget-image-text-padding-top" id="edit_main_widget_image_text_padding_top" name="image_text_padding_top" value="0" min="0" max="200">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">하 (px)</label>
+                                        <input type="number" class="form-control edit-main-widget-image-text-padding-bottom" id="edit_main_widget_image_text_padding_bottom" name="image_text_padding_bottom" value="10" min="0" max="200">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">수평 정렬</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check edit-main-widget-image-align-h" name="edit_main_widget_image_align_h" id="edit_main_widget_image_align_left" value="left" checked>
+                                    <label class="btn btn-outline-primary" for="edit_main_widget_image_align_left"><i class="bi bi-text-left"></i> 좌측</label>
+                                    <input type="radio" class="btn-check edit-main-widget-image-align-h" name="edit_main_widget_image_align_h" id="edit_main_widget_image_align_center" value="center">
+                                    <label class="btn btn-outline-primary" for="edit_main_widget_image_align_center"><i class="bi bi-text-center"></i> 중앙</label>
+                                    <input type="radio" class="btn-check edit-main-widget-image-align-h" name="edit_main_widget_image_align_h" id="edit_main_widget_image_align_right" value="right">
+                                    <label class="btn btn-outline-primary" for="edit_main_widget_image_align_right"><i class="bi bi-text-right"></i> 우측</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">수직 정렬</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check edit-main-widget-image-align-v" name="edit_main_widget_image_align_v" id="edit_main_widget_image_align_top" value="top">
+                                    <label class="btn btn-outline-primary" for="edit_main_widget_image_align_top"><i class="bi bi-align-top"></i> 상단</label>
+                                    <input type="radio" class="btn-check edit-main-widget-image-align-v" name="edit_main_widget_image_align_v" id="edit_main_widget_image_align_middle" value="middle" checked>
+                                    <label class="btn btn-outline-primary" for="edit_main_widget_image_align_middle"><i class="bi bi-align-middle"></i> 중앙</label>
+                                    <input type="radio" class="btn-check edit-main-widget-image-align-v" name="edit_main_widget_image_align_v" id="edit_main_widget_image_align_bottom" value="bottom">
+                                    <label class="btn btn-outline-primary" for="edit_main_widget_image_align_bottom"><i class="bi bi-align-bottom"></i> 하단</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">텍스트 색상</label>
+                                <input type="color" class="form-control form-control-color edit-main-widget-image-text-color" id="edit_main_widget_image_text_color" name="image_text_color" value="#ffffff" title="텍스트 색상 선택">
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input edit-main-widget-image-has-button" type="checkbox" id="edit_main_widget_image_has_button" name="image_has_button" onchange="toggleEditMainWidgetImageButton()">
+                                    <label class="form-check-label" for="edit_main_widget_image_has_button">버튼 추가</label>
+                                </div>
+                            </div>
+                            <div id="edit_main_widget_image_button_container" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">버튼 텍스트</label>
+                                    <input type="text" class="form-control edit-main-widget-image-button-text" id="edit_main_widget_image_button_text" name="image_button_text" placeholder="자세히 보기">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">버튼 링크</label>
+                                    <input type="url" class="form-control edit-main-widget-image-button-link" id="edit_main_widget_image_button_link" name="image_button_link" placeholder="https://example.com">
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-main-widget-image-button-new-tab" type="checkbox" id="edit_main_widget_image_button_new_tab" name="image_button_new_tab">
+                                        <label class="form-check-label" for="edit_main_widget_image_button_new_tab">새창에서 열기</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">버튼 색상</label>
+                                    <input type="color" class="form-control form-control-color edit-main-widget-image-button-color" id="edit_main_widget_image_button_color" name="image_button_color" value="#0d6efd" title="버튼 색상 선택">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">버튼 텍스트 색상</label>
+                                    <input type="color" class="form-control form-control-color edit-main-widget-image-button-text-color" id="edit_main_widget_image_button_text_color" name="image_button_text_color" value="#ffffff" title="버튼 텍스트 색상 선택">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">버튼 테두리 색상</label>
+                                    <input type="color" class="form-control form-control-color edit-main-widget-image-button-border-color" id="edit_main_widget_image_button_border_color" name="image_button_border_color" value="#0d6efd" title="버튼 테두리 색상 선택">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">버튼 배경 투명도</label>
+                                    <input type="range" class="form-range edit-main-widget-image-button-opacity" id="edit_main_widget_image_button_opacity" name="image_button_opacity" min="0" max="100" value="100" oninput="document.getElementById('edit_main_widget_image_button_opacity_value').textContent = this.value + '%'">
+                                    <div class="d-flex justify-content-between">
+                                        <small>0%</small>
+                                        <small id="edit_main_widget_image_button_opacity_value">100%</small>
+                                        <small>100%</small>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">버튼 호버 배경 색상</label>
+                                    <input type="color" class="form-control form-control-color edit-main-widget-image-button-hover-bg-color" id="edit_main_widget_image_button_hover_bg_color" name="image_button_hover_bg_color" value="#0b5ed7" title="버튼 호버 배경 색상 선택">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">버튼 호버 텍스트 색상</label>
+                                    <input type="color" class="form-control form-control-color edit-main-widget-image-button-hover-text-color" id="edit_main_widget_image_button_hover_text_color" name="image_button_hover_text_color" value="#ffffff" title="버튼 호버 텍스트 색상 선택">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">버튼 호버 테두리 색상</label>
+                                    <input type="color" class="form-control form-control-color edit-main-widget-image-button-hover-border-color" id="edit_main_widget_image_button_hover_border_color" name="image_button_hover_border_color" value="#0a58ca" title="버튼 호버 테두리 색상 선택">
+                                </div>
+                            </div>
+                        </div>
                         <div class="row mb-3">
                             <div class="col-6">
                                 <label for="edit_main_widget_image_margin_top" class="form-label">상단 마진 (px)</label>
@@ -4399,6 +4535,57 @@ async function addMainWidget() {
             settings.link = link;
         }
         settings.open_new_tab = document.getElementById('widget_image_open_new_tab')?.checked || false;
+        
+        // 텍스트 오버레이 관련 데이터
+        const textOverlay = document.getElementById('widget_image_text_overlay')?.checked || false;
+        const title = document.getElementById('widget_image_title')?.value || '';
+        const titleFontSize = document.getElementById('widget_image_title_font_size')?.value || '24';
+        const content = document.getElementById('widget_image_content')?.value || '';
+        const contentFontSize = document.getElementById('widget_image_content_font_size')?.value || '16';
+        const titleContentGap = document.getElementById('widget_image_title_content_gap')?.value || '10';
+        const textPaddingLeft = document.getElementById('widget_image_text_padding_left')?.value || '0';
+        const textPaddingRight = document.getElementById('widget_image_text_padding_right')?.value || '0';
+        const textPaddingTop = document.getElementById('widget_image_text_padding_top')?.value || '0';
+        const textPaddingBottom = document.getElementById('widget_image_text_padding_bottom')?.value || '0';
+        const alignH = document.querySelector('input[name="widget_image_align_h"]:checked')?.value || 'left';
+        const alignV = document.querySelector('input[name="widget_image_align_v"]:checked')?.value || 'middle';
+        const textColor = document.getElementById('widget_image_text_color')?.value || '#ffffff';
+        const hasButton = document.getElementById('widget_image_has_button')?.checked || false;
+        const buttonText = document.getElementById('widget_image_button_text')?.value || '';
+        const buttonLink = document.getElementById('widget_image_button_link')?.value || '';
+        const buttonNewTab = document.getElementById('widget_image_button_new_tab')?.checked || false;
+        const buttonColor = document.getElementById('widget_image_button_color')?.value || '#0d6efd';
+        const buttonTextColor = document.getElementById('widget_image_button_text_color')?.value || '#ffffff';
+        const buttonBorderColor = document.getElementById('widget_image_button_border_color')?.value || '#0d6efd';
+        const buttonOpacity = document.getElementById('widget_image_button_opacity')?.value || 100;
+        const buttonHoverBgColor = document.getElementById('widget_image_button_hover_bg_color')?.value || '#0b5ed7';
+        const buttonHoverTextColor = document.getElementById('widget_image_button_hover_text_color')?.value || '#ffffff';
+        const buttonHoverBorderColor = document.getElementById('widget_image_button_hover_border_color')?.value || '#0a58ca';
+        
+        settings.text_overlay = textOverlay;
+        settings.title = title;
+        settings.title_font_size = parseInt(titleFontSize) || 24;
+        settings.content = content;
+        settings.content_font_size = parseInt(contentFontSize) || 16;
+        settings.title_content_gap = parseInt(titleContentGap) || 10;
+        settings.text_padding_left = parseInt(textPaddingLeft) || 0;
+        settings.text_padding_right = parseInt(textPaddingRight) || 0;
+        settings.text_padding_top = parseInt(textPaddingTop) || 0;
+        settings.text_padding_bottom = parseInt(textPaddingBottom) || 0;
+        settings.align_h = alignH;
+        settings.align_v = alignV;
+        settings.text_color = textColor;
+        settings.has_button = hasButton;
+        settings.button_text = buttonText;
+        settings.button_link = buttonLink;
+        settings.button_new_tab = buttonNewTab;
+        settings.button_color = buttonColor;
+        settings.button_text_color = buttonTextColor;
+        settings.button_border_color = buttonBorderColor;
+        settings.button_opacity = parseInt(buttonOpacity) || 100;
+        settings.button_hover_bg_color = buttonHoverBgColor;
+        settings.button_hover_text_color = buttonHoverTextColor;
+        settings.button_hover_border_color = buttonHoverBorderColor;
     } else if (widgetType === 'image_slide') {
         const slideDirection = document.querySelector('input[name="image_slide_direction"]:checked')?.value || 'left';
         settings.slide_direction = slideDirection;
@@ -5210,6 +5397,85 @@ function editMainWidget(widgetId) {
                 }
                 if (document.getElementById('edit_main_widget_image_margin_bottom')) {
                     document.getElementById('edit_main_widget_image_margin_bottom').value = settings.margin_bottom || 0;
+                }
+                // 텍스트 오버레이 로드
+                if (document.getElementById('edit_main_widget_image_text_overlay')) {
+                    document.getElementById('edit_main_widget_image_text_overlay').checked = settings.text_overlay || false;
+                    toggleEditMainWidgetImageTextOverlay();
+                }
+                if (document.getElementById('edit_main_widget_image_title')) {
+                    document.getElementById('edit_main_widget_image_title').value = settings.title || '';
+                }
+                if (document.getElementById('edit_main_widget_image_title_font_size')) {
+                    document.getElementById('edit_main_widget_image_title_font_size').value = settings.title_font_size || 24;
+                }
+                if (document.getElementById('edit_main_widget_image_content')) {
+                    document.getElementById('edit_main_widget_image_content').value = settings.content || '';
+                }
+                if (document.getElementById('edit_main_widget_image_content_font_size')) {
+                    document.getElementById('edit_main_widget_image_content_font_size').value = settings.content_font_size || 16;
+                }
+                if (document.getElementById('edit_main_widget_image_title_content_gap')) {
+                    document.getElementById('edit_main_widget_image_title_content_gap').value = settings.title_content_gap || 10;
+                }
+                if (document.getElementById('edit_main_widget_image_text_padding_left')) {
+                    document.getElementById('edit_main_widget_image_text_padding_left').value = settings.text_padding_left || 0;
+                }
+                if (document.getElementById('edit_main_widget_image_text_padding_right')) {
+                    document.getElementById('edit_main_widget_image_text_padding_right').value = settings.text_padding_right || 0;
+                }
+                if (document.getElementById('edit_main_widget_image_text_padding_top')) {
+                    document.getElementById('edit_main_widget_image_text_padding_top').value = settings.text_padding_top || 0;
+                }
+                if (document.getElementById('edit_main_widget_image_text_padding_bottom')) {
+                    document.getElementById('edit_main_widget_image_text_padding_bottom').value = settings.text_padding_bottom || 10;
+                }
+                if (settings.align_h) {
+                    const alignHRadio = document.querySelector(`input[name="edit_main_widget_image_align_h"][value="${settings.align_h}"]`);
+                    if (alignHRadio) alignHRadio.checked = true;
+                }
+                if (settings.align_v) {
+                    const alignVRadio = document.querySelector(`input[name="edit_main_widget_image_align_v"][value="${settings.align_v}"]`);
+                    if (alignVRadio) alignVRadio.checked = true;
+                }
+                if (document.getElementById('edit_main_widget_image_text_color')) {
+                    document.getElementById('edit_main_widget_image_text_color').value = settings.text_color || '#ffffff';
+                }
+                if (document.getElementById('edit_main_widget_image_has_button')) {
+                    document.getElementById('edit_main_widget_image_has_button').checked = settings.has_button || false;
+                    toggleEditMainWidgetImageButton();
+                }
+                if (document.getElementById('edit_main_widget_image_button_text')) {
+                    document.getElementById('edit_main_widget_image_button_text').value = settings.button_text || '';
+                }
+                if (document.getElementById('edit_main_widget_image_button_link')) {
+                    document.getElementById('edit_main_widget_image_button_link').value = settings.button_link || '';
+                }
+                if (document.getElementById('edit_main_widget_image_button_new_tab')) {
+                    document.getElementById('edit_main_widget_image_button_new_tab').checked = settings.button_new_tab || false;
+                }
+                if (document.getElementById('edit_main_widget_image_button_color')) {
+                    document.getElementById('edit_main_widget_image_button_color').value = settings.button_color || '#0d6efd';
+                }
+                if (document.getElementById('edit_main_widget_image_button_text_color')) {
+                    document.getElementById('edit_main_widget_image_button_text_color').value = settings.button_text_color || '#ffffff';
+                }
+                if (document.getElementById('edit_main_widget_image_button_border_color')) {
+                    document.getElementById('edit_main_widget_image_button_border_color').value = settings.button_border_color || '#0d6efd';
+                }
+                if (document.getElementById('edit_main_widget_image_button_opacity')) {
+                    document.getElementById('edit_main_widget_image_button_opacity').value = settings.button_opacity || 100;
+                    const opacityValueEl = document.getElementById('edit_main_widget_image_button_opacity_value');
+                    if (opacityValueEl) opacityValueEl.textContent = (settings.button_opacity || 100) + '%';
+                }
+                if (document.getElementById('edit_main_widget_image_button_hover_bg_color')) {
+                    document.getElementById('edit_main_widget_image_button_hover_bg_color').value = settings.button_hover_bg_color || '#0b5ed7';
+                }
+                if (document.getElementById('edit_main_widget_image_button_hover_text_color')) {
+                    document.getElementById('edit_main_widget_image_button_hover_text_color').value = settings.button_hover_text_color || '#ffffff';
+                }
+                if (document.getElementById('edit_main_widget_image_button_hover_border_color')) {
+                    document.getElementById('edit_main_widget_image_button_hover_border_color').value = settings.button_hover_border_color || '#0a58ca';
                 }
             } else if (widgetType === 'image_slide') {
                 if (imageSlideContainer) imageSlideContainer.style.display = 'block';
@@ -6833,6 +7099,51 @@ function toggleImageSlideTextOverlay(itemIndex) {
     }
 }
 
+// 이미지 위젯 텍스트 오버레이 토글 함수
+function toggleWidgetImageTextOverlay() {
+    const checkbox = document.getElementById('widget_image_text_overlay');
+    const container = document.getElementById('widget_image_text_overlay_container');
+    const linkContainer = document.querySelector('#widget_image_container .mb-3:nth-of-type(2)');
+    const newTabContainer = document.querySelector('#widget_image_container .mb-3:nth-of-type(3)');
+    const hasButtonCheckbox = document.getElementById('widget_image_has_button');
+    
+    if (checkbox && container) {
+        container.style.display = checkbox.checked ? 'block' : 'none';
+        // 텍스트 오버레이가 활성화되고 버튼이 추가되면 링크 입력 숨김
+        if (checkbox.checked && hasButtonCheckbox && hasButtonCheckbox.checked) {
+            if (linkContainer) linkContainer.style.display = 'none';
+            if (newTabContainer) newTabContainer.style.display = 'none';
+        } else {
+            if (linkContainer) linkContainer.style.display = 'block';
+            if (newTabContainer) newTabContainer.style.display = 'block';
+        }
+    }
+}
+
+// 이미지 위젯 버튼 토글 함수
+function toggleWidgetImageButton() {
+    const checkbox = document.getElementById('widget_image_has_button');
+    const container = document.getElementById('widget_image_button_container');
+    const linkContainer = document.querySelector('#widget_image_container .mb-3:nth-of-type(2)');
+    const newTabContainer = document.querySelector('#widget_image_container .mb-3:nth-of-type(3)');
+    
+    if (checkbox && container) {
+        container.style.display = checkbox.checked ? 'block' : 'none';
+        // 버튼이 추가되면 링크 입력 숨김
+        if (checkbox.checked) {
+            if (linkContainer) linkContainer.style.display = 'none';
+            if (newTabContainer) newTabContainer.style.display = 'none';
+        } else {
+            const textOverlayCheckbox = document.getElementById('widget_image_text_overlay');
+            // 텍스트 오버레이가 비활성화되어 있으면 링크 입력 표시
+            if (!textOverlayCheckbox || !textOverlayCheckbox.checked) {
+                if (linkContainer) linkContainer.style.display = 'block';
+                if (newTabContainer) newTabContainer.style.display = 'block';
+            }
+        }
+    }
+}
+
 function toggleImageSlideButton(itemIndex) {
     const checkbox = document.getElementById(`image_slide_${itemIndex}_has_button`);
     const container = document.getElementById(`image_slide_${itemIndex}_button_container`);
@@ -6869,6 +7180,51 @@ function toggleImageSlideItem(itemIndex) {
 function removeImageSlideItem(itemIndex) {
     const item = document.getElementById(`image_slide_item_${itemIndex}`);
     if (item) item.remove();
+}
+
+// 메인 위젯 이미지 위젯 텍스트 오버레이 토글 함수
+function toggleEditMainWidgetImageTextOverlay() {
+    const checkbox = document.getElementById('edit_main_widget_image_text_overlay');
+    const container = document.getElementById('edit_main_widget_image_text_overlay_container');
+    const linkContainer = document.querySelector('#editMainWidgetForm .mb-3:nth-of-type(3)');
+    const newTabContainer = document.querySelector('#editMainWidgetForm .mb-3:nth-of-type(4)');
+    const hasButtonCheckbox = document.getElementById('edit_main_widget_image_has_button');
+    
+    if (checkbox && container) {
+        container.style.display = checkbox.checked ? 'block' : 'none';
+        // 텍스트 오버레이가 활성화되고 버튼이 추가되면 링크 입력 숨김
+        if (checkbox.checked && hasButtonCheckbox && hasButtonCheckbox.checked) {
+            if (linkContainer) linkContainer.style.display = 'none';
+            if (newTabContainer) newTabContainer.style.display = 'none';
+        } else {
+            if (linkContainer) linkContainer.style.display = 'block';
+            if (newTabContainer) newTabContainer.style.display = 'block';
+        }
+    }
+}
+
+// 메인 위젯 이미지 위젯 버튼 토글 함수
+function toggleEditMainWidgetImageButton() {
+    const checkbox = document.getElementById('edit_main_widget_image_has_button');
+    const container = document.getElementById('edit_main_widget_image_button_container');
+    const linkContainer = document.querySelector('#editMainWidgetForm .mb-3:nth-of-type(3)');
+    const newTabContainer = document.querySelector('#editMainWidgetForm .mb-3:nth-of-type(4)');
+    
+    if (checkbox && container) {
+        container.style.display = checkbox.checked ? 'block' : 'none';
+        // 버튼이 추가되면 링크 입력 숨김
+        if (checkbox.checked) {
+            if (linkContainer) linkContainer.style.display = 'none';
+            if (newTabContainer) newTabContainer.style.display = 'none';
+        } else {
+            const textOverlayCheckbox = document.getElementById('edit_main_widget_image_text_overlay');
+            // 텍스트 오버레이가 비활성화되어 있으면 링크 입력 표시
+            if (!textOverlayCheckbox || !textOverlayCheckbox.checked) {
+                if (linkContainer) linkContainer.style.display = 'block';
+                if (newTabContainer) newTabContainer.style.display = 'block';
+            }
+        }
+    }
 }
 
 function handleImageSlideImageChange(itemIndex, input) {
@@ -7664,6 +8020,57 @@ async function saveMainWidgetSettings() {
         const imageMarginBottom = document.getElementById('edit_main_widget_image_margin_bottom')?.value || '0';
         settings.margin_top = parseInt(imageMarginTop) || 0;
         settings.margin_bottom = parseInt(imageMarginBottom) || 0;
+        
+        // 텍스트 오버레이 관련 데이터
+        const textOverlay = document.getElementById('edit_main_widget_image_text_overlay')?.checked || false;
+        const title = document.getElementById('edit_main_widget_image_title')?.value || '';
+        const titleFontSize = document.getElementById('edit_main_widget_image_title_font_size')?.value || '24';
+        const content = document.getElementById('edit_main_widget_image_content')?.value || '';
+        const contentFontSize = document.getElementById('edit_main_widget_image_content_font_size')?.value || '16';
+        const titleContentGap = document.getElementById('edit_main_widget_image_title_content_gap')?.value || '10';
+        const textPaddingLeft = document.getElementById('edit_main_widget_image_text_padding_left')?.value || '0';
+        const textPaddingRight = document.getElementById('edit_main_widget_image_text_padding_right')?.value || '0';
+        const textPaddingTop = document.getElementById('edit_main_widget_image_text_padding_top')?.value || '0';
+        const textPaddingBottom = document.getElementById('edit_main_widget_image_text_padding_bottom')?.value || '0';
+        const alignH = document.querySelector('input[name="edit_main_widget_image_align_h"]:checked')?.value || 'left';
+        const alignV = document.querySelector('input[name="edit_main_widget_image_align_v"]:checked')?.value || 'middle';
+        const textColor = document.getElementById('edit_main_widget_image_text_color')?.value || '#ffffff';
+        const hasButton = document.getElementById('edit_main_widget_image_has_button')?.checked || false;
+        const buttonText = document.getElementById('edit_main_widget_image_button_text')?.value || '';
+        const buttonLink = document.getElementById('edit_main_widget_image_button_link')?.value || '';
+        const buttonNewTab = document.getElementById('edit_main_widget_image_button_new_tab')?.checked || false;
+        const buttonColor = document.getElementById('edit_main_widget_image_button_color')?.value || '#0d6efd';
+        const buttonTextColor = document.getElementById('edit_main_widget_image_button_text_color')?.value || '#ffffff';
+        const buttonBorderColor = document.getElementById('edit_main_widget_image_button_border_color')?.value || '#0d6efd';
+        const buttonOpacity = document.getElementById('edit_main_widget_image_button_opacity')?.value || 100;
+        const buttonHoverBgColor = document.getElementById('edit_main_widget_image_button_hover_bg_color')?.value || '#0b5ed7';
+        const buttonHoverTextColor = document.getElementById('edit_main_widget_image_button_hover_text_color')?.value || '#ffffff';
+        const buttonHoverBorderColor = document.getElementById('edit_main_widget_image_button_hover_border_color')?.value || '#0a58ca';
+        
+        settings.text_overlay = textOverlay;
+        settings.title = title;
+        settings.title_font_size = parseInt(titleFontSize) || 24;
+        settings.content = content;
+        settings.content_font_size = parseInt(contentFontSize) || 16;
+        settings.title_content_gap = parseInt(titleContentGap) || 10;
+        settings.text_padding_left = parseInt(textPaddingLeft) || 0;
+        settings.text_padding_right = parseInt(textPaddingRight) || 0;
+        settings.text_padding_top = parseInt(textPaddingTop) || 0;
+        settings.text_padding_bottom = parseInt(textPaddingBottom) || 0;
+        settings.align_h = alignH;
+        settings.align_v = alignV;
+        settings.text_color = textColor;
+        settings.has_button = hasButton;
+        settings.button_text = buttonText;
+        settings.button_link = buttonLink;
+        settings.button_new_tab = buttonNewTab;
+        settings.button_color = buttonColor;
+        settings.button_text_color = buttonTextColor;
+        settings.button_border_color = buttonBorderColor;
+        settings.button_opacity = parseInt(buttonOpacity) || 100;
+        settings.button_hover_bg_color = buttonHoverBgColor;
+        settings.button_hover_text_color = buttonHoverTextColor;
+        settings.button_hover_border_color = buttonHoverBorderColor;
     } else if (widgetType === 'image_slide') {
         const slideDirection = document.querySelector('input[name="edit_main_image_slide_direction"]:checked')?.value || 'left';
         settings.slide_direction = slideDirection;

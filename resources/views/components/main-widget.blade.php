@@ -828,6 +828,60 @@
         $imageMarginTop = $imageSettings['margin_top'] ?? 0;
         $imageMarginBottom = $imageSettings['margin_bottom'] ?? 0;
         
+        // 텍스트 오버레이 설정
+        $textOverlay = $imageSettings['text_overlay'] ?? false;
+        $title = $imageSettings['title'] ?? '';
+        $titleFontSize = $imageSettings['title_font_size'] ?? 24;
+        $content = $imageSettings['content'] ?? '';
+        $contentFontSize = $imageSettings['content_font_size'] ?? 16;
+        $titleContentGap = $imageSettings['title_content_gap'] ?? 10;
+        $textPaddingLeft = $imageSettings['text_padding_left'] ?? 0;
+        $textPaddingRight = $imageSettings['text_padding_right'] ?? 0;
+        $textPaddingTop = $imageSettings['text_padding_top'] ?? 0;
+        $textPaddingBottom = $imageSettings['text_padding_bottom'] ?? 10;
+        $alignH = $imageSettings['align_h'] ?? 'left';
+        $alignV = $imageSettings['align_v'] ?? 'middle';
+        $textColor = $imageSettings['text_color'] ?? '#ffffff';
+        $hasButton = $imageSettings['has_button'] ?? false;
+        $buttonText = $imageSettings['button_text'] ?? '';
+        $buttonLink = $imageSettings['button_link'] ?? '';
+        $buttonNewTab = $imageSettings['button_new_tab'] ?? false;
+        $buttonColor = $imageSettings['button_color'] ?? '#0d6efd';
+        $buttonTextColor = $imageSettings['button_text_color'] ?? '#ffffff';
+        $buttonBorderColor = $imageSettings['button_border_color'] ?? '#0d6efd';
+        $buttonOpacity = $imageSettings['button_opacity'] ?? 100;
+        $buttonHoverBgColor = $imageSettings['button_hover_bg_color'] ?? '#0b5ed7';
+        $buttonHoverTextColor = $imageSettings['button_hover_text_color'] ?? '#ffffff';
+        $buttonHoverBorderColor = $imageSettings['button_hover_border_color'] ?? '#0a58ca';
+        
+        // 반응형 폰트 사이즈 계산
+        $responsiveTitleFontSize = 'clamp(' . ($titleFontSize * 0.65) . 'px, ' . ($titleFontSize / 8) . 'vw, ' . $titleFontSize . 'px)';
+        $responsiveContentFontSize = 'clamp(' . ($contentFontSize * 0.65) . 'px, ' . ($contentFontSize / 8) . 'vw, ' . $contentFontSize . 'px)';
+        
+        // 정렬 설정
+        $justifyContent = 'center';
+        if ($alignH === 'left') {
+            $justifyContent = 'flex-start';
+        } elseif ($alignH === 'right') {
+            $justifyContent = 'flex-end';
+        }
+        
+        $alignItems = 'center';
+        if ($alignV === 'top') {
+            $alignItems = 'flex-start';
+        } elseif ($alignV === 'bottom') {
+            $alignItems = 'flex-end';
+        }
+        
+        // 버튼 스타일 생성
+        $buttonBgColor = $buttonColor;
+        if ($buttonOpacity < 100) {
+            $rgb = sscanf($buttonColor, "#%02x%02x%02x");
+            $buttonBgColor = 'rgba(' . $rgb[0] . ', ' . $rgb[1] . ', ' . $rgb[2] . ', ' . ($buttonOpacity / 100) . ')';
+        }
+        $buttonStyle = 'background-color: ' . $buttonBgColor . '; color: ' . $buttonTextColor . '; border-color: ' . $buttonBorderColor . ';';
+        $buttonHoverStyle = 'background-color: ' . $buttonHoverBgColor . '; color: ' . $buttonHoverTextColor . '; border-color: ' . $buttonHoverBorderColor . ';';
+        
         // 컨테이너 정렬에 따라 justify-content 설정
         $imageJustifyContent = 'center';
         if ($verticalAlign === 'top') {
@@ -858,15 +912,55 @@
     @endphp
     @if($imageUrl)
         <div class="mb-0 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; max-width: 100%; {{ $imageWidgetStyle }}" data-widget-id="{{ $widget->id }}">
-            @if($link)
-                <a href="{{ $link }}" 
-                   @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
-                   style="{{ $imageLinkStyle }}">
-            @endif
-            <img src="{{ $imageUrl }}" alt="이미지" style="{{ $imageStyle }}">
-            @if($link)
-                </a>
-            @endif
+            <div style="position: relative; width: 100%;">
+                @if($link && !$hasButton)
+                    <a href="{{ $link }}" 
+                       @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
+                       style="{{ $imageLinkStyle }}">
+                @endif
+                <img src="{{ $imageUrl }}" alt="이미지" style="{{ $imageStyle }}">
+                @if($link && !$hasButton)
+                    </a>
+                @endif
+                
+                @if($textOverlay && ($title || $content))
+                    <div class="image-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
+                        <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
+                            @if($title)
+                                <h3 style="color: {{ $textColor }}; font-size: {{ $responsiveTitleFontSize }}; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
+                            @endif
+                            @if($content)
+                                <p style="color: {{ $textColor }}; font-size: {{ $responsiveContentFontSize }}; margin: 0;">{{ $content }}</p>
+                            @endif
+                            @if($hasButton && $buttonText)
+                                <div style="margin-top: {{ $titleContentGap }}px;">
+                                    <a href="{{ $buttonLink }}" 
+                                       @if($buttonNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                       class="image-button"
+                                       style="{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease;"
+                                       onmouseover="this.style.cssText += '{{ $buttonHoverStyle }}'"
+                                       onmouseout="this.style.cssText = '{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease;'">
+                                        {{ $buttonText }}
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @elseif($hasButton && $buttonText)
+                    <div class="image-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
+                        <div style="pointer-events: auto;">
+                            <a href="{{ $buttonLink }}" 
+                               @if($buttonNewTab) target="_blank" rel="noopener noreferrer" @endif
+                               class="image-button"
+                               style="{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease;"
+                               onmouseover="this.style.cssText += '{{ $buttonHoverStyle }}'"
+                               onmouseout="this.style.cssText = '{{ $buttonStyle }} padding: 10px 20px; border: 2px solid; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease;'">
+                                {{ $buttonText }}
+                            </a>
+                        </div>
+                    </div>
+                @endif
+            </div>
         </div>
     @endif
 @elseif($widget->type === 'image_slide')

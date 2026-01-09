@@ -606,6 +606,142 @@
             </label>
         </div>
     </div>
+    <div class="mb-3">
+        <div class="form-check">
+            <input class="form-check-input widget-image-text-overlay" 
+                   type="checkbox" 
+                   id="widget_image_text_overlay" 
+                   name="image_text_overlay"
+                   onchange="toggleWidgetImageTextOverlay()">
+            <label class="form-check-label" for="widget_image_text_overlay">
+                이미지 위 텍스트 활성화
+            </label>
+        </div>
+    </div>
+    <div id="widget_image_text_overlay_container" style="display: none;">
+        <div class="mb-3">
+            <label class="form-label">제목</label>
+            <input type="text" class="form-control widget-image-title" id="widget_image_title" name="image_title" placeholder="제목을 입력하세요">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">제목 폰트 크기 (px)</label>
+            <input type="number" class="form-control widget-image-title-font-size" id="widget_image_title_font_size" name="image_title_font_size" value="24" min="10" max="100">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">내용</label>
+            <textarea class="form-control widget-image-content" id="widget_image_content" name="image_content" rows="3" placeholder="내용을 입력하세요"></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">내용 폰트 크기 (px)</label>
+            <input type="number" class="form-control widget-image-content-font-size" id="widget_image_content_font_size" name="image_content_font_size" value="16" min="10" max="100">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">제목과 내용 사이 여백 (px)</label>
+            <input type="number" class="form-control widget-image-title-content-gap" id="widget_image_title_content_gap" name="image_title_content_gap" value="10" min="0" max="100">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">패딩</label>
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="form-label small">좌 (px)</label>
+                    <input type="number" class="form-control widget-image-text-padding-left" id="widget_image_text_padding_left" name="image_text_padding_left" value="0" min="0" max="200">
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">우 (px)</label>
+                    <input type="number" class="form-control widget-image-text-padding-right" id="widget_image_text_padding_right" name="image_text_padding_right" value="0" min="0" max="200">
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">상 (px)</label>
+                    <input type="number" class="form-control widget-image-text-padding-top" id="widget_image_text_padding_top" name="image_text_padding_top" value="0" min="0" max="200">
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">하 (px)</label>
+                    <input type="number" class="form-control widget-image-text-padding-bottom" id="widget_image_text_padding_bottom" name="image_text_padding_bottom" value="10" min="0" max="200">
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">수평 정렬</label>
+            <div class="btn-group w-100" role="group">
+                <input type="radio" class="btn-check widget-image-align-h" name="widget_image_align_h" id="widget_image_align_left" value="left" checked>
+                <label class="btn btn-outline-primary" for="widget_image_align_left"><i class="bi bi-text-left"></i> 좌측</label>
+                <input type="radio" class="btn-check widget-image-align-h" name="widget_image_align_h" id="widget_image_align_center" value="center">
+                <label class="btn btn-outline-primary" for="widget_image_align_center"><i class="bi bi-text-center"></i> 중앙</label>
+                <input type="radio" class="btn-check widget-image-align-h" name="widget_image_align_h" id="widget_image_align_right" value="right">
+                <label class="btn btn-outline-primary" for="widget_image_align_right"><i class="bi bi-text-right"></i> 우측</label>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">수직 정렬</label>
+            <div class="btn-group w-100" role="group">
+                <input type="radio" class="btn-check widget-image-align-v" name="widget_image_align_v" id="widget_image_align_top" value="top">
+                <label class="btn btn-outline-primary" for="widget_image_align_top"><i class="bi bi-align-top"></i> 상단</label>
+                <input type="radio" class="btn-check widget-image-align-v" name="widget_image_align_v" id="widget_image_align_middle" value="middle" checked>
+                <label class="btn btn-outline-primary" for="widget_image_align_middle"><i class="bi bi-align-middle"></i> 중앙</label>
+                <input type="radio" class="btn-check widget-image-align-v" name="widget_image_align_v" id="widget_image_align_bottom" value="bottom">
+                <label class="btn btn-outline-primary" for="widget_image_align_bottom"><i class="bi bi-align-bottom"></i> 하단</label>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">텍스트 색상</label>
+            <input type="color" class="form-control form-control-color widget-image-text-color" id="widget_image_text_color" name="image_text_color" value="#ffffff" title="텍스트 색상 선택">
+        </div>
+        <div class="mb-3">
+            <div class="form-check">
+                <input class="form-check-input widget-image-has-button" type="checkbox" id="widget_image_has_button" name="image_has_button" onchange="toggleWidgetImageButton()">
+                <label class="form-check-label" for="widget_image_has_button">버튼 추가</label>
+            </div>
+        </div>
+        <div id="widget_image_button_container" style="display: none;">
+            <div class="mb-3">
+                <label class="form-label">버튼 텍스트</label>
+                <input type="text" class="form-control widget-image-button-text" id="widget_image_button_text" name="image_button_text" placeholder="자세히 보기">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 링크</label>
+                <input type="url" class="form-control widget-image-button-link" id="widget_image_button_link" name="image_button_link" placeholder="https://example.com">
+            </div>
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input widget-image-button-new-tab" type="checkbox" id="widget_image_button_new_tab" name="image_button_new_tab">
+                    <label class="form-check-label" for="widget_image_button_new_tab">새창에서 열기</label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 색상</label>
+                <input type="color" class="form-control form-control-color widget-image-button-color" id="widget_image_button_color" name="image_button_color" value="#0d6efd" title="버튼 색상 선택">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 텍스트 색상</label>
+                <input type="color" class="form-control form-control-color widget-image-button-text-color" id="widget_image_button_text_color" name="image_button_text_color" value="#ffffff" title="버튼 텍스트 색상 선택">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 테두리 색상</label>
+                <input type="color" class="form-control form-control-color widget-image-button-border-color" id="widget_image_button_border_color" name="image_button_border_color" value="#0d6efd" title="버튼 테두리 색상 선택">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 배경 투명도</label>
+                <input type="range" class="form-range widget-image-button-opacity" id="widget_image_button_opacity" name="image_button_opacity" min="0" max="100" value="100" oninput="document.getElementById('widget_image_button_opacity_value').textContent = this.value + '%'">
+                <div class="d-flex justify-content-between">
+                    <small>0%</small>
+                    <small id="widget_image_button_opacity_value">100%</small>
+                    <small>100%</small>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 호버 배경 색상</label>
+                <input type="color" class="form-control form-control-color widget-image-button-hover-bg-color" id="widget_image_button_hover_bg_color" name="image_button_hover_bg_color" value="#0b5ed7" title="버튼 호버 배경 색상 선택">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 호버 텍스트 색상</label>
+                <input type="color" class="form-control form-control-color widget-image-button-hover-text-color" id="widget_image_button_hover_text_color" name="image_button_hover_text_color" value="#ffffff" title="버튼 호버 텍스트 색상 선택">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">버튼 호버 테두리 색상</label>
+                <input type="color" class="form-control form-control-color widget-image-button-hover-border-color" id="widget_image_button_hover_border_color" name="image_button_hover_border_color" value="#0a58ca" title="버튼 호버 테두리 색상 선택">
+            </div>
+        </div>
+    </div>
 </div>
 <div class="mb-3" id="widget_image_slide_container" style="display: none;">
     <div class="mb-3">
