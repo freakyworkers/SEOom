@@ -4188,42 +4188,6 @@ async function addMainWidget() {
         if (mapId) {
             settings.map_id = parseInt(mapId);
         }
-    } else if (widgetType === 'countdown') {
-        const countdownTitle = formData.get('countdown_title') || '';
-        const countdownContent = formData.get('countdown_content') || '';
-        const countdownType = formData.get('countdown_type') || 'dday';
-        
-        settings.countdown_title = countdownTitle;
-        settings.countdown_content = countdownContent;
-        settings.countdown_type = countdownType;
-        
-        if (countdownType === 'dday') {
-            const targetDate = formData.get('countdown_target_date');
-            if (targetDate) {
-                settings.countdown_target_date = targetDate;
-            }
-        } else if (countdownType === 'number') {
-            const animationEnabled = document.getElementById('widget_countdown_animation')?.checked || false;
-            settings.countdown_animation = animationEnabled;
-            
-            const numberItems = [];
-            const numberItemElements = document.querySelectorAll('.countdown-number-item');
-            numberItemElements.forEach((item) => {
-                const itemIndex = item.dataset.itemIndex;
-                const itemName = item.querySelector(`input[name="countdown_number[${itemIndex}][name]"]`)?.value || '';
-                const itemNumber = item.querySelector(`input[name="countdown_number[${itemIndex}][number]"]`)?.value || '';
-                const itemUnit = item.querySelector(`input[name="countdown_number[${itemIndex}][unit]"]`)?.value || '';
-                
-                if (itemName && itemNumber) {
-                    numberItems.push({
-                        name: itemName,
-                        number: parseInt(itemNumber) || 0,
-                        unit: itemUnit
-                    });
-                }
-            });
-            settings.countdown_number_items = numberItems;
-        }
     } else if (widgetType === 'block') {
         const blockTitle = formData.get('block_title');
         const blockContent = formData.get('block_content');
