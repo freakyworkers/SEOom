@@ -1145,6 +1145,60 @@
                                 <img id="edit_main_widget_block_image_preview" src="" alt="미리보기" style="max-width: 100%; height: auto; border-radius: 4px;">
                                 <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeBlockImage('edit_main_widget_block')">이미지 삭제</button>
                             </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit_main_widget_block_image_padding_top" class="form-label">이미지 상단 패딩 (px)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="edit_main_widget_block_image_padding_top" 
+                                           name="block_image_padding_top" 
+                                           value="0"
+                                           min="0"
+                                           max="200"
+                                           step="1"
+                                           placeholder="0">
+                                    <small class="text-muted">이미지 상단 패딩을 입력하세요 (0~200).</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit_main_widget_block_image_padding_bottom" class="form-label">이미지 하단 패딩 (px)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="edit_main_widget_block_image_padding_bottom" 
+                                           name="block_image_padding_bottom" 
+                                           value="0"
+                                           min="0"
+                                           max="200"
+                                           step="1"
+                                           placeholder="0">
+                                    <small class="text-muted">이미지 하단 패딩을 입력하세요 (0~200).</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit_main_widget_block_image_padding_left" class="form-label">이미지 좌측 패딩 (px)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="edit_main_widget_block_image_padding_left" 
+                                           name="block_image_padding_left" 
+                                           value="0"
+                                           min="0"
+                                           max="200"
+                                           step="1"
+                                           placeholder="0">
+                                    <small class="text-muted">이미지 좌측 패딩을 입력하세요 (0~200).</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit_main_widget_block_image_padding_right" class="form-label">이미지 우측 패딩 (px)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="edit_main_widget_block_image_padding_right" 
+                                           name="block_image_padding_right" 
+                                           value="0"
+                                           min="0"
+                                           max="200"
+                                           step="1"
+                                           placeholder="0">
+                                    <small class="text-muted">이미지 우측 패딩을 입력하세요 (0~200).</small>
+                                </div>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="edit_main_widget_block_title" class="form-label">제목</label>
@@ -3995,6 +4049,15 @@ async function addMainWidget() {
             if (blockImageUrl) {
                 settings.block_image_url = blockImageUrl;
             }
+            // 이미지 패딩 데이터 수집
+            const blockImagePaddingTop = document.getElementById('widget_block_image_padding_top')?.value || 0;
+            const blockImagePaddingBottom = document.getElementById('widget_block_image_padding_bottom')?.value || 0;
+            const blockImagePaddingLeft = document.getElementById('widget_block_image_padding_left')?.value || 0;
+            const blockImagePaddingRight = document.getElementById('widget_block_image_padding_right')?.value || 0;
+            settings.block_image_padding_top = blockImagePaddingTop !== '' && blockImagePaddingTop !== null ? parseInt(blockImagePaddingTop) : 0;
+            settings.block_image_padding_bottom = blockImagePaddingBottom !== '' && blockImagePaddingBottom !== null ? parseInt(blockImagePaddingBottom) : 0;
+            settings.block_image_padding_left = blockImagePaddingLeft !== '' && blockImagePaddingLeft !== null ? parseInt(blockImagePaddingLeft) : 0;
+            settings.block_image_padding_right = blockImagePaddingRight !== '' && blockImagePaddingRight !== null ? parseInt(blockImagePaddingRight) : 0;
         }
         // 버튼 데이터 수집
         const buttons = [];
@@ -4805,6 +4868,20 @@ function editMainWidget(widgetId) {
                     if (imageUrlInput) imageUrlInput.value = blockImageUrl;
                     if (previewImg) previewImg.src = blockImageUrl;
                     if (previewContainer) previewContainer.style.display = 'block';
+                }
+                
+                // 이미지 패딩 값 로드
+                if (document.getElementById('edit_main_widget_block_image_padding_top')) {
+                    document.getElementById('edit_main_widget_block_image_padding_top').value = blockImagePaddingTop || 0;
+                }
+                if (document.getElementById('edit_main_widget_block_image_padding_bottom')) {
+                    document.getElementById('edit_main_widget_block_image_padding_bottom').value = blockImagePaddingBottom || 0;
+                }
+                if (document.getElementById('edit_main_widget_block_image_padding_left')) {
+                    document.getElementById('edit_main_widget_block_image_padding_left').value = blockImagePaddingLeft || 0;
+                }
+                if (document.getElementById('edit_main_widget_block_image_padding_right')) {
+                    document.getElementById('edit_main_widget_block_image_padding_right').value = blockImagePaddingRight || 0;
                 }
                 
                 if (document.getElementById('edit_main_widget_block_title')) {
@@ -7231,6 +7308,15 @@ function saveMainWidgetSettings() {
             if (blockImageUrl) {
                 settings.block_image_url = blockImageUrl;
             }
+            // 이미지 패딩 데이터 수집
+            const blockImagePaddingTop = document.getElementById('edit_main_widget_block_image_padding_top')?.value || 0;
+            const blockImagePaddingBottom = document.getElementById('edit_main_widget_block_image_padding_bottom')?.value || 0;
+            const blockImagePaddingLeft = document.getElementById('edit_main_widget_block_image_padding_left')?.value || 0;
+            const blockImagePaddingRight = document.getElementById('edit_main_widget_block_image_padding_right')?.value || 0;
+            settings.block_image_padding_top = blockImagePaddingTop !== '' && blockImagePaddingTop !== null ? parseInt(blockImagePaddingTop) : 0;
+            settings.block_image_padding_bottom = blockImagePaddingBottom !== '' && blockImagePaddingBottom !== null ? parseInt(blockImagePaddingBottom) : 0;
+            settings.block_image_padding_left = blockImagePaddingLeft !== '' && blockImagePaddingLeft !== null ? parseInt(blockImagePaddingLeft) : 0;
+            settings.block_image_padding_right = blockImagePaddingRight !== '' && blockImagePaddingRight !== null ? parseInt(blockImagePaddingRight) : 0;
         }
         // 버튼 데이터 수집
         const buttons = [];
@@ -11130,6 +11216,16 @@ function toggleBlockImageFields(prefix) {
     
     if (enableCheckbox && imageContainer) {
         imageContainer.style.display = enableCheckbox.checked ? 'block' : 'none';
+        
+        // 이미지 패딩 필드들도 함께 표시/숨김
+        const paddingFields = imageContainer.querySelectorAll('[id*="image_padding"]');
+        paddingFields.forEach(field => {
+            const fieldContainer = field.closest('.col-md-6') || field.closest('.mb-3');
+            if (fieldContainer) {
+                fieldContainer.style.display = enableCheckbox.checked ? '' : 'none';
+            }
+        });
+        
         if (!enableCheckbox.checked) {
             // 이미지 필드 초기화
             const imageInput = document.getElementById(prefix === 'widget_block' ? 'widget_block_image' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image' : 'edit_custom_page_widget_block_image'));

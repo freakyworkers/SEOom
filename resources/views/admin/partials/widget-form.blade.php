@@ -211,6 +211,60 @@
             <img id="widget_block_image_preview" src="" alt="미리보기" style="max-width: 100%; height: auto; border-radius: 4px;">
             <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeBlockImage('widget_block')">이미지 삭제</button>
         </div>
+        <div class="row mt-3">
+            <div class="col-md-6 mb-3">
+                <label for="widget_block_image_padding_top" class="form-label">이미지 상단 패딩 (px)</label>
+                <input type="number" 
+                       class="form-control" 
+                       id="widget_block_image_padding_top" 
+                       name="block_image_padding_top" 
+                       value="0"
+                       min="0"
+                       max="200"
+                       step="1"
+                       placeholder="0">
+                <small class="text-muted">이미지 상단 패딩을 입력하세요 (0~200).</small>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="widget_block_image_padding_bottom" class="form-label">이미지 하단 패딩 (px)</label>
+                <input type="number" 
+                       class="form-control" 
+                       id="widget_block_image_padding_bottom" 
+                       name="block_image_padding_bottom" 
+                       value="0"
+                       min="0"
+                       max="200"
+                       step="1"
+                       placeholder="0">
+                <small class="text-muted">이미지 하단 패딩을 입력하세요 (0~200).</small>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="widget_block_image_padding_left" class="form-label">이미지 좌측 패딩 (px)</label>
+                <input type="number" 
+                       class="form-control" 
+                       id="widget_block_image_padding_left" 
+                       name="block_image_padding_left" 
+                       value="0"
+                       min="0"
+                       max="200"
+                       step="1"
+                       placeholder="0">
+                <small class="text-muted">이미지 좌측 패딩을 입력하세요 (0~200).</small>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="widget_block_image_padding_right" class="form-label">이미지 우측 패딩 (px)</label>
+                <input type="number" 
+                       class="form-control" 
+                       id="widget_block_image_padding_right" 
+                       name="block_image_padding_right" 
+                       value="0"
+                       min="0"
+                       max="200"
+                       step="1"
+                       placeholder="0">
+                <small class="text-muted">이미지 우측 패딩을 입력하세요 (0~200).</small>
+            </div>
+        </div>
     </div>
     <div class="mb-3">
         <label for="widget_block_title" class="form-label">제목</label>
