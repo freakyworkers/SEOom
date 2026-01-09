@@ -515,11 +515,14 @@ public function hasMainWidgetType(string $widgetType): bool
         // 플랜의 main widget types 확인
         $planModel = $this->planModel();
         if (!$planModel) {
+            \Log::warning("Site::hasMainWidgetType - planModel not found for site: {$this->id}, plan: {$this->plan}");
             return false;
         }
 
         $mainWidgetTypes = $planModel->main_widget_types ?? [];
-        return in_array($widgetType, $mainWidgetTypes);
+        $result = in_array($widgetType, $mainWidgetTypes);
+        \Log::info("Site::hasMainWidgetType - widgetType: {$widgetType}, site: {$this->id}, isMasterSite: " . ($this->isMasterSite() ? 'true' : 'false') . ", mainWidgetTypes: " . json_encode($mainWidgetTypes) . ", result: " . ($result ? 'true' : 'false'));
+        return $result;
     }
 
     /**
@@ -549,11 +552,14 @@ public function hasMainWidgetType(string $widgetType): bool
         // 플랜의 custom page widget types 확인
         $planModel = $this->planModel();
         if (!$planModel) {
+            \Log::warning("Site::hasCustomPageWidgetType - planModel not found for site: {$this->id}, plan: {$this->plan}");
             return false;
         }
 
         $customPageWidgetTypes = $planModel->custom_page_widget_types ?? [];
-        return in_array($widgetType, $customPageWidgetTypes);
+        $result = in_array($widgetType, $customPageWidgetTypes);
+        \Log::info("Site::hasCustomPageWidgetType - widgetType: {$widgetType}, site: {$this->id}, isMasterSite: " . ($this->isMasterSite() ? 'true' : 'false') . ", customPageWidgetTypes: " . json_encode($customPageWidgetTypes) . ", result: " . ($result ? 'true' : 'false'));
+        return $result;
     }
 
     /**

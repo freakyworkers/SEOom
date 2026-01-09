@@ -256,6 +256,10 @@ class MasterPlanController extends Controller
                 'custom_page_widget_types' => $request->input('custom_page_widget_types', []),
             ];
         }
+        
+        // 디버깅: main_widget_types와 custom_page_widget_types에 board_viewer가 포함되어 있는지 확인
+        \Log::info('Plan Update - main_widget_types: ' . json_encode($features['main_widget_types'] ?? []));
+        \Log::info('Plan Update - custom_page_widget_types: ' . json_encode($features['custom_page_widget_types'] ?? []));
 
         // limits 처리 (null 값 제거, '-'는 null로 처리)
         $limits = [];
@@ -289,6 +293,11 @@ class MasterPlanController extends Controller
             'sort_order' => $request->sort_order ?? $plan->sort_order,
             'is_active' => $request->boolean('is_active', $plan->is_active),
         ]);
+        
+        // 디버깅: 저장된 features 확인
+        $plan->refresh();
+        \Log::info('Plan Updated - saved main_widget_types: ' . json_encode($plan->main_widget_types ?? []));
+        \Log::info('Plan Updated - saved custom_page_widget_types: ' . json_encode($plan->custom_page_widget_types ?? []));
 
         return redirect()->route('master.plans.show', $plan->id)
             ->with('success', '요금제가 성공적으로 수정되었습니다.');
