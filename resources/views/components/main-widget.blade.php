@@ -910,6 +910,9 @@
                             $titleFontSize = $image['title_font_size'] ?? 24;
                             $content = $image['content'] ?? '';
                             $contentFontSize = $image['content_font_size'] ?? 16;
+                            // 반응형 폰트 사이즈 계산 - clamp(최소, 선호, 최대)
+                            $responsiveTitleFontSize = "clamp(" . round($titleFontSize * 0.65) . "px, " . round($titleFontSize / 8, 1) . "vw, " . $titleFontSize . "px)";
+                            $responsiveContentFontSize = "clamp(" . round($contentFontSize * 0.65) . "px, " . round($contentFontSize / 8, 1) . "vw, " . $contentFontSize . "px)";
                             $titleContentGap = $image['title_content_gap'] ?? 10;
                             $textPaddingLeft = $image['text_padding_left'] ?? 0;
                             $textPaddingRight = $image['text_padding_right'] ?? 0;
@@ -963,10 +966,10 @@
                                     <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
                                         <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
                                             @if($title)
-                                                <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
+                                                <h3 style="color: {{ $textColor }}; font-size: {{ $responsiveTitleFontSize }}; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
                                             @endif
                                             @if($content)
-                                                <p style="color: {{ $textColor }}; font-size: {{ $contentFontSize }}px; margin: 0;">{{ $content }}</p>
+                                                <p style="color: {{ $textColor }}; font-size: {{ $responsiveContentFontSize }}; margin: 0;">{{ $content }}</p>
                                             @endif
                                             @if($hasButton && $buttonText)
                                                 <a href="{{ $buttonLink }}" 
@@ -1013,6 +1016,9 @@
                             $titleFontSize = $image['title_font_size'] ?? 24;
                             $content = $image['content'] ?? '';
                             $contentFontSize = $image['content_font_size'] ?? 16;
+                            // 반응형 폰트 사이즈 계산 - clamp(최소, 선호, 최대)
+                            $responsiveTitleFontSize = "clamp(" . round($titleFontSize * 0.65) . "px, " . round($titleFontSize / 8, 1) . "vw, " . $titleFontSize . "px)";
+                            $responsiveContentFontSize = "clamp(" . round($contentFontSize * 0.65) . "px, " . round($contentFontSize / 8, 1) . "vw, " . $contentFontSize . "px)";
                             $titleContentGap = $image['title_content_gap'] ?? 10;
                             $textPaddingLeft = $image['text_padding_left'] ?? 0;
                             $textPaddingRight = $image['text_padding_right'] ?? 0;
@@ -1065,10 +1071,10 @@
                                     <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
                                         <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
                                             @if($title)
-                                                <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
+                                                <h3 style="color: {{ $textColor }}; font-size: {{ $responsiveTitleFontSize }}; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
                                             @endif
                                             @if($content)
-                                                <p style="color: {{ $textColor }}; font-size: {{ $contentFontSize }}px; margin: 0;">{{ $content }}</p>
+                                                <p style="color: {{ $textColor }}; font-size: {{ $responsiveContentFontSize }}; margin: 0;">{{ $content }}</p>
                                             @endif
                                             @if($hasButton && $buttonText)
                                                 <a href="{{ $buttonLink }}" 
@@ -1117,6 +1123,9 @@
                                 $titleFontSize = $image['title_font_size'] ?? 24;
                                 $content = $image['content'] ?? '';
                                 $contentFontSize = $image['content_font_size'] ?? 16;
+                                // 반응형 폰트 사이즈 계산 - clamp(최소, 선호, 최대)
+                                $responsiveTitleFontSize = "clamp(" . round($titleFontSize * 0.65) . "px, " . round($titleFontSize / 8, 1) . "vw, " . $titleFontSize . "px)";
+                                $responsiveContentFontSize = "clamp(" . round($contentFontSize * 0.65) . "px, " . round($contentFontSize / 8, 1) . "vw, " . $contentFontSize . "px)";
                                 $titleContentGap = $image['title_content_gap'] ?? 10;
                                 $alignH = $image['align_h'] ?? 'left';
                                 $alignV = $image['align_v'] ?? 'middle';
@@ -1165,10 +1174,10 @@
                                         <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none; z-index: 2;">
                                             <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
                                                 @if($title)
-                                                    <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
+                                                    <h3 style="color: {{ $textColor }}; font-size: {{ $responsiveTitleFontSize }}; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
                                                 @endif
                                                 @if($content)
-                                                    <p style="color: {{ $textColor }}; font-size: {{ $contentFontSize }}px; margin: 0;">{{ $content }}</p>
+                                                    <p style="color: {{ $textColor }}; font-size: {{ $responsiveContentFontSize }}; margin: 0;">{{ $content }}</p>
                                                 @endif
                                                 @if($hasButton && $buttonText)
                                                     <a href="{{ $buttonLink }}" 
