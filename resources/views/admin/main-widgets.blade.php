@@ -1665,13 +1665,8 @@
                                     <input type="color" class="form-control form-control-color edit-main-widget-image-button-border-color" id="edit_main_widget_image_button_border_color" name="image_button_border_color" value="#0d6efd" title="버튼 테두리 색상 선택">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">버튼 배경 투명도</label>
-                                    <input type="range" class="form-range edit-main-widget-image-button-opacity" id="edit_main_widget_image_button_opacity" name="image_button_opacity" min="0" max="100" value="100" oninput="document.getElementById('edit_main_widget_image_button_opacity_value').textContent = this.value + '%'">
-                                    <div class="d-flex justify-content-between">
-                                        <small>0%</small>
-                                        <small id="edit_main_widget_image_button_opacity_value">100%</small>
-                                        <small>100%</small>
-                                    </div>
+                                    <label class="form-label">버튼 배경 투명도 (%)</label>
+                                    <input type="number" class="form-control edit-main-widget-image-button-opacity" id="edit_main_widget_image_button_opacity" name="image_button_opacity" min="0" max="100" value="100">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">버튼 호버 배경 색상</label>
@@ -7039,13 +7034,8 @@ function addImageSlideItem() {
                     <input type="color" class="form-control form-control-color image-slide-button-border-color" value="#0d6efd" title="버튼 테두리 색상 선택">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">버튼 배경 투명도</label>
-                    <input type="range" class="form-range image-slide-button-opacity" min="0" max="100" value="100" oninput="document.getElementById('image_slide_${itemIndex}_button_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small>0%</small>
-                        <small id="image_slide_${itemIndex}_button_opacity_value">100%</small>
-                        <small>100%</small>
-                    </div>
+                    <label class="form-label">버튼 배경 투명도 (%)</label>
+                    <input type="number" class="form-control image-slide-button-opacity" min="0" max="100" value="100">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">버튼 호버 배경 색상</label>
@@ -9304,12 +9294,7 @@ function addEditMainImageSlideItem(imageData = null) {
                 </div>
                 <div class="mb-3">
                     <label class="form-label">버튼 배경 투명도</label>
-                    <input type="range" class="form-range edit-main-image-slide-button-opacity" min="0" max="100" value="${imageData ? (imageData.button_opacity || 100) : 100}" oninput="document.getElementById('edit_main_image_slide_${itemIndex}_button_opacity_value').textContent = this.value + '%'">
-                    <div class="d-flex justify-content-between">
-                        <small>0%</small>
-                        <small id="edit_main_image_slide_${itemIndex}_button_opacity_value">${imageData ? (imageData.button_opacity || 100) : 100}%</small>
-                        <small>100%</small>
-                    </div>
+                    <input type="number" class="form-control edit-main-image-slide-button-opacity" min="0" max="100" value="${imageData ? (imageData.button_opacity || 100) : 100}">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">버튼 호버 배경 색상</label>

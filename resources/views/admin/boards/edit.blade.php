@@ -447,6 +447,28 @@
                             </tr>
                             <tr>
                                 <td>
+                                    <label class="form-label mb-0">게시판 제목 및 설명 숨기기</label>
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        @php
+                                            $hideTitleDescription = $board->hide_title_description ?? false;
+                                            $isHideTitleDescriptionChecked = ($hideTitleDescription === true || $hideTitleDescription === 1 || $hideTitleDescription === '1');
+                                        @endphp
+                                        <input type="hidden" name="hide_title_description" id="hide_title_description_hidden" value="{{ $isHideTitleDescriptionChecked ? '1' : '0' }}">
+                                        <input type="checkbox" 
+                                               class="form-check-input" 
+                                               name="hide_title_description_checkbox" 
+                                               id="hide_title_description" 
+                                               {{ $isHideTitleDescriptionChecked ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="hide_title_description">
+                                            게시판 제목 및 설명 숨기기
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
                                     <label class="form-label mb-0">글 삭제</label>
                                 </td>
                                 <td>
@@ -520,6 +542,60 @@
                                 <div class="card-body">
                                     <label for="posts_per_page_mobile" class="form-label fw-bold mb-2">페이지당 표시 게시글</label>
                                     <input type="number" class="form-control form-control-sm" id="posts_per_page_mobile" name="posts_per_page" value="{{ old('posts_per_page', $board->posts_per_page ?? 20) }}" min="1">
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <label class="form-label fw-bold mb-2">저장하기</label>
+                                    @php
+                                        $enableSavedPosts = $board->saved_posts_enabled ?? false;
+                                        $isEnableSavedPostsChecked = ($enableSavedPosts === true || $enableSavedPosts === 1 || $enableSavedPosts === '1');
+                                    @endphp
+                                    <input type="hidden" name="saved_posts_enabled" id="saved_posts_enabled_hidden_mobile" value="{{ $isEnableSavedPostsChecked ? '1' : '0' }}">
+                                    <div class="form-check">
+                                        <input type="checkbox" 
+                                               class="form-check-input" 
+                                               id="saved_posts_enabled_mobile" 
+                                               value="1" 
+                                               {{ $isEnableSavedPostsChecked ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="saved_posts_enabled_mobile">
+                                            저장하기 활성화
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <label class="form-label fw-bold mb-2">게시판 제목 및 설명 숨기기</label>
+                                    @php
+                                        $hideTitleDescription = $board->hide_title_description ?? false;
+                                        $isHideTitleDescriptionChecked = ($hideTitleDescription === true || $hideTitleDescription === 1 || $hideTitleDescription === '1');
+                                    @endphp
+                                    <input type="hidden" name="hide_title_description" id="hide_title_description_hidden_mobile" value="{{ $isHideTitleDescriptionChecked ? '1' : '0' }}">
+                                    <div class="form-check">
+                                        <input type="checkbox" 
+                                               class="form-check-input" 
+                                               name="hide_title_description_checkbox" 
+                                               id="hide_title_description_mobile" 
+                                               {{ $isHideTitleDescriptionChecked ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="hide_title_description_mobile">
+                                            게시판 제목 및 설명 숨기기
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <label class="form-label fw-bold mb-2">글 삭제</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="date" class="form-control form-control-sm" id="delete_start_date_mobile" style="width: 120px;">
+                                        <span>~</span>
+                                        <input type="date" class="form-control form-control-sm" id="delete_end_date_mobile" style="width: 120px;">
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeletePosts()">삭제</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1261,6 +1337,15 @@
                 savedPostsEnabledHidden.value = this.checked ? '1' : '0';
             });
         }
+        
+        // 게시판 제목 및 설명 숨기기 체크박스 처리
+        const hideTitleDescriptionCheckbox = document.getElementById('hide_title_description');
+        const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
+        if (hideTitleDescriptionCheckbox && hideTitleDescriptionHidden) {
+            hideTitleDescriptionCheckbox.addEventListener('change', function() {
+                hideTitleDescriptionHidden.value = this.checked ? '1' : '0';
+            });
+        }
     });
     
     // 게시판 타입 변경 시 랜덤배치 체크박스 및 이벤트 표시 타입 표시/숨김
@@ -1464,6 +1549,10 @@
         }
         formData.append('saved_posts_enabled', savedPostsEnabledHidden?.value || '0');
         
+        // 게시판 제목 및 설명 숨기기
+        const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
+        formData.append('hide_title_description', hideTitleDescriptionHidden?.value || '0');
+        
         // AJAX로 제출하여 페이지 리로드 방지
         e.preventDefault();
         
@@ -1500,8 +1589,8 @@
     });
 
     function confirmDeletePosts() {
-        const startDate = document.getElementById('delete_start_date').value;
-        const endDate = document.getElementById('delete_end_date').value;
+        const startDate = document.getElementById('delete_start_date')?.value || document.getElementById('delete_start_date_mobile')?.value;
+        const endDate = document.getElementById('delete_end_date')?.value || document.getElementById('delete_end_date_mobile')?.value;
         
         if (!startDate || !endDate) {
             alert('시작일과 종료일을 모두 선택해주세요.');

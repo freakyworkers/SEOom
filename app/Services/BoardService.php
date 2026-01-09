@@ -121,6 +121,12 @@ class BoardService
             $enableLikes = $data['enable_likes'];
             $data['enable_likes'] = ($enableLikes == '1' || $enableLikes === true || $enableLikes === 'true');
         }
+        
+        // hide_title_description 처리
+        if (isset($data['hide_title_description'])) {
+            $hideTitleDescription = $data['hide_title_description'];
+            $data['hide_title_description'] = ($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true');
+        }
 
         $board->update($data);
         return $board;

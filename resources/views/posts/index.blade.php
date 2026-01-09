@@ -25,9 +25,14 @@
                 <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: auto;">
             </div>
         @endif
-        <div class="bg-white p-3 rounded shadow-sm">
-            <h2 class="mb-1"><i class="bi bi-file-text"></i> {{ $board->name }}</h2>
-        </div>
+        @php
+            $hideTitleDescription = $board->hide_title_description ?? false;
+        @endphp
+        @if(!$hideTitleDescription)
+            <div class="bg-white p-3 rounded shadow-sm">
+                <h2 class="mb-1"><i class="bi bi-file-text"></i> {{ $board->name }}</h2>
+            </div>
+        @endif
     </div>
 
     @if($board->topics()->count() > 0)
