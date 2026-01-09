@@ -4488,11 +4488,17 @@ async function addMainWidget() {
             
             if (imageFile) {
                 // 이미지 압축 처리
-                const compressedFile = await compressImage(imageFile);
-                if (compressedFile) {
-                    formData.append(`image_slide[${itemIndex}][image_file]`, compressedFile, compressedFile.name);
-                } else {
-                    // 압축 실패 시 원본 파일 사용
+                try {
+                    const compressedFile = await compressImage(imageFile);
+                    if (compressedFile) {
+                        formData.append(`image_slide[${itemIndex}][image_file]`, compressedFile, compressedFile.name);
+                    } else {
+                        // 압축 실패 시 원본 파일 사용
+                        formData.append(`image_slide[${itemIndex}][image_file]`, imageFile);
+                    }
+                } catch (error) {
+                    console.error('이미지 압축 오류:', error);
+                    // 오류 발생 시 원본 파일 사용
                     formData.append(`image_slide[${itemIndex}][image_file]`, imageFile);
                 }
             }
