@@ -3744,7 +3744,7 @@ async function addCustomPageWidget() {
         const buttonColor = document.getElementById('widget_image_button_color')?.value || '#0d6efd';
         const buttonTextColor = document.getElementById('widget_image_button_text_color')?.value || '#ffffff';
         const buttonBorderColor = document.getElementById('widget_image_button_border_color')?.value || '#0d6efd';
-        const buttonOpacity = document.getElementById('widget_image_button_opacity')?.value || 100;
+        const buttonOpacity = document.getElementById('widget_image_button_opacity')?.value ?? 100;
         const buttonHoverBgColor = document.getElementById('widget_image_button_hover_bg_color')?.value || '#0b5ed7';
         const buttonHoverTextColor = document.getElementById('widget_image_button_hover_text_color')?.value || '#ffffff';
         const buttonHoverBorderColor = document.getElementById('widget_image_button_hover_border_color')?.value || '#0a58ca';
@@ -3769,7 +3769,7 @@ async function addCustomPageWidget() {
         settings.button_color = buttonColor;
         settings.button_text_color = buttonTextColor;
         settings.button_border_color = buttonBorderColor;
-        settings.button_opacity = parseInt(buttonOpacity) || 100;
+        settings.button_opacity = (buttonOpacity !== '' && buttonOpacity !== null && buttonOpacity !== undefined) ? parseInt(buttonOpacity) : 100;
         settings.button_hover_bg_color = buttonHoverBgColor;
         settings.button_hover_text_color = buttonHoverTextColor;
         settings.button_hover_border_color = buttonHoverBorderColor;
@@ -6275,7 +6275,7 @@ function saveCustomPageWidgetSettings() {
         const buttonColor = document.getElementById('edit_custom_page_widget_image_button_color')?.value || '#0d6efd';
         const buttonTextColor = document.getElementById('edit_custom_page_widget_image_button_text_color')?.value || '#ffffff';
         const buttonBorderColor = document.getElementById('edit_custom_page_widget_image_button_border_color')?.value || '#0d6efd';
-        const buttonOpacity = document.getElementById('edit_custom_page_widget_image_button_opacity')?.value || 100;
+        const buttonOpacity = document.getElementById('edit_custom_page_widget_image_button_opacity')?.value ?? 100;
         const buttonHoverBgColor = document.getElementById('edit_custom_page_widget_image_button_hover_bg_color')?.value || '#0b5ed7';
         const buttonHoverTextColor = document.getElementById('edit_custom_page_widget_image_button_hover_text_color')?.value || '#ffffff';
         const buttonHoverBorderColor = document.getElementById('edit_custom_page_widget_image_button_hover_border_color')?.value || '#0a58ca';
@@ -6300,7 +6300,7 @@ function saveCustomPageWidgetSettings() {
         settings.button_color = buttonColor;
         settings.button_text_color = buttonTextColor;
         settings.button_border_color = buttonBorderColor;
-        settings.button_opacity = parseInt(buttonOpacity) || 100;
+        settings.button_opacity = (buttonOpacity !== '' && buttonOpacity !== null && buttonOpacity !== undefined) ? parseInt(buttonOpacity) : 100;
         settings.button_hover_bg_color = buttonHoverBgColor;
         settings.button_hover_text_color = buttonHoverTextColor;
         settings.button_hover_border_color = buttonHoverBorderColor;

@@ -4552,7 +4552,7 @@ async function addMainWidget() {
         const buttonColor = document.getElementById('widget_image_button_color')?.value || '#0d6efd';
         const buttonTextColor = document.getElementById('widget_image_button_text_color')?.value || '#ffffff';
         const buttonBorderColor = document.getElementById('widget_image_button_border_color')?.value || '#0d6efd';
-        const buttonOpacity = document.getElementById('widget_image_button_opacity')?.value || 100;
+        const buttonOpacity = document.getElementById('widget_image_button_opacity')?.value ?? 100;
         const buttonHoverBgColor = document.getElementById('widget_image_button_hover_bg_color')?.value || '#0b5ed7';
         const buttonHoverTextColor = document.getElementById('widget_image_button_hover_text_color')?.value || '#ffffff';
         const buttonHoverBorderColor = document.getElementById('widget_image_button_hover_border_color')?.value || '#0a58ca';
@@ -4577,7 +4577,7 @@ async function addMainWidget() {
         settings.button_color = buttonColor;
         settings.button_text_color = buttonTextColor;
         settings.button_border_color = buttonBorderColor;
-        settings.button_opacity = parseInt(buttonOpacity) || 100;
+        settings.button_opacity = (buttonOpacity !== '' && buttonOpacity !== null && buttonOpacity !== undefined) ? parseInt(buttonOpacity) : 100;
         settings.button_hover_bg_color = buttonHoverBgColor;
         settings.button_hover_text_color = buttonHoverTextColor;
         settings.button_hover_border_color = buttonHoverBorderColor;
@@ -4634,7 +4634,7 @@ async function addMainWidget() {
             const buttonColor = item.querySelector('.image-slide-button-color')?.value || '#0d6efd';
             const buttonTextColor = item.querySelector('.image-slide-button-text-color')?.value || '#ffffff';
             const buttonBorderColor = item.querySelector('.image-slide-button-border-color')?.value || '#0d6efd';
-            const buttonOpacity = item.querySelector('.image-slide-button-opacity')?.value || 100;
+            const buttonOpacity = item.querySelector('.image-slide-button-opacity')?.value ?? 100;
             const buttonHoverBgColor = item.querySelector('.image-slide-button-hover-bg-color')?.value || '#0b5ed7';
             const buttonHoverTextColor = item.querySelector('.image-slide-button-hover-text-color')?.value || '#ffffff';
             const buttonHoverBorderColor = item.querySelector('.image-slide-button-hover-border-color')?.value || '#0a58ca';
@@ -5459,9 +5459,10 @@ function editMainWidget(widgetId) {
                     document.getElementById('edit_main_widget_image_button_border_color').value = settings.button_border_color || '#0d6efd';
                 }
                 if (document.getElementById('edit_main_widget_image_button_opacity')) {
-                    document.getElementById('edit_main_widget_image_button_opacity').value = settings.button_opacity || 100;
+                    const opacityValue = (settings.button_opacity !== undefined && settings.button_opacity !== null) ? settings.button_opacity : 100;
+                    document.getElementById('edit_main_widget_image_button_opacity').value = opacityValue;
                     const opacityValueEl = document.getElementById('edit_main_widget_image_button_opacity_value');
-                    if (opacityValueEl) opacityValueEl.textContent = (settings.button_opacity || 100) + '%';
+                    if (opacityValueEl) opacityValueEl.textContent = opacityValue + '%';
                 }
                 if (document.getElementById('edit_main_widget_image_button_hover_bg_color')) {
                     document.getElementById('edit_main_widget_image_button_hover_bg_color').value = settings.button_hover_bg_color || '#0b5ed7';
@@ -8032,7 +8033,7 @@ async function saveMainWidgetSettings() {
         const buttonColor = document.getElementById('edit_main_widget_image_button_color')?.value || '#0d6efd';
         const buttonTextColor = document.getElementById('edit_main_widget_image_button_text_color')?.value || '#ffffff';
         const buttonBorderColor = document.getElementById('edit_main_widget_image_button_border_color')?.value || '#0d6efd';
-        const buttonOpacity = document.getElementById('edit_main_widget_image_button_opacity')?.value || 100;
+        const buttonOpacity = document.getElementById('edit_main_widget_image_button_opacity')?.value ?? 100;
         const buttonHoverBgColor = document.getElementById('edit_main_widget_image_button_hover_bg_color')?.value || '#0b5ed7';
         const buttonHoverTextColor = document.getElementById('edit_main_widget_image_button_hover_text_color')?.value || '#ffffff';
         const buttonHoverBorderColor = document.getElementById('edit_main_widget_image_button_hover_border_color')?.value || '#0a58ca';
@@ -8057,7 +8058,7 @@ async function saveMainWidgetSettings() {
         settings.button_color = buttonColor;
         settings.button_text_color = buttonTextColor;
         settings.button_border_color = buttonBorderColor;
-        settings.button_opacity = parseInt(buttonOpacity) || 100;
+        settings.button_opacity = (buttonOpacity !== '' && buttonOpacity !== null && buttonOpacity !== undefined) ? parseInt(buttonOpacity) : 100;
         settings.button_hover_bg_color = buttonHoverBgColor;
         settings.button_hover_text_color = buttonHoverTextColor;
         settings.button_hover_border_color = buttonHoverBorderColor;
@@ -8121,7 +8122,7 @@ async function saveMainWidgetSettings() {
             const buttonColor = item.querySelector('.edit-main-image-slide-button-color')?.value || '#0d6efd';
             const buttonTextColor = item.querySelector('.edit-main-image-slide-button-text-color')?.value || '#ffffff';
             const buttonBorderColor = item.querySelector('.edit-main-image-slide-button-border-color')?.value || '#0d6efd';
-            const buttonOpacity = item.querySelector('.edit-main-image-slide-button-opacity')?.value || 100;
+            const buttonOpacity = item.querySelector('.edit-main-image-slide-button-opacity')?.value ?? 100;
             const buttonHoverBgColor = item.querySelector('.edit-main-image-slide-button-hover-bg-color')?.value || '#0b5ed7';
             const buttonHoverTextColor = item.querySelector('.edit-main-image-slide-button-hover-text-color')?.value || '#ffffff';
             const buttonHoverBorderColor = item.querySelector('.edit-main-image-slide-button-hover-border-color')?.value || '#0a58ca';
@@ -9294,7 +9295,7 @@ function addEditMainImageSlideItem(imageData = null) {
                 </div>
                 <div class="mb-3">
                     <label class="form-label">버튼 배경 투명도</label>
-                    <input type="number" class="form-control edit-main-image-slide-button-opacity" min="0" max="100" value="${imageData ? (imageData.button_opacity || 100) : 100}">
+                    <input type="number" class="form-control edit-main-image-slide-button-opacity" min="0" max="100" value="${imageData ? ((imageData.button_opacity !== undefined && imageData.button_opacity !== null) ? imageData.button_opacity : 100) : 100}">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">버튼 호버 배경 색상</label>
