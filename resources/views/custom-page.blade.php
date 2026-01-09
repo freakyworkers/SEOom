@@ -219,7 +219,7 @@
                                         $widgetWrapperStyleMargin = 'margin-top: 0 !important;';
                                     } else {
                                         // 첫 번째가 아닌 위젯은 상단 간격 적용
-                                        $widgetMarginClass .= $widgetSpacingTopClass;
+                                        $widgetMarginClass = $widgetSpacingTopClass;
                                     }
                                     // 마지막 위젯은 하단 마진 0
                                     if ($isLastWidget) {

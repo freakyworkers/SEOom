@@ -6388,7 +6388,15 @@ function saveCustomPageWidgetSettings() {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            return response.text().then(text => {
+                console.error('Error response:', text.substring(0, 500));
+                try {
+                    const errorData = JSON.parse(text);
+                    throw new Error(errorData.message || errorData.error || 'Network response was not ok: ' + response.status);
+                } catch (e) {
+                    throw new Error('Network response was not ok: ' + response.status + ' - ' + text.substring(0, 200));
+                }
+            });
         }
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
