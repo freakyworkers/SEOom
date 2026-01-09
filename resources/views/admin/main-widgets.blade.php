@@ -4634,7 +4634,8 @@ async function addMainWidget() {
             const buttonColor = item.querySelector('.image-slide-button-color')?.value || '#0d6efd';
             const buttonTextColor = item.querySelector('.image-slide-button-text-color')?.value || '#ffffff';
             const buttonBorderColor = item.querySelector('.image-slide-button-border-color')?.value || '#0d6efd';
-            const buttonOpacity = item.querySelector('.image-slide-button-opacity')?.value ?? 100;
+            const buttonOpacityInput = item.querySelector('.image-slide-button-opacity');
+            const buttonOpacity = (buttonOpacityInput && buttonOpacityInput.value !== '' && buttonOpacityInput.value !== null && buttonOpacityInput.value !== undefined) ? buttonOpacityInput.value : '100';
             const buttonHoverBgColor = item.querySelector('.image-slide-button-hover-bg-color')?.value || '#0b5ed7';
             const buttonHoverTextColor = item.querySelector('.image-slide-button-hover-text-color')?.value || '#ffffff';
             const buttonHoverBorderColor = item.querySelector('.image-slide-button-hover-border-color')?.value || '#0a58ca';
@@ -8122,7 +8123,8 @@ async function saveMainWidgetSettings() {
             const buttonColor = item.querySelector('.edit-main-image-slide-button-color')?.value || '#0d6efd';
             const buttonTextColor = item.querySelector('.edit-main-image-slide-button-text-color')?.value || '#ffffff';
             const buttonBorderColor = item.querySelector('.edit-main-image-slide-button-border-color')?.value || '#0d6efd';
-            const buttonOpacity = item.querySelector('.edit-main-image-slide-button-opacity')?.value ?? 100;
+            const buttonOpacityInput = item.querySelector('.edit-main-image-slide-button-opacity');
+            const buttonOpacity = (buttonOpacityInput && buttonOpacityInput.value !== '' && buttonOpacityInput.value !== null && buttonOpacityInput.value !== undefined) ? buttonOpacityInput.value : '100';
             const buttonHoverBgColor = item.querySelector('.edit-main-image-slide-button-hover-bg-color')?.value || '#0b5ed7';
             const buttonHoverTextColor = item.querySelector('.edit-main-image-slide-button-hover-text-color')?.value || '#ffffff';
             const buttonHoverBorderColor = item.querySelector('.edit-main-image-slide-button-hover-border-color')?.value || '#0a58ca';
