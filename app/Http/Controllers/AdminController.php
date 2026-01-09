@@ -3550,9 +3550,15 @@ class AdminController extends Controller
         // 플랜에 활성화된 위젯 타입만 필터링
         $allTypes = MainWidget::getAvailableTypes();
         $availableTypes = [];
-        foreach ($allTypes as $key => $label) {
-            if ($site->hasMainWidgetType($key)) {
-                $availableTypes[$key] = $label;
+        
+        // 마스터 사이트는 모든 위젯 타입 사용 가능
+        if ($site->isMasterSite()) {
+            $availableTypes = $allTypes;
+        } else {
+            foreach ($allTypes as $key => $label) {
+                if ($site->hasMainWidgetType($key)) {
+                    $availableTypes[$key] = $label;
+                }
             }
         }
         
@@ -4350,9 +4356,15 @@ class AdminController extends Controller
         // 플랜에 활성화된 위젯 타입만 필터링
         $allTypes = \App\Models\CustomPageWidget::getAvailableTypes();
         $availableTypes = [];
-        foreach ($allTypes as $key => $label) {
-            if ($site->hasCustomPageWidgetType($key)) {
-                $availableTypes[$key] = $label;
+        
+        // 마스터 사이트는 모든 위젯 타입 사용 가능
+        if ($site->isMasterSite()) {
+            $availableTypes = $allTypes;
+        } else {
+            foreach ($allTypes as $key => $label) {
+                if ($site->hasCustomPageWidgetType($key)) {
+                    $availableTypes[$key] = $label;
+                }
             }
         }
         
