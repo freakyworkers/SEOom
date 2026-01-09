@@ -2677,6 +2677,9 @@
                     @if(!$hideTitleDescription)
                         <div class="bg-white p-3 rounded shadow-sm mb-3">
                             <h2 class="mb-1"><i class="bi bi-file-text"></i> {{ $board->name }}</h2>
+                            @if($board->description)
+                                <p class="text-muted mb-0">{{ $board->description }}</p>
+                            @endif
                         </div>
                     @endif
                     
