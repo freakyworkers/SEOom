@@ -491,7 +491,7 @@ class Site extends Model
     /**
      * Check if site has a specific main widget type.
      */
-public function hasMainWidgetType(string $widgetType): bool
+    public function hasMainWidgetType(string $widgetType): bool
     {
         // create_site 위젯은 마스터 사이트에서만 사용 가능
         if ($widgetType === 'create_site') {
@@ -508,7 +508,10 @@ public function hasMainWidgetType(string $widgetType): bool
         if ($customFeatures !== null) {
             $customFeaturesArray = is_array($customFeatures) ? $customFeatures : json_decode($customFeatures, true);
             if (is_array($customFeaturesArray) && isset($customFeaturesArray['main_widget_types'])) {
-                return in_array($widgetType, $customFeaturesArray['main_widget_types'] ?? []);
+                $customMainWidgetTypes = $customFeaturesArray['main_widget_types'] ?? [];
+                if (is_array($customMainWidgetTypes)) {
+                    return in_array($widgetType, $customMainWidgetTypes);
+                }
             }
         }
 
@@ -519,6 +522,10 @@ public function hasMainWidgetType(string $widgetType): bool
         }
 
         $mainWidgetTypes = $planModel->main_widget_types ?? [];
+        if (!is_array($mainWidgetTypes)) {
+            return false;
+        }
+        
         return in_array($widgetType, $mainWidgetTypes);
     }
 
@@ -542,7 +549,10 @@ public function hasMainWidgetType(string $widgetType): bool
         if ($customFeatures !== null) {
             $customFeaturesArray = is_array($customFeatures) ? $customFeatures : json_decode($customFeatures, true);
             if (is_array($customFeaturesArray) && isset($customFeaturesArray['custom_page_widget_types'])) {
-                return in_array($widgetType, $customFeaturesArray['custom_page_widget_types'] ?? []);
+                $customCustomPageWidgetTypes = $customFeaturesArray['custom_page_widget_types'] ?? [];
+                if (is_array($customCustomPageWidgetTypes)) {
+                    return in_array($widgetType, $customCustomPageWidgetTypes);
+                }
             }
         }
 
@@ -553,6 +563,10 @@ public function hasMainWidgetType(string $widgetType): bool
         }
 
         $customPageWidgetTypes = $planModel->custom_page_widget_types ?? [];
+        if (!is_array($customPageWidgetTypes)) {
+            return false;
+        }
+        
         return in_array($widgetType, $customPageWidgetTypes);
     }
 
