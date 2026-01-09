@@ -1338,6 +1338,55 @@
             });
         }
         
+        // 게시판 제목 및 설명 숨기기 체크박스 처리 (데스크탑)
+        const hideTitleDescriptionCheckbox = document.getElementById('hide_title_description');
+        const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
+        if (hideTitleDescriptionCheckbox && hideTitleDescriptionHidden) {
+            hideTitleDescriptionCheckbox.addEventListener('change', function() {
+                hideTitleDescriptionHidden.value = this.checked ? '1' : '0';
+            });
+        }
+        
+        // 게시판 제목 및 설명 숨기기 체크박스 처리 (모바일)
+        const hideTitleDescriptionCheckboxMobile = document.getElementById('hide_title_description_mobile');
+        const hideTitleDescriptionHiddenMobile = document.getElementById('hide_title_description_hidden_mobile');
+        if (hideTitleDescriptionCheckboxMobile && hideTitleDescriptionHiddenMobile) {
+            hideTitleDescriptionCheckboxMobile.addEventListener('change', function() {
+                hideTitleDescriptionHiddenMobile.value = this.checked ? '1' : '0';
+            });
+        }
+        
+        // 모바일 저장하기 체크박스 처리
+        const savedPostsEnabledCheckboxMobile = document.getElementById('saved_posts_enabled_mobile');
+        const savedPostsEnabledHiddenMobile = document.getElementById('saved_posts_enabled_hidden_mobile');
+        if (savedPostsEnabledCheckboxMobile && savedPostsEnabledHiddenMobile) {
+            savedPostsEnabledCheckboxMobile.addEventListener('change', function() {
+                savedPostsEnabledHiddenMobile.value = this.checked ? '1' : '0';
+            });
+        }
+        
+        // 모바일 글 삭제 날짜 동기화
+        const deleteStartDateMobile = document.getElementById('delete_start_date_mobile');
+        const deleteEndDateMobile = document.getElementById('delete_end_date_mobile');
+        const deleteStartDate = document.getElementById('delete_start_date');
+        const deleteEndDate = document.getElementById('delete_end_date');
+        if (deleteStartDateMobile && deleteStartDate) {
+            deleteStartDateMobile.addEventListener('change', function() {
+                deleteStartDate.value = this.value;
+            });
+            deleteStartDate.addEventListener('change', function() {
+                deleteStartDateMobile.value = this.value;
+            });
+        }
+        if (deleteEndDateMobile && deleteEndDate) {
+            deleteEndDateMobile.addEventListener('change', function() {
+                deleteEndDate.value = this.value;
+            });
+            deleteEndDate.addEventListener('change', function() {
+                deleteEndDateMobile.value = this.value;
+            });
+        }
+        
         // 게시판 제목 및 설명 숨기기 체크박스 처리
         const hideTitleDescriptionCheckbox = document.getElementById('hide_title_description');
         const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
@@ -1549,9 +1598,11 @@
         }
         formData.append('saved_posts_enabled', savedPostsEnabledHidden?.value || '0');
         
-        // 게시판 제목 및 설명 숨기기
+        // 게시판 제목 및 설명 숨기기 (데스크탑 또는 모바일)
         const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
-        formData.append('hide_title_description', hideTitleDescriptionHidden?.value || '0');
+        const hideTitleDescriptionHiddenMobile = document.getElementById('hide_title_description_hidden_mobile');
+        const hideTitleDescriptionValue = hideTitleDescriptionHidden?.value || hideTitleDescriptionHiddenMobile?.value || '0';
+        formData.append('hide_title_description', hideTitleDescriptionValue);
         
         // AJAX로 제출하여 페이지 리로드 방지
         e.preventDefault();
