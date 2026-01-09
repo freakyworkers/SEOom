@@ -174,8 +174,35 @@
         // 다크모드에서 텍스트 색상 조정
         $fontColor = darkModeTextColor($fontColor, $isDark);
         
+        // 이미지 패딩이 있는지 확인 (하나라도 0이 아니면 패딩 있음)
+        $hasImagePadding = $enableImage && $blockImageUrl && ($blockImagePaddingTop > 0 || $blockImagePaddingBottom > 0 || $blockImagePaddingLeft > 0 || $blockImagePaddingRight > 0);
+        
         // 외부 컨테이너 스타일 (패딩 없음, 그림자/애니메이션 등 유지)
         $outerBlockStyle = "width: 100%;";
+        
+        // 이미지 패딩이 있으면 외부 컨테이너에 배경 적용 (통일된 배경)
+        if ($hasImagePadding) {
+            if ($backgroundType === 'color') {
+                $adjustedBgColor = darkModeBackground($backgroundColor, $isDark);
+                if ($backgroundColorAlpha < 100) {
+                    $adjustedBgColor = hexToRgbaButton($adjustedBgColor, $backgroundColorAlpha / 100);
+                }
+                $outerBlockStyle .= " background-color: {$adjustedBgColor};";
+            } else if ($backgroundType === 'gradient') {
+                $gradientStart = $blockSettings['background_gradient_start'] ?? '#ffffff';
+                $gradientEnd = $blockSettings['background_gradient_end'] ?? '#000000';
+                $gradientStart = darkModeBackground($gradientStart, $isDark);
+                $gradientEnd = darkModeBackground($gradientEnd, $isDark);
+                $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
+                $outerBlockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
+            } else if ($backgroundType === 'image' && $backgroundImageUrl) {
+                $bgSize = $backgroundImageFullWidth ? '100% auto' : 'cover';
+                $outerBlockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: {$bgSize}; background-position: center top; background-repeat: no-repeat;";
+                if ($backgroundImageAlpha < 100) {
+                    $outerBlockStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
+                }
+            }
+        }
         
         // 이미지 컨테이너 스타일 설정
         $imageContainerStyle = "width: 100%; margin: 0; box-sizing: border-box; overflow: hidden; flex-shrink: 0;";
@@ -185,27 +212,9 @@
         if ($enableImage && $blockImageUrl) {
             $imageContainerStyle .= " padding-top: {$blockImagePaddingTop}px; padding-bottom: {$blockImagePaddingBottom}px; padding-left: {$blockImagePaddingLeft}px; padding-right: {$blockImagePaddingRight}px;";
             
-            // 이미지 컨테이너 배경색을 블록 배경과 동일하게 설정
-            if ($backgroundType === 'color') {
-                $adjustedBgColor = darkModeBackground($backgroundColor, $isDark);
-                if ($backgroundColorAlpha < 100) {
-                    $adjustedBgColor = hexToRgbaButton($adjustedBgColor, $backgroundColorAlpha / 100);
-                }
-                $imageContainerStyle .= " background-color: {$adjustedBgColor};";
-            } else if ($backgroundType === 'gradient') {
-                $gradientStart = $blockSettings['background_gradient_start'] ?? '#ffffff';
-                $gradientEnd = $blockSettings['background_gradient_end'] ?? '#000000';
-                $gradientStart = darkModeBackground($gradientStart, $isDark);
-                $gradientEnd = darkModeBackground($gradientEnd, $isDark);
-                $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
-                $imageContainerStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
-            } else if ($backgroundType === 'image' && $backgroundImageUrl) {
-                $bgSize = $backgroundImageFullWidth ? '100% auto' : 'cover';
-                $imageContainerStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: {$bgSize}; background-position: center top; background-repeat: no-repeat;";
-                if ($backgroundImageAlpha < 100) {
-                    $imageContainerStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
-                }
-            }
+            // 이미지 패딩이 있으면 배경 없이 (외부 컨테이너 배경 사용)
+            // 이미지 패딩이 없으면 배경 없이 (내용 컨테이너 배경 사용)
+            // 배경은 적용하지 않음
         } else {
             $imageContainerStyle .= " padding: 0;";
         }
@@ -241,7 +250,7 @@
         // 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1과 height: 100% 적용
         $outerBlockStyle .= " flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column; justify-content: {$justifyContent}; margin-top: 0 !important; margin-bottom: 0 !important;";
         
-        // 내용 컨테이너 스타일 (패딩 있음, 배경색/그라데이션/배경 이미지 적용)
+        // 내용 컨테이너 스타일 (패딩 있음)
         $contentBlockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
         
         // 라운드 테마 적용 (이미지가 있으면 하단만, 없으면 전체)
@@ -255,28 +264,35 @@
             }
         }
         
-        if ($backgroundType === 'color') {
-            $adjustedBgColor = darkModeBackground($backgroundColor, $isDark);
-            // 투명도 적용
-            if ($backgroundColorAlpha < 100) {
-                $adjustedBgColor = hexToRgbaButton($adjustedBgColor, $backgroundColorAlpha / 100);
+        // 이미지 패딩이 없을 때만 내용 컨테이너에 배경 적용
+        // 이미지 패딩이 있으면 외부 컨테이너 배경 사용 (통일된 배경)
+        if (!$hasImagePadding) {
+            if ($backgroundType === 'color') {
+                $adjustedBgColor = darkModeBackground($backgroundColor, $isDark);
+                // 투명도 적용
+                if ($backgroundColorAlpha < 100) {
+                    $adjustedBgColor = hexToRgbaButton($adjustedBgColor, $backgroundColorAlpha / 100);
+                }
+                $contentBlockStyle .= " background-color: {$adjustedBgColor};";
+            } else if ($backgroundType === 'gradient') {
+                $gradientStart = $blockSettings['background_gradient_start'] ?? '#ffffff';
+                $gradientEnd = $blockSettings['background_gradient_end'] ?? '#000000';
+                // 다크모드에서 그라디언트 색상도 조정
+                $gradientStart = darkModeBackground($gradientStart, $isDark);
+                $gradientEnd = darkModeBackground($gradientEnd, $isDark);
+                $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
+                $contentBlockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
+            } else if ($backgroundType === 'image' && $backgroundImageUrl) {
+                $bgSize = $backgroundImageFullWidth ? '100% auto' : 'cover';
+                $contentBlockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: {$bgSize}; background-position: center top; background-repeat: no-repeat;";
+                // 이미지 투명도 적용
+                if ($backgroundImageAlpha < 100) {
+                    $contentBlockStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
+                }
             }
-            $contentBlockStyle .= " background-color: {$adjustedBgColor};";
-        } else if ($backgroundType === 'gradient') {
-            $gradientStart = $blockSettings['background_gradient_start'] ?? '#ffffff';
-            $gradientEnd = $blockSettings['background_gradient_end'] ?? '#000000';
-            // 다크모드에서 그라디언트 색상도 조정
-            $gradientStart = darkModeBackground($gradientStart, $isDark);
-            $gradientEnd = darkModeBackground($gradientEnd, $isDark);
-            $gradientAngle = $blockSettings['background_gradient_angle'] ?? 90;
-            $contentBlockStyle .= " background: linear-gradient({$gradientAngle}deg, {$gradientStart}, {$gradientEnd});";
-        } else if ($backgroundType === 'image' && $backgroundImageUrl) {
-            $bgSize = $backgroundImageFullWidth ? '100% auto' : 'cover';
-            $contentBlockStyle .= " background-image: url('{$backgroundImageUrl}'); background-size: {$bgSize}; background-position: center top; background-repeat: no-repeat;";
-            // 이미지 투명도 적용
-            if ($backgroundImageAlpha < 100) {
-                $contentBlockStyle .= " opacity: " . ($backgroundImageAlpha / 100) . ";";
-            }
+        } else {
+            // 이미지 패딩이 있으면 내용 컨테이너는 배경 없이 (외부 컨테이너 배경 사용)
+            $contentBlockStyle .= " background: transparent;";
         }
         
         // 내용 컨테이너도 flex로 설정하여 내용 정렬
