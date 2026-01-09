@@ -743,7 +743,10 @@ class Site extends Model
         // 모든 위젯 카운트 (사이드바 + 메인 + 커스텀페이지)
         $sidebarCount = \App\Models\SidebarWidget::where('site_id', $this->id)->count();
         $mainCount = \App\Models\MainWidget::where('site_id', $this->id)->count();
-        $customPageWidgetCount = \App\Models\CustomPageWidget::where('site_id', $this->id)->count();
+        // custom_page_widgets는 custom_pages를 통해 site_id로 조회
+        $customPageWidgetCount = \App\Models\CustomPageWidget::whereHas('customPage', function($query) {
+            $query->where('site_id', $this->id);
+        })->count();
         
         $currentCount = $sidebarCount + $mainCount + $customPageWidgetCount;
         return $currentCount < $limit;
@@ -791,7 +794,10 @@ class Site extends Model
         
         $sidebarCount = \App\Models\SidebarWidget::where('site_id', $this->id)->count();
         $mainCount = \App\Models\MainWidget::where('site_id', $this->id)->count();
-        $customPageWidgetCount = \App\Models\CustomPageWidget::where('site_id', $this->id)->count();
+        // custom_page_widgets는 custom_pages를 통해 site_id로 조회
+        $customPageWidgetCount = \App\Models\CustomPageWidget::whereHas('customPage', function($query) {
+            $query->where('site_id', $this->id);
+        })->count();
         
         $currentCount = $sidebarCount + $mainCount + $customPageWidgetCount;
         return max(0, $limit - $currentCount);
@@ -826,7 +832,9 @@ class Site extends Model
             'widgets' => [
                 'current' => \App\Models\SidebarWidget::where('site_id', $this->id)->count() 
                            + \App\Models\MainWidget::where('site_id', $this->id)->count()
-                           + \App\Models\CustomPageWidget::where('site_id', $this->id)->count(),
+                           + \App\Models\CustomPageWidget::whereHas('customPage', function($query) {
+                               $query->where('site_id', $this->id);
+                           })->count(),
                 'limit' => $this->getWidgetLimit(),
                 'can_create' => $this->canCreateWidget(),
             ],

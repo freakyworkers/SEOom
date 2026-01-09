@@ -91,12 +91,12 @@ return new class extends Migration
                 'user_ranking', 'image', 'image_slide', 'contact_form', 'map', 'search',
             ],
             'main_widget_types' => [
-                'recent_posts', 'popular_posts', 'board_list', 'board', 'marquee_board', 'gallery',
+                'recent_posts', 'popular_posts', 'board_list', 'board', 'board_viewer', 'marquee_board', 'gallery',
                 'custom_html', 'tab_menu', 'user_ranking', 'block', 'block_slide', 'image',
                 'image_slide', 'contact_form', 'map',
             ],
             'custom_page_widget_types' => [
-                'recent_posts', 'popular_posts', 'board_list', 'board', 'marquee_board', 'gallery',
+                'recent_posts', 'popular_posts', 'board_list', 'board', 'board_viewer', 'marquee_board', 'gallery',
                 'custom_html', 'tab_menu', 'user_ranking', 'block', 'block_slide', 'image',
                 'image_slide', 'contact_form', 'map',
             ],
@@ -154,13 +154,13 @@ return new class extends Migration
             ],
             'main_widget_types' => [
                 'recent_posts', 'popular_posts', 'weekly_popular_posts', 'monthly_popular_posts',
-                'board_list', 'board', 'marquee_board', 'gallery', 'search', 'custom_html',
+                'board_list', 'board', 'board_viewer', 'marquee_board', 'gallery', 'search', 'custom_html',
                 'tab_menu', 'user_ranking', 'block', 'block_slide', 'image', 'image_slide',
                 'contact_form', 'map',
             ],
             'custom_page_widget_types' => [
                 'recent_posts', 'popular_posts', 'weekly_popular_posts', 'monthly_popular_posts',
-                'board_list', 'board', 'marquee_board', 'gallery', 'search', 'custom_html',
+                'board_list', 'board', 'board_viewer', 'marquee_board', 'gallery', 'search', 'custom_html',
                 'tab_menu', 'user_ranking', 'block', 'block_slide', 'image', 'image_slide',
                 'contact_form', 'map',
             ],

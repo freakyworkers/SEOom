@@ -6489,7 +6489,8 @@ class AdminController extends Controller
     {
         // Get subscription and plan
         $subscription = $site->subscription;
-        $plan = $subscription ? $subscription->plan : null;
+        // 플랜은 subscription의 plan이 있으면 사용하고, 없으면 site의 planModel() 사용
+        $plan = $subscription ? $subscription->plan : $site->planModel();
         
         // Get server subscription (server capacity plan)
         $serverSubscription = \App\Models\Subscription::where('site_id', $site->id)
