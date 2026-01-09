@@ -4088,7 +4088,7 @@ function addWidget() {
                 button_color: buttonColor,
                 button_text_color: buttonTextColor,
                 button_border_color: buttonBorderColor,
-                button_opacity: parseInt(buttonOpacity) || 100,
+                button_opacity: (buttonOpacity !== '' && buttonOpacity !== null && buttonOpacity !== undefined) ? parseInt(buttonOpacity) : 100,
                 button_hover_bg_color: buttonHoverBgColor,
                 button_hover_text_color: buttonHoverTextColor,
                 button_hover_border_color: buttonHoverBorderColor
