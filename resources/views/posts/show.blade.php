@@ -19,7 +19,7 @@
 
 <!-- Post Content -->
 <div class="card mb-4 shadow-sm position-relative">
-    <div class="card-header bg-white">
+    <div class="card-header bg-white" style="border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important;">
         <div class="d-flex flex-column">
             <div class="d-flex justify-content-between align-items-start mb-2">
                 <div class="flex-grow-1">
