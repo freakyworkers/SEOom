@@ -2717,10 +2717,112 @@
                     
                     {{-- 게시글 목록 --}}
                     @if($posts->count() > 0)
-                        {{-- 일반 게시판 레이아웃 (심플 리스트 형태) --}}
-                        <div class="card bg-white shadow-sm">
-                            <div class="list-group list-group-flush">
-                            @foreach($posts as $post)
+                        @if($board->type === 'pinterest')
+                            {{-- 핀터레스트 게시판 레이아웃 --}}
+                            @php
+                                // 디바이스별 컬럼 수 설정 (기본값)
+                                $mobileCols = $board->pinterest_columns_mobile ?? 2;
+                                $tabletCols = $board->pinterest_columns_tablet ?? 3;
+                                $desktopCols = $board->pinterest_columns_desktop ?? 4;
+                                $largeCols = $board->pinterest_columns_large ?? 6;
+                                
+                                // Bootstrap 컬럼 클래스 생성 (12를 컬럼 수로 나눔)
+                                $colClass = 'col-' . (12 / $mobileCols);
+                                if ($tabletCols > 0) {
+                                    $colClass .= ' col-md-' . (12 / $tabletCols);
+                                }
+                                if ($desktopCols > 0) {
+                                    $colClass .= ' col-lg-' . (12 / $desktopCols);
+                                }
+                                if ($largeCols > 0) {
+                                    $colClass .= ' col-xl-' . (12 / $largeCols);
+                                }
+                            @endphp
+                            <div class="row g-3">
+                                @foreach($posts as $post)
+                                    <div class="{{ $colClass }}">
+                                        <div class="card shadow-sm" style="overflow: hidden; border-radius: 12px;">
+                                            <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
+                                               class="text-decoration-none text-dark">
+                                                {{-- 이미지 영역 --}}
+                                                @if($post->thumbnail_path)
+                                                    <div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">
+                                                        <img src="{{ asset('storage/' . $post->thumbnail_path) }}" 
+                                                             alt="{{ $post->title }}" 
+                                                             class="img-fluid"
+                                                             style="width: 100%; height: auto; display: block; object-fit: cover; min-height: 150px;">
+                                                        {{-- 좋아요/댓글 수 표시 (우측 하단) --}}
+                                                        <div class="position-absolute bottom-0 end-0 m-2 d-flex gap-2">
+                                                            @if($board->enable_likes && $post->like_count > 0)
+                                                                <span class="badge bg-dark bg-opacity-75">
+                                                                    <i class="bi bi-hand-thumbs-up"></i> {{ $post->like_count }}
+                                                                </span>
+                                                            @endif
+                                                            @if($post->comments->count() > 0)
+                                                                <span class="badge bg-dark bg-opacity-75">
+                                                                    <i class="bi bi-chat-dots"></i> {{ $post->comments->count() }}
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    @php
+                                                        // 게시글 내용에서 첫 번째 이미지 추출
+                                                        $content = $post->content;
+                                                        preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $content, $matches);
+                                                        $firstImage = $matches[1] ?? null;
+                                                    @endphp
+                                                    @if($firstImage)
+                                                        <div class="position-relative" style="overflow: hidden;">
+                                                            <img src="{{ $firstImage }}" 
+                                                                 alt="{{ $post->title }}" 
+                                                                 class="img-fluid"
+                                                                 style="width: 100%; height: auto; display: block;">
+                                                            {{-- 좋아요/댓글 수 표시 (우측 하단) --}}
+                                                            <div class="position-absolute bottom-0 end-0 m-2 d-flex gap-2">
+                                                                @if($board->enable_likes && $post->like_count > 0)
+                                                                    <span class="badge bg-dark bg-opacity-75">
+                                                                        <i class="bi bi-hand-thumbs-up"></i> {{ $post->like_count }}
+                                                                    </span>
+                                                                @endif
+                                                                @if($post->comments->count() > 0)
+                                                                    <span class="badge bg-dark bg-opacity-75">
+                                                                        <i class="bi bi-chat-dots"></i> {{ $post->comments->count() }}
+                                                                    </span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <div class="position-relative bg-secondary bg-opacity-25 d-flex flex-column align-items-center justify-content-center" 
+                                                             style="min-height: 150px;">
+                                                            <i class="bi bi-image display-4 text-muted mb-2"></i>
+                                                            <span class="text-muted small">No image</span>
+                                                            {{-- 좋아요/댓글 수 표시 (우측 하단) --}}
+                                                            <div class="position-absolute bottom-0 end-0 m-2 d-flex gap-2">
+                                                                @if($board->enable_likes && $post->like_count > 0)
+                                                                    <span class="badge bg-dark bg-opacity-75">
+                                                                        <i class="bi bi-hand-thumbs-up"></i> {{ $post->like_count }}
+                                                                    </span>
+                                                                @endif
+                                                                @if($post->comments->count() > 0)
+                                                                    <span class="badge bg-dark bg-opacity-75">
+                                                                        <i class="bi bi-chat-dots"></i> {{ $post->comments->count() }}
+                                                                    </span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endif
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            {{-- 일반 게시판 레이아웃 (심플 리스트 형태) --}}
+                            <div class="card bg-white shadow-sm">
+                                <div class="list-group list-group-flush">
+                                @foreach($posts as $post)
                                 @php
                                     $hasImage = false;
                                     if ($post->content) {
@@ -2845,6 +2947,7 @@
                             @endforeach
                             </div>
                         </div>
+                        @endif
                         
                         {{-- 페이지네이션 --}}
                         @if($posts->hasPages())
