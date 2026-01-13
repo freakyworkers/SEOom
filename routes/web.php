@@ -1704,6 +1704,36 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             return app(\App\Http\Controllers\AdminController::class)->popupsDelete($site, $popup);
         });
     });
+    
+    // Board routes for domain-based access (서브도메인/커스텀 도메인용)
+    Route::get('/boards/{slug}', function (Request $request, $slug) {
+        $site = $request->attributes->get('site');
+        if (!$site) {
+            abort(404);
+        }
+        return app(\App\Http\Controllers\BoardController::class)->show($site, $slug);
+    })->name('boards.show.domain');
+    
+    Route::middleware('auth')->group(function () {
+        Route::get('/boards/{board}/edit', function (Request $request, \App\Models\Board $board) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            if ($board->site_id !== $site->id) {
+                abort(403);
+            }
+            return app(\App\Http\Controllers\BoardController::class)->edit($site, $board);
+        })->name('boards.edit.domain');
+        
+        Route::get('/boards/create', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\BoardController::class)->create($site);
+        })->name('boards.create.domain');
+    });
 });
 
 Route::middleware(['block.ip', 'verify.site.user', 'auth'])->group(function () {

@@ -500,8 +500,15 @@ class AdminController extends Controller
     /**
      * Display boards management.
      */
-    public function boards(Site $site)
+    public function boards(Request $request)
     {
+        // ResolveSiteByDomain 미들웨어에서 설정한 site 가져오기
+        $site = $request->attributes->get('site');
+        
+        if (!$site) {
+            abort(404, 'Site not found');
+        }
+        
         $boards = Board::where('site_id', $site->id)->ordered()->paginate(15);
 
         return view('admin.boards', compact('site', 'boards'));
@@ -510,8 +517,15 @@ class AdminController extends Controller
     /**
      * Get topics for a board.
      */
-    public function getBoardTopics(Site $site, Board $board)
+    public function getBoardTopics(Request $request, Board $board)
     {
+        // ResolveSiteByDomain 미들웨어에서 설정한 site 가져오기
+        $site = $request->attributes->get('site');
+        
+        if (!$site) {
+            abort(404, 'Site not found');
+        }
+        
         if ($board->site_id !== $site->id) {
             abort(403);
         }
@@ -529,8 +543,15 @@ class AdminController extends Controller
     /**
      * Update banned words.
      */
-    public function updateBannedWords(Request $request, Site $site)
+    public function updateBannedWords(Request $request)
     {
+        // ResolveSiteByDomain 미들웨어에서 설정한 site 가져오기
+        $site = $request->attributes->get('site');
+        
+        if (!$site) {
+            abort(404, 'Site not found');
+        }
+        
         $request->validate([
             'banned_words' => 'nullable|string',
         ]);
@@ -546,8 +567,15 @@ class AdminController extends Controller
     /**
      * Display posts management.
      */
-    public function posts(Site $site, Request $request)
+    public function posts(Request $request)
     {
+        // ResolveSiteByDomain 미들웨어에서 설정한 site 가져오기
+        $site = $request->attributes->get('site');
+        
+        if (!$site) {
+            abort(404, 'Site not found');
+        }
+        
         $query = Post::where('site_id', $site->id)
             ->with(['board', 'user']);
 

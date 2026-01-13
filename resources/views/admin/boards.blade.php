@@ -31,7 +31,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div></div>
-    <a href="{{ route('boards.create', ['site' => $site->slug]) }}" class="btn btn-primary">
+    <a href="{{ url('/boards/create') }}" class="btn btn-primary">
         <i class="bi bi-plus-circle me-1"></i>게시판 만들기
     </a>
 </div>
@@ -77,15 +77,15 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <a href="{{ route('boards.show', ['site' => $site->slug, 'slug' => $board->slug]) }}" 
+                                    <a href="{{ url('/boards/' . $board->slug) }}" 
                                        class="btn btn-outline-info btn-sm board-action-btn" title="보기" target="_blank">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="{{ route('boards.edit', ['site' => $site->slug, 'board' => $board->id]) }}" 
+                                    <a href="{{ url('/boards/' . $board->id . '/edit') }}" 
                                        class="btn btn-outline-primary btn-sm board-action-btn" title="수정">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form action="{{ route('boards.destroy', ['site' => $site->slug, 'board' => $board->id]) }}" 
+                                    <form action="{{ url('/boards/' . $board->id) }}" 
                                           method="POST" 
                                           class="d-inline"
                                           onsubmit="return confirm('정말 삭제하시겠습니까?');">
@@ -138,15 +138,15 @@
                             </div>
                             
                             <div class="d-flex gap-2">
-                                <a href="{{ route('boards.show', ['site' => $site->slug, 'slug' => $board->slug]) }}" 
+                                <a href="{{ url('/boards/' . $board->slug) }}" 
                                    class="btn btn-outline-info btn-sm flex-fill board-action-btn" title="보기" target="_blank">
                                     <i class="bi bi-eye me-1"></i>보기
                                 </a>
-                                <a href="{{ route('boards.edit', ['site' => $site->slug, 'board' => $board->id]) }}" 
+                                <a href="{{ url('/boards/' . $board->id . '/edit') }}" 
                                    class="btn btn-outline-primary btn-sm flex-fill board-action-btn" title="수정">
                                     <i class="bi bi-pencil me-1"></i>수정
                                 </a>
-                                <form action="{{ route('boards.destroy', ['site' => $site->slug, 'board' => $board->id]) }}" 
+                                <form action="{{ url('/boards/' . $board->id) }}" 
                                       method="POST" 
                                       class="flex-fill"
                                       onsubmit="return confirm('정말 삭제하시겠습니까?');">
@@ -182,7 +182,7 @@
             <i class="bi bi-inbox display-1 text-muted"></i>
             <h4 class="mt-3 mb-2">등록된 게시판이 없습니다</h4>
             <p class="text-muted mb-4">첫 게시판을 만들어보세요!</p>
-            <a href="{{ route('boards.create', ['site' => $site->slug]) }}" class="btn btn-primary">
+            <a href="{{ url('/boards/create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-1"></i>게시판 만들기
             </a>
         </div>
@@ -209,7 +209,7 @@ function saveBannedWords() {
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>저장 중...';
     
-    fetch('{{ route("admin.banned-words.update", ["site" => $site->slug]) }}', {
+    fetch('{{ url("/admin/banned-words") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
