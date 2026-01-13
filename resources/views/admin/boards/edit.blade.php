@@ -1738,47 +1738,16 @@
         const submitButton = form.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.textContent;
         
-        // FormData를 처음부터 직접 생성 (폼에서 자동 생성하지 않음)
-        const formData = new FormData();
+        // FormData를 폼에서 직접 생성 (모든 입력 필드 자동 포함)
+        const formData = new FormData(form);
         
-        // CSRF 토큰 추가
-        const csrfToken = form.querySelector('input[name="_token"]');
-        if (csrfToken) {
-            formData.append('_token', csrfToken.value);
-        }
-        
-        // _method 추가
-        formData.append('_method', 'POST');
-        
-        // 폼의 모든 입력 필드를 순회하면서 값 수집
-        const allInputs = form.querySelectorAll('input, select');
-        const fieldValues = {};
-        
-        allInputs.forEach(input => {
-            const name = input.name;
-            if (name && name !== '_token' && name !== '_method') {
-                // 데스크탑과 모바일 버전 중 하나만 사용 (데스크탑 우선)
-                if (!fieldValues[name] || input.id && !input.id.includes('_mobile')) {
-                    if (input.type === 'checkbox') {
-                        fieldValues[name] = input.checked ? input.value : '';
-                    } else {
-                        fieldValues[name] = input.value !== null && input.value !== undefined ? input.value : '';
-                    }
-                }
-            }
-        });
-        
-        // 모든 필드 값을 FormData에 추가
-        Object.keys(fieldValues).forEach(fieldName => {
-            let fieldValue = fieldValues[fieldName];
-            
-            // 값이 빈 문자열이고 포인트 필드인 경우 '0'으로 설정
-            if (fieldValue === '' && fieldName.includes('_points')) {
-                fieldValue = '0';
-            }
-            
-            formData.append(fieldName, fieldValue);
-            console.log(`Added ${fieldName}: ${fieldValue}`);
+        // 모바일 버전 필드가 있으면 제거 (데스크탑 버전만 사용)
+        const mobileFields = ['read_points_mobile', 'write_points_mobile', 'delete_points_mobile', 
+                              'comment_points_mobile', 'comment_delete_points_mobile',
+                              'read_permission_mobile', 'write_permission_mobile', 'delete_permission_mobile',
+                              'comment_permission_mobile', 'comment_delete_permission_mobile'];
+        mobileFields.forEach(fieldName => {
+            formData.delete(fieldName);
         });
         
         // 디버깅을 위한 로그
