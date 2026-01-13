@@ -1564,13 +1564,8 @@
         // FormData 생성 전에 모든 hidden input 업데이트 완료 확인
         // FormData는 생성 시점의 폼 상태를 캡처하므로, 이전에 모든 값을 업데이트해야 함
         
-        // 게시판 제목 및 설명 숨기기 값 명시적으로 추가 (체크박스 상태 직접 확인)
-        const hideTitleDescriptionCheckbox = document.getElementById('hide_title_description');
-        const hideTitleDescriptionCheckboxMobile = document.getElementById('hide_title_description_mobile');
-        const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
-        const hideTitleDescriptionHiddenMobile = document.getElementById('hide_title_description_hidden_mobile');
-        
         // 체크박스 상태를 직접 확인하여 hidden input 업데이트 (FormData 생성 전에 반드시 업데이트)
+        // 이미 위에서 선언된 변수를 재사용
         let hideTitleDescriptionValue = '0';
         if (hideTitleDescriptionCheckbox && hideTitleDescriptionCheckbox.checked) {
             hideTitleDescriptionValue = '1';
@@ -1755,9 +1750,20 @@
         pointFields.forEach(fieldName => {
             const desktopField = document.getElementById(fieldName);
             if (desktopField) {
-                const value = desktopField.value !== null && desktopField.value !== undefined && desktopField.value !== '' ? desktopField.value : '0';
-                formData.append(fieldName, value);
-                console.log(`Added ${fieldName}: ${value} (from desktop field)`);
+                // 입력 필드의 실제 값을 직접 읽기 (getAttribute로도 확인)
+                let value = desktopField.value;
+                const valueAttr = desktopField.getAttribute('value');
+                console.log(`Field ${fieldName}: value=${value}, getAttribute('value')=${valueAttr}, type=${typeof value}`);
+                
+                // 값이 null, undefined, 빈 문자열이면 '0'으로 설정
+                if (value === null || value === undefined || value === '') {
+                    value = '0';
+                }
+                // 문자열로 명시적으로 변환
+                formData.append(fieldName, String(value));
+                console.log(`Added ${fieldName}: ${String(value)} to FormData`);
+            } else {
+                console.warn(`Field ${fieldName} not found`);
             }
         });
         

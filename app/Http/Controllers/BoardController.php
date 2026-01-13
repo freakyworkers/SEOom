@@ -946,10 +946,10 @@ class BoardController extends Controller
             'comment_permission' => $request->input('comment_permission', $board->comment_permission ?? 'user'),
             'comment_delete_permission' => $request->input('comment_delete_permission', $board->comment_delete_permission ?? 'author'),
             'read_points' => $request->input('read_points') !== null && $request->input('read_points') !== '' ? (int)$request->input('read_points') : ($board->read_points ?? 0),
-            'write_points' => $request->input('write_points') !== null && $request->input('write_points') !== '' ? (int)$request->input('write_points') : ($board->write_points ?? 0),
-            'delete_points' => $request->input('delete_points') !== null && $request->input('delete_points') !== '' ? (int)$request->input('delete_points') : ($board->delete_points ?? 0),
-            'comment_points' => $request->input('comment_points') !== null && $request->input('comment_points') !== '' ? (int)$request->input('comment_points') : ($board->comment_points ?? 0),
-            'comment_delete_points' => $request->input('comment_delete_points') !== null && $request->input('comment_delete_points') !== '' ? (int)$request->input('comment_delete_points') : ($board->comment_delete_points ?? 0),
+            'write_points' => $request->has('write_points') && $request->input('write_points') !== null && $request->input('write_points') !== '' ? (int)$request->input('write_points') : (int)($board->write_points ?? 0),
+            'delete_points' => $request->has('delete_points') && $request->input('delete_points') !== null && $request->input('delete_points') !== '' ? (int)$request->input('delete_points') : (int)($board->delete_points ?? 0),
+            'comment_points' => $request->has('comment_points') && $request->input('comment_points') !== null && $request->input('comment_points') !== '' ? (int)$request->input('comment_points') : (int)($board->comment_points ?? 0),
+            'comment_delete_points' => $request->has('comment_delete_points') && $request->input('comment_delete_points') !== null && $request->input('comment_delete_points') !== '' ? (int)$request->input('comment_delete_points') : (int)($board->comment_delete_points ?? 0),
         ];
         
         // 로그 추가
