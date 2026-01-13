@@ -467,8 +467,10 @@ class BoardController extends Controller
         }
         
         // hide_title_description 처리 (항상 처리 - 체크 해제 시에도 저장)
+        // FormData에서 직접 가져오거나 기본값 '0' 사용
         $hideTitleDescription = $request->input('hide_title_description', '0');
-        $updateData['hide_title_description'] = ($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true' || $hideTitleDescription === 1);
+        // 문자열 '1', 숫자 1, boolean true 모두 체크됨으로 처리
+        $updateData['hide_title_description'] = ($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true' || $hideTitleDescription === 1 || $hideTitleDescription === 'on');
         
         // Handle header image upload
         if ($request->hasFile('header_image')) {

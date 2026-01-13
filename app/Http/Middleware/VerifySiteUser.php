@@ -21,8 +21,24 @@ class VerifySiteUser
         }
         
         // /admin 경로는 site 속성이 없어도 계속 진행 (ResolveSiteByDomain에서 설정됨)
-        if ($request->is('admin*') && !$request->attributes->has('site')) {
-            // ResolveSiteByDomain 미들웨어가 site를 찾지 못했을 수 있으므로 계속 진행
+        // 서브도메인/커스텀 도메인으로 접근하는 경우 site를 다시 찾기 시도
+        if ($request->is('admin*')) {
+            if (!$request->attributes->has('site')) {
+                // ResolveSiteByDomain 미들웨어가 site를 찾지 못했을 수 있으므로 다시 찾기 시도
+                $host = $request->getHost();
+                $masterDomain = config('app.master_domain', 'seoomweb.com');
+                $subdomain = str_replace('.' . $masterDomain, '', $host);
+                $subdomain = str_replace('www.', '', $subdomain);
+                $site = \App\Models\Site::where('slug', $subdomain)
+                    ->orWhere('domain', $host)
+                    ->orWhere('domain', str_replace('www.', '', $host))
+                    ->where('status', 'active')
+                    ->first();
+                if ($site) {
+                    $request->attributes->set('site', $site);
+                }
+            }
+            // site가 있어도 없어도 계속 진행 (인증은 auth 미들웨어에서 처리)
             return $next($request);
         }
         
