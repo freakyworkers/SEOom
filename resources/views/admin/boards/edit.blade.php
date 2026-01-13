@@ -1342,8 +1342,18 @@
         const hideTitleDescriptionCheckbox = document.getElementById('hide_title_description');
         const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
         if (hideTitleDescriptionCheckbox && hideTitleDescriptionHidden) {
+            // 초기값 설정
+            hideTitleDescriptionHidden.value = hideTitleDescriptionCheckbox.checked ? '1' : '0';
             hideTitleDescriptionCheckbox.addEventListener('change', function() {
                 hideTitleDescriptionHidden.value = this.checked ? '1' : '0';
+                console.log('hide_title_description updated:', hideTitleDescriptionHidden.value);
+            });
+            // 클릭 이벤트도 추가 (change 이벤트가 발생하지 않을 수 있음)
+            hideTitleDescriptionCheckbox.addEventListener('click', function() {
+                setTimeout(() => {
+                    hideTitleDescriptionHidden.value = this.checked ? '1' : '0';
+                    console.log('hide_title_description updated on click:', hideTitleDescriptionHidden.value);
+                }, 0);
             });
         }
         
@@ -1351,8 +1361,16 @@
         const hideTitleDescriptionCheckboxMobile = document.getElementById('hide_title_description_mobile');
         const hideTitleDescriptionHiddenMobile = document.getElementById('hide_title_description_hidden_mobile');
         if (hideTitleDescriptionCheckboxMobile && hideTitleDescriptionHiddenMobile) {
+            // 초기값 설정
+            hideTitleDescriptionHiddenMobile.value = hideTitleDescriptionCheckboxMobile.checked ? '1' : '0';
             hideTitleDescriptionCheckboxMobile.addEventListener('change', function() {
                 hideTitleDescriptionHiddenMobile.value = this.checked ? '1' : '0';
+            });
+            // 클릭 이벤트도 추가
+            hideTitleDescriptionCheckboxMobile.addEventListener('click', function() {
+                setTimeout(() => {
+                    hideTitleDescriptionHiddenMobile.value = this.checked ? '1' : '0';
+                }, 0);
             });
         }
         
@@ -1387,14 +1405,7 @@
             });
         }
         
-        // 게시판 제목 및 설명 숨기기 체크박스 처리
-        const hideTitleDescriptionCheckbox = document.getElementById('hide_title_description');
-        const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
-        if (hideTitleDescriptionCheckbox && hideTitleDescriptionHidden) {
-            hideTitleDescriptionCheckbox.addEventListener('change', function() {
-                hideTitleDescriptionHidden.value = this.checked ? '1' : '0';
-            });
-        }
+        // 중복 제거 - 이미 위에서 처리됨
     });
     
     // 게시판 타입 변경 시 랜덤배치 체크박스 및 이벤트 표시 타입 표시/숨김
