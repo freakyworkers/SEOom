@@ -587,8 +587,16 @@
                                 <div class="card-body">
                                     <label class="form-label fw-bold mb-2">게시판 제목 및 설명 숨기기</label>
                                     @php
+                                        // hide_title_description 값을 여러 방법으로 확인
                                         $hideTitleDescription = $board->hide_title_description ?? false;
-                                        $isHideTitleDescriptionChecked = ($hideTitleDescription === true || $hideTitleDescription === 1 || $hideTitleDescription === '1');
+                                        // boolean, integer, string 모두 확인
+                                        $isHideTitleDescriptionChecked = (
+                                            $hideTitleDescription === true || 
+                                            $hideTitleDescription === 1 || 
+                                            $hideTitleDescription === '1' ||
+                                            $hideTitleDescription == 1 ||
+                                            $hideTitleDescription == '1'
+                                        );
                                     @endphp
                                     <input type="hidden" name="hide_title_description" id="hide_title_description_hidden_mobile" value="{{ $isHideTitleDescriptionChecked ? '1' : '0' }}">
                                     <div class="form-check">
