@@ -1598,28 +1598,28 @@
         // FormData는 생성 시점의 폼 상태를 캡처하므로, 이전에 모든 값을 업데이트해야 함
         
         // 체크박스 상태를 직접 확인하여 hidden input 업데이트 (FormData 생성 전에 반드시 업데이트)
-        // 이미 위에서 선언된 변수를 재사용
+        // 화면 너비를 기준으로 데스크탑/모바일 결정
+        const isMobileView = window.innerWidth < 768;
+        
         let hideTitleDescriptionValue = '0';
-        if (hideTitleDescriptionCheckbox && hideTitleDescriptionCheckbox.checked) {
-            hideTitleDescriptionValue = '1';
-            if (hideTitleDescriptionHidden) {
-                hideTitleDescriptionHidden.value = '1';
-            }
-        } else if (hideTitleDescriptionCheckboxMobile && hideTitleDescriptionCheckboxMobile.checked) {
-            hideTitleDescriptionValue = '1';
-            if (hideTitleDescriptionHiddenMobile) {
-                hideTitleDescriptionHiddenMobile.value = '1';
+        if (isMobileView) {
+            // 모바일 뷰: 모바일 체크박스만 사용
+            if (hideTitleDescriptionCheckboxMobile) {
+                hideTitleDescriptionValue = hideTitleDescriptionCheckboxMobile.checked ? '1' : '0';
+                if (hideTitleDescriptionHiddenMobile) {
+                    hideTitleDescriptionHiddenMobile.value = hideTitleDescriptionValue;
+                }
             }
         } else {
-            // 체크 해제된 경우
-            hideTitleDescriptionValue = '0';
-            if (hideTitleDescriptionHidden) {
-                hideTitleDescriptionHidden.value = '0';
-            }
-            if (hideTitleDescriptionHiddenMobile) {
-                hideTitleDescriptionHiddenMobile.value = '0';
+            // 데스크탑 뷰: 데스크탑 체크박스만 사용
+            if (hideTitleDescriptionCheckbox) {
+                hideTitleDescriptionValue = hideTitleDescriptionCheckbox.checked ? '1' : '0';
+                if (hideTitleDescriptionHidden) {
+                    hideTitleDescriptionHidden.value = hideTitleDescriptionValue;
+                }
             }
         }
+        console.log('hide_title_description final value:', hideTitleDescriptionValue, 'isMobile:', isMobileView);
         
         // AJAX로 제출 (FormData는 hidden input 업데이트 후 생성)
         const formData = new FormData(this);
