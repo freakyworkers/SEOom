@@ -532,6 +532,15 @@ class BoardController extends Controller
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($board->header_image_path);
             }
         }
+        // Handle header image removal
+        elseif ($request->input('remove_header_image') == '1') {
+            // Delete old header image if exists
+            if ($board->header_image_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($board->header_image_path);
+            }
+            $updateData['header_image_path'] = null;
+            \Log::info('Header image removed for board:', ['board_id' => $board->id]);
+        }
 
         // 게시판 타입 업데이트
         if ($request->has('type')) {

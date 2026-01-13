@@ -294,10 +294,14 @@
                                 </td>
                                 <td>
                                     @if($board->header_image_path)
-                                        <div class="mb-2">
+                                        <div class="mb-2 d-flex align-items-start gap-2" id="current_header_image_container">
                                             <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="현재 이미지" style="max-width: 300px; max-height: 200px; border-radius: 0.25rem; border: 1px solid #dee2e6;">
+                                            <button type="button" class="btn btn-outline-danger btn-sm" id="remove_header_image_btn" title="이미지 제거">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
                                         </div>
                                     @endif
+                                    <input type="hidden" name="remove_header_image" id="remove_header_image" value="0">
                                     <div class="d-flex gap-2 align-items-center">
                                         <input type="file" 
                                                class="@error('header_image') is-invalid @enderror" 
@@ -1331,6 +1335,35 @@
             console.error('Header image input not found');
         }
         
+        // 상단 이미지 제거 버튼 이벤트 핸들러
+        const removeHeaderImageBtn = document.getElementById('remove_header_image_btn');
+        const removeHeaderImageInput = document.getElementById('remove_header_image');
+        const currentHeaderImageContainer = document.getElementById('current_header_image_container');
+        
+        if (removeHeaderImageBtn) {
+            removeHeaderImageBtn.addEventListener('click', function() {
+                if (confirm('상단 이미지를 제거하시겠습니까?')) {
+                    // hidden input에 제거 표시
+                    if (removeHeaderImageInput) {
+                        removeHeaderImageInput.value = '1';
+                    }
+                    // 현재 이미지 컨테이너 숨기기
+                    if (currentHeaderImageContainer) {
+                        currentHeaderImageContainer.style.display = 'none';
+                    }
+                    // 파일 입력 초기화
+                    if (headerImageInput) {
+                        headerImageInput.value = '';
+                    }
+                    if (headerImageFilename) {
+                        headerImageFilename.value = '';
+                        headerImageFilename.placeholder = '이미지가 제거됩니다 (저장 시 적용)';
+                    }
+                    console.log('Header image marked for removal');
+                }
+            });
+        }
+        
         // 체크박스 변경 시 hidden input 즉시 업데이트
         const randomOrderCheckbox = document.getElementById('random_order');
         const randomOrderHidden = document.getElementById('random_order_hidden');
@@ -1594,6 +1627,12 @@
         // FormData에 명시적으로 추가 (기존 값이 있어도 덮어쓰기)
         formData.set('hide_title_description', hideTitleDescriptionValue);
         console.log('hide_title_description set in formData:', hideTitleDescriptionValue, 'checkbox checked:', hideTitleDescriptionCheckbox?.checked || hideTitleDescriptionCheckboxMobile?.checked, 'from hidden:', hideTitleDescriptionHidden?.value, hideTitleDescriptionHiddenMobile?.value);
+        
+        // saved_posts_enabled도 명시적으로 추가
+        const savedPostsEnabledFinalCheckbox = document.getElementById('saved_posts_enabled') || document.getElementById('saved_posts_enabled_mobile');
+        const savedPostsEnabledValue = savedPostsEnabledFinalCheckbox?.checked ? '1' : '0';
+        formData.set('saved_posts_enabled', savedPostsEnabledValue);
+        console.log('saved_posts_enabled set in formData:', savedPostsEnabledValue);
         
         // 핀터레스트 컬럼 필드가 있으면 명시적으로 추가 (숨겨져 있어도 포함되도록)
         const pinterestColumnsMobile = document.getElementById('pinterest_columns_mobile');
