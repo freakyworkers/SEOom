@@ -453,22 +453,31 @@
                                     <div class="form-check">
                                         @php
                                             // hide_title_description 값을 여러 방법으로 확인
+                                            // 먼저 원시 값을 가져옴
+                                            $rawValue = $board->getRawOriginal('hide_title_description');
                                             $hideTitleDescription = $board->hide_title_description ?? false;
+                                            
+                                            // 원시 값이 있으면 그것을 우선 사용
+                                            if ($rawValue !== null) {
+                                                $hideTitleDescription = $rawValue;
+                                            }
+                                            
                                             // boolean, integer, string 모두 확인
                                             $isHideTitleDescriptionChecked = (
                                                 $hideTitleDescription === true || 
                                                 $hideTitleDescription === 1 || 
                                                 $hideTitleDescription === '1' ||
                                                 $hideTitleDescription == 1 ||
-                                                $hideTitleDescription == '1'
+                                                $hideTitleDescription == '1' ||
+                                                (is_string($hideTitleDescription) && trim($hideTitleDescription) === '1')
                                             );
                                             // 디버깅을 위한 로그 (개발 환경에서만)
                                             if (config('app.debug')) {
                                                 \Log::info('hide_title_description in blade:', [
                                                     'value' => $hideTitleDescription,
                                                     'type' => gettype($hideTitleDescription),
-                                                    'checked' => $isHideTitleDescriptionChecked,
-                                                    'raw' => $board->getRawOriginal('hide_title_description') ?? 'null'
+                                                    'raw' => $rawValue,
+                                                    'checked' => $isHideTitleDescriptionChecked
                                                 ]);
                                             }
                                         @endphp
