@@ -15,6 +15,11 @@ class BlockIp
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // /admin 경로는 IP 차단 제외
+        if ($request->is('admin*')) {
+            return $next($request);
+        }
+        
         // Site가 route parameter로 있는 경우에만 체크
         if ($request->route('site')) {
             $site = $request->route('site');
