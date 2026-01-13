@@ -480,11 +480,14 @@ class BoardController extends Controller
         
         // hide_title_description 저장 전 로그
         \Log::info('hide_title_description before update:', [
-            'request_value' => $request->input('hide_title_description'),
+            'request_all' => $request->all(),
+            'request_input' => $request->input('hide_title_description'),
+            'request_has' => $request->has('hide_title_description'),
             'parsed_value' => $hideTitleDescription,
             'final_value' => $updateData['hide_title_description'],
             'board_id' => $board->id,
-            'current_value' => $board->hide_title_description
+            'current_value' => $board->hide_title_description,
+            'updateData' => $updateData
         ]);
         
         // Handle header image upload
