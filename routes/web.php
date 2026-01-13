@@ -1338,6 +1338,15 @@ Route::middleware(['block.ip', 'verify.site.user'])->group(function () {
         Route::get('/', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
+                // site가 없으면 로그인 페이지로 리다이렉트
+                $host = $request->getHost();
+                $masterDomain = config('app.master_domain', 'seoomweb.com');
+                $subdomain = str_replace('.' . $masterDomain, '', $host);
+                $subdomain = str_replace('www.', '', $subdomain);
+                $site = \App\Models\Site::where('slug', $subdomain)->orWhere('domain', $host)->first();
+                if ($site) {
+                    return redirect()->route('login', ['site' => $site->slug ?? '']);
+                }
                 abort(404);
             }
             return redirect('/admin/dashboard');

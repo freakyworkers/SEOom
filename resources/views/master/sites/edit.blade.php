@@ -228,6 +228,7 @@
                                     <input type="text" 
                                            class="form-control" 
                                            id="test_admin_id" 
+                                           name="test_admin[id]"
                                            value="{{ $testAdminId }}"
                                            placeholder="admin">
                                 </div>
