@@ -1735,11 +1735,10 @@
         e.preventDefault();
         
         const form = this;
-        const formData = new FormData(form);
         const submitButton = form.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.textContent;
         
-        // 모든 입력 필드 값을 명시적으로 확인하고 FormData에 추가
+        // 모든 입력 필드 값을 먼저 수집
         const fields = [
             'read_permission', 'read_points',
             'write_permission', 'write_points',
@@ -1748,20 +1747,39 @@
             'comment_delete_permission', 'comment_delete_points'
         ];
         
-        // 데스크탑과 모바일 버전 모두 확인
+        const fieldValues = {};
+        
+        // 데스크탑과 모바일 버전 모두 확인하여 값 수집
         fields.forEach(fieldName => {
             const desktopField = document.getElementById(fieldName);
             const mobileField = document.getElementById(fieldName + '_mobile');
             
             if (desktopField) {
-                formData.set(fieldName, desktopField.value);
+                fieldValues[fieldName] = desktopField.value;
             } else if (mobileField) {
-                formData.set(fieldName, mobileField.value);
+                fieldValues[fieldName] = mobileField.value;
+            } else {
+                // 폼에서 직접 가져오기
+                const formField = form.querySelector(`[name="${fieldName}"]`);
+                if (formField) {
+                    fieldValues[fieldName] = formField.value;
+                }
             }
         });
         
         // 디버깅을 위한 로그
-        console.log('FormData values:', {
+        console.log('Field values before FormData:', fieldValues);
+        
+        // FormData 생성
+        const formData = new FormData(form);
+        
+        // 수집한 값을 FormData에 명시적으로 설정
+        Object.keys(fieldValues).forEach(fieldName => {
+            formData.set(fieldName, fieldValues[fieldName]);
+        });
+        
+        // 디버깅을 위한 로그
+        console.log('FormData values after set:', {
             read_permission: formData.get('read_permission'),
             read_points: formData.get('read_points'),
             write_permission: formData.get('write_permission'),
