@@ -502,11 +502,32 @@ class AdminController extends Controller
      */
     public function boards(Request $request)
     {
-        // ResolveSiteByDomain 미들웨어에서 설정한 site 가져오기
-        $site = $request->attributes->get('site');
+        // 로그인한 사용자의 site_id를 우선 사용
+        $user = auth()->user();
+        if (!$user) {
+            abort(403, 'Unauthorized');
+        }
         
+        // 사용자의 site_id로 사이트 가져오기
+        $site = Site::find($user->site_id);
+        
+        // 사용자의 site_id가 없거나 사이트를 찾을 수 없으면, 미들웨어에서 설정한 site 사용
+        if (!$site) {
+            $site = $request->attributes->get('site');
+        }
+        
+        // 여전히 사이트를 찾을 수 없으면 404
         if (!$site) {
             abort(404, 'Site not found');
+        }
+        
+        // 사용자의 site_id와 조회한 사이트의 id가 일치하는지 확인
+        if ($user->site_id && $user->site_id !== $site->id) {
+            // 사용자의 site_id로 다시 조회
+            $site = Site::find($user->site_id);
+            if (!$site) {
+                abort(404, 'Site not found');
+            }
         }
         
         $boards = Board::where('site_id', $site->id)->ordered()->paginate(15);
