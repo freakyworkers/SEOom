@@ -1750,8 +1750,30 @@
             formData.delete(fieldName);
         });
         
+        // 포인트 필드의 값을 직접 확인하고 명시적으로 설정
+        const pointFields = ['read_points', 'write_points', 'delete_points', 'comment_points', 'comment_delete_points'];
+        pointFields.forEach(fieldName => {
+            const field = document.getElementById(fieldName);
+            if (field) {
+                const value = field.value !== null && field.value !== undefined ? field.value : '';
+                formData.set(fieldName, value);
+                console.log(`Set ${fieldName} to: ${value} (from field.value: ${field.value})`);
+            }
+        });
+        
+        // 등급 필드의 값도 직접 확인하고 명시적으로 설정
+        const permissionFields = ['read_permission', 'write_permission', 'delete_permission', 'comment_permission', 'comment_delete_permission'];
+        permissionFields.forEach(fieldName => {
+            const field = document.getElementById(fieldName);
+            if (field) {
+                const value = field.value !== null && field.value !== undefined ? field.value : '';
+                formData.set(fieldName, value);
+                console.log(`Set ${fieldName} to: ${value}`);
+            }
+        });
+        
         // 디버깅을 위한 로그
-        console.log('FormData values:', {
+        console.log('FormData values after explicit set:', {
             read_permission: formData.get('read_permission'),
             read_points: formData.get('read_points'),
             write_permission: formData.get('write_permission'),
