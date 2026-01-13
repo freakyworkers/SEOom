@@ -876,6 +876,19 @@ class BoardController extends Controller
             $pinterestShowTitleValue = $request->input('pinterest_show_title', '0');
             $updateData['pinterest_show_title'] = ($pinterestShowTitleValue == '1' || $pinterestShowTitleValue === true || $pinterestShowTitleValue === 'true' || $pinterestShowTitleValue === 1);
         }
+        
+        // enable_search 처리 - 검색 기능 활성화 여부
+        if (!Schema::hasColumn('boards', 'enable_search')) {
+            try {
+                Schema::table('boards', function (Blueprint $table) {
+                    $table->boolean('enable_search')->default(true)->after('pinterest_show_title')->comment('검색 기능 활성화');
+                });
+            } catch (\Exception $e) {
+                \Log::error('Failed to create enable_search column: ' . $e->getMessage());
+            }
+        }
+        $enableSearchValue = $request->input('enable_search', '0');
+        $updateData['enable_search'] = ($enableSearchValue == '1' || $enableSearchValue === true || $enableSearchValue === 'true' || $enableSearchValue === 1);
 
         $board->update($updateData);
         $board->refresh();

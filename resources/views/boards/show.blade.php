@@ -1393,7 +1393,8 @@
         </div>
     @endif
     
-    <!-- 검색 폼 -->
+    <!-- 검색 폼 (enable_search가 활성화된 경우에만 표시) -->
+    @if($board->enable_search ?? true)
     <div class="mt-4 d-flex justify-content-center">
         <form method="GET" action="{{ route('boards.show', ['site' => $site->slug, 'slug' => $board->slug]) }}" class="d-flex gap-2 align-items-center">
             <input type="hidden" name="topic" value="{{ request('topic') }}">
@@ -1418,6 +1419,7 @@
             @endif
         </form>
     </div>
+    @endif
 @else
     <div class="card">
         <div class="card-body text-center py-5">

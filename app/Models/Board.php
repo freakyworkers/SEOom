@@ -60,6 +60,7 @@ class Board extends Model
         'pinterest_columns_desktop',
         'pinterest_columns_large',
         'pinterest_show_title',
+        'enable_search',
         'qa_statuses',
     ];
 
@@ -83,6 +84,7 @@ class Board extends Model
         'enable_share' => 'boolean',
         'hide_title_description' => 'boolean',
         'pinterest_show_title' => 'boolean',
+        'enable_search' => 'boolean',
         'order' => 'integer',
         'max_posts_per_day' => 'integer',
         'read_points' => 'integer',

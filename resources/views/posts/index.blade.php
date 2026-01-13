@@ -1437,7 +1437,8 @@
         </div>
     @endif
     
-    <!-- 검색 폼 -->
+    <!-- 검색 폼 (enable_search가 활성화된 경우에만 표시) -->
+    @if($board->enable_search ?? true)
     <div class="mt-4 d-flex justify-content-center">
         <form method="GET" action="{{ route('posts.index', ['site' => $site->slug, 'boardSlug' => $board->slug]) }}" class="d-flex gap-2 align-items-center">
             <input type="hidden" name="topic" value="{{ request('topic') }}">
@@ -1462,6 +1463,7 @@
             @endif
         </form>
     </div>
+    @endif
 @else
     <div class="alert alert-info text-center">
         <i class="bi bi-info-circle"></i> 등록된 게시글이 없습니다.

@@ -1192,6 +1192,22 @@
                             </div>
                         </div>
                         @endif
+                        {{-- 검색 기능 --}}
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                @php
+                                    $enableSearchValue = true;
+                                    if (\Illuminate\Support\Facades\Schema::hasColumn('boards', 'enable_search')) {
+                                        $enableSearchValue = $board->enable_search ?? true;
+                                    }
+                                @endphp
+                                <input type="checkbox" class="form-check-input" id="enable_search" name="enable_search" value="1" {{ old('enable_search', $enableSearchValue) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="enable_search">
+                                    검색 기능
+                                </label>
+                                <small class="d-block text-muted">게시판 하단에 검색창을 표시합니다.</small>
+                            </div>
+                        </div>
                     </div>
                     <div class="d-flex justify-content-end mt-3">
                         <button type="submit" class="btn btn-primary">저장</button>
@@ -1764,6 +1780,12 @@
         const pinterestShowTitleCheckbox = document.getElementById('pinterest_show_title');
         if (pinterestShowTitleCheckbox) {
             formData.append('pinterest_show_title', pinterestShowTitleCheckbox.checked ? '1' : '0');
+        }
+        
+        // enable_search 체크박스 처리
+        const enableSearchCheckbox = document.getElementById('enable_search');
+        if (enableSearchCheckbox) {
+            formData.append('enable_search', enableSearchCheckbox.checked ? '1' : '0');
         }
         
         const savedPostsEnabledCheckbox = document.getElementById('saved_posts_enabled');

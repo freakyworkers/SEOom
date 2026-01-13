@@ -2691,17 +2691,23 @@
                     @if($board->topics()->count() > 0)
                         <div class="mb-3">
                             <div class="topic-filter-container d-flex gap-2 align-items-center" style="overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: thin;">
-                                <a href="{{ route('posts.index', ['site' => $site->slug, 'boardSlug' => $board->slug]) }}" 
-                                   class="btn btn-sm {{ !isset($topicId) ? 'btn-primary' : 'btn-outline-secondary' }}" 
-                                   style="flex-shrink: 0; {{ !isset($topicId) ? 'background-color: ' . $pointColor . '; border-color: ' . $pointColor . ';' : '' }}">
+                                <button type="button" 
+                                   class="btn btn-sm board-viewer-topic-btn {{ !isset($topicId) || !$topicId ? 'active' : '' }}" 
+                                   data-widget-id="{{ $widget->id }}"
+                                   data-board-id="{{ $board->id }}"
+                                   data-topic-id=""
+                                   style="flex-shrink: 0; {{ !isset($topicId) || !$topicId ? 'background-color: ' . $pointColor . '; border-color: ' . $pointColor . '; color: white;' : 'background-color: transparent; border-color: ' . $pointColor . '; color: ' . $pointColor . ';' }}">
                                     전체
-                                </a>
+                                </button>
                                 @foreach($board->topics()->ordered()->get() as $topic)
-                                    <a href="{{ route('posts.index', ['site' => $site->slug, 'boardSlug' => $board->slug, 'topic' => $topic->id]) }}" 
-                                       class="btn btn-sm"
+                                    <button type="button" 
+                                       class="btn btn-sm board-viewer-topic-btn {{ (isset($topicId) && $topicId == $topic->id) ? 'active' : '' }}"
+                                       data-widget-id="{{ $widget->id }}"
+                                       data-board-id="{{ $board->id }}"
+                                       data-topic-id="{{ $topic->id }}"
                                        style="background-color: {{ (isset($topicId) && $topicId == $topic->id) ? $pointColor : 'transparent' }}; border-color: {{ $pointColor }}; color: {{ (isset($topicId) && $topicId == $topic->id) ? 'white' : $pointColor }}; flex-shrink: 0;">
                                         {{ $topic->name }}
-                                    </a>
+                                    </button>
                                 @endforeach
                             </div>
                         </div>
@@ -2723,6 +2729,7 @@
                     @endif
                     
                     {{-- 게시글 목록 --}}
+                    <div id="board-viewer-posts-{{ $widget->id }}">
                     @if($posts->count() > 0)
                         @if($board->type === 'pinterest')
                             {{-- 핀터레스트 게시판 레이아웃 --}}
@@ -2819,6 +2826,14 @@
                                                             </div>
                                                         </div>
                                                     @endif
+                                                @endif
+                                                {{-- 핀터레스트 게시판 제목 표시 (pinterest_show_title이 true인 경우) --}}
+                                                @if($board->pinterest_show_title ?? false)
+                                                    <div class="card-body p-2" style="background-color: rgba(255,255,255,0.95);">
+                                                        <h6 class="card-title mb-0 small text-truncate" style="font-size: 0.85rem; line-height: 1.3;">
+                                                            {{ $post->title }}
+                                                        </h6>
+                                                    </div>
                                                 @endif
                                             </a>
                                         </div>
@@ -2967,8 +2982,10 @@
                             <i class="bi bi-info-circle me-2"></i>게시글이 없습니다.
                         </div>
                     @endif
+                    </div>{{-- end of board-viewer-posts --}}
                     
-                    {{-- 검색 폼 --}}
+                    {{-- 검색 폼 (enable_search가 활성화된 경우에만 표시) --}}
+                    @if($board->enable_search ?? true)
                     <div class="mt-4 d-flex justify-content-center">
                         <form method="GET" action="{{ route('posts.index', ['site' => $site->slug, 'boardSlug' => $board->slug]) }}" class="d-flex gap-2 align-items-center">
                             <input type="hidden" name="topic" value="{{ request('topic') }}">
@@ -2993,6 +3010,7 @@
                             @endif
                         </form>
                     </div>
+                    @endif
                     
                     {{-- 글쓰기 버튼 --}}
                     @if(auth()->check() && ($board->write_permission === 'user' || ($board->write_permission === 'admin' && auth()->user()->canManage())))
@@ -3012,6 +3030,120 @@
                             </a>
                         </div>
                     @endif
+                    {{-- 주제 필터 AJAX 스크립트 --}}
+                    <script>
+                    (function() {
+                        const widgetId = '{{ $widget->id }}';
+                        const boardId = '{{ $board->id }}';
+                        const siteSlug = '{{ $site->slug }}';
+                        const boardSlug = '{{ $board->slug }}';
+                        const pointColor = '{{ $pointColor }}';
+                        
+                        document.querySelectorAll('.board-viewer-topic-btn[data-widget-id="' + widgetId + '"]').forEach(btn => {
+                            btn.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const topicId = this.dataset.topicId;
+                                
+                                // 버튼 스타일 업데이트
+                                document.querySelectorAll('.board-viewer-topic-btn[data-widget-id="' + widgetId + '"]').forEach(b => {
+                                    b.classList.remove('active');
+                                    b.style.backgroundColor = 'transparent';
+                                    b.style.color = pointColor;
+                                });
+                                this.classList.add('active');
+                                this.style.backgroundColor = pointColor;
+                                this.style.color = 'white';
+                                
+                                // AJAX로 게시글 목록 가져오기
+                                let url = '/api/boards/' + boardId + '/posts?site=' + siteSlug;
+                                if (topicId) {
+                                    url += '&topic=' + topicId;
+                                }
+                                
+                                const postsContainer = document.getElementById('board-viewer-posts-' + widgetId);
+                                if (postsContainer) {
+                                    postsContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+                                }
+                                
+                                fetch(url, {
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success && postsContainer) {
+                                        // 게시글 목록 HTML 생성
+                                        let html = '';
+                                        if (data.posts && data.posts.length > 0) {
+                                            if (data.board_type === 'pinterest') {
+                                                html = '<div class="row g-3">';
+                                                data.posts.forEach(post => {
+                                                    const colClass = data.col_class || 'col-6 col-md-4 col-lg-3';
+                                                    const thumbnail = post.thumbnail_path ? '/storage/' + post.thumbnail_path : (post.first_image || '');
+                                                    html += '<div class="' + colClass + '">';
+                                                    html += '<div class="card shadow-sm" style="overflow: hidden; border-radius: 12px;">';
+                                                    html += '<a href="/site/' + siteSlug + '/boards/' + boardSlug + '/posts/' + post.id + '" class="text-decoration-none text-dark">';
+                                                    if (thumbnail) {
+                                                        html += '<div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">';
+                                                        html += '<img src="' + thumbnail + '" alt="' + post.title + '" class="img-fluid" style="width: 100%; height: auto; display: block; object-fit: cover; min-height: 150px;">';
+                                                        html += '</div>';
+                                                    } else {
+                                                        html += '<div class="position-relative bg-secondary bg-opacity-25 d-flex flex-column align-items-center justify-content-center" style="min-height: 150px;">';
+                                                        html += '<i class="bi bi-image display-4 text-muted mb-2"></i>';
+                                                        html += '<span class="text-muted small">No image</span>';
+                                                        html += '</div>';
+                                                    }
+                                                    if (data.show_title) {
+                                                        html += '<div class="card-body p-2" style="background-color: rgba(255,255,255,0.95);">';
+                                                        html += '<h6 class="card-title mb-0 small text-truncate" style="font-size: 0.85rem; line-height: 1.3;">' + post.title + '</h6>';
+                                                        html += '</div>';
+                                                    }
+                                                    html += '</a>';
+                                                    html += '</div>';
+                                                    html += '</div>';
+                                                });
+                                                html += '</div>';
+                                            } else {
+                                                html = '<div class="card bg-white shadow-sm"><div class="list-group list-group-flush">';
+                                                data.posts.forEach((post, index) => {
+                                                    html += '<div class="list-group-item list-group-item-action border-start-0 border-end-0 ' + (index < data.posts.length - 1 ? 'border-bottom' : '') + '" style="padding: 1rem;">';
+                                                    html += '<div class="d-flex align-items-start gap-2 mb-2">';
+                                                    if (post.topics && post.topics.length > 0) {
+                                                        post.topics.forEach(topic => {
+                                                            html += '<span class="badge" style="background-color: ' + topic.color + '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: normal; flex-shrink: 0;">' + topic.name + '</span>';
+                                                        });
+                                                    }
+                                                    html += '<a href="/site/' + siteSlug + '/boards/' + boardSlug + '/posts/' + post.id + '" class="text-decoration-none text-dark flex-grow-1" style="line-height: 1.5;">';
+                                                    html += '<span>' + post.title + '</span>';
+                                                    html += '</a>';
+                                                    html += '</div>';
+                                                    html += '<div class="d-flex align-items-center gap-2 text-muted small">';
+                                                    html += '<span>' + post.author + '</span>';
+                                                    html += '<span>|</span>';
+                                                    html += '<span>' + post.created_at + '</span>';
+                                                    html += '</div>';
+                                                    html += '</div>';
+                                                });
+                                                html += '</div></div>';
+                                            }
+                                        } else {
+                                            html = '<div class="alert alert-info"><i class="bi bi-info-circle me-2"></i>게시글이 없습니다.</div>';
+                                        }
+                                        postsContainer.innerHTML = html;
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    if (postsContainer) {
+                                        postsContainer.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>게시글을 불러오는 중 오류가 발생했습니다.</div>';
+                                    }
+                                });
+                            });
+                        });
+                    })();
+                    </script>
                 @else
                     <div class="alert alert-warning">
                         <i class="bi bi-exclamation-triangle me-2"></i>게시판을 선택해주세요.
