@@ -29,6 +29,7 @@ class RewriteCleanUrls
         'logout',
         'plans/',
         'payment/',
+        'admin/',  // 관리자 페이지 (서브도메인/커스텀 도메인용)
     ];
     
     /**
