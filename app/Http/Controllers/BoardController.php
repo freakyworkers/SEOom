@@ -265,6 +265,20 @@ class BoardController extends Controller
             return $next($request);
         });
         
+        // 최신 데이터를 가져오기 위해 fresh() 사용
+        $board = $board->fresh();
+        
+        // hide_title_description 값 확인 로그
+        \Log::info('hide_title_description in edit method:', [
+            'board_id' => $board->id,
+            'value' => $board->hide_title_description,
+            'type' => gettype($board->hide_title_description),
+            'raw' => $board->getRawOriginal('hide_title_description') ?? 'null',
+            'is_true' => $board->hide_title_description === true,
+            'is_1' => $board->hide_title_description === 1,
+            'is_string_1' => $board->hide_title_description === '1'
+        ]);
+        
         return view('admin.boards.edit', compact('board', 'site'));
     }
 
