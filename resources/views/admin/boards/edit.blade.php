@@ -1766,18 +1766,24 @@
             
             let fieldValue = '';
             if (desktopField) {
-                fieldValue = desktopField.value || '';
+                fieldValue = desktopField.value !== null && desktopField.value !== undefined ? desktopField.value : '';
             } else if (mobileField) {
-                fieldValue = mobileField.value || '';
+                fieldValue = mobileField.value !== null && mobileField.value !== undefined ? mobileField.value : '';
             } else {
                 // 폼에서 직접 가져오기
                 const formField = form.querySelector(`[name="${fieldName}"]`);
                 if (formField) {
-                    fieldValue = formField.value || '';
+                    fieldValue = formField.value !== null && formField.value !== undefined ? formField.value : '';
                 }
             }
             
+            // 값이 빈 문자열이면 '0'으로 설정 (포인트 필드의 경우)
+            if (fieldValue === '' && fieldName.includes('_points')) {
+                fieldValue = '0';
+            }
+            
             formData.append(fieldName, fieldValue);
+            console.log(`Added ${fieldName}: ${fieldValue} (from ${desktopField ? 'desktop' : mobileField ? 'mobile' : 'form'})`);
         });
         
         // 디버깅을 위한 로그
