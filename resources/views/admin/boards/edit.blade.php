@@ -1530,29 +1530,30 @@
         // FormData 생성 전에 모든 hidden input 업데이트 완료 확인
         // FormData는 생성 시점의 폼 상태를 캡처하므로, 이전에 모든 값을 업데이트해야 함
         
-        // AJAX로 제출 (FormData는 fetch 호출 직전에 생성)
-        const formData = new FormData(this);
-        
         // 게시판 제목 및 설명 숨기기 값 명시적으로 추가 (체크박스 상태 직접 확인)
         const hideTitleDescriptionCheckbox = document.getElementById('hide_title_description');
         const hideTitleDescriptionCheckboxMobile = document.getElementById('hide_title_description_mobile');
         const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
         const hideTitleDescriptionHiddenMobile = document.getElementById('hide_title_description_hidden_mobile');
         
-        // 체크박스 상태를 직접 확인하여 값 설정
-        let hideTitleDescriptionValue = '0';
-        if (hideTitleDescriptionCheckbox && hideTitleDescriptionCheckbox.checked) {
-            hideTitleDescriptionValue = '1';
-        } else if (hideTitleDescriptionCheckboxMobile && hideTitleDescriptionCheckboxMobile.checked) {
-            hideTitleDescriptionValue = '1';
-        } else if (hideTitleDescriptionHidden && hideTitleDescriptionHidden.value) {
-            hideTitleDescriptionValue = hideTitleDescriptionHidden.value;
-        } else if (hideTitleDescriptionHiddenMobile && hideTitleDescriptionHiddenMobile.value) {
-            hideTitleDescriptionValue = hideTitleDescriptionHiddenMobile.value;
+        // 체크박스 상태를 직접 확인하여 hidden input 업데이트
+        if (hideTitleDescriptionCheckbox) {
+            if (hideTitleDescriptionHidden) {
+                hideTitleDescriptionHidden.value = hideTitleDescriptionCheckbox.checked ? '1' : '0';
+            }
+        } else if (hideTitleDescriptionCheckboxMobile) {
+            if (hideTitleDescriptionHiddenMobile) {
+                hideTitleDescriptionHiddenMobile.value = hideTitleDescriptionCheckboxMobile.checked ? '1' : '0';
+            }
         }
         
+        // AJAX로 제출 (FormData는 hidden input 업데이트 후 생성)
+        const formData = new FormData(this);
+        
+        // FormData에 명시적으로 추가 (FormData 생성 후에도 안전하게 추가)
+        const hideTitleDescriptionValue = hideTitleDescriptionHidden?.value || hideTitleDescriptionHiddenMobile?.value || '0';
         formData.set('hide_title_description', hideTitleDescriptionValue);
-        console.log('hide_title_description set in formData:', hideTitleDescriptionValue);
+        console.log('hide_title_description set in formData:', hideTitleDescriptionValue, 'from hidden:', hideTitleDescriptionHidden?.value, hideTitleDescriptionHiddenMobile?.value);
         
         // 핀터레스트 컬럼 필드가 있으면 명시적으로 추가 (숨겨져 있어도 포함되도록)
         const pinterestColumnsMobile = document.getElementById('pinterest_columns_mobile');
