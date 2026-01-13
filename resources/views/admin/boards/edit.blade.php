@@ -454,8 +454,8 @@
                                         @php
                                             // hide_title_description 값을 여러 방법으로 확인
                                             // 컨트롤러에서 전달된 원시 값을 우선 사용
-                                            $rawValue = $rawHideTitleDescription ?? $board->getRawOriginal('hide_title_description');
-                                            $hideTitleDescription = $rawValue ?? $board->hide_title_description ?? false;
+                                            $rawValue = isset($rawHideTitleDescription) ? $rawHideTitleDescription : $board->getRawOriginal('hide_title_description');
+                                            $hideTitleDescription = ($rawValue !== null) ? $rawValue : ($board->hide_title_description ?? false);
                                             
                                             // boolean, integer, string 모두 확인
                                             $isHideTitleDescriptionChecked = (
@@ -594,8 +594,8 @@
                                     @php
                                         // hide_title_description 값을 여러 방법으로 확인
                                         // 컨트롤러에서 전달된 원시 값을 우선 사용
-                                        $rawValue = $rawHideTitleDescription ?? $board->getRawOriginal('hide_title_description');
-                                        $hideTitleDescription = $rawValue ?? $board->hide_title_description ?? false;
+                                        $rawValue = isset($rawHideTitleDescription) ? $rawHideTitleDescription : $board->getRawOriginal('hide_title_description');
+                                        $hideTitleDescription = ($rawValue !== null) ? $rawValue : ($board->hide_title_description ?? false);
                                         
                                         // boolean, integer, string 모두 확인
                                         $isHideTitleDescriptionChecked = (
