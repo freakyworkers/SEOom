@@ -1332,7 +1332,8 @@ Route::middleware('web')->group(function () {
 // 이 라우트들은 site/{site} prefix 없이 직접 접근 가능
 // 서브도메인/커스텀 도메인으로 접근할 때 사용
 // /admin 경로는 verify.site.user 미들웨어 밖에서 처리 (ResolveSiteByDomain에서 site 설정)
-Route::middleware(['block.ip'])->group(function () {
+// web 미들웨어 그룹이 적용되어야 ResolveSiteByDomain이 실행됨
+Route::middleware(['web', 'block.ip'])->group(function () {
     // 어드민 라우트 (서브도메인/커스텀 도메인용)
     Route::prefix('admin')->middleware(['auth', 'sample.readonly', 'test.admin.readonly'])->group(function () {
         // /admin 경로로 접속 시 /admin/dashboard로 리다이렉트
