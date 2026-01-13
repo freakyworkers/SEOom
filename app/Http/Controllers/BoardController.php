@@ -268,16 +268,27 @@ class BoardController extends Controller
         // 최신 데이터를 가져오기 위해 fresh() 사용
         $board = $board->fresh();
         
+        // hide_title_description 값을 데이터베이스에서 직접 가져오기 (캐스팅 우회)
+        $rawHideTitleDescription = \DB::table('boards')
+            ->where('id', $board->id)
+            ->value('hide_title_description');
+        
         // hide_title_description 값 확인 로그
         \Log::info('hide_title_description in edit method:', [
             'board_id' => $board->id,
             'value' => $board->hide_title_description,
             'type' => gettype($board->hide_title_description),
-            'raw' => $board->getRawOriginal('hide_title_description') ?? 'null',
+            'raw_from_model' => $board->getRawOriginal('hide_title_description') ?? 'null',
+            'raw_from_db' => $rawHideTitleDescription,
             'is_true' => $board->hide_title_description === true,
             'is_1' => $board->hide_title_description === 1,
             'is_string_1' => $board->hide_title_description === '1'
         ]);
+        
+        // 원시 값을 board 객체에 직접 설정 (Blade에서 사용할 수 있도록)
+        if ($rawHideTitleDescription !== null) {
+            $board->setRawAttributes(array_merge($board->getAttributes(), ['hide_title_description' => $rawHideTitleDescription]), true);
+        }
         
         return view('admin.boards.edit', compact('board', 'site'));
     }

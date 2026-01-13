@@ -453,14 +453,9 @@
                                     <div class="form-check">
                                         @php
                                             // hide_title_description 값을 여러 방법으로 확인
-                                            // 먼저 원시 값을 가져옴
-                                            $rawValue = $board->getRawOriginal('hide_title_description');
-                                            $hideTitleDescription = $board->hide_title_description ?? false;
-                                            
-                                            // 원시 값이 있으면 그것을 우선 사용
-                                            if ($rawValue !== null) {
-                                                $hideTitleDescription = $rawValue;
-                                            }
+                                            // 컨트롤러에서 전달된 원시 값을 우선 사용
+                                            $rawValue = $rawHideTitleDescription ?? $board->getRawOriginal('hide_title_description');
+                                            $hideTitleDescription = $rawValue ?? $board->hide_title_description ?? false;
                                             
                                             // boolean, integer, string 모두 확인
                                             $isHideTitleDescriptionChecked = (
@@ -477,6 +472,7 @@
                                                     'value' => $hideTitleDescription,
                                                     'type' => gettype($hideTitleDescription),
                                                     'raw' => $rawValue,
+                                                    'raw_from_controller' => $rawHideTitleDescription ?? 'not set',
                                                     'checked' => $isHideTitleDescriptionChecked
                                                 ]);
                                             }
@@ -597,14 +593,9 @@
                                     <label class="form-label fw-bold mb-2">게시판 제목 및 설명 숨기기</label>
                                     @php
                                         // hide_title_description 값을 여러 방법으로 확인
-                                        // 먼저 원시 값을 가져옴
-                                        $rawValue = $board->getRawOriginal('hide_title_description');
-                                        $hideTitleDescription = $board->hide_title_description ?? false;
-                                        
-                                        // 원시 값이 있으면 그것을 우선 사용
-                                        if ($rawValue !== null) {
-                                            $hideTitleDescription = $rawValue;
-                                        }
+                                        // 컨트롤러에서 전달된 원시 값을 우선 사용
+                                        $rawValue = $rawHideTitleDescription ?? $board->getRawOriginal('hide_title_description');
+                                        $hideTitleDescription = $rawValue ?? $board->hide_title_description ?? false;
                                         
                                         // boolean, integer, string 모두 확인
                                         $isHideTitleDescriptionChecked = (
