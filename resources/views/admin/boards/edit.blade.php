@@ -1738,7 +1738,19 @@
         const submitButton = form.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.textContent;
         
-        // 모든 입력 필드 값을 먼저 수집
+        // FormData를 처음부터 직접 생성 (폼에서 자동 생성하지 않음)
+        const formData = new FormData();
+        
+        // CSRF 토큰 추가
+        const csrfToken = form.querySelector('input[name="_token"]');
+        if (csrfToken) {
+            formData.append('_token', csrfToken.value);
+        }
+        
+        // _method 추가
+        formData.append('_method', 'POST');
+        
+        // 모든 입력 필드 값을 명시적으로 추가
         const fields = [
             'read_permission', 'read_points',
             'write_permission', 'write_points',
@@ -1747,39 +1759,29 @@
             'comment_delete_permission', 'comment_delete_points'
         ];
         
-        const fieldValues = {};
-        
-        // 데스크탑과 모바일 버전 모두 확인하여 값 수집
+        // 데스크탑과 모바일 버전 모두 확인하여 값 추가
         fields.forEach(fieldName => {
             const desktopField = document.getElementById(fieldName);
             const mobileField = document.getElementById(fieldName + '_mobile');
             
+            let fieldValue = '';
             if (desktopField) {
-                fieldValues[fieldName] = desktopField.value;
+                fieldValue = desktopField.value || '';
             } else if (mobileField) {
-                fieldValues[fieldName] = mobileField.value;
+                fieldValue = mobileField.value || '';
             } else {
                 // 폼에서 직접 가져오기
                 const formField = form.querySelector(`[name="${fieldName}"]`);
                 if (formField) {
-                    fieldValues[fieldName] = formField.value;
+                    fieldValue = formField.value || '';
                 }
             }
+            
+            formData.append(fieldName, fieldValue);
         });
         
         // 디버깅을 위한 로그
-        console.log('Field values before FormData:', fieldValues);
-        
-        // FormData 생성
-        const formData = new FormData(form);
-        
-        // 수집한 값을 FormData에 명시적으로 설정
-        Object.keys(fieldValues).forEach(fieldName => {
-            formData.set(fieldName, fieldValues[fieldName]);
-        });
-        
-        // 디버깅을 위한 로그
-        console.log('FormData values after set:', {
+        console.log('FormData values:', {
             read_permission: formData.get('read_permission'),
             read_points: formData.get('read_points'),
             write_permission: formData.get('write_permission'),
