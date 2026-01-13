@@ -677,6 +677,16 @@ class BoardController extends Controller
             $updateData['post_template'] = $request->post_template;
         }
 
+        // hide_title_description이 $updateData에 포함되어 있는지 확인하고 강제로 포함
+        if (!isset($updateData['hide_title_description'])) {
+            // 만약 $updateData에 없으면 다시 설정
+            $hideTitleDescription = $request->input('hide_title_description', '0');
+            if ($hideTitleDescription === null || $hideTitleDescription === '') {
+                $hideTitleDescription = '0';
+            }
+            $updateData['hide_title_description'] = (bool)($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true' || $hideTitleDescription === 1 || $hideTitleDescription === 'on');
+        }
+        
         // hide_title_description이 $updateData에 포함되어 있는지 확인
         \Log::info('hide_title_description in updateData before update:', [
             'in_updateData' => isset($updateData['hide_title_description']),
@@ -689,16 +699,15 @@ class BoardController extends Controller
         $board->update($updateData);
         
         // hide_title_description을 명시적으로 다시 설정 (이중 확인)
-        if (isset($updateData['hide_title_description'])) {
-            // Eloquent를 통한 업데이트
-            $board->hide_title_description = $updateData['hide_title_description'];
-            $board->save();
-            
-            // DB 쿼리 빌더를 통한 직접 업데이트 (최종 확인)
-            \DB::table('boards')
-                ->where('id', $board->id)
-                ->update(['hide_title_description' => $updateData['hide_title_description'] ? 1 : 0]);
-        }
+        // Eloquent를 통한 업데이트
+        $board->hide_title_description = $updateData['hide_title_description'];
+        $board->save();
+        
+        // DB 쿼리 빌더를 통한 직접 업데이트 (최종 확인)
+        $dbValue = $updateData['hide_title_description'] ? 1 : 0;
+        \DB::table('boards')
+            ->where('id', $board->id)
+            ->update(['hide_title_description' => $dbValue]);
         
         // refresh 전에 다시 로드하여 최신 값 확인
         $board = $board->fresh();
