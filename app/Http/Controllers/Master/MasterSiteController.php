@@ -150,6 +150,7 @@ class MasterSiteController extends Controller
         if ($request->input('test_admin_enabled')) {
             $data['test_admin'] = [
                 'enabled' => true,
+                'id' => $request->input('test_admin_username'),
                 'username' => $request->input('test_admin_username'),
                 'password' => $request->input('test_admin_password'),
             ];

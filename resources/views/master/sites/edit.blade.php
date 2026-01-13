@@ -181,7 +181,8 @@
                     
                     @php
                         $testAdmin = $site->test_admin ?? [];
-                        $hasTestAdmin = !empty($testAdmin) && (!empty($testAdmin['id'] ?? '') || !empty($testAdmin['password'] ?? ''));
+                        $testAdminId = $testAdmin['id'] ?? $testAdmin['username'] ?? '';
+                        $hasTestAdmin = !empty($testAdmin) && (!empty($testAdminId) || !empty($testAdmin['password'] ?? ''));
                     @endphp
                     
                     {{-- 등록된 테스트 관리자가 있는 경우 --}}
@@ -192,7 +193,7 @@
                                     <div class="row align-items-center">
                                         <div class="col-md-4">
                                             <small class="text-muted d-block">관리자 ID</small>
-                                            <strong>{{ $testAdmin['id'] ?? '-' }}</strong>
+                                            <strong>{{ $testAdminId ?: '-' }}</strong>
                                         </div>
                                         <div class="col-md-4">
                                             <small class="text-muted d-block">비밀번호</small>
@@ -215,7 +216,7 @@
                             </div>
                             
                             {{-- 숨겨진 입력 필드 (폼 제출용) --}}
-                            <input type="hidden" name="test_admin[id]" id="hidden_test_admin_id" value="{{ $testAdmin['id'] ?? '' }}">
+                            <input type="hidden" name="test_admin[id]" id="hidden_test_admin_id" value="{{ $testAdminId }}">
                             <input type="hidden" name="test_admin[password]" id="hidden_test_admin_password" value="{{ $testAdmin['password'] ?? '' }}">
                         </div>
                         
@@ -227,7 +228,7 @@
                                     <input type="text" 
                                            class="form-control" 
                                            id="test_admin_id" 
-                                           value="{{ $testAdmin['id'] ?? '' }}"
+                                           value="{{ $testAdminId }}"
                                            placeholder="admin">
                                 </div>
 

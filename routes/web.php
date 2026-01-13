@@ -227,6 +227,15 @@ Route::middleware('web')->group(function () {
     // 마스터 사이트 관리자 페이지 라우트 (루트 경로)
     // 모든 관리자 라우트를 마스터 사이트용으로 복제
     Route::prefix('admin')->middleware('auth')->group(function () {
+        // /admin 경로로 접속 시 /admin/dashboard로 리다이렉트
+        Route::get('/', function () {
+            $masterSite = \App\Models\Site::getMasterSite();
+            if (!$masterSite) {
+                abort(404);
+            }
+            return redirect('/admin/dashboard');
+        });
+        
         // Dashboard
         Route::get('/dashboard', function () {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -1325,6 +1334,15 @@ Route::middleware('web')->group(function () {
 Route::middleware(['block.ip', 'verify.site.user'])->group(function () {
     // 어드민 라우트 (서브도메인/커스텀 도메인용)
     Route::prefix('admin')->middleware(['auth', 'sample.readonly', 'test.admin.readonly'])->group(function () {
+        // /admin 경로로 접속 시 /admin/dashboard로 리다이렉트
+        Route::get('/', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return redirect('/admin/dashboard');
+        });
+        
         // Dashboard
         Route::get('/dashboard', function (Request $request) {
             $site = $request->attributes->get('site');

@@ -1514,6 +1514,12 @@
         // AJAX로 제출 (FormData는 fetch 호출 직전에 생성)
         const formData = new FormData(this);
         
+        // 게시판 제목 및 설명 숨기기 값 명시적으로 추가
+        const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
+        const hideTitleDescriptionHiddenMobile = document.getElementById('hide_title_description_hidden_mobile');
+        const hideTitleDescriptionValue = hideTitleDescriptionHidden?.value || hideTitleDescriptionHiddenMobile?.value || '0';
+        formData.set('hide_title_description', hideTitleDescriptionValue);
+        
         // 핀터레스트 컬럼 필드가 있으면 명시적으로 추가 (숨겨져 있어도 포함되도록)
         const pinterestColumnsMobile = document.getElementById('pinterest_columns_mobile');
         const pinterestColumnsTablet = document.getElementById('pinterest_columns_tablet');
