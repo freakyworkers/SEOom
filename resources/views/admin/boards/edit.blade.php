@@ -1738,37 +1738,37 @@
         const submitButton = form.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.textContent;
         
-        // FormData를 폼에서 직접 생성 (모든 입력 필드 자동 포함)
-        const formData = new FormData(form);
+        // FormData를 처음부터 직접 생성 (폼에서 자동 생성하지 않음)
+        const formData = new FormData();
         
-        // 모바일 버전 필드가 있으면 제거 (데스크탑 버전만 사용)
-        const mobileFields = ['read_points_mobile', 'write_points_mobile', 'delete_points_mobile', 
-                              'comment_points_mobile', 'comment_delete_points_mobile',
-                              'read_permission_mobile', 'write_permission_mobile', 'delete_permission_mobile',
-                              'comment_permission_mobile', 'comment_delete_permission_mobile'];
-        mobileFields.forEach(fieldName => {
-            formData.delete(fieldName);
-        });
+        // CSRF 토큰 추가
+        const csrfToken = form.querySelector('input[name="_token"]');
+        if (csrfToken) {
+            formData.append('_token', csrfToken.value);
+        }
         
-        // 포인트 필드의 값을 직접 확인하고 명시적으로 설정
+        // _method 추가
+        formData.append('_method', 'POST');
+        
+        // 데스크탑 버전 필드의 값을 직접 확인하고 명시적으로 추가 (모바일 버전 무시)
         const pointFields = ['read_points', 'write_points', 'delete_points', 'comment_points', 'comment_delete_points'];
         pointFields.forEach(fieldName => {
-            const field = document.getElementById(fieldName);
-            if (field) {
-                const value = field.value !== null && field.value !== undefined ? field.value : '';
-                formData.set(fieldName, value);
-                console.log(`Set ${fieldName} to: ${value} (from field.value: ${field.value})`);
+            const desktopField = document.getElementById(fieldName);
+            if (desktopField) {
+                const value = desktopField.value !== null && desktopField.value !== undefined && desktopField.value !== '' ? desktopField.value : '0';
+                formData.append(fieldName, value);
+                console.log(`Added ${fieldName}: ${value} (from desktop field)`);
             }
         });
         
-        // 등급 필드의 값도 직접 확인하고 명시적으로 설정
+        // 등급 필드의 값도 직접 확인하고 명시적으로 추가 (데스크탑 버전만 사용)
         const permissionFields = ['read_permission', 'write_permission', 'delete_permission', 'comment_permission', 'comment_delete_permission'];
         permissionFields.forEach(fieldName => {
-            const field = document.getElementById(fieldName);
-            if (field) {
-                const value = field.value !== null && field.value !== undefined ? field.value : '';
-                formData.set(fieldName, value);
-                console.log(`Set ${fieldName} to: ${value}`);
+            const desktopField = document.getElementById(fieldName);
+            if (desktopField) {
+                const value = desktopField.value !== null && desktopField.value !== undefined ? desktopField.value : '';
+                formData.append(fieldName, value);
+                console.log(`Added ${fieldName}: ${value} (from desktop field)`);
             }
         });
         
