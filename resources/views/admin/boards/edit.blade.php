@@ -1739,6 +1739,35 @@
         const submitButton = form.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.textContent;
         
+        // 모든 입력 필드 값을 명시적으로 확인하고 FormData에 추가
+        const fields = [
+            'read_permission', 'read_points',
+            'write_permission', 'write_points',
+            'delete_permission', 'delete_points',
+            'comment_permission', 'comment_points',
+            'comment_delete_permission', 'comment_delete_points'
+        ];
+        
+        // 데스크탑과 모바일 버전 모두 확인
+        fields.forEach(fieldName => {
+            const desktopField = document.getElementById(fieldName);
+            const mobileField = document.getElementById(fieldName + '_mobile');
+            
+            if (desktopField) {
+                formData.set(fieldName, desktopField.value);
+            } else if (mobileField) {
+                formData.set(fieldName, mobileField.value);
+            }
+        });
+        
+        // 디버깅을 위한 로그
+        console.log('FormData values:', {
+            read_permission: formData.get('read_permission'),
+            read_points: formData.get('read_points'),
+            write_permission: formData.get('write_permission'),
+            write_points: formData.get('write_points'),
+        });
+        
         // 버튼 비활성화
         submitButton.disabled = true;
         submitButton.textContent = '저장 중...';
