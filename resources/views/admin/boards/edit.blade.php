@@ -451,7 +451,10 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <label class="form-label mb-0">게시판 제목 및 설명 숨기기</label>
+                                    <label class="form-label mb-0">
+                                        게시판 제목 및 설명 숨기기
+                                        <i class="bi bi-question-circle" data-bs-toggle="tooltip" title="게시판 상단에 표시되는 게시판 이름과 설명을 숨깁니다"></i>
+                                    </label>
                                 </td>
                                 <td>
                                     <div class="form-check">
@@ -594,7 +597,10 @@
                             
                             <div class="card shadow-sm">
                                 <div class="card-body">
-                                    <label class="form-label fw-bold mb-2">게시판 제목 및 설명 숨기기</label>
+                                    <label class="form-label fw-bold mb-2">
+                                        게시판 제목 및 설명 숨기기
+                                        <i class="bi bi-question-circle" data-bs-toggle="tooltip" title="게시판 상단에 표시되는 게시판 이름과 설명을 숨깁니다"></i>
+                                    </label>
                                     @php
                                         // hide_title_description 값을 여러 방법으로 확인
                                         // 컨트롤러에서 전달된 원시 값을 우선 사용
@@ -1357,9 +1363,16 @@
                     }
                     if (headerImageFilename) {
                         headerImageFilename.value = '';
-                        headerImageFilename.placeholder = '이미지가 제거됩니다 (저장 시 적용)';
+                        headerImageFilename.placeholder = '이미지 제거 중...';
                     }
-                    console.log('Header image marked for removal');
+                    console.log('Header image removal - submitting form');
+                    
+                    // 폼을 바로 제출하여 이미지 삭제
+                    const generalForm = document.getElementById('generalForm');
+                    if (generalForm) {
+                        // 폼 제출 이벤트 트리거
+                        generalForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                    }
                 }
             });
         }
