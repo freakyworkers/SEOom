@@ -1550,10 +1550,29 @@
         // AJAX로 제출 (FormData는 hidden input 업데이트 후 생성)
         const formData = new FormData(this);
         
-        // FormData에 명시적으로 추가 (FormData 생성 후에도 안전하게 추가)
-        const hideTitleDescriptionValue = hideTitleDescriptionHidden?.value || hideTitleDescriptionHiddenMobile?.value || '0';
+        // 체크박스 상태를 직접 확인하여 FormData에 명시적으로 추가
+        // hidden input 값과 체크박스 상태를 모두 확인하여 더 확실하게 처리
+        let hideTitleDescriptionValue = '0';
+        if (hideTitleDescriptionCheckbox) {
+            hideTitleDescriptionValue = hideTitleDescriptionCheckbox.checked ? '1' : '0';
+            // hidden input도 동기화
+            if (hideTitleDescriptionHidden) {
+                hideTitleDescriptionHidden.value = hideTitleDescriptionValue;
+            }
+        } else if (hideTitleDescriptionCheckboxMobile) {
+            hideTitleDescriptionValue = hideTitleDescriptionCheckboxMobile.checked ? '1' : '0';
+            // hidden input도 동기화
+            if (hideTitleDescriptionHiddenMobile) {
+                hideTitleDescriptionHiddenMobile.value = hideTitleDescriptionValue;
+            }
+        } else {
+            // 체크박스가 없으면 hidden input 값 사용
+            hideTitleDescriptionValue = hideTitleDescriptionHidden?.value || hideTitleDescriptionHiddenMobile?.value || '0';
+        }
+        
+        // FormData에 명시적으로 추가 (기존 값이 있어도 덮어쓰기)
         formData.set('hide_title_description', hideTitleDescriptionValue);
-        console.log('hide_title_description set in formData:', hideTitleDescriptionValue, 'from hidden:', hideTitleDescriptionHidden?.value, hideTitleDescriptionHiddenMobile?.value);
+        console.log('hide_title_description set in formData:', hideTitleDescriptionValue, 'checkbox checked:', hideTitleDescriptionCheckbox?.checked || hideTitleDescriptionCheckboxMobile?.checked, 'from hidden:', hideTitleDescriptionHidden?.value, hideTitleDescriptionHiddenMobile?.value);
         
         // 핀터레스트 컬럼 필드가 있으면 명시적으로 추가 (숨겨져 있어도 포함되도록)
         const pinterestColumnsMobile = document.getElementById('pinterest_columns_mobile');

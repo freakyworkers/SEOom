@@ -468,7 +468,12 @@ class BoardController extends Controller
         
         // hide_title_description 처리 (항상 처리 - 체크 해제 시에도 저장)
         // FormData에서 직접 가져오거나 기본값 '0' 사용
-        $hideTitleDescription = $request->input('hide_title_description', '0');
+        // $request->has()를 사용하지 않고 항상 input()으로 가져옴 (체크 해제 시에도 저장되도록)
+        $hideTitleDescription = $request->input('hide_title_description');
+        // 값이 없으면 기본값 '0' 사용, 있으면 그 값 사용
+        if ($hideTitleDescription === null || $hideTitleDescription === '') {
+            $hideTitleDescription = '0';
+        }
         // 문자열 '1', 숫자 1, boolean true 모두 체크됨으로 처리
         $updateData['hide_title_description'] = ($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true' || $hideTitleDescription === 1 || $hideTitleDescription === 'on');
         
