@@ -1570,39 +1570,31 @@
         const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
         const hideTitleDescriptionHiddenMobile = document.getElementById('hide_title_description_hidden_mobile');
         
-        // 체크박스 상태를 직접 확인하여 hidden input 업데이트
-        if (hideTitleDescriptionCheckbox) {
+        // 체크박스 상태를 직접 확인하여 hidden input 업데이트 (FormData 생성 전에 반드시 업데이트)
+        let hideTitleDescriptionValue = '0';
+        if (hideTitleDescriptionCheckbox && hideTitleDescriptionCheckbox.checked) {
+            hideTitleDescriptionValue = '1';
             if (hideTitleDescriptionHidden) {
-                hideTitleDescriptionHidden.value = hideTitleDescriptionCheckbox.checked ? '1' : '0';
+                hideTitleDescriptionHidden.value = '1';
             }
-        } else if (hideTitleDescriptionCheckboxMobile) {
+        } else if (hideTitleDescriptionCheckboxMobile && hideTitleDescriptionCheckboxMobile.checked) {
+            hideTitleDescriptionValue = '1';
             if (hideTitleDescriptionHiddenMobile) {
-                hideTitleDescriptionHiddenMobile.value = hideTitleDescriptionCheckboxMobile.checked ? '1' : '0';
+                hideTitleDescriptionHiddenMobile.value = '1';
+            }
+        } else {
+            // 체크 해제된 경우
+            hideTitleDescriptionValue = '0';
+            if (hideTitleDescriptionHidden) {
+                hideTitleDescriptionHidden.value = '0';
+            }
+            if (hideTitleDescriptionHiddenMobile) {
+                hideTitleDescriptionHiddenMobile.value = '0';
             }
         }
         
         // AJAX로 제출 (FormData는 hidden input 업데이트 후 생성)
         const formData = new FormData(this);
-        
-        // 체크박스 상태를 직접 확인하여 FormData에 명시적으로 추가
-        // hidden input 값과 체크박스 상태를 모두 확인하여 더 확실하게 처리
-        let hideTitleDescriptionValue = '0';
-        if (hideTitleDescriptionCheckbox) {
-            hideTitleDescriptionValue = hideTitleDescriptionCheckbox.checked ? '1' : '0';
-            // hidden input도 동기화
-            if (hideTitleDescriptionHidden) {
-                hideTitleDescriptionHidden.value = hideTitleDescriptionValue;
-            }
-        } else if (hideTitleDescriptionCheckboxMobile) {
-            hideTitleDescriptionValue = hideTitleDescriptionCheckboxMobile.checked ? '1' : '0';
-            // hidden input도 동기화
-            if (hideTitleDescriptionHiddenMobile) {
-                hideTitleDescriptionHiddenMobile.value = hideTitleDescriptionValue;
-            }
-        } else {
-            // 체크박스가 없으면 hidden input 값 사용
-            hideTitleDescriptionValue = hideTitleDescriptionHidden?.value || hideTitleDescriptionHiddenMobile?.value || '0';
-        }
         
         // FormData에 명시적으로 추가 (기존 값이 있어도 덮어쓰기)
         formData.set('hide_title_description', hideTitleDescriptionValue);

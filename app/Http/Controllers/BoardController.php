@@ -475,16 +475,21 @@ class BoardController extends Controller
         $updateData = [];
         
         // hide_title_description 처리 (항상 처리 - 체크 해제 시에도 저장)
-        // FormData에서 직접 가져오거나 기본값 '0' 사용
-        // $request->has()를 사용하지 않고 항상 input()으로 가져옴 (체크 해제 시에도 저장되도록)
+        // 체크박스가 "on"이면 true, hide_title_description 값도 확인
+        $hideTitleDescriptionCheckbox = $request->input('hide_title_description_checkbox');
         $hideTitleDescription = $request->input('hide_title_description', '0');
-        // 값이 null이거나 빈 문자열이면 기본값 '0' 사용
-        if ($hideTitleDescription === null || $hideTitleDescription === '') {
-            $hideTitleDescription = '0';
+        
+        // 체크박스가 "on"이면 무조건 true로 처리
+        if ($hideTitleDescriptionCheckbox === 'on') {
+            $updateData['hide_title_description'] = true;
+        } else {
+            // 체크박스가 없으면 hide_title_description 값 확인
+            if ($hideTitleDescription === null || $hideTitleDescription === '') {
+                $hideTitleDescription = '0';
+            }
+            // 문자열 '1', 숫자 1, boolean true 모두 체크됨으로 처리
+            $updateData['hide_title_description'] = (bool)($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true' || $hideTitleDescription === 1);
         }
-        // 문자열 '1', 숫자 1, boolean true 모두 체크됨으로 처리
-        // boolean으로 명시적으로 변환하여 저장 (데이터베이스에 0 또는 1로 저장됨)
-        $updateData['hide_title_description'] = (bool)($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true' || $hideTitleDescription === 1 || $hideTitleDescription === 'on');
         
         // 일반 설정 필드는 요청에 있을 때만 업데이트 (기능 ON/OFF 폼에서는 제외)
         if ($request->has('name')) {
