@@ -1505,18 +1505,26 @@
             console.log('saved_posts_enabled_hidden updated before submit:', savedPostsEnabledHidden.value);
         }
         
-        // 게시판 제목 및 설명 숨기기 체크박스 처리 (데스크탑 또는 모바일)
+        // 게시판 제목 및 설명 숨기기 체크박스 처리 (데스크탑 또는 모바일) - 제출 전 강제 업데이트
         const hideTitleDescriptionCheckbox = document.getElementById('hide_title_description');
         const hideTitleDescriptionCheckboxMobile = document.getElementById('hide_title_description_mobile');
         const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
         const hideTitleDescriptionHiddenMobile = document.getElementById('hide_title_description_hidden_mobile');
-        if (hideTitleDescriptionCheckbox && hideTitleDescriptionHidden) {
-            hideTitleDescriptionHidden.value = hideTitleDescriptionCheckbox.checked ? '1' : '0';
-            console.log('hide_title_description_hidden updated before submit:', hideTitleDescriptionHidden.value);
+        
+        // 체크박스 상태를 확인하여 hidden input 강제 업데이트
+        if (hideTitleDescriptionCheckbox) {
+            const checked = hideTitleDescriptionCheckbox.checked;
+            if (hideTitleDescriptionHidden) {
+                hideTitleDescriptionHidden.value = checked ? '1' : '0';
+            }
+            console.log('hide_title_description_hidden updated before submit (desktop):', checked, hideTitleDescriptionHidden?.value);
         }
-        if (hideTitleDescriptionCheckboxMobile && hideTitleDescriptionHiddenMobile) {
-            hideTitleDescriptionHiddenMobile.value = hideTitleDescriptionCheckboxMobile.checked ? '1' : '0';
-            console.log('hide_title_description_hidden_mobile updated before submit:', hideTitleDescriptionHiddenMobile.value);
+        if (hideTitleDescriptionCheckboxMobile) {
+            const checked = hideTitleDescriptionCheckboxMobile.checked;
+            if (hideTitleDescriptionHiddenMobile) {
+                hideTitleDescriptionHiddenMobile.value = checked ? '1' : '0';
+            }
+            console.log('hide_title_description_hidden_mobile updated before submit:', checked, hideTitleDescriptionHiddenMobile?.value);
         }
         
         // FormData 생성 전에 모든 hidden input 업데이트 완료 확인
