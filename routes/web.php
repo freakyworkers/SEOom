@@ -1334,7 +1334,7 @@ Route::middleware('web')->group(function () {
 // /admin 경로는 verify.site.user 미들웨어 밖에서 처리 (ResolveSiteByDomain에서 site 설정)
 Route::middleware(['block.ip'])->group(function () {
     // 어드민 라우트 (서브도메인/커스텀 도메인용)
-    Route::prefix('admin')->middleware(['auth', 'sample.readonly', 'test.admin.readonly', 'verify.site.user'])->group(function () {
+    Route::prefix('admin')->middleware(['auth', 'sample.readonly', 'test.admin.readonly'])->group(function () {
         // /admin 경로로 접속 시 /admin/dashboard로 리다이렉트
         Route::get('/', function (Request $request) {
             $site = $request->attributes->get('site');
@@ -1344,14 +1344,18 @@ Route::middleware(['block.ip'])->group(function () {
                 $masterDomain = config('app.master_domain', 'seoomweb.com');
                 $subdomain = str_replace('.' . $masterDomain, '', $host);
                 $subdomain = str_replace('www.', '', $subdomain);
-                $site = \App\Models\Site::where('slug', $subdomain)->orWhere('domain', $host)->first();
+                $site = \App\Models\Site::where('slug', $subdomain)
+                    ->orWhere('domain', $host)
+                    ->orWhere('domain', str_replace('www.', '', $host))
+                    ->where('status', 'active')
+                    ->first();
                 if ($site) {
                     return redirect()->route('login', ['site' => $site->slug ?? '']);
                 }
                 abort(404);
             }
             return redirect('/admin/dashboard');
-        });
+        })->middleware('verify.site.user');
         
         // Dashboard
         Route::get('/dashboard', function (Request $request) {

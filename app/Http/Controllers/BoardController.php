@@ -657,7 +657,8 @@ class BoardController extends Controller
         if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
             $response = [
                 'success' => true,
-                'message' => '일반 설정이 저장되었습니다.'
+                'message' => '일반 설정이 저장되었습니다.',
+                'hide_title_description' => $board->hide_title_description ? 1 : 0
             ];
             
             // saved_posts_enabled 저장 확인을 위해 응답에 포함
