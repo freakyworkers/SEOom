@@ -352,13 +352,14 @@ class MasterSiteController extends Controller
             // id와 password가 모두 있으면 저장, 아니면 null
             if (!empty($testAdmin['id']) && !empty($testAdmin['password'])) {
                 $site->test_admin = [
-                    'id' => $testAdmin['id'],
-                    'password' => $testAdmin['password'],
+                    'id' => trim($testAdmin['id']),
+                    'password' => trim($testAdmin['password']),
                 ];
             } else {
                 $site->test_admin = null;
             }
             $site->save();
+            $site->refresh(); // DB에서 최신 값 가져오기
         }
 
         // 사이트별 커스텀 features 저장

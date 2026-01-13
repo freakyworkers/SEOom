@@ -20,6 +20,12 @@ class VerifySiteUser
             return $next($request);
         }
         
+        // /admin 경로는 site 속성이 없어도 계속 진행 (ResolveSiteByDomain에서 설정됨)
+        if ($request->is('admin*') && !$request->attributes->has('site')) {
+            // ResolveSiteByDomain 미들웨어가 site를 찾지 못했을 수 있으므로 계속 진행
+            return $next($request);
+        }
+        
         // Site가 route parameter로 있는 경우에만 체크
         if ($request->route('site')) {
             $site = $request->route('site');
