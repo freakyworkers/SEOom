@@ -472,6 +472,15 @@ class BoardController extends Controller
         // 문자열 '1', 숫자 1, boolean true 모두 체크됨으로 처리
         $updateData['hide_title_description'] = ($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true' || $hideTitleDescription === 1 || $hideTitleDescription === 'on');
         
+        // hide_title_description 저장 전 로그
+        \Log::info('hide_title_description before update:', [
+            'request_value' => $request->input('hide_title_description'),
+            'parsed_value' => $hideTitleDescription,
+            'final_value' => $updateData['hide_title_description'],
+            'board_id' => $board->id,
+            'current_value' => $board->hide_title_description
+        ]);
+        
         // Handle header image upload
         if ($request->hasFile('header_image')) {
             $headerImage = $request->file('header_image');
