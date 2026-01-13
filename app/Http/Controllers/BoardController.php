@@ -285,12 +285,12 @@ class BoardController extends Controller
             'is_string_1' => $board->hide_title_description === '1'
         ]);
         
-        // 원시 값을 board 객체에 직접 설정 (Blade에서 사용할 수 있도록)
-        if ($rawHideTitleDescription !== null) {
-            $board->setRawAttributes(array_merge($board->getAttributes(), ['hide_title_description' => $rawHideTitleDescription]), true);
-        }
-        
-        return view('admin.boards.edit', compact('board', 'site'));
+        // 원시 값을 view에 직접 전달
+        return view('admin.boards.edit', [
+            'board' => $board,
+            'site' => $site,
+            'rawHideTitleDescription' => $rawHideTitleDescription
+        ]);
     }
 
     /**
