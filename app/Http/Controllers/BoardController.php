@@ -875,6 +875,12 @@ class BoardController extends Controller
         if ($board->type === 'pinterest') {
             $pinterestShowTitleValue = $request->input('pinterest_show_title', '0');
             $updateData['pinterest_show_title'] = ($pinterestShowTitleValue == '1' || $pinterestShowTitleValue === true || $pinterestShowTitleValue === 'true' || $pinterestShowTitleValue === 1);
+            
+            // pinterest_title_align 값 설정 (제목 정렬)
+            $pinterestTitleAlign = $request->input('pinterest_title_align', 'left');
+            if (in_array($pinterestTitleAlign, ['left', 'center', 'right'])) {
+                $updateData['pinterest_title_align'] = $pinterestTitleAlign;
+            }
         }
         
         // enable_search 처리 - 검색 기능 활성화 여부

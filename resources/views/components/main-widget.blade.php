@@ -2829,7 +2829,10 @@
                                                 @endif
                                                 {{-- 핀터레스트 게시판 제목 표시 (pinterest_show_title이 true인 경우) --}}
                                                 @if($board->pinterest_show_title ?? false)
-                                                    <div class="card-body p-2" style="background-color: rgba(255,255,255,0.95);">
+                                                    @php
+                                                        $pinterestTitleAlign = $board->pinterest_title_align ?? 'left';
+                                                    @endphp
+                                                    <div class="card-body p-2" style="background-color: rgba(255,255,255,0.95); text-align: {{ $pinterestTitleAlign }};">
                                                         <h6 class="card-title mb-0 small text-truncate" style="font-size: 0.85rem; line-height: 1.3;">
                                                             {{ $post->title }}
                                                         </h6>
@@ -3096,7 +3099,8 @@
                                                         html += '</div>';
                                                     }
                                                     if (data.show_title) {
-                                                        html += '<div class="card-body p-2" style="background-color: rgba(255,255,255,0.95);">';
+                                                        const titleAlign = data.title_align || 'left';
+                                                        html += '<div class="card-body p-2" style="background-color: rgba(255,255,255,0.95); text-align: ' + titleAlign + ';">';
                                                         html += '<h6 class="card-title mb-0 small text-truncate" style="font-size: 0.85rem; line-height: 1.3;">' + post.title + '</h6>';
                                                         html += '</div>';
                                                     }

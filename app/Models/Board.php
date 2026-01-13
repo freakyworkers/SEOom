@@ -60,6 +60,7 @@ class Board extends Model
         'pinterest_columns_desktop',
         'pinterest_columns_large',
         'pinterest_show_title',
+        'pinterest_title_align',
         'enable_search',
         'qa_statuses',
     ];

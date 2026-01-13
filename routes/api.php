@@ -104,6 +104,7 @@ Route::get('/boards/{boardId}/posts', function (Request $request, $boardId) {
         'posts' => $postsData,
         'board_type' => $board->type,
         'show_title' => $board->pinterest_show_title ?? false,
+        'title_align' => $board->pinterest_title_align ?? 'left',
         'col_class' => $colClass,
     ]);
 });

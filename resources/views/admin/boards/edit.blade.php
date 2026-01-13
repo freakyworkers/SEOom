@@ -1190,6 +1190,29 @@
                                 </label>
                                 <small class="d-block text-muted">핀터레스트 게시판에서 썸네일 하단에 게시글 제목을 표시합니다.</small>
                             </div>
+                            {{-- 제목 정렬 옵션 (제목 표시 활성화 시에만 표시) --}}
+                            @php
+                                $pinterestTitleAlign = $board->pinterest_title_align ?? 'left';
+                            @endphp
+                            <div id="pinterest_title_align_container" class="mt-2" style="{{ $pinterestShowTitleValue ? '' : 'display: none;' }}">
+                                <label class="form-label small text-muted mb-1">제목 정렬</label>
+                                <div class="btn-group" role="group" aria-label="제목 정렬">
+                                    <input type="radio" class="btn-check" name="pinterest_title_align" id="pinterest_title_align_left" value="left" {{ $pinterestTitleAlign === 'left' ? 'checked' : '' }}>
+                                    <label class="btn btn-outline-secondary btn-sm" for="pinterest_title_align_left" title="좌측 정렬">
+                                        <i class="bi bi-text-left"></i>
+                                    </label>
+                                    
+                                    <input type="radio" class="btn-check" name="pinterest_title_align" id="pinterest_title_align_center" value="center" {{ $pinterestTitleAlign === 'center' ? 'checked' : '' }}>
+                                    <label class="btn btn-outline-secondary btn-sm" for="pinterest_title_align_center" title="중앙 정렬">
+                                        <i class="bi bi-text-center"></i>
+                                    </label>
+                                    
+                                    <input type="radio" class="btn-check" name="pinterest_title_align" id="pinterest_title_align_right" value="right" {{ $pinterestTitleAlign === 'right' ? 'checked' : '' }}>
+                                    <label class="btn btn-outline-secondary btn-sm" for="pinterest_title_align_right" title="우측 정렬">
+                                        <i class="bi bi-text-right"></i>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         @endif
                         {{-- 검색 기능 --}}
@@ -1780,6 +1803,12 @@
         const pinterestShowTitleCheckbox = document.getElementById('pinterest_show_title');
         if (pinterestShowTitleCheckbox) {
             formData.append('pinterest_show_title', pinterestShowTitleCheckbox.checked ? '1' : '0');
+        }
+        
+        // pinterest_title_align 처리 (핀터레스트 타입인 경우)
+        const pinterestTitleAlignRadio = document.querySelector('input[name="pinterest_title_align"]:checked');
+        if (pinterestTitleAlignRadio) {
+            formData.append('pinterest_title_align', pinterestTitleAlignRadio.value);
         }
         
         // enable_search 체크박스 처리
@@ -2762,6 +2791,22 @@
                     desktopField.value = this.value;
                 });
             }
+        }
+    });
+    
+    // 핀터레스트 제목 표시 체크박스 토글 시 제목 정렬 옵션 표시/숨김
+    document.addEventListener('DOMContentLoaded', function() {
+        const pinterestShowTitleCheckbox = document.getElementById('pinterest_show_title');
+        const pinterestTitleAlignContainer = document.getElementById('pinterest_title_align_container');
+        
+        if (pinterestShowTitleCheckbox && pinterestTitleAlignContainer) {
+            pinterestShowTitleCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    pinterestTitleAlignContainer.style.display = 'block';
+                } else {
+                    pinterestTitleAlignContainer.style.display = 'none';
+                }
+            });
         }
     });
 </script>
