@@ -1355,7 +1355,7 @@ Route::middleware(['block.ip'])->group(function () {
                 abort(404);
             }
             return redirect('/admin/dashboard');
-        })->middleware('verify.site.user');
+        });
         
         // Dashboard
         Route::get('/dashboard', function (Request $request) {
