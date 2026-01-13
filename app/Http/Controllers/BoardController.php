@@ -676,8 +676,14 @@ class BoardController extends Controller
         
         // hide_title_description을 명시적으로 다시 설정 (이중 확인)
         if (isset($updateData['hide_title_description'])) {
+            // Eloquent를 통한 업데이트
             $board->hide_title_description = $updateData['hide_title_description'];
             $board->save();
+            
+            // DB 쿼리 빌더를 통한 직접 업데이트 (최종 확인)
+            \DB::table('boards')
+                ->where('id', $board->id)
+                ->update(['hide_title_description' => $updateData['hide_title_description'] ? 1 : 0]);
         }
         
         // refresh 전에 다시 로드하여 최신 값 확인
