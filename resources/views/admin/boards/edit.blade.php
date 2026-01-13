@@ -452,8 +452,25 @@
                                 <td>
                                     <div class="form-check">
                                         @php
+                                            // hide_title_description 값을 여러 방법으로 확인
                                             $hideTitleDescription = $board->hide_title_description ?? false;
-                                            $isHideTitleDescriptionChecked = ($hideTitleDescription === true || $hideTitleDescription === 1 || $hideTitleDescription === '1');
+                                            // boolean, integer, string 모두 확인
+                                            $isHideTitleDescriptionChecked = (
+                                                $hideTitleDescription === true || 
+                                                $hideTitleDescription === 1 || 
+                                                $hideTitleDescription === '1' ||
+                                                $hideTitleDescription == 1 ||
+                                                $hideTitleDescription == '1'
+                                            );
+                                            // 디버깅을 위한 로그 (개발 환경에서만)
+                                            if (config('app.debug')) {
+                                                \Log::info('hide_title_description in blade:', [
+                                                    'value' => $hideTitleDescription,
+                                                    'type' => gettype($hideTitleDescription),
+                                                    'checked' => $isHideTitleDescriptionChecked,
+                                                    'raw' => $board->getRawOriginal('hide_title_description') ?? 'null'
+                                                ]);
+                                            }
                                         @endphp
                                         <input type="hidden" name="hide_title_description" id="hide_title_description_hidden" value="{{ $isHideTitleDescriptionChecked ? '1' : '0' }}">
                                         <input type="checkbox" 
