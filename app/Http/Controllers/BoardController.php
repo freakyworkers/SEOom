@@ -938,17 +938,59 @@ class BoardController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $board->update([
-            'read_permission' => $request->read_permission ?? 'guest',
-            'write_permission' => $request->write_permission ?? 'user',
-            'delete_permission' => $request->delete_permission ?? 'author',
-            'comment_permission' => $request->comment_permission ?? 'user',
-            'comment_delete_permission' => $request->comment_delete_permission ?? 'author',
-            'read_points' => $request->read_points ?? 0,
-            'write_points' => $request->write_points ?? 0,
-            'delete_points' => $request->delete_points ?? 0,
-            'comment_points' => $request->comment_points ?? 0,
-            'comment_delete_points' => $request->comment_delete_points ?? 0,
+        // 등급 및 포인트 값 처리 (null이 아닌 경우에만 업데이트)
+        $updateData = [];
+        
+        if ($request->has('read_permission')) {
+            $updateData['read_permission'] = $request->read_permission;
+        }
+        if ($request->has('write_permission')) {
+            $updateData['write_permission'] = $request->write_permission;
+        }
+        if ($request->has('delete_permission')) {
+            $updateData['delete_permission'] = $request->delete_permission;
+        }
+        if ($request->has('comment_permission')) {
+            $updateData['comment_permission'] = $request->comment_permission;
+        }
+        if ($request->has('comment_delete_permission')) {
+            $updateData['comment_delete_permission'] = $request->comment_delete_permission;
+        }
+        
+        // 포인트 값 처리 (null이 아닌 경우에만 업데이트, 빈 문자열도 0으로 처리)
+        if ($request->has('read_points')) {
+            $updateData['read_points'] = $request->read_points !== null && $request->read_points !== '' ? (int)$request->read_points : 0;
+        }
+        if ($request->has('write_points')) {
+            $updateData['write_points'] = $request->write_points !== null && $request->write_points !== '' ? (int)$request->write_points : 0;
+        }
+        if ($request->has('delete_points')) {
+            $updateData['delete_points'] = $request->delete_points !== null && $request->delete_points !== '' ? (int)$request->delete_points : 0;
+        }
+        if ($request->has('comment_points')) {
+            $updateData['comment_points'] = $request->comment_points !== null && $request->comment_points !== '' ? (int)$request->comment_points : 0;
+        }
+        if ($request->has('comment_delete_points')) {
+            $updateData['comment_delete_points'] = $request->comment_delete_points !== null && $request->comment_delete_points !== '' ? (int)$request->comment_delete_points : 0;
+        }
+        
+        // 로그 추가
+        \Log::info('updateGradePoints called:', [
+            'board_id' => $board->id,
+            'request_data' => $request->all(),
+            'update_data' => $updateData
+        ]);
+        
+        $board->update($updateData);
+        
+        // 저장 후 최신 데이터 확인
+        $board->refresh();
+        \Log::info('updateGradePoints after update:', [
+            'board_id' => $board->id,
+            'read_permission' => $board->read_permission,
+            'read_points' => $board->read_points,
+            'write_permission' => $board->write_permission,
+            'write_points' => $board->write_points,
         ]);
 
         if ($request->expectsJson()) {

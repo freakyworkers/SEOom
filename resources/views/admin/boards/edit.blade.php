@@ -1732,7 +1732,50 @@
     });
 
     document.getElementById('gradePointsForm').addEventListener('submit', function(e) {
-        // 폼 제출은 그대로 진행
+        e.preventDefault();
+        
+        const form = this;
+        const formData = new FormData(form);
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+        
+        // 버튼 비활성화
+        submitButton.disabled = true;
+        submitButton.textContent = '저장 중...';
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return response.text().then(text => {
+                throw new Error(text || '서버 오류가 발생했습니다.');
+            });
+        })
+        .then(data => {
+            if (data.success) {
+                alert(data.message || '등급 & 포인트 설정이 저장되었습니다.');
+                // 페이지 새로고침하여 최신 데이터 표시
+                window.location.reload();
+            } else {
+                alert(data.message || '저장 중 오류가 발생했습니다.');
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('저장 중 오류가 발생했습니다: ' + error.message);
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
+        });
     });
 
     function confirmDeletePosts() {
