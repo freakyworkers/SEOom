@@ -648,6 +648,13 @@ class BoardController extends Controller
         $board->update($updateData);
         $board->refresh(); // DB에서 최신 값 가져오기
         
+        // hide_title_description 저장 확인 로그
+        \Log::info('hide_title_description after update:', [
+            'value' => $board->hide_title_description,
+            'type' => gettype($board->hide_title_description),
+            'raw' => $board->getRawOriginal('hide_title_description')
+        ]);
+        
         // saved_posts_enabled 저장 확인
         if (Schema::hasColumn('boards', 'saved_posts_enabled')) {
             \Log::info('saved_posts_enabled after refresh:', ['value' => $board->saved_posts_enabled, 'type' => gettype($board->saved_posts_enabled)]);
