@@ -29,7 +29,7 @@ class ResolveSiteByDomain
         $masterSite = Site::getMasterSite();
         
         // 마스터 도메인 체크
-        $masterDomain = config('app.master_domain', 'seoom.com');
+        $masterDomain = config('app.master_domain', 'seoomweb.com');
         $masterDomains = [
             $masterDomain,
             'www.' . $masterDomain,
