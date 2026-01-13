@@ -466,11 +466,9 @@ class BoardController extends Controller
             $updateData['posts_per_page'] = $request->posts_per_page ?? 20;
         }
         
-        // hide_title_description 처리
-        if ($request->has('hide_title_description')) {
-            $hideTitleDescription = $request->input('hide_title_description');
-            $updateData['hide_title_description'] = ($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true' || $hideTitleDescription === 1);
-        }
+        // hide_title_description 처리 (항상 처리 - 체크 해제 시에도 저장)
+        $hideTitleDescription = $request->input('hide_title_description', '0');
+        $updateData['hide_title_description'] = ($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true' || $hideTitleDescription === 1);
         
         // Handle header image upload
         if ($request->hasFile('header_image')) {
