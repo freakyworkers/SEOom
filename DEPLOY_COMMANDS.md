@@ -5,7 +5,7 @@
 ## 📋 서버 정보
 
 - **AWS EC2 퍼블릭 IPv4 주소:** `52.79.104.130`
-- **키 파일 경로:** `C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem`
+- **키 파일 경로:** `C:\Users\kangd\Desktop\seoom bepo\seoom-key.pem`
 - **마스터 사이트:** `seoomweb.com`
 - **마스터 계정:** `master@seoom.com` / `Qkqh090909!`
 

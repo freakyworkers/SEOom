@@ -521,26 +521,32 @@ Route::middleware('web')->group(function () {
             })->name('master.admin.crawlers.run-all');
             
             // Boards
-            Route::get('/boards', function () {
+            Route::get('/boards', function (Request $request) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->boards($masterSite);
+            // Request attributes에 마스터 사이트 설정
+            $request->attributes->set('site', $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->boards($request);
             })->name('master.admin.boards');
-            Route::get('/boards/{board}/topics', function (\App\Models\Board $board) {
+            Route::get('/boards/{board}/topics', function (Request $request, \App\Models\Board $board) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->getBoardTopics($masterSite, $board);
+            // Request attributes에 마스터 사이트 설정
+            $request->attributes->set('site', $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->getBoardTopics($request, $board);
             })->name('master.admin.boards.topics');
             Route::post('/banned-words', function (Request $request) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateBannedWords($request, $masterSite);
+            // Request attributes에 마스터 사이트 설정
+            $request->attributes->set('site', $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->updateBannedWords($request);
             })->name('master.admin.banned-words.update');
             
             // Posts
