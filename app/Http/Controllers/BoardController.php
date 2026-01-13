@@ -664,10 +664,18 @@ class BoardController extends Controller
         \Log::info('hide_title_description in updateData before update:', [
             'in_updateData' => isset($updateData['hide_title_description']),
             'value' => $updateData['hide_title_description'] ?? 'not set',
-            'type' => isset($updateData['hide_title_description']) ? gettype($updateData['hide_title_description']) : 'not set'
+            'type' => isset($updateData['hide_title_description']) ? gettype($updateData['hide_title_description']) : 'not set',
+            'updateData_keys' => array_keys($updateData)
         ]);
         
+        // update() 메서드 사용
         $board->update($updateData);
+        
+        // hide_title_description을 명시적으로 다시 설정 (이중 확인)
+        if (isset($updateData['hide_title_description'])) {
+            $board->hide_title_description = $updateData['hide_title_description'];
+            $board->save();
+        }
         
         // refresh 전에 다시 로드하여 최신 값 확인
         $board = $board->fresh();
