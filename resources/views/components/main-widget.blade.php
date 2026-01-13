@@ -2178,7 +2178,11 @@
                     
                     if ($boardId) {
                         $board = \App\Models\Board::find($boardId);
-                        if ($board && in_array($board->type, ['photo', 'bookmark', 'blog'])) {
+                        // 핀터레스트 타입인 경우 게시판의 pinterest_show_title 설정을 따름
+                        if ($board && $board->type === 'pinterest') {
+                            $showTitle = $board->pinterest_show_title ?? false;
+                        }
+                        if ($board && in_array($board->type, ['photo', 'bookmark', 'blog', 'pinterest'])) {
                             $query = \App\Models\Post::where('site_id', $site->id)
                                 ->where('board_id', $boardId)
                                 ->with(['user', 'board', 'attachments'])

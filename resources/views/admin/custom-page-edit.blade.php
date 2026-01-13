@@ -824,8 +824,8 @@
                         <select class="form-select" id="edit_custom_page_widget_gallery_board_id" name="gallery_board_id">
                             <option value="">선택하세요</option>
                             @foreach(\App\Models\Board::where('site_id', $site->id)->active()->orderBy('order')->get() as $board)
-                                @if(in_array($board->type, ['photo', 'bookmark', 'blog']))
-                                    <option value="{{ $board->id }}">{{ $board->name }}</option>
+                                @if(in_array($board->type, ['photo', 'bookmark', 'blog', 'pinterest']))
+                                    <option value="{{ $board->id }}">{{ $board->name }} @if($board->type === 'pinterest')(핀터레스트)@endif</option>
                                 @endif
                             @endforeach
                         </select>
