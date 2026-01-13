@@ -349,11 +349,15 @@ class MasterSiteController extends Controller
         // 테스트 관리자 계정 저장
         if ($request->has('test_admin')) {
             $testAdmin = $request->input('test_admin');
-            // 빈 값 필터링
-            $filteredTestAdmin = array_filter($testAdmin, function($value) {
-                return $value !== null && $value !== '';
-            });
-            $site->test_admin = !empty($filteredTestAdmin) ? $filteredTestAdmin : null;
+            // id와 password가 모두 있으면 저장, 아니면 null
+            if (!empty($testAdmin['id']) && !empty($testAdmin['password'])) {
+                $site->test_admin = [
+                    'id' => $testAdmin['id'],
+                    'password' => $testAdmin['password'],
+                ];
+            } else {
+                $site->test_admin = null;
+            }
             $site->save();
         }
 

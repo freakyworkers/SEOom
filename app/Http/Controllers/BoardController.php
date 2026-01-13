@@ -644,6 +644,7 @@ class BoardController extends Controller
         }
 
         $board->update($updateData);
+        $board->refresh(); // DB에서 최신 값 가져오기
         
         // saved_posts_enabled 저장 확인
         if (Schema::hasColumn('boards', 'saved_posts_enabled')) {
