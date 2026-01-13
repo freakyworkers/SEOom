@@ -1750,40 +1750,35 @@
         // _method 추가
         formData.append('_method', 'POST');
         
-        // 모든 입력 필드 값을 명시적으로 추가
-        const fields = [
-            'read_permission', 'read_points',
-            'write_permission', 'write_points',
-            'delete_permission', 'delete_points',
-            'comment_permission', 'comment_points',
-            'comment_delete_permission', 'comment_delete_points'
-        ];
+        // 폼의 모든 입력 필드를 순회하면서 값 수집
+        const allInputs = form.querySelectorAll('input, select');
+        const fieldValues = {};
         
-        // 데스크탑과 모바일 버전 모두 확인하여 값 추가
-        fields.forEach(fieldName => {
-            const desktopField = document.getElementById(fieldName);
-            const mobileField = document.getElementById(fieldName + '_mobile');
-            
-            let fieldValue = '';
-            if (desktopField) {
-                fieldValue = desktopField.value !== null && desktopField.value !== undefined ? desktopField.value : '';
-            } else if (mobileField) {
-                fieldValue = mobileField.value !== null && mobileField.value !== undefined ? mobileField.value : '';
-            } else {
-                // 폼에서 직접 가져오기
-                const formField = form.querySelector(`[name="${fieldName}"]`);
-                if (formField) {
-                    fieldValue = formField.value !== null && formField.value !== undefined ? formField.value : '';
+        allInputs.forEach(input => {
+            const name = input.name;
+            if (name && name !== '_token' && name !== '_method') {
+                // 데스크탑과 모바일 버전 중 하나만 사용 (데스크탑 우선)
+                if (!fieldValues[name] || input.id && !input.id.includes('_mobile')) {
+                    if (input.type === 'checkbox') {
+                        fieldValues[name] = input.checked ? input.value : '';
+                    } else {
+                        fieldValues[name] = input.value !== null && input.value !== undefined ? input.value : '';
+                    }
                 }
             }
+        });
+        
+        // 모든 필드 값을 FormData에 추가
+        Object.keys(fieldValues).forEach(fieldName => {
+            let fieldValue = fieldValues[fieldName];
             
-            // 값이 빈 문자열이면 '0'으로 설정 (포인트 필드의 경우)
+            // 값이 빈 문자열이고 포인트 필드인 경우 '0'으로 설정
             if (fieldValue === '' && fieldName.includes('_points')) {
                 fieldValue = '0';
             }
             
             formData.append(fieldName, fieldValue);
-            console.log(`Added ${fieldName}: ${fieldValue} (from ${desktopField ? 'desktop' : mobileField ? 'mobile' : 'form'})`);
+            console.log(`Added ${fieldName}: ${fieldValue}`);
         });
         
         // 디버깅을 위한 로그
