@@ -1533,11 +1533,26 @@
         // AJAX로 제출 (FormData는 fetch 호출 직전에 생성)
         const formData = new FormData(this);
         
-        // 게시판 제목 및 설명 숨기기 값 명시적으로 추가
+        // 게시판 제목 및 설명 숨기기 값 명시적으로 추가 (체크박스 상태 직접 확인)
+        const hideTitleDescriptionCheckbox = document.getElementById('hide_title_description');
+        const hideTitleDescriptionCheckboxMobile = document.getElementById('hide_title_description_mobile');
         const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
         const hideTitleDescriptionHiddenMobile = document.getElementById('hide_title_description_hidden_mobile');
-        const hideTitleDescriptionValue = hideTitleDescriptionHidden?.value || hideTitleDescriptionHiddenMobile?.value || '0';
+        
+        // 체크박스 상태를 직접 확인하여 값 설정
+        let hideTitleDescriptionValue = '0';
+        if (hideTitleDescriptionCheckbox && hideTitleDescriptionCheckbox.checked) {
+            hideTitleDescriptionValue = '1';
+        } else if (hideTitleDescriptionCheckboxMobile && hideTitleDescriptionCheckboxMobile.checked) {
+            hideTitleDescriptionValue = '1';
+        } else if (hideTitleDescriptionHidden && hideTitleDescriptionHidden.value) {
+            hideTitleDescriptionValue = hideTitleDescriptionHidden.value;
+        } else if (hideTitleDescriptionHiddenMobile && hideTitleDescriptionHiddenMobile.value) {
+            hideTitleDescriptionValue = hideTitleDescriptionHiddenMobile.value;
+        }
+        
         formData.set('hide_title_description', hideTitleDescriptionValue);
+        console.log('hide_title_description set in formData:', hideTitleDescriptionValue);
         
         // 핀터레스트 컬럼 필드가 있으면 명시적으로 추가 (숨겨져 있어도 포함되도록)
         const pinterestColumnsMobile = document.getElementById('pinterest_columns_mobile');
