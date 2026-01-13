@@ -859,6 +859,23 @@ class BoardController extends Controller
             'final_value' => $updateData['enable_share'],
             'board_id' => $board->id
         ]);
+        
+        // pinterest_show_title 처리 - 핀터레스트 타입에서 제목 표시 옵션
+        if (!Schema::hasColumn('boards', 'pinterest_show_title')) {
+            try {
+                Schema::table('boards', function (Blueprint $table) {
+                    $table->boolean('pinterest_show_title')->default(false)->after('pinterest_columns_large')->comment('핀터레스트 게시판에서 제목 표시');
+                });
+            } catch (\Exception $e) {
+                \Log::error('Failed to create pinterest_show_title column: ' . $e->getMessage());
+            }
+        }
+        
+        // pinterest_show_title 값 설정 (핀터레스트 타입인 경우에만)
+        if ($board->type === 'pinterest') {
+            $pinterestShowTitleValue = $request->input('pinterest_show_title', '0');
+            $updateData['pinterest_show_title'] = ($pinterestShowTitleValue == '1' || $pinterestShowTitleValue === true || $pinterestShowTitleValue === 'true' || $pinterestShowTitleValue === 1);
+        }
 
         $board->update($updateData);
         $board->refresh();

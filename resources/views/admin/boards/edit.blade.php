@@ -1174,6 +1174,24 @@
                                 <small class="d-block text-muted">운영자가 댓글을 채택할 수 있습니다.</small>
                             </div>
                         </div>
+                        {{-- 핀터레스트 타입 전용 옵션 --}}
+                        @if($board->type === 'pinterest')
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                @php
+                                    $pinterestShowTitleValue = false;
+                                    if (\Illuminate\Support\Facades\Schema::hasColumn('boards', 'pinterest_show_title')) {
+                                        $pinterestShowTitleValue = $board->pinterest_show_title;
+                                    }
+                                @endphp
+                                <input type="checkbox" class="form-check-input" id="pinterest_show_title" name="pinterest_show_title" value="1" {{ old('pinterest_show_title', $pinterestShowTitleValue) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="pinterest_show_title">
+                                    제목 표시
+                                </label>
+                                <small class="d-block text-muted">핀터레스트 게시판에서 썸네일 하단에 게시글 제목을 표시합니다.</small>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                     <div class="d-flex justify-content-end mt-3">
                         <button type="submit" class="btn btn-primary">저장</button>
@@ -1741,6 +1759,13 @@
         formData.append('enable_share', enableShareCheckbox?.checked ? '1' : '0');
         formData.append('enable_author_comment_adopt', enableAuthorCommentAdoptCheckbox?.checked ? '1' : '0');
         formData.append('enable_admin_comment_adopt', enableAdminCommentAdoptCheckbox?.checked ? '1' : '0');
+        
+        // pinterest_show_title 체크박스 처리 (핀터레스트 타입인 경우)
+        const pinterestShowTitleCheckbox = document.getElementById('pinterest_show_title');
+        if (pinterestShowTitleCheckbox) {
+            formData.append('pinterest_show_title', pinterestShowTitleCheckbox.checked ? '1' : '0');
+        }
+        
         const savedPostsEnabledCheckbox = document.getElementById('saved_posts_enabled');
         const savedPostsEnabledHidden = document.getElementById('saved_posts_enabled_hidden');
         if (savedPostsEnabledCheckbox && savedPostsEnabledHidden) {
