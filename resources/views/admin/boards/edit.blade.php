@@ -1624,13 +1624,16 @@
         // AJAX로 제출 (FormData는 hidden input 업데이트 후 생성)
         const formData = new FormData(this);
         
-        // FormData에 명시적으로 추가 (기존 값이 있어도 덮어쓰기)
+        // hide_title_description 관련 기존 값 모두 삭제 후 새 값 설정
+        formData.delete('hide_title_description');
+        formData.delete('hide_title_description_checkbox');
         formData.set('hide_title_description', hideTitleDescriptionValue);
         console.log('hide_title_description set in formData:', hideTitleDescriptionValue, 'checkbox checked:', hideTitleDescriptionCheckbox?.checked || hideTitleDescriptionCheckboxMobile?.checked, 'from hidden:', hideTitleDescriptionHidden?.value, hideTitleDescriptionHiddenMobile?.value);
         
-        // saved_posts_enabled도 명시적으로 추가
+        // saved_posts_enabled 관련 기존 값 모두 삭제 후 새 값 설정
         const savedPostsEnabledFinalCheckbox = document.getElementById('saved_posts_enabled') || document.getElementById('saved_posts_enabled_mobile');
         const savedPostsEnabledValue = savedPostsEnabledFinalCheckbox?.checked ? '1' : '0';
+        formData.delete('saved_posts_enabled');
         formData.set('saved_posts_enabled', savedPostsEnabledValue);
         console.log('saved_posts_enabled set in formData:', savedPostsEnabledValue);
         
