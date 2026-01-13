@@ -449,6 +449,18 @@ class BoardController extends Controller
 
         $updateData = [];
         
+        // hide_title_description 처리 (항상 처리 - 체크 해제 시에도 저장)
+        // FormData에서 직접 가져오거나 기본값 '0' 사용
+        // $request->has()를 사용하지 않고 항상 input()으로 가져옴 (체크 해제 시에도 저장되도록)
+        $hideTitleDescription = $request->input('hide_title_description', '0');
+        // 값이 null이거나 빈 문자열이면 기본값 '0' 사용
+        if ($hideTitleDescription === null || $hideTitleDescription === '') {
+            $hideTitleDescription = '0';
+        }
+        // 문자열 '1', 숫자 1, boolean true 모두 체크됨으로 처리
+        // boolean으로 명시적으로 변환하여 저장 (데이터베이스에 0 또는 1로 저장됨)
+        $updateData['hide_title_description'] = (bool)($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true' || $hideTitleDescription === 1 || $hideTitleDescription === 'on');
+        
         // 일반 설정 필드는 요청에 있을 때만 업데이트 (기능 ON/OFF 폼에서는 제외)
         if ($request->has('name')) {
             $updateData['name'] = $request->name;
@@ -465,17 +477,6 @@ class BoardController extends Controller
         if ($request->has('posts_per_page')) {
             $updateData['posts_per_page'] = $request->posts_per_page ?? 20;
         }
-        
-        // hide_title_description 처리 (항상 처리 - 체크 해제 시에도 저장)
-        // FormData에서 직접 가져오거나 기본값 '0' 사용
-        // $request->has()를 사용하지 않고 항상 input()으로 가져옴 (체크 해제 시에도 저장되도록)
-        $hideTitleDescription = $request->input('hide_title_description');
-        // 값이 없으면 기본값 '0' 사용, 있으면 그 값 사용
-        if ($hideTitleDescription === null || $hideTitleDescription === '') {
-            $hideTitleDescription = '0';
-        }
-        // 문자열 '1', 숫자 1, boolean true 모두 체크됨으로 처리
-        $updateData['hide_title_description'] = ($hideTitleDescription == '1' || $hideTitleDescription === true || $hideTitleDescription === 'true' || $hideTitleDescription === 1 || $hideTitleDescription === 'on');
         
         // hide_title_description 저장 전 로그
         \Log::info('hide_title_description before update:', [
@@ -659,14 +660,26 @@ class BoardController extends Controller
             $updateData['post_template'] = $request->post_template;
         }
 
+        // hide_title_description이 $updateData에 포함되어 있는지 확인
+        \Log::info('hide_title_description in updateData before update:', [
+            'in_updateData' => isset($updateData['hide_title_description']),
+            'value' => $updateData['hide_title_description'] ?? 'not set',
+            'type' => isset($updateData['hide_title_description']) ? gettype($updateData['hide_title_description']) : 'not set'
+        ]);
+        
         $board->update($updateData);
-        $board->refresh(); // DB에서 최신 값 가져오기
+        
+        // refresh 전에 다시 로드하여 최신 값 확인
+        $board = $board->fresh();
         
         // hide_title_description 저장 확인 로그
         \Log::info('hide_title_description after update:', [
             'value' => $board->hide_title_description,
             'type' => gettype($board->hide_title_description),
-            'raw' => $board->getRawOriginal('hide_title_description')
+            'raw' => $board->getRawOriginal('hide_title_description'),
+            'is_true' => $board->hide_title_description === true,
+            'is_1' => $board->hide_title_description === 1,
+            'is_string_1' => $board->hide_title_description === '1'
         ]);
         
         // saved_posts_enabled 저장 확인
