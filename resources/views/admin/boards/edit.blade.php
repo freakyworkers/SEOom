@@ -1652,11 +1652,7 @@
         }
         formData.append('saved_posts_enabled', savedPostsEnabledHidden?.value || '0');
         
-        // 게시판 제목 및 설명 숨기기 (데스크탑 또는 모바일)
-        const hideTitleDescriptionHidden = document.getElementById('hide_title_description_hidden');
-        const hideTitleDescriptionHiddenMobile = document.getElementById('hide_title_description_hidden_mobile');
-        const hideTitleDescriptionValue = hideTitleDescriptionHidden?.value || hideTitleDescriptionHiddenMobile?.value || '0';
-        formData.append('hide_title_description', hideTitleDescriptionValue);
+        // 게시판 제목 및 설명 숨기기는 이미 위에서 설정됨 (중복 제거)
         
         // AJAX로 제출하여 페이지 리로드 방지
         e.preventDefault();
