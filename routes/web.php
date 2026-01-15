@@ -1089,7 +1089,7 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->storeCustomPageWidgetContainer($masterSite, $customPage, $request);
+                return app(\App\Http\Controllers\AdminController::class)->storeCustomPageWidgetContainer($customPage, $request, $masterSite);
             })->name('master.admin.custom-pages.containers.store');
             Route::put('/custom-pages/{customPage}/containers/{container}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidgetContainer $container) {
             $masterSite = \App\Models\Site::getMasterSite();

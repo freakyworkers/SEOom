@@ -4493,8 +4493,11 @@ class AdminController extends Controller
     /**
      * Store a new custom page widget container.
      */
-    public function storeCustomPageWidgetContainer(Site $site, CustomPage $customPage, Request $request)
+    public function storeCustomPageWidgetContainer(CustomPage $customPage, Request $request, Site $site = null)
     {
+        // Site를 customPage에서 가져오거나 파라미터에서 가져옴
+        $site = $site ?? $customPage->site;
+        
         // Ensure custom page belongs to site
         if ($customPage->site_id !== $site->id) {
             abort(403);
