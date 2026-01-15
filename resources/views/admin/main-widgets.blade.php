@@ -5765,7 +5765,16 @@ function editMainWidget(widgetId) {
                     'edit_main_widget_marquee_direction_container',
                     'edit_main_widget_gallery_container',
                     'edit_main_widget_gallery_display_type_container',
-                    'edit_main_widget_image_slide_speed_container'
+                    'edit_main_widget_gallery_grid_container',
+                    'edit_main_widget_gallery_slide_container',
+                    'edit_main_widget_gallery_show_title_container',
+                    'edit_main_widget_image_slide_speed_container',
+                    'edit_main_widget_image_slide_visible_count_container',
+                    'edit_main_widget_image_slide_visible_count_mobile_container',
+                    'edit_main_widget_image_slide_gap_container',
+                    'edit_main_widget_image_slide_background_container',
+                    'edit_main_widget_block_link_container',
+                    'edit_main_widget_countdown_dday_container'
                 ];
                 elementsToRemove.forEach(id => {
                     const el = document.getElementById(id);
