@@ -105,8 +105,11 @@
     // 위젯 그림자 설정 확인 (기본값: ON)
     $widgetShadow = $site->getSetting('widget_shadow', '1') == '1';
     
-    // 그림자 클래스 결정: 실제 full width/full height이거나 그림자 설정이 OFF이면 그림자 제거
-    $shadowClass = ($isActualFullWidth || $isFullHeight || !$widgetShadow) ? '' : 'shadow-sm';
+    // board_viewer 위젯의 no_background 설정 확인 (외부 카드에도 적용하기 위해 미리 확인)
+    $boardViewerNoBackgroundEarly = ($widget->type === 'board_viewer' && isset($widgetSettings['no_background']) && $widgetSettings['no_background']);
+    
+    // 그림자 클래스 결정: 실제 full width/full height이거나 그림자 설정이 OFF이거나 board_viewer의 no_background가 활성화되면 그림자 제거
+    $shadowClass = ($isActualFullWidth || $isFullHeight || !$widgetShadow || $boardViewerNoBackgroundEarly) ? '' : 'shadow-sm';
     
     // 애니메이션 설정 가져오기
     $animationDirection = $widgetSettings['animation_direction'] ?? 'none';
@@ -1626,7 +1629,7 @@
     $cardStyle .= ($cardStyle ? ' ' : '') . 'flex: 1; display: flex; flex-direction: column; min-height: 0; height: 100%; margin-top: 0 !important; margin-bottom: 0 !important;';
     $cardMarginBottom = 'mb-0';
 @endphp
-<div class="card {{ $shadowClass }} {{ $animationClass }} {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }}" style="{{ $cardStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
+<div class="card {{ $shadowClass }} {{ $animationClass }} {{ $cardMarginBottom }} {{ $isRoundTheme ? '' : 'rounded-0' }} {{ ($widget->type === 'chat' || $widget->type === 'chat_widget') ? 'd-none d-md-block' : '' }} {{ $boardViewerNoBackgroundEarly ? 'bg-transparent border-0' : '' }}" style="{{ $cardStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
     @if($hasTitle)
         @php
             $cardHeaderBg = $isDark ? 'rgb(43, 43, 43)' : 'white';
