@@ -7815,8 +7815,11 @@ async function saveMainWidgetSettings() {
         const enableImage = document.getElementById('edit_main_widget_block_enable_image')?.checked || false;
         const blockImageFile = document.getElementById('edit_main_widget_block_image')?.files[0];
         const blockImageUrl = document.getElementById('edit_main_widget_block_image_url')?.value || '';
+        
+        // enable_image 값을 항상 설정 (이미지 삭제 시 false로 저장되어야 함)
+        settings.enable_image = enableImage;
+        
         if (enableImage) {
-            settings.enable_image = true;
             if (blockImageFile) {
                 formData.append('block_image_file', blockImageFile);
             }
@@ -7832,6 +7835,9 @@ async function saveMainWidgetSettings() {
             settings.block_image_padding_bottom = blockImagePaddingBottom !== '' && blockImagePaddingBottom !== null ? parseInt(blockImagePaddingBottom) : 0;
             settings.block_image_padding_left = blockImagePaddingLeft !== '' && blockImagePaddingLeft !== null ? parseInt(blockImagePaddingLeft) : 0;
             settings.block_image_padding_right = blockImagePaddingRight !== '' && blockImagePaddingRight !== null ? parseInt(blockImagePaddingRight) : 0;
+        } else {
+            // 이미지 비활성화 시 이미지 URL도 초기화
+            settings.block_image_url = '';
         }
         // 버튼 데이터 수집
         const buttons = [];
@@ -11857,11 +11863,21 @@ function removeBlockImage(prefix) {
     const imageUrlInput = document.getElementById(prefix === 'widget_block' ? 'widget_block_image_url' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image_url' : 'edit_custom_page_widget_block_image_url'));
     const previewContainer = document.getElementById(prefix === 'widget_block' ? 'widget_block_image_preview_container' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image_preview_container' : 'edit_custom_page_widget_block_image_preview_container'));
     const previewImg = document.getElementById(prefix === 'widget_block' ? 'widget_block_image_preview' : (prefix === 'edit_main_widget_block' ? 'edit_main_widget_block_image_preview' : 'edit_custom_page_widget_block_image_preview'));
+    const enableImageCheckbox = document.getElementById(prefix + '_enable_image');
+    const imageContainer = document.getElementById(prefix + '_image_container');
     
     if (imageInput) imageInput.value = '';
     if (imageUrlInput) imageUrlInput.value = '';
     if (previewImg) previewImg.src = '';
     if (previewContainer) previewContainer.style.display = 'none';
+    
+    // 체크박스 해제 및 이미지 컨테이너 숨기기
+    if (enableImageCheckbox) {
+        enableImageCheckbox.checked = false;
+    }
+    if (imageContainer) {
+        imageContainer.style.display = 'none';
+    }
 }
 </script>
 
