@@ -4804,11 +4804,12 @@ class AdminController extends Controller
     /**
      * Store a new custom page widget.
      */
-    public function storeCustomPageWidget(Site $site, CustomPage $customPage, Request $request)
+    public function storeCustomPageWidget(CustomPage $customPage, Request $request)
     {
-        // Ensure custom page belongs to site
-        if ($customPage->site_id !== $site->id) {
-            abort(403);
+        // Get site from custom page
+        $site = $customPage->site;
+        if (!$site) {
+            abort(404);
         }
 
         // 위젯 생성 제한 확인

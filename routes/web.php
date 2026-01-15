@@ -1110,7 +1110,7 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->storeCustomPageWidget($masterSite, $customPage, $request);
+                return app(\App\Http\Controllers\AdminController::class)->storeCustomPageWidget($customPage, $request);
             })->name('master.admin.custom-pages.widgets.store');
             Route::put('/custom-pages/{customPage}/widgets/{widget}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidget $widget) {
             $masterSite = \App\Models\Site::getMasterSite();
