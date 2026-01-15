@@ -985,49 +985,65 @@
     
     <div class="mt-5 mb-4">
         @if($board->type === 'pinterest')
-            {{-- 핀터레스트 게시판 레이아웃 --}}
+            {{-- 핀터레스트 게시판 레이아웃 (Masonry 스타일) --}}
             @php
                 // 디바이스별 컬럼 수 설정 (기본값)
                 $mobileCols = $board->pinterest_columns_mobile ?? 2;
                 $tabletCols = $board->pinterest_columns_tablet ?? 3;
                 $desktopCols = $board->pinterest_columns_desktop ?? 4;
                 $largeCols = $board->pinterest_columns_large ?? 6;
-                
-                // Bootstrap 컬럼 클래스 생성 (12를 컬럼 수로 나눔)
-                $colClass = 'col-' . (12 / $mobileCols);
-                if ($tabletCols > 0) {
-                    $colClass .= ' col-md-' . (12 / $tabletCols);
-                }
-                if ($desktopCols > 0) {
-                    $colClass .= ' col-lg-' . (12 / $desktopCols);
-                }
-                if ($largeCols > 0) {
-                    $colClass .= ' col-xl-' . (12 / $largeCols);
-                }
+                $masonryGap = '12px';
             @endphp
-            <div class="row g-3">
-                @foreach($posts as $post)
-                    <div class="{{ $colClass }}">
+            <style>
+                .pinterest-masonry-detail {
+                    column-count: {{ $mobileCols }};
+                    column-gap: {{ $masonryGap }};
+                }
+                .pinterest-masonry-detail-item {
+                    break-inside: avoid;
+                    margin-bottom: {{ $masonryGap }};
+                    display: inline-block;
+                    width: 100%;
+                }
+                @media (min-width: 768px) {
+                    .pinterest-masonry-detail {
+                        column-count: {{ $tabletCols }};
+                    }
+                }
+                @media (min-width: 992px) {
+                    .pinterest-masonry-detail {
+                        column-count: {{ $desktopCols }};
+                    }
+                }
+                @media (min-width: 1200px) {
+                    .pinterest-masonry-detail {
+                        column-count: {{ $largeCols }};
+                    }
+                }
+            </style>
+            <div class="pinterest-masonry-detail">
+                @foreach($posts as $postItem)
+                    <div class="pinterest-masonry-detail-item">
                         <div class="card shadow-sm" style="overflow: hidden; border-radius: 12px;">
-                            <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
+                            <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $postItem->id]) }}" 
                                class="text-decoration-none text-dark">
                                 {{-- 이미지 영역 --}}
-                                @if($post->thumbnail_path)
+                                @if($postItem->thumbnail_path)
                                     <div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">
-                                        <img src="{{ asset('storage/' . $post->thumbnail_path) }}" 
-                                             alt="{{ $post->title }}" 
+                                        <img src="{{ asset('storage/' . $postItem->thumbnail_path) }}" 
+                                             alt="{{ $postItem->title }}" 
                                              class="img-fluid"
                                              style="width: 100%; height: auto; display: block; object-fit: cover; min-height: 150px;">
                                         {{-- 좋아요/댓글 수 표시 (우측 하단) --}}
                                         <div class="position-absolute bottom-0 end-0 m-2 d-flex gap-2">
-                                            @if($board->enable_likes && $post->like_count > 0)
+                                            @if($board->enable_likes && $postItem->like_count > 0)
                                                 <span class="badge bg-dark bg-opacity-75">
-                                                    <i class="bi bi-hand-thumbs-up"></i> {{ $post->like_count }}
+                                                    <i class="bi bi-hand-thumbs-up"></i> {{ $postItem->like_count }}
                                                 </span>
                                             @endif
-                                            @if($post->comments->count() > 0)
+                                            @if($postItem->comments->count() > 0)
                                                 <span class="badge bg-dark bg-opacity-75">
-                                                    <i class="bi bi-chat-dots"></i> {{ $post->comments->count() }}
+                                                    <i class="bi bi-chat-dots"></i> {{ $postItem->comments->count() }}
                                                 </span>
                                             @endif
                                         </div>
@@ -1035,26 +1051,26 @@
                                 @else
                                     @php
                                         // 게시글 내용에서 첫 번째 이미지 추출
-                                        $content = $post->content;
-                                        preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $content, $matches);
+                                        $postContent = $postItem->content;
+                                        preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $postContent, $matches);
                                         $firstImage = $matches[1] ?? null;
                                     @endphp
                                     @if($firstImage)
                                         <div class="position-relative" style="overflow: hidden;">
                                             <img src="{{ $firstImage }}" 
-                                                 alt="{{ $post->title }}" 
+                                                 alt="{{ $postItem->title }}" 
                                                  class="img-fluid"
                                                  style="width: 100%; height: auto; display: block;">
                                             {{-- 좋아요/댓글 수 표시 (우측 하단) --}}
                                             <div class="position-absolute bottom-0 end-0 m-2 d-flex gap-2">
-                                                @if($board->enable_likes && $post->like_count > 0)
+                                                @if($board->enable_likes && $postItem->like_count > 0)
                                                     <span class="badge bg-dark bg-opacity-75">
-                                                        <i class="bi bi-hand-thumbs-up"></i> {{ $post->like_count }}
+                                                        <i class="bi bi-hand-thumbs-up"></i> {{ $postItem->like_count }}
                                                     </span>
                                                 @endif
-                                                @if($post->comments->count() > 0)
+                                                @if($postItem->comments->count() > 0)
                                                     <span class="badge bg-dark bg-opacity-75">
-                                                        <i class="bi bi-chat-dots"></i> {{ $post->comments->count() }}
+                                                        <i class="bi bi-chat-dots"></i> {{ $postItem->comments->count() }}
                                                     </span>
                                                 @endif
                                             </div>
@@ -1066,19 +1082,30 @@
                                             <span class="text-muted small">No image</span>
                                             {{-- 좋아요/댓글 수 표시 (우측 하단) --}}
                                             <div class="position-absolute bottom-0 end-0 m-2 d-flex gap-2">
-                                                @if($board->enable_likes && $post->like_count > 0)
+                                                @if($board->enable_likes && $postItem->like_count > 0)
                                                     <span class="badge bg-dark bg-opacity-75">
-                                                        <i class="bi bi-hand-thumbs-up"></i> {{ $post->like_count }}
+                                                        <i class="bi bi-hand-thumbs-up"></i> {{ $postItem->like_count }}
                                                     </span>
                                                 @endif
-                                                @if($post->comments->count() > 0)
+                                                @if($postItem->comments->count() > 0)
                                                     <span class="badge bg-dark bg-opacity-75">
-                                                        <i class="bi bi-chat-dots"></i> {{ $post->comments->count() }}
+                                                        <i class="bi bi-chat-dots"></i> {{ $postItem->comments->count() }}
                                                     </span>
                                                 @endif
                                             </div>
                                         </div>
                                     @endif
+                                @endif
+                                {{-- 핀터레스트 게시판 제목 표시 (pinterest_show_title이 true인 경우) --}}
+                                @if($board->pinterest_show_title ?? false)
+                                    @php
+                                        $titleAlign = $board->pinterest_title_align ?? 'left';
+                                    @endphp
+                                    <div class="card-body p-2" style="background-color: rgba(255,255,255,0.95); text-align: {{ $titleAlign }};">
+                                        <h6 class="card-title mb-0 small text-truncate" style="font-size: 0.85rem; line-height: 1.3;">
+                                            {{ $postItem->title }}
+                                        </h6>
+                                    </div>
                                 @endif
                             </a>
                         </div>

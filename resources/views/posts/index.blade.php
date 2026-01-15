@@ -76,29 +76,45 @@
             : $site->getSetting('color_light_point_main', '#0d6efd');
     @endphp
     @if($board->type === 'pinterest')
-        {{-- 핀터레스트 게시판 레이아웃 --}}
+        {{-- 핀터레스트 게시판 레이아웃 (Masonry 스타일) --}}
         @php
             // 디바이스별 컬럼 수 설정 (기본값)
             $mobileCols = $board->pinterest_columns_mobile ?? 2;
             $tabletCols = $board->pinterest_columns_tablet ?? 3;
             $desktopCols = $board->pinterest_columns_desktop ?? 4;
             $largeCols = $board->pinterest_columns_large ?? 6;
-            
-            // Bootstrap 컬럼 클래스 생성 (12를 컬럼 수로 나눔)
-            $colClass = 'col-' . (12 / $mobileCols);
-            if ($tabletCols > 0) {
-                $colClass .= ' col-md-' . (12 / $tabletCols);
-            }
-            if ($desktopCols > 0) {
-                $colClass .= ' col-lg-' . (12 / $desktopCols);
-            }
-            if ($largeCols > 0) {
-                $colClass .= ' col-xl-' . (12 / $largeCols);
-            }
+            $masonryGap = '12px';
         @endphp
-        <div class="row g-3">
+        <style>
+            .pinterest-masonry-index {
+                column-count: {{ $mobileCols }};
+                column-gap: {{ $masonryGap }};
+            }
+            .pinterest-masonry-index-item {
+                break-inside: avoid;
+                margin-bottom: {{ $masonryGap }};
+                display: inline-block;
+                width: 100%;
+            }
+            @media (min-width: 768px) {
+                .pinterest-masonry-index {
+                    column-count: {{ $tabletCols }};
+                }
+            }
+            @media (min-width: 992px) {
+                .pinterest-masonry-index {
+                    column-count: {{ $desktopCols }};
+                }
+            }
+            @media (min-width: 1200px) {
+                .pinterest-masonry-index {
+                    column-count: {{ $largeCols }};
+                }
+            }
+        </style>
+        <div class="pinterest-masonry-index">
             @foreach($posts as $post)
-                <div class="{{ $colClass }}">
+                <div class="pinterest-masonry-index-item">
                     <div class="card shadow-sm" style="overflow: hidden; border-radius: 12px;">
                         <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
                            class="text-decoration-none text-dark">
@@ -126,8 +142,8 @@
                             @else
                                 @php
                                     // 게시글 내용에서 첫 번째 이미지 추출
-                                    $content = $post->content;
-                                    preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $content, $matches);
+                                    $postContent = $post->content;
+                                    preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $postContent, $matches);
                                     $firstImage = $matches[1] ?? null;
                                 @endphp
                                 @if($firstImage)
