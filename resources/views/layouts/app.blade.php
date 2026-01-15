@@ -1271,11 +1271,11 @@
             }
         @endphp
         @php
-            // 투명헤더가 활성화되고 메인 페이지일 때 최상단 헤더도 투명하게
-            $topHeaderBg = ($headerTransparent && $isHomePage) ? 'transparent' : $topBarBg;
-            $topHeaderBorder = ($headerTransparent && $isHomePage) ? 'none' : '1px solid rgba(0,0,0,0.1)';
+            // 투명헤더가 활성화되면 모든 페이지에서 최상단 헤더도 투명하게
+            $topHeaderBg = $headerTransparent ? 'transparent' : $topBarBg;
+            $topHeaderBorder = $headerTransparent ? 'none' : '1px solid rgba(0,0,0,0.1)';
             // 투명헤더일 때 최상단 헤더도 absolute로 설정
-            $topHeaderPosition = ($headerTransparent && $isHomePage) ? 'position: absolute; top: 0; left: 0; right: 0; width: 100%;' : 'position: relative;';
+            $topHeaderPosition = $headerTransparent ? 'position: absolute; top: 0; left: 0; right: 0; width: 100%;' : 'position: relative;';
         @endphp
         <div class="top-header-bar d-none d-xl-block" style="background-color: {{ $topHeaderBg }}; color: {{ $topBarText }}; padding: 0.5rem 0; border-bottom: {{ $topHeaderBorder }}; {{ $topHeaderPosition }} z-index: 1051;">
             <div class="{{ $themeFullWidth ? 'container-fluid' : 'container' }}" style="{{ $themeFullWidth ? 'max-width: 100%; padding-left: 15px; padding-right: 15px;' : '' }}">
@@ -1375,8 +1375,8 @@
         // 투명헤더가 활성화되고 메인 페이지인 경우 헤더를 absolute로 위치시켜 첫 번째 컨테이너 위로 오버레이
         $headerWrapperStyle = '';
         $headerWrapperClass = '';
-        if ($headerTransparent && $isHomePage) {
-            // 투명헤더: absolute position으로 첫 번째 컨테이너 위에 오버레이
+        if ($headerTransparent) {
+            // 투명헤더: absolute position으로 첫 번째 컨테이너 위에 오버레이 (모든 페이지에서 적용)
             // 최상단 헤더가 활성화되어 있으면 top을 최상단 헤더 높이만큼 조정 (약 40px)
             $navTopPosition = $showTopHeader ? '40px' : '0';
             $headerWrapperStyle = 'position: absolute; top: ' . $navTopPosition . '; left: 0; right: 0; z-index: 1030; width: 100%;';
@@ -1428,7 +1428,7 @@
         $customPageFirstFullWidth = isset($containers) && $containers->isNotEmpty() && ($containers->first()->full_width ?? false) && ($themeSidebar === 'none');
         
         // 투명헤더이거나 첫 번째 컨테이너가 세로 100% 또는 가로 100%일 때 상단 여백 제거
-        $removeTopMargin = ($headerTransparent && $isHomePage) || $firstContainerFullHeight || $firstContainerFullWidth || $customPageFirstFullHeight || $customPageFirstFullWidth;
+        $removeTopMargin = $headerTransparent || $firstContainerFullHeight || $firstContainerFullWidth || $customPageFirstFullHeight || $customPageFirstFullWidth;
     @endphp
     
     {{-- 샘플 사이트 안내 배너 (상단 고정) --}}
@@ -1986,9 +1986,9 @@
     });
     </script>
     
-    @if($headerTransparent && $isHomePage)
+    @if($headerTransparent)
     <style>
-        /* 투명헤더 오버레이 스타일 */
+        /* 투명헤더 오버레이 스타일 - 모든 페이지에서 적용 */
         /* PHP에서 생성된 .navbar 규칙보다 나중에 로드되도록 하기 위해 가장 마지막에 배치 */
         .header-transparent-overlay {
             position: absolute !important;
@@ -2128,8 +2128,8 @@
             --header-bg-color: transparent !important;
         }
         
-        /* 투명헤더일 때 메인 컨텐츠 영역의 상단 마진 제거 */
-        @if($headerTransparent && $isHomePage)
+        /* 투명헤더일 때 메인 컨텐츠 영역의 상단 마진 제거 - 모든 페이지에서 적용 */
+        @if($headerTransparent)
         main.container {
             margin-top: 0 !important;
             padding-top: 0 !important;
@@ -2410,7 +2410,7 @@
     </script>
     @endif
     
-    @if($isHeaderSticky && !($headerTransparent && $isHomePage))
+    @if($isHeaderSticky && !$headerTransparent)
     <style>
         .sticky-header-wrapper {
             background-color: transparent;

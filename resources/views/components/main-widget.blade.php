@@ -2677,12 +2677,7 @@
                         $boardViewerShadowClass = $boardViewerNoBackground ? '' : 'shadow-sm';
                         $boardViewerBgClass = $boardViewerNoBackground ? 'bg-transparent' : 'bg-white';
                     @endphp
-                    {{-- 게시판 헤더 이미지 --}}
-                    @if($board->header_image_path)
-                        <div class="mb-3">
-                            <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid rounded {{ $boardViewerShadowClass }}" style="width: 100%; height: auto;">
-                        </div>
-                    @endif
+                    {{-- 게시판 헤더 이미지는 위젯에서는 표시하지 않음 (게시판 페이지에서만 표시) --}}
                     
                     {{-- 게시판 제목 및 설명 --}}
                     @php

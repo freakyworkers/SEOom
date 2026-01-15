@@ -1061,7 +1061,7 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->storeCustomPage($request, $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->storeCustomPage($masterSite, $request);
             })->name('master.admin.custom-pages.store');
             Route::get('/custom-pages/{customPage}/edit', function (Request $request, \App\Models\CustomPage $customPage) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -1547,7 +1547,7 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->storeCustomPage($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->storeCustomPage($site, $request);
         });
         Route::get('/custom-pages/{customPage}/edit', function (Request $request, \App\Models\CustomPage $customPage) {
             $site = $request->attributes->get('site');
