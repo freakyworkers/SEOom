@@ -4839,6 +4839,15 @@ function editMainWidget(widgetId) {
     const rankingContainer = document.getElementById('edit_main_widget_ranking_container');
     const titleContainer = document.getElementById('edit_main_widget_title_container_main');
     
+    // AJAX 요청 전에 모든 컨테이너 먼저 숨기기 (이전 위젯 상태 초기화)
+    const sortOrderContainerInit = document.getElementById('edit_main_widget_sort_order_container');
+    const marqueeDirectionContainerInit = document.getElementById('edit_main_widget_marquee_direction_container');
+    if (sortOrderContainerInit) sortOrderContainerInit.style.display = 'none';
+    if (marqueeDirectionContainerInit) marqueeDirectionContainerInit.style.display = 'none';
+    if (limitContainer) limitContainer.style.display = 'none';
+    if (tabMenuContainer) tabMenuContainer.style.display = 'none';
+    if (rankingContainer) rankingContainer.style.display = 'none';
+    
     // 위젯 정보를 AJAX로 가져오기
     fetch(`{{ route("admin.main-widgets", ["site" => $site->slug]) }}?widget_id=${widgetId}`, {
         headers: {
