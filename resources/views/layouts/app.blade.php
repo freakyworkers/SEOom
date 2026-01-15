@@ -1198,16 +1198,14 @@
         // 체크박스 값 비교 (문자열 '1' 또는 숫자 1 모두 처리)
         $showTopHeader = ($themeTopHeaderShow == '1' || $themeTopHeaderShow === '1' || $themeTopHeaderShow === 1);
         $isHeaderSticky = ($headerSticky == '1' || $headerSticky === '1' || $headerSticky === 1);
-        // 투명헤더 기능 일시적으로 비활성화 (성능 문제로 인해)
-        // TODO: 투명헤더 코드 최적화 후 다시 활성화
-        $headerTransparent = false;
-        // $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
+        // 투명헤더 설정 (최적화 완료)
+        $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
         
         // 사이드바 설정 확인 (투명헤더는 사이드바가 없을 때만 적용 가능)
         $hasSidebar = $themeSidebar !== 'none';
-        // if ($hasSidebar) {
-        //     $headerTransparent = false;
-        // }
+        if ($hasSidebar) {
+            $headerTransparent = false;
+        }
         
         // 메인 페이지인지 확인 - 루트 경로(/)와 /site/{site} 모두 HomeController::index를 호출하므로 동일하게 처리
         $currentPath = request()->path();
@@ -1991,14 +1989,12 @@
     
     @php
         // 투명헤더 CSS/JS 출력 전에 변수 재확인 (자식 뷰에서 재정의될 수 있으므로)
-        // 투명헤더 기능 일시적으로 비활성화 (성능 문제로 인해)
-        // TODO: 투명헤더 코드 최적화 후 다시 활성화
-        $headerTransparentFinal = false;
-        // $headerTransparentFinal = $site->getSetting('header_transparent', '0') == '1';
+        // 투명헤더 설정 (최적화 완료)
+        $headerTransparentFinal = $site->getSetting('header_transparent', '0') == '1';
         $themeSidebarFinal = $site->getSetting('theme_sidebar', 'none');
-        // if ($themeSidebarFinal !== 'none') {
-        //     $headerTransparentFinal = false;
-        // }
+        if ($themeSidebarFinal !== 'none') {
+            $headerTransparentFinal = false;
+        }
     @endphp
     
     @if($headerTransparentFinal)
@@ -2160,24 +2156,51 @@
         
         /* 투명헤더 sticky 오버레이 - 스크롤 시 fixed로 변경 */
         .header-transparent-sticky-overlay {
-            transition: background-color 0.3s ease, top 0.3s ease, position 0s;
+            transition: all 0.3s ease;
         }
         
+        /* 스크롤 시 글래스 모피즘 효과 적용 */
         .header-transparent-sticky-overlay.scrolled {
             position: fixed !important;
-            top: 0 !important; /* 스크롤 시 최상단으로 이동 */
+            top: 0 !important;
             left: 0 !important;
             right: 0 !important;
             width: 100% !important;
             z-index: 1030 !important;
-            background-color: var(--header-bg-color, rgba(255,255,255,0.95)) !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            /* 글래스 모피즘 효과 */
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
         
-        /* 스크롤 시 투명 배경 해제하고 실제 헤더 배경색 적용 */
+        /* 다크모드에서 글래스 효과 */
+        .dark-mode .header-transparent-sticky-overlay.scrolled,
+        [data-theme="dark"] .header-transparent-sticky-overlay.scrolled {
+            background: rgba(33, 37, 41, 0.85) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 스크롤 시 nav 배경도 투명하게 (글래스 효과는 wrapper에서 적용) */
         .header-transparent-sticky-overlay.scrolled .navbar,
         .header-transparent-sticky-overlay.scrolled nav.pc-header {
-            background-color: var(--header-bg-color, #ffffff) !important;
+            background-color: transparent !important;
+            background: transparent !important;
+        }
+        
+        /* 모바일에서도 글래스 효과 적용 */
+        @media (max-width: 1199px) {
+            .header-transparent-sticky-overlay.scrolled {
+                background: rgba(255, 255, 255, 0.9) !important;
+                backdrop-filter: blur(10px) saturate(150%);
+                -webkit-backdrop-filter: blur(10px) saturate(150%);
+            }
+            
+            .dark-mode .header-transparent-sticky-overlay.scrolled,
+            [data-theme="dark"] .header-transparent-sticky-overlay.scrolled {
+                background: rgba(33, 37, 41, 0.9) !important;
+            }
         }
         
         /* 투명헤더 + 최상단 헤더 + sticky일 때 스크롤 시 최상단 헤더 숨기기 */
@@ -2194,128 +2217,32 @@
         }
     </style>
     <script>
-        // 즉시 실행 (DOMContentLoaded 전에도 실행) - MutationObserver로 동적 변경 감지
+        // 투명헤더 적용 - 최적화된 버전 (성능 개선)
         (function() {
+            // 투명 배경 적용 함수 - 필요한 요소만 선택
             function applyTransparentBackground() {
-                // :root 레벨에서 CSS 변수 오버라이드 (가장 중요 - 모든 페이지에서 동일하게 작동)
-                // 이렇게 하면 CSS 변수 기반 배경색이 완전히 무효화됨
-                document.documentElement.style.setProperty('--header-bg-color', 'transparent', 'important');
-                
                 const headerWrapper = document.querySelector('.header-transparent-overlay');
-                if (headerWrapper) {
-                    // 헤더 내부의 nav 요소들도 투명하게 설정
-                    const navElements = headerWrapper.querySelectorAll('nav, .navbar, .pc-header');
-                    navElements.forEach(nav => {
-                        // CSS 변수를 먼저 오버라이드 (가장 중요)
-                        nav.style.setProperty('--header-bg-color', 'transparent', 'important');
-                        
-                        // 직접 style 속성을 설정하여 모든 CSS를 덮어씀
-                        // 기존 스타일을 가져와서 배경 관련만 제거
-                        const currentStyle = nav.getAttribute('style') || '';
-                        // background-color 관련 스타일 제거 후 재설정
-                        let newStyle = currentStyle
-                            .replace(/background-color\s*:[^;]+;?/gi, '')
-                            .replace(/background\s*:[^;]+;?/gi, '')
-                            .replace(/background-image\s*:[^;]+;?/gi, '');
-                        newStyle += ' background-color: transparent !important; background: none !important; background-image: none !important;';
-                        nav.setAttribute('style', newStyle);
-                        
-                        // 직접 style 객체에도 설정 (더 강력함) - CSS 변수 기반 배경색도 오버라이드
-                        nav.style.setProperty('background-color', 'transparent', 'important');
-                        nav.style.setProperty('background', 'none', 'important');
-                        nav.style.setProperty('background-image', 'none', 'important');
-                    });
-                }
+                if (!headerWrapper) return;
+                
+                // CSS 변수 오버라이드 (헤더 wrapper에만 적용)
+                headerWrapper.style.setProperty('--header-bg-color', 'transparent', 'important');
+                
+                // nav 요소만 선택 (성능을 위해 * 선택자 제거)
+                const navElements = headerWrapper.querySelectorAll('nav, .navbar, .pc-header');
+                navElements.forEach(function(nav) {
+                    nav.style.setProperty('--header-bg-color', 'transparent', 'important');
+                    nav.style.setProperty('background-color', 'transparent', 'important');
+                    nav.style.setProperty('background', 'none', 'important');
+                });
             }
             
-            // 즉시 실행 (여러 번 실행하여 확실하게 적용)
-            // CSS 변수를 먼저 오버라이드 (가장 중요)
-            function forceTransparent() {
-                // :root, html, body 모든 레벨에서 CSS 변수 오버라이드
-                document.documentElement.style.setProperty('--header-bg-color', 'transparent', 'important');
-                if (document.body) {
-                    document.body.style.setProperty('--header-bg-color', 'transparent', 'important');
-                }
-                
-                const headerWrapper = document.querySelector('.header-transparent-overlay');
-                if (headerWrapper) {
-                    // 헤더 wrapper 자체에도 CSS 변수 설정
-                    headerWrapper.style.setProperty('--header-bg-color', 'transparent', 'important');
-                    
-                    const navElements = headerWrapper.querySelectorAll('nav, .navbar, .pc-header, *');
-                    navElements.forEach(nav => {
-                        // 모든 레벨에서 CSS 변수 오버라이드
-                        nav.style.setProperty('--header-bg-color', 'transparent', 'important');
-                        // 직접 배경색도 설정 (CSS 변수보다 우선순위 높음)
-                        nav.style.setProperty('background-color', 'transparent', 'important');
-                        nav.style.setProperty('background', 'none', 'important');
-                        nav.style.setProperty('background-image', 'none', 'important');
-                    });
-                }
-                applyTransparentBackground();
-            }
+            // 초기 실행 (한 번만)
+            applyTransparentBackground();
             
-            forceTransparent();
-            
-            // 반복 실행하여 CSS가 나중에 로드되어도 오버라이드
-            [0, 10, 50, 100, 200, 300, 500, 1000].forEach(function(delay) {
-                setTimeout(forceTransparent, delay);
-            });
-            
-            // DOMContentLoaded 후에도 실행
+            // DOMContentLoaded 후 한 번만 재적용
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
-                    forceTransparent();
-                    [0, 50, 100, 200].forEach(function(delay) {
-                        setTimeout(forceTransparent, delay);
-                    });
-                });
-            } else {
-                forceTransparent();
-                [0, 50, 100, 200].forEach(function(delay) {
-                    setTimeout(forceTransparent, delay);
-                });
+                document.addEventListener('DOMContentLoaded', applyTransparentBackground);
             }
-            
-            // MutationObserver로 동적으로 추가되는 요소도 감지
-            const observer = new MutationObserver(function(mutations) {
-                forceTransparent();
-                setTimeout(forceTransparent, 0);
-            });
-            
-            if (document.body) {
-                observer.observe(document.body, {
-                    childList: true,
-                    subtree: true,
-                    attributes: true,
-                    attributeFilter: ['style', 'class']
-                });
-            }
-            
-            // 주기적으로 확인 (CSS가 나중에 로드되는 경우 대비)
-            let checkCount = 0;
-            const maxChecks = 50;
-            const checkInterval = setInterval(function() {
-                checkCount++;
-                const headerWrapper = document.querySelector('.header-transparent-overlay');
-                if (headerWrapper) {
-                    const navElements = headerWrapper.querySelectorAll('nav, .navbar, .pc-header');
-                    let needsFix = false;
-                    navElements.forEach(nav => {
-                        const bgColor = window.getComputedStyle(nav).backgroundColor;
-                        if (bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent') {
-                            needsFix = true;
-                        }
-                    });
-                    if (needsFix) {
-                        forceTransparent();
-                    } else if (checkCount >= maxChecks) {
-                        clearInterval(checkInterval);
-                    }
-                } else if (checkCount >= maxChecks) {
-                    clearInterval(checkInterval);
-                }
-            }, 100);
         })();
         
         // 다크 모드일 때 포인트 컬러가 화이트인 경우 버튼 텍스트 색상 자동 조정
@@ -2327,48 +2254,18 @@
             @if($isWhitePoint)
                 (function() {
                     function adjustButtonTextColor() {
-                        const pointColor = '{{ $colorDarkPointMain }}';
-                        const buttons = document.querySelectorAll('.btn, button, a.btn');
-                        
-                        buttons.forEach(function(btn) {
+                        document.querySelectorAll('.btn-primary, .btn-light').forEach(function(btn) {
                             const style = window.getComputedStyle(btn);
                             const bgColor = style.backgroundColor;
-                            
-                            // 포인트 컬러와 같은 배경색을 가진 버튼인지 확인
-                            if (bgColor && (
-                                bgColor === 'rgb(255, 255, 255)' || 
-                                bgColor === '#ffffff' || 
-                                bgColor === 'white' ||
-                                btn.style.backgroundColor === pointColor ||
-                                btn.getAttribute('style')?.includes(pointColor)
-                            )) {
+                            if (bgColor === 'rgb(255, 255, 255)' || bgColor === '#ffffff') {
                                 btn.style.color = '#000000';
                             }
                         });
                     }
-                    
-                    // 즉시 실행
-                    adjustButtonTextColor();
-                    
-                    // DOMContentLoaded 후 실행
                     if (document.readyState === 'loading') {
                         document.addEventListener('DOMContentLoaded', adjustButtonTextColor);
                     } else {
                         adjustButtonTextColor();
-                    }
-                    
-                    // MutationObserver로 동적으로 추가되는 버튼도 감지
-                    const observer = new MutationObserver(function(mutations) {
-                        adjustButtonTextColor();
-                    });
-                    
-                    if (document.body) {
-                        observer.observe(document.body, {
-                            childList: true,
-                            subtree: true,
-                            attributes: true,
-                            attributeFilter: ['style', 'class']
-                        });
                     }
                 })();
             @endif
@@ -2378,60 +2275,44 @@
             const headerWrapper = document.querySelector('.header-transparent-overlay');
             
             if (headerWrapper) {
-                // 헤더 내부의 nav 요소들도 투명하게 설정 (재확인)
-                const navElements = headerWrapper.querySelectorAll('nav, .navbar, .pc-header');
-                navElements.forEach(nav => {
-                    // 인라인 스타일을 직접 수정하여 CSS보다 우선순위 높게
-                    nav.style.cssText += 'background-color: transparent !important; background: none !important; background-image: none !important;';
-                    // CSS 변수도 오버라이드
-                    nav.style.setProperty('--header-bg-color', 'transparent', 'important');
+                // 헤더 내부의 nav 요소들 투명하게 설정
+                headerWrapper.querySelectorAll('nav, .navbar, .pc-header').forEach(function(nav) {
+                    nav.style.setProperty('background-color', 'transparent', 'important');
+                    nav.style.setProperty('background', 'none', 'important');
                 });
                 
-                const firstContainer = document.querySelector('.main-widget-container')?.closest('div[class*="container"], div[class*="container-fluid"]');
-                
+                // 첫 번째 컨테이너 여백 제거
+                const firstContainer = document.querySelector('.main-widget-container, .custom-page-container');
                 if (firstContainer) {
-                    // 헤더 높이 계산
-                    const headerHeight = headerWrapper.offsetHeight;
-                    
-                    // 투명헤더일 때는 첫 번째 컨테이너의 상단 마진과 패딩 제거 (헤더가 오버레이되므로)
-                    firstContainer.style.setProperty('margin-top', '0', 'important');
-                    firstContainer.style.setProperty('padding-top', '0', 'important');
-                    firstContainer.classList.add('first-container-with-transparent-header');
-                    
-                    // row 요소도 확인하여 패딩 제거
-                    const rowElement = document.querySelector('.main-widget-container');
-                    if (rowElement && rowElement.closest('div[class*="container"], div[class*="container-fluid"]') === firstContainer) {
-                        rowElement.style.setProperty('margin-top', '0', 'important');
-                        rowElement.style.setProperty('padding-top', '0', 'important');
-                        rowElement.classList.add('first-container-with-transparent-header');
+                    const container = firstContainer.closest('.container, .container-fluid');
+                    if (container) {
+                        container.style.setProperty('margin-top', '0', 'important');
+                        container.style.setProperty('padding-top', '0', 'important');
                     }
                 }
             }
             
-            // sticky 헤더인 경우 스크롤 이벤트 처리 (headerWrapper와 독립적으로 실행)
+            // sticky 헤더 스크롤 처리 (throttle 적용)
             const stickyOverlay = document.querySelector('.header-transparent-sticky-overlay');
             const topHeaderBar = document.querySelector('.top-header-bar');
             if (stickyOverlay) {
-                let lastScrollTop = 0;
+                let ticking = false;
                 window.addEventListener('scroll', function() {
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    
-                    if (scrollTop > 50) {
-                        stickyOverlay.classList.add('scrolled');
-                        // 스크롤 시 최상단 헤더 숨기기
-                        if (topHeaderBar) {
-                            topHeaderBar.classList.add('transparent-header-scrolled');
-                        }
-                    } else {
-                        stickyOverlay.classList.remove('scrolled');
-                        // 최상단 헤더 다시 표시
-                        if (topHeaderBar) {
-                            topHeaderBar.classList.remove('transparent-header-scrolled');
-                        }
+                    if (!ticking) {
+                        window.requestAnimationFrame(function() {
+                            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                            if (scrollTop > 50) {
+                                stickyOverlay.classList.add('scrolled');
+                                if (topHeaderBar) topHeaderBar.classList.add('transparent-header-scrolled');
+                            } else {
+                                stickyOverlay.classList.remove('scrolled');
+                                if (topHeaderBar) topHeaderBar.classList.remove('transparent-header-scrolled');
+                            }
+                            ticking = false;
+                        });
+                        ticking = true;
                     }
-                    
-                    lastScrollTop = scrollTop;
-                });
+                }, { passive: true });
             }
         });
     </script>
