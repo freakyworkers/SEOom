@@ -5065,15 +5065,6 @@ function handleBlockImageChange(input) {
     }
 }
 
-function removeBlockImage() {
-    const input = document.getElementById('widget_block_image_input');
-    const preview = document.getElementById('widget_block_image_preview');
-    const imageUrl = document.getElementById('widget_block_background_image');
-    if (input) input.value = '';
-    if (preview) preview.style.display = 'none';
-    if (imageUrl) imageUrl.value = '';
-}
-
 function handleImageChange(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
