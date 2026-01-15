@@ -2368,19 +2368,29 @@ document.addEventListener('DOMContentLoaded', function() {
         bottomMenu.style.top = (headerHeight - headerBorderBottom) + 'px';
     }
     
+    // 원래 인라인 스타일 저장
+    const originalStyle = mobileHeader.getAttribute('style') || '';
+    
     function handleMobileScroll() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         
         if (scrollTop > 10) {
             // 스크롤 시 글래스모피즘 배경 적용
             mobileHeader.classList.add('scrolled');
+            // 인라인 스타일에서 background 관련 속성 제거 (CSS 글래스모피즘이 적용되도록)
+            mobileHeader.style.background = '';
+            mobileHeader.style.backgroundColor = '';
+            mobileHeader.style.backgroundImage = '';
+            mobileHeader.style.setProperty('--header-bg-color', '');
             // 하단 메뉴 바 숨김
             if (bottomMenu) {
                 bottomMenu.classList.add('scrolled-hide');
             }
         } else {
-            // 상단일 때 투명 배경
+            // 상단일 때 투명 배경 복원
             mobileHeader.classList.remove('scrolled');
+            mobileHeader.style.background = 'none';
+            mobileHeader.style.backgroundColor = 'transparent';
             // 하단 메뉴 바 표시
             if (bottomMenu) {
                 bottomMenu.classList.remove('scrolled-hide');
