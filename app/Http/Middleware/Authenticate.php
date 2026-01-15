@@ -13,6 +13,16 @@ class Authenticate extends Middleware
      */
     public function handle($request, Closure $next, ...$guards)
     {
+        // 실제 사용자가 로그인되어 있으면 테스트 어드민 세션 무시
+        // (테스트 어드민은 실제 Auth::login()을 호출하지 않으므로 auth()->check()가 false)
+        if (auth()->check()) {
+            // 실제 사용자가 로그인되어 있으면 테스트 어드민 세션 클리어
+            if (session('is_test_admin')) {
+                session()->forget(['is_test_admin', 'test_admin_site_id', 'test_admin_username']);
+            }
+            return parent::handle($request, $next, ...$guards);
+        }
+        
         // 테스트 어드민 세션이 있으면 인증 우회
         if (session('is_test_admin') && session('test_admin_site_id')) {
             // 현재 사이트 가져오기 (다양한 방법 시도)
@@ -37,6 +47,18 @@ class Authenticate extends Middleware
                     $subdomain = str_replace('.' . $masterDomain, '', $host);
                     $subdomain = str_replace('www.', '', $subdomain);
                     $site = \App\Models\Site::where('slug', $subdomain)->first();
+                }
+            }
+            
+            // 사이트에 테스트 어드민이 등록되어 있는지 확인
+            if ($site) {
+                $testAdmin = $site->test_admin;
+                $hasTestAdmin = !empty($testAdmin) && !empty($testAdmin['id']) && !empty($testAdmin['password']);
+                
+                // 테스트 어드민이 등록되어 있지 않으면 세션 클리어하고 일반 인증 처리
+                if (!$hasTestAdmin) {
+                    session()->forget(['is_test_admin', 'test_admin_site_id', 'test_admin_username']);
+                    return parent::handle($request, $next, ...$guards);
                 }
             }
             
