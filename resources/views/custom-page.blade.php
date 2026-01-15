@@ -184,7 +184,12 @@
             }
         @endphp
         <div class="{{ $containerClass }} {{ $containerMarginBottom }}" style="{{ $containerStyle }}"@if($container->anchor_id) id="{{ $container->anchor_id }}"@endif>
-            <div class="row custom-page-widget-container {{ $alignClass }} {{ $gutterClass }}{{ $fixedWidthColumns ? ' container mx-auto' : '' }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }} --bs-gutter-y: 0;">
+            @php
+                    // 위젯 간격에 따른 gutter-y 값 설정 (모바일에서 세로 배치 시에도 간격 유지)
+                    $spacingMap = [0 => '0', 1 => '0.25rem', 2 => '0.5rem', 3 => '1rem', 4 => '1.5rem', 5 => '3rem'];
+                    $gutterYValue = $spacingMap[$widgetSpacingValue] ?? '1rem';
+                @endphp
+                <div class="row custom-page-widget-container {{ $alignClass }} {{ $gutterClass }}{{ $fixedWidthColumns ? ' container mx-auto' : '' }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }} --bs-gutter-y: {{ $gutterYValue }};">
                 @php
                     $columnMerges = $container->column_merges ?? [];
                     $hiddenColumns = [];
