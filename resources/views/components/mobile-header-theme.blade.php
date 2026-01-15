@@ -2372,13 +2372,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         
         if (scrollTop > 10) {
-            // 스크롤 시 글래스모피즘 배경 적용
+            // 스크롤 시 글래스모피즘 배경 적용 (인라인 스타일로 직접 설정)
             mobileHeader.classList.add('scrolled');
-            // 인라인 스타일에서 background 관련 속성 제거 (CSS 글래스모피즘이 적용되도록)
-            mobileHeader.style.background = '';
-            mobileHeader.style.backgroundColor = '';
-            mobileHeader.style.backgroundImage = '';
-            mobileHeader.style.setProperty('--header-bg-color', '');
+            // PC와 동일한 글래스모피즘 효과 인라인 적용
+            mobileHeader.style.background = 'rgba(255, 255, 255, 0.7)';
+            mobileHeader.style.backdropFilter = 'blur(20px) saturate(180%)';
+            mobileHeader.style.webkitBackdropFilter = 'blur(20px) saturate(180%)';
+            mobileHeader.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05)';
             // 하단 메뉴 바 숨김
             if (bottomMenu) {
                 bottomMenu.classList.add('scrolled-hide');
@@ -2388,6 +2388,9 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileHeader.classList.remove('scrolled');
             mobileHeader.style.background = 'none';
             mobileHeader.style.backgroundColor = 'transparent';
+            mobileHeader.style.backdropFilter = '';
+            mobileHeader.style.webkitBackdropFilter = '';
+            mobileHeader.style.boxShadow = '';
             // 하단 메뉴 바 표시
             if (bottomMenu) {
                 bottomMenu.classList.remove('scrolled-hide');

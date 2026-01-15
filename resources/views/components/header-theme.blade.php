@@ -810,16 +810,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             
             if (scrollTop > 10) {
-                // 스크롤 시 글래스 모피즘 배경 적용
+                // 스크롤 시 글래스 모피즘 배경 적용 (인라인 스타일로 직접 설정)
                 header.classList.add('scrolled');
                 if (headerWrapper) {
                     headerWrapper.classList.add('scrolled');
                 }
-                // 인라인 스타일에서 background 관련 속성 제거 (CSS 글래스모피즘이 적용되도록)
-                header.style.background = '';
-                header.style.backgroundColor = '';
-                header.style.backgroundImage = '';
-                header.style.setProperty('--header-bg-color', '');
+                // 글래스모피즘 효과 인라인 적용
+                header.style.background = 'rgba(255, 255, 255, 0.7)';
+                header.style.backdropFilter = 'blur(20px) saturate(180%)';
+                header.style.webkitBackdropFilter = 'blur(20px) saturate(180%)';
+                header.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05)';
                 header.style.color = textColor;
                 header.style.transition = 'all 0.3s ease';
                 
@@ -836,6 +836,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 header.style.background = 'none';
                 header.style.backgroundColor = 'transparent';
+                header.style.backdropFilter = '';
+                header.style.webkitBackdropFilter = '';
+                header.style.boxShadow = '';
                 header.style.color = textColor;
                 
                 // 헤더 내 모든 링크와 텍스트 색상도 유지
