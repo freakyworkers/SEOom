@@ -4351,8 +4351,14 @@ class AdminController extends Controller
     /**
      * Store a new custom page.
      */
-    public function storeCustomPage(Site $site, Request $request)
+    public function storeCustomPage(Request $request, Site $site = null)
     {
+        // Site를 request에서 가져오거나 파라미터에서 가져옴
+        $site = $site ?? $request->attributes->get('site');
+        if (!$site) {
+            return response()->json(['success' => false, 'message' => '사이트를 찾을 수 없습니다.'], 404);
+        }
+        
         // 커스텀 페이지 생성 제한 확인
         if (!$site->canCreateCustomPage()) {
             $limit = $site->getCustomPageLimit();
@@ -4393,8 +4399,11 @@ class AdminController extends Controller
     /**
      * Display custom page edit page.
      */
-    public function editCustomPage(Site $site, \App\Models\CustomPage $customPage, Request $request)
+    public function editCustomPage(\App\Models\CustomPage $customPage, Request $request, Site $site = null)
     {
+        // Site를 request에서 가져오거나 customPage에서 가져옴
+        $site = $site ?? $request->attributes->get('site') ?? $customPage->site;
+        
         // Ensure custom page belongs to site
         if ($customPage->site_id !== $site->id) {
             abort(403);
@@ -4447,8 +4456,11 @@ class AdminController extends Controller
     /**
      * Update a custom page.
      */
-    public function updateCustomPage(Site $site, \App\Models\CustomPage $customPage, Request $request)
+    public function updateCustomPage(\App\Models\CustomPage $customPage, Request $request, Site $site = null)
     {
+        // Site를 request에서 가져오거나 customPage에서 가져옴
+        $site = $site ?? $request->attributes->get('site') ?? $customPage->site;
+        
         // Ensure custom page belongs to site
         if ($customPage->site_id !== $site->id) {
             abort(403);
@@ -4475,8 +4487,11 @@ class AdminController extends Controller
     /**
      * Delete a custom page.
      */
-    public function deleteCustomPage(Site $site, \App\Models\CustomPage $customPage)
+    public function deleteCustomPage(\App\Models\CustomPage $customPage, Request $request = null, Site $site = null)
     {
+        // Site를 request에서 가져오거나 customPage에서 가져옴
+        $site = $site ?? ($request ? $request->attributes->get('site') : null) ?? $customPage->site;
+        
         // Ensure custom page belongs to site
         if ($customPage->site_id !== $site->id) {
             abort(403);
@@ -4495,8 +4510,8 @@ class AdminController extends Controller
      */
     public function storeCustomPageWidgetContainer(CustomPage $customPage, Request $request, Site $site = null)
     {
-        // Site를 customPage에서 가져오거나 파라미터에서 가져옴
-        $site = $site ?? $customPage->site;
+        // Site를 request에서 가져오거나 customPage에서 가져옴
+        $site = $site ?? $request->attributes->get('site') ?? $customPage->site;
         
         // Ensure custom page belongs to site
         if ($customPage->site_id !== $site->id) {
@@ -4559,8 +4574,11 @@ class AdminController extends Controller
     /**
      * Update a custom page widget container.
      */
-    public function updateCustomPageWidgetContainer(Site $site, CustomPage $customPage, CustomPageWidgetContainer $container, Request $request)
+    public function updateCustomPageWidgetContainer(CustomPage $customPage, CustomPageWidgetContainer $container, Request $request, Site $site = null)
     {
+        // Site를 request에서 가져오거나 customPage에서 가져옴
+        $site = $site ?? $request->attributes->get('site') ?? $customPage->site;
+        
         // Ensure custom page and container belong to site
         if ($customPage->site_id !== $site->id || $container->custom_page_id !== $customPage->id) {
             abort(403);
@@ -4789,8 +4807,11 @@ class AdminController extends Controller
     /**
      * Delete a custom page widget container.
      */
-    public function deleteCustomPageWidgetContainer(Site $site, CustomPage $customPage, CustomPageWidgetContainer $container)
+    public function deleteCustomPageWidgetContainer(CustomPage $customPage, CustomPageWidgetContainer $container, Request $request = null, Site $site = null)
     {
+        // Site를 request에서 가져오거나 customPage에서 가져옴
+        $site = $site ?? ($request ? $request->attributes->get('site') : null) ?? $customPage->site;
+        
         // Ensure custom page and container belong to site
         if ($customPage->site_id !== $site->id || $container->custom_page_id !== $customPage->id) {
             abort(403);
@@ -5060,8 +5081,11 @@ class AdminController extends Controller
     /**
      * Reorder custom page widget containers.
      */
-    public function reorderCustomPageWidgetContainers(Site $site, CustomPage $customPage, Request $request)
+    public function reorderCustomPageWidgetContainers(CustomPage $customPage, Request $request, Site $site = null)
     {
+        // Site를 request에서 가져오거나 customPage에서 가져옴
+        $site = $site ?? $request->attributes->get('site') ?? $customPage->site;
+        
         // Ensure custom page belongs to site
         if ($customPage->site_id !== $site->id) {
             abort(403);
@@ -5088,8 +5112,11 @@ class AdminController extends Controller
     /**
      * Reorder custom page widgets within a container column.
      */
-    public function reorderCustomPageWidgets(Site $site, CustomPage $customPage, Request $request)
+    public function reorderCustomPageWidgets(CustomPage $customPage, Request $request, Site $site = null)
     {
+        // Site를 request에서 가져오거나 customPage에서 가져옴
+        $site = $site ?? $request->attributes->get('site') ?? $customPage->site;
+        
         $request->validate([
             'container_id' => 'required|integer',
             'column_index' => 'required|integer',

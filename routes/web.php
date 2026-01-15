@@ -1061,28 +1061,28 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->storeCustomPage($masterSite, $request);
+                return app(\App\Http\Controllers\AdminController::class)->storeCustomPage($request, $masterSite);
             })->name('master.admin.custom-pages.store');
             Route::get('/custom-pages/{customPage}/edit', function (Request $request, \App\Models\CustomPage $customPage) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->editCustomPage($masterSite, $customPage, $request);
+                return app(\App\Http\Controllers\AdminController::class)->editCustomPage($customPage, $request, $masterSite);
             })->name('master.admin.custom-pages.edit');
             Route::put('/custom-pages/{customPage}', function (Request $request, \App\Models\CustomPage $customPage) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateCustomPage($request, $masterSite, $customPage);
+                return app(\App\Http\Controllers\AdminController::class)->updateCustomPage($customPage, $request, $masterSite);
             })->name('master.admin.custom-pages.update');
-            Route::delete('/custom-pages/{customPage}', function (\App\Models\CustomPage $customPage) {
+            Route::delete('/custom-pages/{customPage}', function (Request $request, \App\Models\CustomPage $customPage) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->deleteCustomPage($masterSite, $customPage);
+                return app(\App\Http\Controllers\AdminController::class)->deleteCustomPage($customPage, $request, $masterSite);
             })->name('master.admin.custom-pages.delete');
             Route::post('/custom-pages/{customPage}/containers/store', function (Request $request, \App\Models\CustomPage $customPage) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -1096,14 +1096,14 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateCustomPageWidgetContainer($masterSite, $customPage, $container, $request);
+                return app(\App\Http\Controllers\AdminController::class)->updateCustomPageWidgetContainer($customPage, $container, $request, $masterSite);
             })->name('master.admin.custom-pages.containers.update');
-            Route::delete('/custom-pages/{customPage}/containers/{container}', function (\App\Models\CustomPage $customPage, \App\Models\CustomPageWidgetContainer $container) {
+            Route::delete('/custom-pages/{customPage}/containers/{container}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidgetContainer $container) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->deleteCustomPageWidgetContainer($masterSite, $customPage, $container);
+                return app(\App\Http\Controllers\AdminController::class)->deleteCustomPageWidgetContainer($customPage, $container, $request, $masterSite);
             })->name('master.admin.custom-pages.containers.delete');
             Route::post('/custom-pages/{customPage}/widgets/store', function (Request $request, \App\Models\CustomPage $customPage) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -1131,14 +1131,14 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgetContainers($masterSite, $customPage, $request);
+                return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgetContainers($customPage, $request, $masterSite);
             })->name('master.admin.custom-pages.containers.reorder');
             Route::post('/custom-pages/{customPage}/widgets/reorder', function (Request $request, \App\Models\CustomPage $customPage) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgets($masterSite, $customPage, $request);
+                return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgets($customPage, $request, $masterSite);
             })->name('master.admin.custom-pages.widgets.reorder');
             
             // Chat Management
