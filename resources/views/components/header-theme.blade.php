@@ -813,6 +813,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (headerWrapper) {
                     headerWrapper.classList.add('scrolled');
                 }
+                // 인라인 스타일에서 background 관련 속성 제거 (CSS 글래스모피즘이 적용되도록)
+                header.style.background = '';
+                header.style.backgroundColor = '';
+                header.style.backgroundImage = '';
+                header.style.setProperty('--header-bg-color', '');
                 header.style.color = textColor;
                 header.style.transition = 'all 0.3s ease';
                 
@@ -827,6 +832,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (headerWrapper) {
                     headerWrapper.classList.remove('scrolled');
                 }
+                header.style.background = 'none';
                 header.style.backgroundColor = 'transparent';
                 header.style.color = textColor;
                 
