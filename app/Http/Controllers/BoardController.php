@@ -254,6 +254,66 @@ class BoardController extends Controller
     }
 
     /**
+     * Load more posts for Pinterest board (AJAX)
+     */
+    public function loadMore(Request $request, Site $site, $slug)
+    {
+        $board = $this->boardService->getBoardBySlug($site->id, $slug);
+        
+        // 권한 체크
+        $permission = $board->read_permission ?? 'guest';
+        if ($permission === 'user' && !auth()->check()) {
+            return response()->json(['success' => false, 'message' => '로그인이 필요합니다.'], 401);
+        }
+        if ($permission === 'admin' && (!auth()->check() || !auth()->user()->canManage())) {
+            return response()->json(['success' => false, 'message' => '권한이 없습니다.'], 403);
+        }
+        
+        // 핀터레스트 타입만 허용
+        if ($board->type !== 'pinterest') {
+            return response()->json(['success' => false, 'message' => '지원하지 않는 게시판 타입입니다.'], 400);
+        }
+        
+        // 페이지 파라미터
+        $page = $request->query('page', 1);
+        $topicId = $request->query('topic');
+        $searchKeyword = $request->query('search');
+        $searchType = $request->query('search_type', 'title_content');
+        $perPage = $board->posts_per_page ?? 20;
+        
+        // 게시글 가져오기
+        $posts = $this->postService->getPostsByBoard($board->id, $perPage, false, $topicId, $site->id, $searchKeyword, $searchType);
+        
+        // HTML 생성
+        $html = '';
+        $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
+        $pointColor = $themeDarkMode === 'dark' 
+            ? $site->getSetting('color_dark_point_main', '#ffffff')
+            : $site->getSetting('color_light_point_main', '#0d6efd');
+        $showViews = $site->getSetting('show_views', '1') == '1';
+        $showDatetime = $site->getSetting('show_datetime', '1') == '1';
+        
+        foreach ($posts as $post) {
+            $html .= view('boards.partials.pinterest-item', [
+                'post' => $post,
+                'board' => $board,
+                'site' => $site,
+                'pointColor' => $pointColor,
+                'showViews' => $showViews,
+                'showDatetime' => $showDatetime,
+            ])->render();
+        }
+        
+        return response()->json([
+            'success' => true,
+            'html' => $html,
+            'hasMorePages' => $posts->hasMorePages(),
+            'currentPage' => $posts->currentPage(),
+            'lastPage' => $posts->lastPage(),
+        ]);
+    }
+
+    /**
      * Show the form for editing the specified board.
      */
     public function edit(Site $site, Board $board)

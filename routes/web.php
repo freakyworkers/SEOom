@@ -1975,6 +1975,9 @@ Route::prefix('site/{site}')->middleware(['block.ip', 'verify.site.user'])->grou
     // 질의응답 상태 변경 (관리자만)
     Route::middleware('auth')->post('/boards/{boardSlug}/posts/{post}/update-qa-status', [PostController::class, 'updateQaStatus'])->name('posts.update-qa-status');
 
+    // Pinterest board load more (AJAX)
+    Route::get('/boards/{slug}/load-more', [BoardController::class, 'loadMore'])->name('boards.loadMore');
+    
     // Board detail route - MUST be last to avoid conflicts with /boards/{boardSlug}/posts/*
     Route::get('/boards/{slug}', [BoardController::class, 'show'])->name('boards.show');
 
