@@ -31,9 +31,63 @@
 
     <div class="mb-4">
         @if($board->header_image_path)
-            <div class="mb-3">
-                <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: auto;">
-            </div>
+            @php
+                $headerImageFullWidth = $board->header_image_full_width ?? false;
+                $headerImageTextEnabled = $board->header_image_text_enabled ?? false;
+                $headerImageTextTitle = $board->header_image_text_title ?? '';
+                $headerImageTextContent = $board->header_image_text_content ?? '';
+                $headerImageTextAlign = $board->header_image_text_align ?? 'center';
+                $headerImageTextValign = $board->header_image_text_valign ?? 'center';
+                
+                // 가로 정렬 CSS
+                $textAlignClass = match($headerImageTextAlign) {
+                    'left' => 'text-start',
+                    'right' => 'text-end',
+                    default => 'text-center',
+                };
+                
+                // 세로 정렬 CSS
+                $valignClass = match($headerImageTextValign) {
+                    'top' => 'align-items-start',
+                    'bottom' => 'align-items-end',
+                    default => 'align-items-center',
+                };
+            @endphp
+            @if($headerImageFullWidth)
+                </div>{{-- 컨테이너 닫기 --}}
+                <div class="mb-3 position-relative" style="margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); width: 100vw;">
+                    <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid" style="width: 100%; height: auto; object-fit: cover;">
+                    @if($headerImageTextEnabled && ($headerImageTextTitle || $headerImageTextContent))
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center" style="background: rgba(0,0,0,0.3);">
+                            <div class="{{ $textAlignClass }} text-white px-4 py-3" style="max-width: 800px;">
+                                @if($headerImageTextTitle)
+                                    <h2 class="mb-2 fw-bold" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
+                                @endif
+                                @if($headerImageTextContent)
+                                    <p class="mb-0" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+                </div>
+                <div class="container">{{-- 컨테이너 다시 열기 --}}
+            @else
+                <div class="mb-3 position-relative">
+                    <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: auto;">
+                    @if($headerImageTextEnabled && ($headerImageTextTitle || $headerImageTextContent))
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center rounded" style="background: rgba(0,0,0,0.3);">
+                            <div class="{{ $textAlignClass }} text-white px-4 py-3" style="max-width: 100%;">
+                                @if($headerImageTextTitle)
+                                    <h2 class="mb-2 fw-bold" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
+                                @endif
+                                @if($headerImageTextContent)
+                                    <p class="mb-0" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            @endif
         @endif
         @php
             $hideTitleDescription = $board->hide_title_description ?? false;

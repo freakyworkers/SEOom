@@ -541,6 +541,26 @@ class BoardController extends Controller
             $updateData['header_image_path'] = null;
             \Log::info('Header image removed for board:', ['board_id' => $board->id]);
         }
+        
+        // 상단 이미지 가로 100% 처리
+        $updateData['header_image_full_width'] = $request->has('header_image_full_width') ? true : false;
+        
+        // 이미지 위 텍스트 활성화 처리
+        $updateData['header_image_text_enabled'] = $request->has('header_image_text_enabled') ? true : false;
+        
+        // 이미지 위 텍스트 관련 필드 처리
+        if ($request->has('header_image_text_title')) {
+            $updateData['header_image_text_title'] = $request->input('header_image_text_title');
+        }
+        if ($request->has('header_image_text_content')) {
+            $updateData['header_image_text_content'] = $request->input('header_image_text_content');
+        }
+        if ($request->has('header_image_text_align')) {
+            $updateData['header_image_text_align'] = $request->input('header_image_text_align');
+        }
+        if ($request->has('header_image_text_valign')) {
+            $updateData['header_image_text_valign'] = $request->input('header_image_text_valign');
+        }
 
         // 게시판 타입 업데이트
         if ($request->has('type')) {

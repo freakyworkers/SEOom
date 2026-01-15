@@ -322,6 +322,127 @@
                                     @enderror
                                 </td>
                             </tr>
+                            {{-- 상단 이미지 가로 100% --}}
+                            <tr id="header_image_full_width_row">
+                                <td>
+                                    <label class="form-label mb-0">
+                                        상단 이미지 가로 100%
+                                        <i class="bi bi-question-circle" data-bs-toggle="tooltip" title="활성화 시 상단 이미지가 화면 전체 너비로 표시됩니다"></i>
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        <input type="checkbox" 
+                                               class="form-check-input" 
+                                               id="header_image_full_width" 
+                                               name="header_image_full_width"
+                                               value="1"
+                                               {{ old('header_image_full_width', $board->header_image_full_width) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="header_image_full_width">
+                                            가로 100% 적용
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{-- 이미지 위 텍스트 활성화 --}}
+                            <tr id="header_image_text_enabled_row">
+                                <td>
+                                    <label class="form-label mb-0">
+                                        이미지 위 텍스트
+                                        <i class="bi bi-question-circle" data-bs-toggle="tooltip" title="활성화 시 상단 이미지 위에 제목과 내용을 표시할 수 있습니다"></i>
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        <input type="checkbox" 
+                                               class="form-check-input" 
+                                               id="header_image_text_enabled" 
+                                               name="header_image_text_enabled"
+                                               value="1"
+                                               {{ old('header_image_text_enabled', $board->header_image_text_enabled) ? 'checked' : '' }}
+                                               onchange="toggleHeaderImageTextOptions()">
+                                        <label class="form-check-label" for="header_image_text_enabled">
+                                            이미지 위 텍스트 활성화
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{-- 이미지 위 텍스트 옵션들 --}}
+                            <tr id="header_image_text_title_row" style="display: {{ old('header_image_text_enabled', $board->header_image_text_enabled) ? '' : 'none' }};">
+                                <td>
+                                    <label for="header_image_text_title" class="form-label mb-0">
+                                        텍스트 제목
+                                    </label>
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="header_image_text_title" 
+                                           name="header_image_text_title"
+                                           value="{{ old('header_image_text_title', $board->header_image_text_title) }}"
+                                           placeholder="이미지 위에 표시될 제목">
+                                </td>
+                            </tr>
+                            <tr id="header_image_text_content_row" style="display: {{ old('header_image_text_enabled', $board->header_image_text_enabled) ? '' : 'none' }};">
+                                <td>
+                                    <label for="header_image_text_content" class="form-label mb-0">
+                                        텍스트 내용
+                                    </label>
+                                </td>
+                                <td>
+                                    <textarea class="form-control" 
+                                              id="header_image_text_content" 
+                                              name="header_image_text_content"
+                                              rows="3"
+                                              placeholder="이미지 위에 표시될 내용">{{ old('header_image_text_content', $board->header_image_text_content) }}</textarea>
+                                </td>
+                            </tr>
+                            <tr id="header_image_text_align_row" style="display: {{ old('header_image_text_enabled', $board->header_image_text_enabled) ? '' : 'none' }};">
+                                <td>
+                                    <label class="form-label mb-0">
+                                        가로 정렬
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" name="header_image_text_align" id="header_image_text_align_left" value="left" {{ old('header_image_text_align', $board->header_image_text_align ?? 'center') === 'left' ? 'checked' : '' }}>
+                                        <label class="btn btn-outline-secondary" for="header_image_text_align_left">
+                                            <i class="bi bi-text-left"></i> 좌
+                                        </label>
+                                        <input type="radio" class="btn-check" name="header_image_text_align" id="header_image_text_align_center" value="center" {{ old('header_image_text_align', $board->header_image_text_align ?? 'center') === 'center' ? 'checked' : '' }}>
+                                        <label class="btn btn-outline-secondary" for="header_image_text_align_center">
+                                            <i class="bi bi-text-center"></i> 중앙
+                                        </label>
+                                        <input type="radio" class="btn-check" name="header_image_text_align" id="header_image_text_align_right" value="right" {{ old('header_image_text_align', $board->header_image_text_align ?? 'center') === 'right' ? 'checked' : '' }}>
+                                        <label class="btn btn-outline-secondary" for="header_image_text_align_right">
+                                            <i class="bi bi-text-right"></i> 우
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr id="header_image_text_valign_row" style="display: {{ old('header_image_text_enabled', $board->header_image_text_enabled) ? '' : 'none' }};">
+                                <td>
+                                    <label class="form-label mb-0">
+                                        세로 정렬
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" name="header_image_text_valign" id="header_image_text_valign_top" value="top" {{ old('header_image_text_valign', $board->header_image_text_valign ?? 'center') === 'top' ? 'checked' : '' }}>
+                                        <label class="btn btn-outline-secondary" for="header_image_text_valign_top">
+                                            <i class="bi bi-align-top"></i> 상단
+                                        </label>
+                                        <input type="radio" class="btn-check" name="header_image_text_valign" id="header_image_text_valign_center" value="center" {{ old('header_image_text_valign', $board->header_image_text_valign ?? 'center') === 'center' ? 'checked' : '' }}>
+                                        <label class="btn btn-outline-secondary" for="header_image_text_valign_center">
+                                            <i class="bi bi-align-center"></i> 중앙
+                                        </label>
+                                        <input type="radio" class="btn-check" name="header_image_text_valign" id="header_image_text_valign_bottom" value="bottom" {{ old('header_image_text_valign', $board->header_image_text_valign ?? 'center') === 'bottom' ? 'checked' : '' }}>
+                                        <label class="btn btn-outline-secondary" for="header_image_text_valign_bottom">
+                                            <i class="bi bi-align-bottom"></i> 하단
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
                             <tr id="random-order-row" style="display: {{ old('type', $board->type) === 'bookmark' ? '' : 'none' }};">
                                 <td>
                                     <label class="form-label mb-0">
@@ -1294,6 +1415,22 @@
 
 @push('scripts')
 <script>
+    // 이미지 위 텍스트 옵션 토글 함수
+    function toggleHeaderImageTextOptions() {
+        const checkbox = document.getElementById('header_image_text_enabled');
+        const titleRow = document.getElementById('header_image_text_title_row');
+        const contentRow = document.getElementById('header_image_text_content_row');
+        const alignRow = document.getElementById('header_image_text_align_row');
+        const valignRow = document.getElementById('header_image_text_valign_row');
+        
+        const display = checkbox && checkbox.checked ? '' : 'none';
+        
+        if (titleRow) titleRow.style.display = display;
+        if (contentRow) contentRow.style.display = display;
+        if (alignRow) alignRow.style.display = display;
+        if (valignRow) valignRow.style.display = display;
+    }
+    
     // 초기 로드 시에도 체크 (create.blade.php와 동일한 구조)
     document.addEventListener('DOMContentLoaded', function() {
         const typeSelect = document.getElementById('type');
