@@ -2797,7 +2797,7 @@
                                                class="text-decoration-none text-dark">
                                                 {{-- 이미지 영역 --}}
                                                 @if($post->thumbnail_path)
-                                                    <div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">
+                                                    <div class="position-relative" style="overflow: hidden;{{ $boardViewerNoBackground ? '' : ' background-color: #f8f9fa;' }}">
                                                         <img src="{{ asset('storage/' . $post->thumbnail_path) }}" 
                                                              alt="{{ $post->title }}" 
                                                              class="img-fluid"
