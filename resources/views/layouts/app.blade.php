@@ -2233,8 +2233,9 @@
         @endif
         
         /* 스크롤 시 nav 배경도 투명하게 (글래스 효과는 wrapper에서 적용) */
-        .header-transparent-sticky-overlay.scrolled .navbar,
-        .header-transparent-sticky-overlay.scrolled nav.pc-header {
+        /* 단, navbar에 .scrolled 클래스가 있으면 navbar 자체의 글래스모피즘 스타일이 적용되도록 예외 처리 */
+        .header-transparent-sticky-overlay.scrolled .navbar:not(.scrolled),
+        .header-transparent-sticky-overlay.scrolled nav.pc-header:not(.scrolled) {
             background-color: transparent !important;
             background: transparent !important;
         }
