@@ -14,8 +14,52 @@
 @endif
 @endpush
 
+@php
+    // 상단 이미지 가로 100%이고 투명헤더일 때 상단 여백 제거를 위한 설정
+    $boardHeaderImageFullWidth = $board->header_image_full_width ?? false;
+    $boardHeaderTransparent = $site->getSetting('header_transparent', '0') == '1';
+    $themeSidebar = $site->getSetting('theme_sidebar', 'none');
+    $hasSidebar = $themeSidebar !== 'none';
+    // 사이드바가 있으면 투명헤더 비활성화
+    if ($hasSidebar) {
+        $boardHeaderTransparent = false;
+    }
+    $shouldRemoveTopMargin = $boardHeaderImageFullWidth;
+@endphp
+
+@if($shouldRemoveTopMargin)
+@push('styles')
+<style>
+    /* 상단 이미지 가로 100%일 때 상단 여백 제거 */
+    body > main.container.my-4,
+    .d-flex main.container,
+    .d-flex main.container.my-4 {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    .board-full-width-header-container {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    @if($boardHeaderTransparent)
+    /* 투명헤더일 때 상단 이미지가 헤더 뒤로 들어가도록 */
+    .board-header-image-fullwidth {
+        margin-top: -80px !important; /* 헤더 높이만큼 위로 */
+        padding-top: 80px; /* 이미지 내용이 헤더 아래에서 시작하도록 */
+    }
+    @media (min-width: 1200px) {
+        .board-header-image-fullwidth {
+            margin-top: -120px !important; /* 최상단 헤더 포함 */
+            padding-top: 120px;
+        }
+    }
+    @endif
+</style>
+@endpush
+@endif
+
 @section('content')
-<div style="position: relative;">
+<div style="position: relative;" class="{{ $shouldRemoveTopMargin ? 'board-full-width-header-container' : '' }}">
     @php
         $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
         $pointColor = $themeDarkMode === 'dark' 
@@ -29,7 +73,7 @@
         $showDatetime = $site->getSetting('show_datetime', '1') == '1';
     @endphp
 
-    <div class="mb-4">
+    <div class="{{ $boardHeaderImageFullWidth ? '' : 'mb-4' }}">
         @if($board->header_image_path)
             @php
                 $headerImageFullWidth = $board->header_image_full_width ?? false;
@@ -59,10 +103,10 @@
             @endphp
             @if($headerImageFullWidth)
                 </div>{{-- 컨테이너 닫기 --}}
-                <div class="mb-3 position-relative" style="margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); width: 100vw;">
+                <div class="position-relative {{ $boardHeaderTransparent ? 'board-header-image-fullwidth' : '' }}" style="margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); width: 100vw; margin-bottom: 1rem;">
                     <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid" style="width: 100%; height: auto; object-fit: cover;">
                     @if($headerImageTextEnabled && ($headerImageTextTitle || $headerImageTextContent))
-                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center" style="background: rgba(0,0,0,0.3);">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center" style="background: rgba(0,0,0,0.3);{{ $boardHeaderTransparent ? ' padding-top: 80px;' : '' }}">
                             <div class="{{ $textAlignClass }} px-4 py-3" style="max-width: 800px;">
                                 @if($headerImageTextTitle)
                                     <h2 class="mb-2 fw-bold" style="font-size: {{ $headerImageTextTitleSize }}px; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
