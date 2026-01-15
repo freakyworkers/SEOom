@@ -4963,7 +4963,7 @@ class AdminController extends Controller
             }
         }
 
-        $widget->title = $request->input('title', '');
+        $widget->title = $request->input('title') ?? '';
         $widget->settings = $settings;
         if ($request->has('is_active')) {
             $widget->is_active = $request->is_active;
