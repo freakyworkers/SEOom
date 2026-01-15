@@ -101,22 +101,16 @@
                 $containerClass .= ' full-height-container';
             }
             
-            // 위젯 간격 설정 (row의 gap으로 칸 간 간격 조절)
+            // 위젯 간격 설정 (Bootstrap gutter 클래스 사용)
             $widgetSpacing = $container->widget_spacing ?? 3;
             $widgetSpacingValue = min(max($widgetSpacing, 0), 5);
-            $spacingMap = [0 => '0px', 1 => '4px', 2 => '8px', 3 => '16px', 4 => '24px', 5 => '48px'];
-            $widgetGapRow = $spacingMap[$widgetSpacingValue] ?? '16px';
+            // Bootstrap gutter 클래스 (g-0, g-1, g-2, g-3, g-4, g-5)
+            $gutterClass = 'g-' . $widgetSpacingValue;
             
-            // row 스타일: Bootstrap 기본 음수 마진 제거하고 gap으로 간격 처리
-            $rowStyle = 'margin-left: 0; margin-right: 0;';
-            // 칸 고정너비가 아닐 때만 width 100% 적용
-            if ($isFullWidth && !$fixedWidthColumns) {
-                $rowStyle .= ' width: 100%;';
-            }
-            // row에 gap 추가하여 칸 간 간격을 위젯 간격과 동일하게 (가로 100% 포함)
-            $rowStyle .= ' gap: ' . $widgetGapRow . ';';
+            // 칸 고정너비가 아닐 때만 row에 100% 적용
+            $rowStyle = ($isFullWidth && !$fixedWidthColumns) ? 'margin-left: 0; margin-right: 0; width: 100%;' : '';
             if ($isFullHeight) {
-                $rowStyle .= ' height: 100%;';
+                $rowStyle .= ($rowStyle ? ' ' : '') . 'height: 100%;';
             }
             
             // 컨테이너 간격 처리
@@ -201,7 +195,7 @@
             {{-- 칸 고정너비: 배경은 100%지만 칸들은 고정 너비 유지 --}}
             <div class="container">
             @endif
-            <div class="row main-widget-container {{ $alignClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
+            <div class="row main-widget-container {{ $alignClass }} {{ $gutterClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
                 @php
                     $columnMerges = $container->column_merges ?? [];
                     $hiddenColumns = [];
@@ -228,15 +222,15 @@
                         $mergeSpan = $columnMerges[$i] ?? 1;
                         $colWidth = $mergeSpan * (12 / $container->columns);
                         $columnWidgets = $container->widgets->where('column_index', $i)->sortBy('order');
-                        // row에서 gap을 사용하므로 컬럼의 padding을 제거 (가로 100% 여부와 관계없이)
-                        $colStyle = 'padding-left: 0; padding-right: 0;';
+                        // 가로 100%이고 칸 고정너비가 아닐 때만 padding 제거 (Bootstrap gutter 시스템 유지)
+                        $colStyle = ($isFullWidth && !$fixedWidthColumns) ? 'padding-left: 0; padding-right: 0;' : '';
                         if ($isFullHeight) {
-                            $colStyle .= ' height: 100%; display: flex; flex-direction: column;';
+                            $colStyle .= ($colStyle ? ' ' : '') . 'height: 100%; display: flex; flex-direction: column;';
                         }
-                        // 컬럼 하단 마진은 제거 (row의 gap으로 처리)
+                        // 컬럼 하단 마진 제거 (Bootstrap gutter로 처리)
                         $colMarginBottom = 'mb-0';
                         
-                        // 위젯 간격 설정 (컨테이너별) - row에서 이미 정의했지만 컬럼 내 위젯 간격도 필요
+                        // 위젯 간격 설정 (컨테이너별)
                         $widgetSpacing = $container->widget_spacing ?? 3;
                         $widgetSpacingValue = min(max($widgetSpacing, 0), 5);
                         // Bootstrap spacing 값을 px로 변환 (0=0px, 1=0.25rem=4px, 2=0.5rem=8px, 3=1rem=16px, 4=1.5rem=24px, 5=3rem=48px)
