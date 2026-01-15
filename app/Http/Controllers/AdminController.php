@@ -4939,10 +4939,10 @@ class AdminController extends Controller
     /**
      * Update a custom page widget.
      */
-    public function updateCustomPageWidget(Site $site, CustomPage $customPage, CustomPageWidget $widget, Request $request)
+    public function updateCustomPageWidget(CustomPage $customPage, CustomPageWidget $widget, Request $request)
     {
-        // Ensure custom page and widget belong to site
-        if ($customPage->site_id !== $site->id || $widget->custom_page_id !== $customPage->id) {
+        // Ensure widget belongs to custom page
+        if ($widget->custom_page_id !== $customPage->id) {
             abort(403);
         }
 
@@ -4980,10 +4980,10 @@ class AdminController extends Controller
     /**
      * Delete a custom page widget.
      */
-    public function deleteCustomPageWidget(Site $site, CustomPage $customPage, CustomPageWidget $widget)
+    public function deleteCustomPageWidget(CustomPage $customPage, CustomPageWidget $widget)
     {
-        // Ensure custom page and widget belong to site
-        if ($customPage->site_id !== $site->id || $widget->custom_page_id !== $customPage->id) {
+        // Ensure widget belongs to custom page
+        if ($widget->custom_page_id !== $customPage->id) {
             abort(403);
         }
 

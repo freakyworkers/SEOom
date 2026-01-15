@@ -1117,14 +1117,14 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateCustomPageWidget($masterSite, $customPage, $widget, $request);
+                return app(\App\Http\Controllers\AdminController::class)->updateCustomPageWidget($customPage, $widget, $request);
             })->name('master.admin.custom-pages.widgets.update');
             Route::delete('/custom-pages/{customPage}/widgets/{widget}', function (\App\Models\CustomPage $customPage, \App\Models\CustomPageWidget $widget) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->deleteCustomPageWidget($masterSite, $customPage, $widget);
+                return app(\App\Http\Controllers\AdminController::class)->deleteCustomPageWidget($customPage, $widget);
             })->name('master.admin.custom-pages.widgets.delete');
             Route::post('/custom-pages/{customPage}/containers/reorder', function (Request $request, \App\Models\CustomPage $customPage) {
             $masterSite = \App\Models\Site::getMasterSite();
