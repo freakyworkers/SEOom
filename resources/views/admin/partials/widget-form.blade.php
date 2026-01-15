@@ -45,6 +45,14 @@
         @endforeach
     </select>
 </div>
+<div class="mb-3" id="widget_board_viewer_no_background_container" style="display: none;">
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="widget_board_viewer_no_background" name="board_viewer_no_background">
+        <label class="form-check-label" for="widget_board_viewer_no_background">
+            배경색 없음 (그림자도 함께 제거됨)
+        </label>
+    </div>
+</div>
 <div class="mb-3" id="widget_sort_order_container" style="display: none;">
     <label for="widget_sort_order" class="form-label">표시 방식</label>
     <select class="form-select" id="widget_sort_order" name="sort_order">

@@ -2667,10 +2667,16 @@
                     }
                 @endphp
                 @if(isset($board) && $board)
+                    @php
+                        // 배경색 없음 설정 확인
+                        $boardViewerNoBackground = $widgetSettings['no_background'] ?? false;
+                        $boardViewerShadowClass = $boardViewerNoBackground ? '' : 'shadow-sm';
+                        $boardViewerBgClass = $boardViewerNoBackground ? '' : 'bg-white';
+                    @endphp
                     {{-- 게시판 헤더 이미지 --}}
                     @if($board->header_image_path)
                         <div class="mb-3">
-                            <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: auto;">
+                            <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid rounded {{ $boardViewerShadowClass }}" style="width: 100%; height: auto;">
                         </div>
                     @endif
                     
@@ -2679,7 +2685,7 @@
                         $hideTitleDescription = $board->hide_title_description ?? false;
                     @endphp
                     @if(!$hideTitleDescription)
-                        <div class="bg-white p-3 rounded shadow-sm mb-3">
+                        <div class="{{ $boardViewerBgClass }} p-3 rounded {{ $boardViewerShadowClass }} mb-3">
                             <h2 class="mb-1"><i class="bi bi-file-text"></i> {{ $board->name }}</h2>
                             @if($board->description)
                                 <p class="text-muted mb-0">{{ $board->description }}</p>
@@ -2772,7 +2778,7 @@
                             <div id="{{ $widgetMasonryId }}">
                                 @foreach($posts as $post)
                                     <div class="pinterest-masonry-widget-item">
-                                        <div class="card shadow-sm" style="overflow: hidden; border-radius: 12px;">
+                                        <div class="card {{ $boardViewerShadowClass }}" style="overflow: hidden; border-radius: 12px;">
                                             <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
                                                class="text-decoration-none text-dark">
                                                 {{-- 이미지 영역 --}}
@@ -2862,7 +2868,7 @@
                             </div>
                         @else
                             {{-- 일반 게시판 레이아웃 (심플 리스트 형태) --}}
-                            <div class="card bg-white shadow-sm">
+                            <div class="card {{ $boardViewerBgClass }} {{ $boardViewerShadowClass }}">
                                 <div class="list-group list-group-flush">
                                 @foreach($posts as $post)
                                 @php

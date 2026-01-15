@@ -984,6 +984,14 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="mb-3" id="edit_main_widget_board_viewer_no_background_container" style="display: none;">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="edit_main_widget_board_viewer_no_background" name="board_viewer_no_background">
+                            <label class="form-check-label" for="edit_main_widget_board_viewer_no_background">
+                                배경색 없음 (그림자도 함께 제거됨)
+                            </label>
+                        </div>
+                    </div>
                     <div class="mb-3" id="edit_main_widget_sort_order_container" style="display: none;">
                         <label for="edit_main_widget_sort_order" class="form-label">표시 방식</label>
                         <select class="form-select" id="edit_main_widget_sort_order" name="sort_order">
@@ -4097,6 +4105,8 @@ async function addMainWidget() {
         if (boardId) {
             settings.board_id = parseInt(boardId);
         }
+        const noBackground = document.getElementById('widget_board_viewer_no_background')?.checked;
+        settings.no_background = noBackground || false;
     } else if (widgetType === 'marquee_board') {
         if (!formData.get('title') || formData.get('title') === '') {
             formData.set('title', '게시글 전광판');
@@ -4914,8 +4924,13 @@ function editMainWidget(widgetId) {
             } else if (widgetType === 'board_viewer') {
                 if (boardContainer) boardContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'block';
+                const boardViewerNoBackgroundContainer = document.getElementById('edit_main_widget_board_viewer_no_background_container');
+                if (boardViewerNoBackgroundContainer) boardViewerNoBackgroundContainer.style.display = 'block';
                 if (document.getElementById('edit_main_widget_board_id')) {
                     document.getElementById('edit_main_widget_board_id').value = settings.board_id || '';
+                }
+                if (document.getElementById('edit_main_widget_board_viewer_no_background')) {
+                    document.getElementById('edit_main_widget_board_viewer_no_background').checked = settings.no_background || false;
                 }
                 if (document.getElementById('edit_main_widget_title')) {
                     document.getElementById('edit_main_widget_title').value = title;
@@ -5993,6 +6008,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (boardContainer) boardContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'block';
                 if (titleInput) titleInput.required = false;
+                const boardViewerNoBackgroundContainer = document.getElementById('widget_board_viewer_no_background_container');
+                if (boardViewerNoBackgroundContainer) boardViewerNoBackgroundContainer.style.display = 'block';
             } else if (widgetType === 'marquee_board') {
                 if (limitContainer) limitContainer.style.display = 'block';
                 if (boardContainer) boardContainer.style.display = 'block';
@@ -7600,6 +7617,8 @@ async function saveMainWidgetSettings() {
         if (boardId) {
             settings.board_id = parseInt(boardId);
         }
+        const noBackground = document.getElementById('edit_main_widget_board_viewer_no_background')?.checked;
+        settings.no_background = noBackground || false;
     } else if (widgetType === 'marquee_board') {
         const boardId = document.getElementById('edit_main_widget_board_id')?.value;
         const limit = document.getElementById('edit_main_widget_limit')?.value;
