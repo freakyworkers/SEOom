@@ -1986,7 +1986,16 @@
     });
     </script>
     
-    @if($headerTransparent)
+    @php
+        // 투명헤더 CSS/JS 출력 전에 변수 재확인 (자식 뷰에서 재정의될 수 있으므로)
+        $headerTransparentFinal = $site->getSetting('header_transparent', '0') == '1';
+        $themeSidebarFinal = $site->getSetting('theme_sidebar', 'none');
+        if ($themeSidebarFinal !== 'none') {
+            $headerTransparentFinal = false;
+        }
+    @endphp
+    
+    @if($headerTransparentFinal)
     <style>
         /* 투명헤더 오버레이 스타일 - 모든 페이지에서 적용 */
         /* PHP에서 생성된 .navbar 규칙보다 나중에 로드되도록 하기 위해 가장 마지막에 배치 */
@@ -2129,7 +2138,7 @@
         }
         
         /* 투명헤더일 때 메인 컨텐츠 영역의 상단 마진 제거 - 모든 페이지에서 적용 */
-        @if($headerTransparent)
+        @if($headerTransparentFinal)
         main.container {
             margin-top: 0 !important;
             padding-top: 0 !important;
@@ -2422,7 +2431,7 @@
     </script>
     @endif
     
-    @if($isHeaderSticky && !$headerTransparent)
+    @if($isHeaderSticky && !$headerTransparentFinal)
     <style>
         .sticky-header-wrapper {
             background-color: transparent;
