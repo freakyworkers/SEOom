@@ -2753,6 +2753,7 @@
                                 #{{ $widgetMasonryId }} {
                                     column-count: {{ $mobileCols }};
                                     column-gap: {{ $masonryGap }};
+                                    margin-bottom: -{{ $masonryGap }};
                                 }
                                 #{{ $widgetMasonryId }} .pinterest-masonry-widget-item {
                                     break-inside: avoid;
@@ -2760,13 +2761,15 @@
                                     display: inline-block;
                                     width: 100%;
                                 }
-                                #{{ $widgetMasonryId }} .pinterest-masonry-widget-item:last-child {
-                                    margin-bottom: 0 !important;
-                                }
                                 @if($boardViewerNoBackground)
-                                #{{ $widgetMasonryId }} .pinterest-masonry-widget-item .card {
+                                #{{ $widgetMasonryId }} .pinterest-masonry-widget-item .card,
+                                #{{ $widgetMasonryId }} .pinterest-masonry-widget-item .card.bg-white,
+                                #{{ $widgetMasonryId }} .pinterest-masonry-widget-item .card.bg-transparent,
+                                #{{ $widgetMasonryId }} .pinterest-masonry-widget-item .card.shadow-sm {
+                                    background: transparent !important;
                                     background-color: transparent !important;
                                     box-shadow: none !important;
+                                    -webkit-box-shadow: none !important;
                                     border: none !important;
                                 }
                                 @endif
@@ -2788,7 +2791,7 @@
                             </style>
                             <div id="{{ $widgetMasonryId }}">
                                 @foreach($posts as $post)
-                                    <div class="pinterest-masonry-widget-item" @if($loop->last) style="margin-bottom: 0 !important;" @endif>
+                                    <div class="pinterest-masonry-widget-item">
                                         <div class="card {{ $boardViewerShadowClass }} {{ $boardViewerBgClass }}" style="overflow: hidden; border-radius: 12px;">
                                             <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
                                                class="text-decoration-none text-dark">

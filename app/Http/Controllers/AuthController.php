@@ -117,6 +117,9 @@ class AuthController extends Controller
                 // 사이트 사용자로 로그인
                 \Illuminate\Support\Facades\Auth::login($admin, $request->boolean('remember'));
                 
+                // 테스트 어드민 세션 정리 (이전에 테스트 어드민으로 로그인했을 수 있음)
+                session()->forget(['is_test_admin', 'test_admin_site_id', 'test_admin_username']);
+                
                 // 세션에 마스터 사용자 정보 저장
                 session(['is_master_user' => true, 'master_user_id' => $masterUser->id]);
                 
@@ -152,6 +155,9 @@ class AuthController extends Controller
 
         if ($this->authService->login($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+            
+            // 테스트 어드민 세션 정리 (이전에 테스트 어드민으로 로그인했을 수 있음)
+            session()->forget(['is_test_admin', 'test_admin_site_id', 'test_admin_username']);
             
             // intended URL이 있으면 그곳으로, 없으면 현재 페이지 또는 기본 경로로
             $intendedUrl = $request->input('intended_url') ?: session()->pull('url.intended');
