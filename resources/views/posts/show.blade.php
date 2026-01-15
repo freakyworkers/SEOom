@@ -2,6 +2,37 @@
 
 @section('title', $post->title)
 
+@php
+    // 투명헤더 설정 확인
+    $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
+    $themeSidebar = $site->getSetting('theme_sidebar', 'none');
+    $hasSidebar = $themeSidebar !== 'none';
+    // 사이드바가 있으면 투명헤더 비활성화
+    if ($hasSidebar) {
+        $headerTransparent = false;
+    }
+@endphp
+
+@if($headerTransparent)
+@push('styles')
+<style>
+    /* 투명헤더일 때 게시글 페이지 상단 여백 추가 */
+    body > main.container.my-4,
+    .d-flex main.container,
+    .d-flex main.container.my-4 {
+        padding-top: 80px !important;
+    }
+    @media (min-width: 1200px) {
+        body > main.container.my-4,
+        .d-flex main.container,
+        .d-flex main.container.my-4 {
+            padding-top: 120px !important; /* 최상단 헤더 포함 */
+        }
+    }
+</style>
+@endpush
+@endif
+
 @section('content')
 @php
     // 조회수 공개 설정 (기본값: 공개)

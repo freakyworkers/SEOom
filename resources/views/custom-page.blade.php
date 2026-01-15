@@ -7,7 +7,36 @@
     $themeSidebar = $site->getSetting('theme_sidebar', 'left');
     $firstContainerIsFullHeight = isset($containers) && $containers->isNotEmpty() && ($containers->first()->full_height ?? false);
     $firstContainerIsFullWidth = isset($containers) && $containers->isNotEmpty() && ($containers->first()->full_width ?? false) && ($themeSidebar === 'none');
+    
+    // 투명헤더 설정 확인
+    $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
+    $hasSidebar = $themeSidebar !== 'none';
+    if ($hasSidebar) {
+        $headerTransparent = false;
+    }
+    // 첫 번째 컨테이너가 가로/세로 100%가 아니고 투명헤더면 상단 여백 필요
+    $needsTopPadding = $headerTransparent && !$firstContainerIsFullHeight && !$firstContainerIsFullWidth;
 @endphp
+
+@if($needsTopPadding)
+@push('styles')
+<style>
+    /* 투명헤더일 때 커스텀 페이지 상단 여백 추가 */
+    body > main.container.my-4,
+    .d-flex main.container,
+    .d-flex main.container.my-4 {
+        padding-top: 80px !important;
+    }
+    @media (min-width: 1200px) {
+        body > main.container.my-4,
+        .d-flex main.container,
+        .d-flex main.container.my-4 {
+            padding-top: 120px !important; /* 최상단 헤더 포함 */
+        }
+    }
+</style>
+@endpush
+@endif
 
 @if($firstContainerIsFullHeight || $firstContainerIsFullWidth)
 @push('styles')

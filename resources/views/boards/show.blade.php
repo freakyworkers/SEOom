@@ -16,7 +16,7 @@
 
 @php
     // 상단 이미지 가로 100%이고 투명헤더일 때 상단 여백 제거를 위한 설정
-    $boardHeaderImageFullWidth = $board->header_image_full_width ?? false;
+    $boardHeaderImageFullWidth = ($board->header_image_full_width ?? false) && $board->header_image_path;
     $boardHeaderTransparent = $site->getSetting('header_transparent', '0') == '1';
     $themeSidebar = $site->getSetting('theme_sidebar', 'none');
     $hasSidebar = $themeSidebar !== 'none';
@@ -24,8 +24,31 @@
     if ($hasSidebar) {
         $boardHeaderTransparent = false;
     }
+    // 상단 이미지 가로 100%일 때만 상단 마진 제거
     $shouldRemoveTopMargin = $boardHeaderImageFullWidth;
+    // 상단 이미지가 없거나 가로 100%가 아닐 때 투명헤더면 상단 여백 필요
+    $needsTopPadding = $boardHeaderTransparent && !$shouldRemoveTopMargin;
 @endphp
+
+@if($needsTopPadding)
+@push('styles')
+<style>
+    /* 투명헤더일 때 일반 게시판 페이지 상단 여백 추가 */
+    body > main.container.my-4,
+    .d-flex main.container,
+    .d-flex main.container.my-4 {
+        padding-top: 80px !important;
+    }
+    @media (min-width: 1200px) {
+        body > main.container.my-4,
+        .d-flex main.container,
+        .d-flex main.container.my-4 {
+            padding-top: 120px !important; /* 최상단 헤더 포함 */
+        }
+    }
+</style>
+@endpush
+@endif
 
 @if($shouldRemoveTopMargin)
 @push('styles')

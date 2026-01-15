@@ -2145,12 +2145,24 @@
         
         /* 투명헤더 sticky 오버레이 - 스크롤 시 fixed로 변경 */
         .header-transparent-sticky-overlay {
-            transition: background-color 0.3s ease, top 0.3s ease;
+            transition: background-color 0.3s ease, top 0.3s ease, position 0s;
         }
         
         .header-transparent-sticky-overlay.scrolled {
             position: fixed !important;
             top: 0 !important; /* 스크롤 시 최상단으로 이동 */
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 1030 !important;
+            background-color: var(--header-bg-color, rgba(255,255,255,0.95)) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* 스크롤 시 투명 배경 해제하고 실제 헤더 배경색 적용 */
+        .header-transparent-sticky-overlay.scrolled .navbar,
+        .header-transparent-sticky-overlay.scrolled nav.pc-header {
+            background-color: var(--header-bg-color, #ffffff) !important;
         }
         
         /* 투명헤더 + 최상단 헤더 + sticky일 때 스크롤 시 최상단 헤더 숨기기 */
