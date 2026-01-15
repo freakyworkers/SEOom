@@ -1541,6 +1541,20 @@
                             </div>
                         </div>
                         <div class="mb-3">
+                            <label for="edit_main_widget_image_width" class="form-label">이미지 width <small class="text-muted">(%)</small></label>
+                            <div class="input-group" style="max-width: 150px;">
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="edit_main_widget_image_width" 
+                                       name="image_width" 
+                                       value="100"
+                                       min="1" 
+                                       max="100"
+                                       placeholder="100">
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
                             <label for="edit_main_widget_image_link" class="form-label">링크 입력 <small class="text-muted">(선택사항)</small></label>
                             <input type="url" 
                                    class="form-control" 
@@ -4504,6 +4518,10 @@ async function addMainWidget() {
         if (imageUrl) {
             settings.image_url = imageUrl;
         }
+        // 이미지 width
+        const imageWidth = document.getElementById('widget_image_width')?.value || '100';
+        settings.image_width = parseInt(imageWidth) || 100;
+        
         const link = document.getElementById('widget_image_link')?.value;
         if (link) {
             settings.link = link;
@@ -5385,6 +5403,10 @@ function editMainWidget(widgetId) {
                     document.getElementById('edit_main_widget_image_preview_img').src = settings.image_url;
                     document.getElementById('edit_main_widget_image_preview').style.display = 'block';
                     document.getElementById('edit_main_widget_image_url').value = settings.image_url;
+                }
+                // 이미지 width 로드
+                if (document.getElementById('edit_main_widget_image_width')) {
+                    document.getElementById('edit_main_widget_image_width').value = settings.image_width || 100;
                 }
                 if (document.getElementById('edit_main_widget_image_link')) {
                     document.getElementById('edit_main_widget_image_link').value = settings.image_link || '';
@@ -8077,6 +8099,10 @@ async function saveMainWidgetSettings() {
         if (imageUrl) {
             settings.image_url = imageUrl;
         }
+        // 이미지 width
+        const editImageWidth = document.getElementById('edit_main_widget_image_width')?.value || '100';
+        settings.image_width = parseInt(editImageWidth) || 100;
+        
         const imageLink = document.getElementById('edit_main_widget_image_link')?.value;
         if (imageLink) {
             settings.image_link = imageLink;

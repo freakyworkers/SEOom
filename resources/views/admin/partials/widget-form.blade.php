@@ -596,6 +596,20 @@
         </div>
     </div>
     <div class="mb-3">
+        <label for="widget_image_width" class="form-label">이미지 width <small class="text-muted">(%)</small></label>
+        <div class="input-group" style="max-width: 150px;">
+            <input type="number" 
+                   class="form-control" 
+                   id="widget_image_width" 
+                   name="image_width" 
+                   value="100"
+                   min="1" 
+                   max="100"
+                   placeholder="100">
+            <span class="input-group-text">%</span>
+        </div>
+    </div>
+    <div class="mb-3">
         <label for="widget_image_link" class="form-label">링크 입력 <small class="text-muted">(선택사항)</small></label>
         <input type="url" 
                class="form-control" 

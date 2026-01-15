@@ -195,7 +195,7 @@
             {{-- 칸 고정너비: 배경은 100%지만 칸들은 고정 너비 유지 --}}
             <div class="container">
             @endif
-            <div class="row main-widget-container {{ $alignClass }} {{ $gutterClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }}">
+            <div class="row main-widget-container {{ $alignClass }} {{ $gutterClass }}" data-container-id="{{ $container->id }}" style="display: flex; {{ $rowStyle }} --bs-gutter-y: 0;">
                 @php
                     $columnMerges = $container->column_merges ?? [];
                     $hiddenColumns = [];

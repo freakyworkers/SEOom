@@ -827,6 +827,10 @@
         $link = $imageSettings['link'] ?? '';
         $openNewTab = $imageSettings['open_new_tab'] ?? false;
         
+        // 이미지 width 설정 (% 값, 기본 100%)
+        $imageWidth = $imageSettings['image_width'] ?? 100;
+        $imageWidth = max(1, min(100, (int)$imageWidth)); // 1~100% 범위 제한
+        
         // 이미지 위젯 상단/하단 마진
         $imageMarginTop = $imageSettings['margin_top'] ?? 0;
         $imageMarginBottom = $imageSettings['margin_bottom'] ?? 0;
@@ -913,18 +917,30 @@
         $imageLinkStyle = $isRoundTheme ? 'display: block; border-radius: 0.5rem; overflow: hidden; width: 100%;' : 'display: block; width: 100%;';
         // 이미지에 margin: auto를 추가하여 flex 컨테이너에서 세로 중앙 정렬
         $imageStyle = 'width: 100%; height: auto; display: block; margin: auto 0;' . ($isRoundTheme ? ' border-radius: 0.5rem;' : '');
+        
+        // 이미지 width가 100% 미만일 때 max-width 적용 및 중앙 정렬
+        $imageContainerStyle = 'position: relative; width: 100%;';
+        if ($imageWidth < 100) {
+            $imageContainerStyle .= ' display: flex; justify-content: center;';
+            $imageLinkStyle = $isRoundTheme ? 'display: block; border-radius: 0.5rem; overflow: hidden; width: ' . $imageWidth . '%;' : 'display: block; width: ' . $imageWidth . '%;';
+            $imageStyle = 'width: 100%; height: auto; display: block;' . ($isRoundTheme ? ' border-radius: 0.5rem;' : '');
+        }
     @endphp
     @if($imageUrl)
         <div class="mb-0 {{ $shadowClass }} {{ $animationClass }} {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $isRoundTheme ? 'border-radius: 0.5rem; overflow: hidden;' : '' }} {{ $animationStyle }} width: 100%; max-width: 100%; {{ $imageWidgetStyle }}" data-widget-id="{{ $widget->id }}">
-            <div style="position: relative; width: 100%;">
+            <div style="{{ $imageContainerStyle }}">
                 @if($link && !$hasButton)
                     <a href="{{ $link }}" 
                        @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
                        style="{{ $imageLinkStyle }}">
+                @elseif($imageWidth < 100)
+                    <div style="width: {{ $imageWidth }}%;">
                 @endif
                 <img src="{{ $imageUrl }}" alt="이미지" style="{{ $imageStyle }}">
                 @if($link && !$hasButton)
                     </a>
+                @elseif($imageWidth < 100)
+                    </div>
                 @endif
                 
                 @if($textOverlay && ($title || $content))
