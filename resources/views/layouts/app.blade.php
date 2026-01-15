@@ -2159,7 +2159,21 @@
             transition: all 0.3s ease;
         }
         
-        /* 스크롤 시 글래스 모피즘 효과 적용 */
+        /* 스크롤 시 글래스 모피즘 효과 적용 - 헤더 배경색 기반 */
+        @php
+            // 헤더 배경색을 RGBA로 변환 (85% 투명도)
+            $headerBgHex = $themeDarkMode === 'dark' ? ($colorDarkHeaderBg ?? '#212529') : ($colorLightHeaderBg ?? '#ffffff');
+            // hex to rgb
+            $headerBgHex = ltrim($headerBgHex, '#');
+            if (strlen($headerBgHex) == 3) {
+                $headerBgHex = $headerBgHex[0].$headerBgHex[0].$headerBgHex[1].$headerBgHex[1].$headerBgHex[2].$headerBgHex[2];
+            }
+            $r = hexdec(substr($headerBgHex, 0, 2));
+            $g = hexdec(substr($headerBgHex, 2, 2));
+            $b = hexdec(substr($headerBgHex, 4, 2));
+            $glassBackground = "rgba($r, $g, $b, 0.85)";
+            $glassBackgroundMobile = "rgba($r, $g, $b, 0.92)";
+        @endphp
         .header-transparent-sticky-overlay.scrolled {
             position: fixed !important;
             top: 0 !important;
@@ -2167,19 +2181,12 @@
             right: 0 !important;
             width: 100% !important;
             z-index: 1030 !important;
-            /* 글래스 모피즘 효과 */
-            background: rgba(255, 255, 255, 0.85) !important;
+            /* 글래스 모피즘 효과 - 사이트 헤더 배경색 사용 */
+            background: {{ $glassBackground }} !important;
             backdrop-filter: blur(12px) saturate(180%);
             -webkit-backdrop-filter: blur(12px) saturate(180%);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        /* 다크모드에서 글래스 효과 */
-        .dark-mode .header-transparent-sticky-overlay.scrolled,
-        [data-theme="dark"] .header-transparent-sticky-overlay.scrolled {
-            background: rgba(33, 37, 41, 0.85) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(128, 128, 128, 0.2);
         }
         
         /* 스크롤 시 nav 배경도 투명하게 (글래스 효과는 wrapper에서 적용) */
@@ -2192,14 +2199,9 @@
         /* 모바일에서도 글래스 효과 적용 */
         @media (max-width: 1199px) {
             .header-transparent-sticky-overlay.scrolled {
-                background: rgba(255, 255, 255, 0.9) !important;
+                background: {{ $glassBackgroundMobile }} !important;
                 backdrop-filter: blur(10px) saturate(150%);
                 -webkit-backdrop-filter: blur(10px) saturate(150%);
-            }
-            
-            .dark-mode .header-transparent-sticky-overlay.scrolled,
-            [data-theme="dark"] .header-transparent-sticky-overlay.scrolled {
-                background: rgba(33, 37, 41, 0.9) !important;
             }
         }
         
