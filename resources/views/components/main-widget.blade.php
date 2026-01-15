@@ -2760,6 +2760,16 @@
                                     display: inline-block;
                                     width: 100%;
                                 }
+                                #{{ $widgetMasonryId }} .pinterest-masonry-widget-item:last-child {
+                                    margin-bottom: 0 !important;
+                                }
+                                @if($boardViewerNoBackground)
+                                #{{ $widgetMasonryId }} .pinterest-masonry-widget-item .card {
+                                    background-color: transparent !important;
+                                    box-shadow: none !important;
+                                    border: none !important;
+                                }
+                                @endif
                                 @media (min-width: 768px) {
                                     #{{ $widgetMasonryId }} {
                                         column-count: {{ $tabletCols }};

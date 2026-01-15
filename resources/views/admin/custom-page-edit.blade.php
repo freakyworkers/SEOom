@@ -742,6 +742,79 @@
     </div>
 </div>
 
+<!-- 커스텀 페이지 위젯 애니메이션 설정 모달 -->
+<div class="modal fade" id="customPageWidgetAnimationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">위젯 애니메이션 설정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="customPageWidgetAnimationForm">
+                    <input type="hidden" id="custom_page_widget_animation_id" name="widget_id">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            애니메이션 방향
+                            <i class="bi bi-question-circle text-muted ms-1" 
+                               data-bs-toggle="tooltip" 
+                               data-bs-placement="top" 
+                               title="위젯이 화면에 나타날 때의 애니메이션 방향을 선택합니다. 스크롤하거나 페이지를 새로고침할 때 적용됩니다."></i>
+                        </label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="left"
+                                    onclick="selectCustomPageAnimationDirection('left', this)">
+                                <i class="bi bi-arrow-left"></i> 좌
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="right"
+                                    onclick="selectCustomPageAnimationDirection('right', this)">
+                                <i class="bi bi-arrow-right"></i> 우
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="up"
+                                    onclick="selectCustomPageAnimationDirection('up', this)">
+                                <i class="bi bi-arrow-up"></i> 상
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-primary animation-direction-btn" 
+                                    data-direction="down"
+                                    onclick="selectCustomPageAnimationDirection('down', this)">
+                                <i class="bi bi-arrow-down"></i> 하
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-outline-secondary animation-direction-btn" 
+                                    data-direction="none"
+                                    onclick="selectCustomPageAnimationDirection('none', this)">
+                                없음
+                            </button>
+                        </div>
+                        <input type="hidden" id="custom_page_widget_animation_direction" name="animation_direction" value="none">
+                    </div>
+                    <div class="mb-3">
+                        <label for="custom_page_widget_animation_delay" class="form-label">
+                            애니메이션 딜레이 (초)
+                            <i class="bi bi-question-circle text-muted ms-1" 
+                               data-bs-toggle="tooltip" 
+                               data-bs-placement="top" 
+                               title="위젯이 화면에 나타난 후 애니메이션이 시작되기까지의 지연 시간입니다."></i>
+                        </label>
+                        <input type="number" class="form-control" id="custom_page_widget_animation_delay" name="animation_delay" value="0" min="0" max="5" step="0.1">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="saveCustomPageWidgetAnimation()">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- 저장 완료 알림 모달 -->
 <div class="modal fade" id="saveCustomPageWidgetSuccessModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
@@ -5726,6 +5799,12 @@ function toggleEditCustomPageWidgetImageTextOverlay() {
     const linkContainer = document.querySelector('#editCustomPageWidgetForm .mb-3:nth-of-type(3)');
     const newTabContainer = document.querySelector('#editCustomPageWidgetForm .mb-3:nth-of-type(4)');
     const hasButtonCheckbox = document.getElementById('edit_custom_page_widget_image_has_button');
+    
+    // 이미지 위젯에서는 전광판 옵션을 항상 숨김
+    const sortOrderContainer = document.getElementById('edit_custom_page_widget_sort_order_container');
+    const marqueeDirectionContainer = document.getElementById('edit_custom_page_widget_marquee_direction_container');
+    if (sortOrderContainer) sortOrderContainer.style.display = 'none';
+    if (marqueeDirectionContainer) marqueeDirectionContainer.style.display = 'none';
     
     if (checkbox && container) {
         container.style.display = checkbox.checked ? 'block' : 'none';

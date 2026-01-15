@@ -7207,6 +7207,12 @@ function toggleEditMainWidgetImageTextOverlay() {
     const newTabContainer = document.querySelector('#editMainWidgetForm .mb-3:nth-of-type(4)');
     const hasButtonCheckbox = document.getElementById('edit_main_widget_image_has_button');
     
+    // 이미지 위젯에서는 전광판 옵션을 항상 숨김
+    const sortOrderContainer = document.getElementById('edit_main_widget_sort_order_container');
+    const marqueeDirectionContainer = document.getElementById('edit_main_widget_marquee_direction_container');
+    if (sortOrderContainer) sortOrderContainer.style.display = 'none';
+    if (marqueeDirectionContainer) marqueeDirectionContainer.style.display = 'none';
+    
     if (checkbox && container) {
         container.style.display = checkbox.checked ? 'block' : 'none';
         // 텍스트 오버레이가 활성화되고 버튼이 추가되면 링크 입력 숨김
