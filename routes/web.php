@@ -996,7 +996,7 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->storeMainWidgetContainer($request, $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->storeMainWidgetContainer($masterSite, $request);
             })->name('master.admin.main-widgets.containers.store');
             Route::put('/main-widgets/containers/{container}', function (Request $request, \App\Models\MainWidgetContainer $container) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -1089,14 +1089,14 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->storeCustomPageWidgetContainer($request, $masterSite, $customPage);
+                return app(\App\Http\Controllers\AdminController::class)->storeCustomPageWidgetContainer($masterSite, $customPage, $request);
             })->name('master.admin.custom-pages.containers.store');
             Route::put('/custom-pages/{customPage}/containers/{container}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidgetContainer $container) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateCustomPageWidgetContainer($request, $masterSite, $customPage, $container);
+                return app(\App\Http\Controllers\AdminController::class)->updateCustomPageWidgetContainer($masterSite, $customPage, $container, $request);
             })->name('master.admin.custom-pages.containers.update');
             Route::delete('/custom-pages/{customPage}/containers/{container}', function (\App\Models\CustomPage $customPage, \App\Models\CustomPageWidgetContainer $container) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -1482,7 +1482,7 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->storeMainWidgetContainer($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->storeMainWidgetContainer($site, $request);
         });
         Route::put('/main-widgets/containers/{container}', function (Request $request, \App\Models\MainWidgetContainer $container) {
             $site = $request->attributes->get('site');

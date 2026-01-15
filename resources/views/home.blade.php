@@ -120,7 +120,18 @@
             $backgroundStyle = '';
             $backgroundType = $container->background_type ?? 'none';
             if ($backgroundType === 'color' && !empty($container->background_color)) {
-                $backgroundStyle = 'background-color: ' . $container->background_color . ';';
+                $bgColor = $container->background_color;
+                $bgAlpha = $container->background_color_alpha ?? 100;
+                if ($bgAlpha < 100) {
+                    // 투명도 적용 - hex를 rgba로 변환
+                    $hex = str_replace('#', '', $bgColor);
+                    $r = hexdec(substr($hex, 0, 2));
+                    $g = hexdec(substr($hex, 2, 2));
+                    $b = hexdec(substr($hex, 4, 2));
+                    $backgroundStyle = 'background-color: rgba(' . $r . ', ' . $g . ', ' . $b . ', ' . ($bgAlpha / 100) . ');';
+                } else {
+                    $backgroundStyle = 'background-color: ' . $bgColor . ';';
+                }
             } elseif ($backgroundType === 'gradient') {
                 $gradientStart = $container->background_gradient_start ?? '#ffffff';
                 $gradientEnd = $container->background_gradient_end ?? '#000000';
