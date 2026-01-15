@@ -28,10 +28,12 @@ class CustomPageWidgetContainer extends Model
         'padding_right',
         'background_type',
         'background_color',
+        'background_color_alpha',
         'background_gradient_start',
         'background_gradient_end',
         'background_gradient_angle',
         'background_image_url',
+        'background_image_alpha',
         'background_parallax',
         'order',
         'anchor_id',
@@ -53,6 +55,8 @@ class CustomPageWidgetContainer extends Model
         'padding_bottom' => 'integer',
         'padding_left' => 'integer',
         'padding_right' => 'integer',
+        'background_color_alpha' => 'integer',
+        'background_image_alpha' => 'integer',
         'background_parallax' => 'boolean',
     ];
 

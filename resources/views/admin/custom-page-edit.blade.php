@@ -4533,6 +4533,9 @@ function editCustomPageWidget(widgetId) {
             } else if (widgetType === 'image') {
                 if (imageContainer) imageContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'none';
+                // 다른 위젯의 옵션들 숨기기
+                if (sortOrderContainer) sortOrderContainer.style.display = 'none';
+                if (marqueeDirectionContainer) marqueeDirectionContainer.style.display = 'none';
                 
                 if (settings.image_url && document.getElementById('edit_custom_page_widget_image_preview_img')) {
                     document.getElementById('edit_custom_page_widget_image_preview_img').src = settings.image_url;

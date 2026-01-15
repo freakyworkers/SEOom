@@ -3834,18 +3834,23 @@ class AdminController extends Controller
             
             if ($request->background_type === 'color') {
                 $container->background_color = $request->background_color ?? null;
+                $container->background_color_alpha = $request->background_color_alpha ?? 100;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
                 $container->background_gradient_angle = null;
                 $container->background_image_url = null;
+                $container->background_image_alpha = 100;
             } elseif ($request->background_type === 'gradient') {
                 $container->background_color = null;
+                $container->background_color_alpha = 100;
                 $container->background_gradient_start = $request->background_gradient_start ?? null;
                 $container->background_gradient_end = $request->background_gradient_end ?? null;
                 $container->background_gradient_angle = $request->background_gradient_angle ?? 90;
                 $container->background_image_url = null;
+                $container->background_image_alpha = 100;
             } elseif ($request->background_type === 'image') {
                 $container->background_color = null;
+                $container->background_color_alpha = 100;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
                 $container->background_gradient_angle = null;
@@ -3867,17 +3872,19 @@ class AdminController extends Controller
                     $container->background_image_url = $request->background_image_url;
                 }
                 
-                // 투명도 설정 (현재 데이터베이스에 컬럼이 없으므로 주석 처리)
-                // if ($request->has('background_image_alpha')) {
-                //     $container->background_image_alpha = $request->background_image_alpha;
-                // }
+                // 투명도 설정
+                if ($request->has('background_image_alpha')) {
+                    $container->background_image_alpha = $request->background_image_alpha;
+                }
             } else {
                 // none
                 $container->background_color = null;
+                $container->background_color_alpha = 100;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
                 $container->background_gradient_angle = null;
                 $container->background_image_url = null;
+                $container->background_image_alpha = 100;
                 $container->background_parallax = false;
             }
         }
@@ -4696,18 +4703,23 @@ class AdminController extends Controller
             
             if ($request->background_type === 'color') {
                 $container->background_color = $request->background_color ?? null;
+                $container->background_color_alpha = $request->background_color_alpha ?? 100;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
                 $container->background_gradient_angle = null;
                 $container->background_image_url = null;
+                $container->background_image_alpha = 100;
             } elseif ($request->background_type === 'gradient') {
                 $container->background_color = null;
+                $container->background_color_alpha = 100;
                 $container->background_gradient_start = $request->background_gradient_start ?? null;
                 $container->background_gradient_end = $request->background_gradient_end ?? null;
                 $container->background_gradient_angle = $request->background_gradient_angle ?? 90;
                 $container->background_image_url = null;
+                $container->background_image_alpha = 100;
             } elseif ($request->background_type === 'image') {
                 $container->background_color = null;
+                $container->background_color_alpha = 100;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
                 $container->background_gradient_angle = null;
@@ -4728,13 +4740,20 @@ class AdminController extends Controller
                 } elseif ($request->has('background_image_url')) {
                     $container->background_image_url = $request->background_image_url;
                 }
+                
+                // 투명도 설정
+                if ($request->has('background_image_alpha')) {
+                    $container->background_image_alpha = $request->background_image_alpha;
+                }
             } else {
                 // none
                 $container->background_color = null;
+                $container->background_color_alpha = 100;
                 $container->background_gradient_start = null;
                 $container->background_gradient_end = null;
                 $container->background_gradient_angle = null;
                 $container->background_image_url = null;
+                $container->background_image_alpha = 100;
                 $container->background_parallax = false;
             }
         }

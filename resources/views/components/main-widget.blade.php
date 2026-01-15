@@ -893,16 +893,17 @@
         // 이미지 위젯도 같은 높이를 가지도록 flex 적용 및 세로 정렬 추가
         $imageWidgetStyle = 'display: flex; flex-direction: column; flex: 1; justify-content: ' . $imageJustifyContent . ';';
         
-        // 상단/하단 마진 적용
+        // 상단/하단 마진 적용 - 마지막 위젯일 경우 하단 마진 제거
         if ($imageMarginTop > 0) {
             $imageWidgetStyle .= ' margin-top: ' . $imageMarginTop . 'px !important;';
         } else {
             $imageWidgetStyle .= ' margin-top: 0 !important;';
         }
-        if ($imageMarginBottom > 0) {
-            $imageWidgetStyle .= ' margin-bottom: ' . $imageMarginBottom . 'px !important;';
-        } else {
+        // 마지막 위젯인 경우 하단 마진 강제로 0 (컨테이너 세로 정렬을 위해)
+        if ($isLastWidget || $imageMarginBottom == 0) {
             $imageWidgetStyle .= ' margin-bottom: 0 !important;';
+        } else {
+            $imageWidgetStyle .= ' margin-bottom: ' . $imageMarginBottom . 'px !important;';
         }
         
         // 이미지 링크 및 이미지 자체의 스타일

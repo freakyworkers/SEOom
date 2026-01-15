@@ -15,7 +15,7 @@
 
 ### 1단계: 서버 접속
 ```bash
-ssh -i "C:\Users\kangd\Desktop\세움배포파일\seoom-key.pem" ubuntu@52.79.104.130
+ssh -i "C:\Users\kangd\Desktop\seoom bepo\seoom-key.pem" ubuntu@52.79.104.130
 ```
 
 ### 2단계: 프로젝트 폴더로 이동
