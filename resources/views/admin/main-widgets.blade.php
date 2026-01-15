@@ -5758,17 +5758,12 @@ function editMainWidget(widgetId) {
             const modal = new bootstrap.Modal(document.getElementById('mainWidgetSettingsModal'));
             modal.show();
             
-            // 이미지 위젯일 때 모달이 열린 후 전광판 옵션 완전히 제거
+            // 이미지 위젯일 때 전광판 옵션 HTML 요소 완전히 제거
             if (widgetType === 'image') {
-                const modalElement = document.getElementById('mainWidgetSettingsModal');
-                modalElement.addEventListener('shown.bs.modal', function hideImageWidgetOptions() {
-                    const sortOrderContainer = document.getElementById('edit_main_widget_sort_order_container');
-                    const marqueeDirectionContainer = document.getElementById('edit_main_widget_marquee_direction_container');
-                    if (sortOrderContainer) sortOrderContainer.style.cssText = 'display: none !important';
-                    if (marqueeDirectionContainer) marqueeDirectionContainer.style.cssText = 'display: none !important';
-                    // 이벤트 리스너 제거 (한 번만 실행)
-                    modalElement.removeEventListener('shown.bs.modal', hideImageWidgetOptions);
-                });
+                const sortOrderContainer = document.getElementById('edit_main_widget_sort_order_container');
+                const marqueeDirectionContainer = document.getElementById('edit_main_widget_marquee_direction_container');
+                if (sortOrderContainer) sortOrderContainer.remove();
+                if (marqueeDirectionContainer) marqueeDirectionContainer.remove();
             }
         } else {
             alert('위젯 정보를 가져오는데 실패했습니다.');
