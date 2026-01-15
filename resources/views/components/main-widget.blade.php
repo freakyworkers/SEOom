@@ -257,7 +257,7 @@
         $outerBlockStyle .= " flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column; justify-content: {$justifyContent}; margin-top: 0 !important; margin-bottom: 0 !important;";
         
         // 내용 컨테이너 스타일 (패딩 있음)
-        $contentBlockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
+        $contentBlockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$contentColor};";
         
         // 라운드 테마 적용 (이미지가 있으면 하단만, 없으면 전체)
         if ($isRoundTheme && !$isActualFullWidth) {
