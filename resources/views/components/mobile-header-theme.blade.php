@@ -2300,7 +2300,7 @@ document.addEventListener('DOMContentLoaded', function() {
 /* PC와 동일한 글래스모피즘 효과 적용 */
 .mobile-transparent-header-fixed.scrolled,
 .mobile-header-transparent-sticky.scrolled {
-    background: rgba(255, 255, 255, 0.7) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
     backdrop-filter: blur(20px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
     box-shadow: 

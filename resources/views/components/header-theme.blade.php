@@ -778,7 +778,7 @@
 <style>
 /* PC 헤더 글래스모피즘 - 라이트 모드 */
 .header-transparent-sticky.scrolled {
-    background: rgba(255, 255, 255, 0.7) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
     backdrop-filter: blur(20px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
     box-shadow: 

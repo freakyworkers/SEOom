@@ -2159,8 +2159,8 @@
         html body div.header-transparent-overlay nav.mobile-header-transparent-sticky.scrolled,
         html body div.header-transparent-overlay nav[class*="mobile-header-transparent"].scrolled,
         html body div.header-transparent-overlay .navbar[class*="mobile-header-transparent"].scrolled {
-            background: rgba(255, 255, 255, 0.7) !important;
-            background-color: rgba(255, 255, 255, 0.7) !important;
+            background: rgba(255, 255, 255, 0.25) !important;
+            background-color: rgba(255, 255, 255, 0.25) !important;
             backdrop-filter: blur(20px) saturate(180%) !important;
             -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
             box-shadow: 
