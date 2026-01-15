@@ -776,24 +776,26 @@
 
 @if($headerSticky && $headerTransparent && $isHomePage)
 <style>
+/* PC 헤더 글래스모피즘 - 라이트 모드 */
 .header-transparent-sticky.scrolled {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
-    backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
-    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
     box-shadow: 
-        0 8px 32px 0 rgba(0, 0, 0, 0.15),
-        0 4px 16px 0 rgba(0, 0, 0, 0.08),
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
-        inset 0 -1px 1px 0 rgba(255, 255, 255, 0.1) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+        0 4px 30px rgba(0, 0, 0, 0.1),
+        0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
 /* 다크 모드일 때 글래스 모피즘 */
 [data-theme="dark"] .header-transparent-sticky.scrolled,
 .theme-dark .header-transparent-sticky.scrolled {
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2)) !important;
-    backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
-    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    box-shadow: 
+        0 4px 30px rgba(0, 0, 0, 0.3),
+        0 1px 3px rgba(0, 0, 0, 0.2) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 </style>
