@@ -1082,11 +1082,12 @@
                         </div>
                         <div class="mb-3">
                             <label for="edit_custom_page_widget_block_title" class="form-label">제목</label>
-                            <input type="text" 
-                                   class="form-control" 
-                                   id="edit_custom_page_widget_block_title" 
-                                   name="block_title" 
-                                   placeholder="제목을 입력하세요">
+                            <textarea class="form-control" 
+                                      id="edit_custom_page_widget_block_title" 
+                                      name="block_title" 
+                                      rows="2"
+                                      placeholder="제목을 입력하세요 (엔터로 줄바꿈)"></textarea>
+                            <small class="text-muted">엔터 키로 줄바꿈이 가능합니다.</small>
                         </div>
                         <div class="mb-3">
                             <label for="edit_custom_page_widget_block_content" class="form-label">내용</label>
@@ -1195,11 +1196,19 @@
                             <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_custom_page_widget_block_font_color" class="form-label">폰트 컬러</label>
+                            <label for="edit_custom_page_widget_block_title_color" class="form-label">제목 컬러</label>
                             <input type="color" 
                                    class="form-control form-control-color" 
-                                   id="edit_custom_page_widget_block_font_color" 
-                                   name="block_font_color" 
+                                   id="edit_custom_page_widget_block_title_color" 
+                                   name="block_title_color" 
+                                   value="#ffffff">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_custom_page_widget_block_content_color" class="form-label">내용 컬러</label>
+                            <input type="color" 
+                                   class="form-control form-control-color" 
+                                   id="edit_custom_page_widget_block_content_color" 
+                                   name="block_content_color" 
                                    value="#ffffff">
                         </div>
                         <div class="mb-3" id="edit_custom_page_widget_block_image_container" style="display: none;">
@@ -3532,7 +3541,8 @@ async function addCustomPageWidget() {
         const buttonTopMargin = formData.get('block_button_top_margin');
         const blockLink = formData.get('block_link');
         const openNewTab = document.getElementById('widget_block_open_new_tab')?.checked || false;
-        const fontColor = formData.get('block_font_color') || '#ffffff';
+        const titleColor = formData.get('block_title_color') || '#ffffff';
+        const contentColor = formData.get('block_content_color') || '#ffffff';
         const titleFontSize = formData.get('block_title_font_size') || '16';
         const contentFontSize = formData.get('block_content_font_size') || '14';
         
@@ -3624,7 +3634,8 @@ async function addCustomPageWidget() {
         }
         settings.text_align = textAlign;
         settings.background_type = backgroundType;
-        settings.font_color = fontColor;
+        settings.title_color = titleColor;
+        settings.content_color = contentColor;
         settings.title_font_size = titleFontSize;
         settings.content_font_size = contentFontSize;
         settings.buttons = buttons;
@@ -3702,7 +3713,8 @@ async function addCustomPageWidget() {
             const buttonTopMargin = buttonTopMarginVal !== '' && buttonTopMarginVal !== null && buttonTopMarginVal !== undefined ? buttonTopMarginVal : '12';
             const link = item.querySelector('.block-slide-link')?.value || '';
             const openNewTab = item.querySelector('.block-slide-open-new-tab')?.checked || false;
-            const fontColor = item.querySelector('.block-slide-font-color')?.value || '#ffffff';
+            const titleColor = item.querySelector('.block-slide-title-color')?.value || '#ffffff';
+            const contentColor = item.querySelector('.block-slide-content-color')?.value || '#ffffff';
             const titleFontSize = item.querySelector('.block-slide-title-font-size')?.value || '16';
             const contentFontSize = item.querySelector('.block-slide-content-font-size')?.value || '14';
             // 버튼 데이터 수집
@@ -3776,7 +3788,8 @@ async function addCustomPageWidget() {
                 button_top_margin: parseInt(buttonTopMargin),
                 link: link,
                 open_new_tab: openNewTab,
-                font_color: fontColor,
+                title_color: titleColor,
+                content_color: contentColor,
                 title_font_size: titleFontSize,
                 content_font_size: contentFontSize,
                 buttons: buttons
@@ -4550,8 +4563,11 @@ function editCustomPageWidget(widgetId) {
                     }
                 }
                 
-                if (document.getElementById('edit_custom_page_widget_block_font_color')) {
-                    document.getElementById('edit_custom_page_widget_block_font_color').value = settings.font_color || '#ffffff';
+                if (document.getElementById('edit_custom_page_widget_block_title_color')) {
+                    document.getElementById('edit_custom_page_widget_block_title_color').value = settings.title_color || settings.font_color || '#ffffff';
+                }
+                if (document.getElementById('edit_custom_page_widget_block_content_color')) {
+                    document.getElementById('edit_custom_page_widget_block_content_color').value = settings.content_color || settings.font_color || '#ffffff';
                 }
                 if (document.getElementById('edit_custom_page_widget_block_title_font_size')) {
                     let titleSize = settings.title_font_size || '16';
@@ -4591,10 +4607,6 @@ function editCustomPageWidget(widgetId) {
                 }
                 if (document.getElementById('edit_custom_page_widget_block_open_new_tab')) {
                     document.getElementById('edit_custom_page_widget_block_open_new_tab').checked = settings.open_new_tab || false;
-                }
-                
-                if (document.getElementById('edit_custom_page_widget_block_font_color')) {
-                    document.getElementById('edit_custom_page_widget_block_font_color').value = settings.font_color || '#ffffff';
                 }
                 
                 // 버튼 관리 기능 로드
@@ -5150,7 +5162,7 @@ function addBlockSlideItem() {
     body.className = 'card-body';
     body.id = `block_slide_item_${itemIndex}_body`;
     body.innerHTML = `
-        <div class="mb-3"><label class="form-label">제목</label><input type="text" class="form-control block-slide-title" name="block_slide[${itemIndex}][title]" placeholder="제목을 입력하세요"></div>
+        <div class="mb-3"><label class="form-label">제목</label><textarea class="form-control block-slide-title" name="block_slide[${itemIndex}][title]" rows="2" placeholder="제목을 입력하세요 (엔터로 줄바꿈)"></textarea><small class="text-muted">엔터 키로 줄바꿈이 가능합니다.</small></div>
         <div class="mb-3"><label class="form-label">내용</label><textarea class="form-control block-slide-content" name="block_slide[${itemIndex}][content]" rows="3" placeholder="내용을 입력하세요"></textarea></div>
         <div class="mb-3"><label class="form-label">텍스트 정렬</label>
             <div class="btn-group w-100" role="group">
@@ -5223,8 +5235,11 @@ function addBlockSlideItem() {
             </div>
             <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
         </div>
-        <div class="mb-3"><label class="form-label">폰트 컬러</label>
-            <input type="color" class="form-control form-control-color block-slide-font-color" name="block_slide[${itemIndex}][font_color]" value="#ffffff">
+        <div class="mb-3"><label class="form-label">제목 컬러</label>
+            <input type="color" class="form-control form-control-color block-slide-title-color" name="block_slide[${itemIndex}][title_color]" value="#ffffff">
+        </div>
+        <div class="mb-3"><label class="form-label">내용 컬러</label>
+            <input type="color" class="form-control form-control-color block-slide-content-color" name="block_slide[${itemIndex}][content_color]" value="#ffffff">
         </div>
         <div class="mb-3 block-slide-image-container" id="block_slide_${itemIndex}_image_container" style="display: none;">
             <label class="form-label">배경 이미지</label>
@@ -6181,7 +6196,8 @@ function saveCustomPageWidgetSettings() {
         const titleContentGap = document.getElementById('edit_custom_page_widget_block_title_content_gap')?.value;
         const blockLink = document.getElementById('edit_custom_page_widget_block_link')?.value;
         const openNewTab = document.getElementById('edit_custom_page_widget_block_open_new_tab')?.checked;
-        const fontColor = document.getElementById('edit_custom_page_widget_block_font_color')?.value || '#ffffff';
+        const titleColor = document.getElementById('edit_custom_page_widget_block_title_color')?.value || '#ffffff';
+        const contentColor = document.getElementById('edit_custom_page_widget_block_content_color')?.value || '#ffffff';
         const titleFontSize = document.getElementById('edit_custom_page_widget_block_title_font_size')?.value || '16';
         const contentFontSize = document.getElementById('edit_custom_page_widget_block_content_font_size')?.value || '14';
         const buttonTopMargin = document.getElementById('edit_custom_page_widget_block_button_top_margin')?.value;
@@ -6251,7 +6267,8 @@ function saveCustomPageWidgetSettings() {
         }
         settings.text_align = textAlign;
         settings.background_type = backgroundType;
-        settings.font_color = fontColor;
+        settings.title_color = titleColor;
+        settings.content_color = contentColor;
         settings.title_font_size = titleFontSize;
         settings.content_font_size = contentFontSize;
         settings.buttons = buttons;
@@ -6326,7 +6343,8 @@ function saveCustomPageWidgetSettings() {
             const buttonTopMarginInput = item.querySelector('.edit-custom-page-block-slide-button-top-margin');
             const linkInput = item.querySelector('.edit-custom-page-block-slide-link');
             const openNewTabCheckbox = item.querySelector('.edit-custom-page-block-slide-open-new-tab');
-            const fontColorInput = item.querySelector('.edit-custom-page-block-slide-font-color');
+            const titleColorInput = item.querySelector('.edit-custom-page-block-slide-title-color');
+            const contentColorInput = item.querySelector('.edit-custom-page-block-slide-content-color');
             const titleFontSizeInput = item.querySelector('.edit-custom-page-block-slide-title-font-size');
             const contentFontSizeInput = item.querySelector('.edit-custom-page-block-slide-content-font-size');
             // 버튼 데이터 수집
@@ -6400,7 +6418,8 @@ function saveCustomPageWidgetSettings() {
                 button_top_margin: buttonTopMarginInput ? parseInt(buttonTopMarginInput.value) : 12,
                 link: linkInput ? linkInput.value : '',
                 open_new_tab: openNewTabCheckbox ? openNewTabCheckbox.checked : false,
-                font_color: fontColorInput ? fontColorInput.value : '#ffffff',
+                title_color: titleColorInput ? titleColorInput.value : '#ffffff',
+                content_color: contentColorInput ? contentColorInput.value : '#ffffff',
                 title_font_size: titleFontSizeInput ? titleFontSizeInput.value : '16',
                 content_font_size: contentFontSizeInput ? contentFontSizeInput.value : '14',
                 buttons: buttons
@@ -6791,11 +6810,11 @@ function addEditMainBlockSlideItem(blockData = null) {
     body.innerHTML = `
         <div class="mb-3">
             <label class="form-label">제목</label>
-            <input type="text" 
-                   class="form-control edit-custom-page-block-slide-title" 
-                   name="edit_custom_page_block_slide[${itemIndex}][title]" 
-                   placeholder="제목을 입력하세요"
-                   value="${blockData ? (blockData.title || '') : ''}">
+            <textarea class="form-control edit-custom-page-block-slide-title" 
+                      name="edit_custom_page_block_slide[${itemIndex}][title]" 
+                      rows="2"
+                      placeholder="제목을 입력하세요 (엔터로 줄바꿈)">${blockData ? (blockData.title || '') : ''}</textarea>
+            <small class="text-muted">엔터 키로 줄바꿈이 가능합니다.</small>
         </div>
         <div class="mb-3">
             <label class="form-label">내용</label>
@@ -6900,11 +6919,18 @@ function addEditMainBlockSlideItem(blockData = null) {
             <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
         </div>
         <div class="mb-3">
-            <label class="form-label">폰트 컬러</label>
+            <label class="form-label">제목 컬러</label>
             <input type="color" 
-                   class="form-control form-control-color edit-custom-page-block-slide-font-color" 
-                   name="edit_custom_page_block_slide[${itemIndex}][font_color]" 
-                   value="${blockData ? (blockData.font_color || '#ffffff') : '#ffffff'}">
+                   class="form-control form-control-color edit-custom-page-block-slide-title-color" 
+                   name="edit_custom_page_block_slide[${itemIndex}][title_color]" 
+                   value="${blockData ? (blockData.title_color || blockData.font_color || '#ffffff') : '#ffffff'}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">내용 컬러</label>
+            <input type="color" 
+                   class="form-control form-control-color edit-custom-page-block-slide-content-color" 
+                   name="edit_custom_page_block_slide[${itemIndex}][content_color]" 
+                   value="${blockData ? (blockData.content_color || blockData.font_color || '#ffffff') : '#ffffff'}">
         </div>
         <div class="mb-3 edit-custom-page-block-slide-image-container" id="edit_custom_page_block_slide_${itemIndex}_image_container" style="${!blockData || blockData.background_type !== 'image' ? 'display: none;' : ''}">
             <label class="form-label">배경 이미지</label>

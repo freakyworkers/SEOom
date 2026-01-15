@@ -276,11 +276,12 @@
     </div>
     <div class="mb-3">
         <label for="widget_block_title" class="form-label">제목</label>
-        <input type="text" 
-               class="form-control" 
-               id="widget_block_title" 
-               name="block_title" 
-               placeholder="제목을 입력하세요">
+        <textarea class="form-control" 
+                  id="widget_block_title" 
+                  name="block_title" 
+                  rows="2"
+                  placeholder="제목을 입력하세요 (엔터로 줄바꿈)"></textarea>
+        <small class="text-muted">엔터 키로 줄바꿈이 가능합니다.</small>
     </div>
     <div class="mb-3">
         <label for="widget_block_content" class="form-label">내용</label>
@@ -375,11 +376,19 @@
         <small class="text-muted">미리보기를 클릭하여 그라데이션을 설정하세요</small>
     </div>
     <div class="mb-3">
-        <label for="widget_block_font_color" class="form-label">폰트 컬러</label>
+        <label for="widget_block_title_color" class="form-label">제목 컬러</label>
         <input type="color" 
                class="form-control form-control-color" 
-               id="widget_block_font_color" 
-               name="block_font_color" 
+               id="widget_block_title_color" 
+               name="block_title_color" 
+               value="#ffffff">
+    </div>
+    <div class="mb-3">
+        <label for="widget_block_content_color" class="form-label">내용 컬러</label>
+        <input type="color" 
+               class="form-control form-control-color" 
+               id="widget_block_content_color" 
+               name="block_content_color" 
                value="#ffffff">
     </div>
     <div class="mb-3" id="widget_block_image_container" style="display: none;">

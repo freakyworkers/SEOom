@@ -141,7 +141,9 @@
         $titleContentGap = $blockSettings['title_content_gap'] ?? 8;
         $link = $blockSettings['link'] ?? '';
         $openNewTab = $blockSettings['open_new_tab'] ?? false;
-        $fontColor = $blockSettings['font_color'] ?? '#ffffff';
+        // 제목/내용 컬러 분리 (하위 호환성: font_color도 지원)
+        $titleColor = $blockSettings['title_color'] ?? $blockSettings['font_color'] ?? '#ffffff';
+        $contentColor = $blockSettings['content_color'] ?? $blockSettings['font_color'] ?? '#ffffff';
         $titleFontSize = $blockSettings['title_font_size'] ?? '16';
         $contentFontSize = $blockSettings['content_font_size'] ?? '14';
         // 반응형 폰트 사이즈 계산 - clamp(최소, 선호, 최대)
@@ -175,7 +177,8 @@
         $hasButtons = !empty($buttons);
         
         // 다크모드에서 텍스트 색상 조정
-        $fontColor = darkModeTextColor($fontColor, $isDark);
+        $titleColor = darkModeTextColor($titleColor, $isDark);
+        $contentColor = darkModeTextColor($contentColor, $isDark);
         
         // 이미지 패딩이 있는지 확인 (하나라도 0이 아니면 패딩 있음)
         $hasImagePadding = $enableImage && $blockImageUrl && ($blockImagePaddingTop > 0 || $blockImagePaddingBottom > 0 || $blockImagePaddingLeft > 0 || $blockImagePaddingRight > 0);
@@ -319,14 +322,14 @@
         <div style="{{ $contentBlockStyle }}">
         @if($link && !$hasButtons)
             <a href="{{ $link }}" 
-               style="color: {{ $fontColor }}; text-decoration: none; display: block;"
+               style="text-decoration: none; display: block;"
                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
         @endif
         @if($blockTitle)
-            <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }}; margin-top: {{ ($enableImage && $blockImageUrl) ? $titleContentGap : 0 }}px; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
+            <h4 style="color: {{ $titleColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }}; margin-top: {{ ($enableImage && $blockImageUrl) ? $titleContentGap : 0 }}px; margin-bottom: {{ $titleContentGap }}px;">{!! nl2br(e($blockTitle)) !!}</h4>
         @endif
         @if($blockContent)
-            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
+            <p class="mb-0" style="color: {{ $contentColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
         @endif
         @if($link && !$hasButtons)
             </a>
@@ -469,7 +472,9 @@
                         $titleContentGap = $block['title_content_gap'] ?? 8;
                         $link = $block['link'] ?? '';
                         $openNewTab = $block['open_new_tab'] ?? false;
-                        $fontColor = $block['font_color'] ?? '#ffffff';
+                        // 제목/내용 컬러 분리 (하위 호환성: font_color도 지원)
+                        $titleColor = $block['title_color'] ?? $block['font_color'] ?? '#ffffff';
+                        $contentColor = $block['content_color'] ?? $block['font_color'] ?? '#ffffff';
                         $titleFontSize = $block['title_font_size'] ?? '16';
                         $contentFontSize = $block['content_font_size'] ?? '14';
                         // 반응형 폰트 사이즈 계산
@@ -495,7 +500,7 @@
                         $hasButtons = !empty($buttons);
                         
                         // 스타일 생성
-                        $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign}; color: {$fontColor};";
+                        $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingBottom}px; padding-left: {$paddingLeft}px; padding-right: {$paddingRight}px; text-align: {$textAlign};";
                         
                         if ($backgroundType === 'color') {
                             // 투명도 적용
@@ -541,14 +546,14 @@
                     <div class="block-slide-item" style="{{ $blockStyle }}" data-index="{{ $index }}">
                         @if($link && !$hasButtons)
                             <a href="{{ $link }}" 
-                               style="color: {{ $fontColor }}; text-decoration: none; display: flex; flex-direction: column; flex: 1; height: 100%;"
+                               style="text-decoration: none; display: flex; flex-direction: column; flex: 1; height: 100%;"
                                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
                         @endif
                         @if($blockTitle)
-                            <h4 style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }}; margin-bottom: {{ $titleContentGap }}px;">{{ $blockTitle }}</h4>
+                            <h4 style="color: {{ $titleColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }}; margin-bottom: {{ $titleContentGap }}px;">{!! nl2br(e($blockTitle)) !!}</h4>
                         @endif
                         @if($blockContent)
-                            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
+                            <p class="mb-0" style="color: {{ $contentColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
                         @endif
                         @if($link && !$hasButtons)
                             </a>
@@ -666,10 +671,12 @@
                         $paddingLeft = $block['padding_left'] ?? 20;
                         $link = $block['link'] ?? '';
                         $openNewTab = $block['open_new_tab'] ?? false;
-                        $fontColor = $block['font_color'] ?? '#ffffff';
+                        // 제목/내용 컬러 분리 (하위 호환성: font_color도 지원)
+                        $titleColor = $block['title_color'] ?? $block['font_color'] ?? '#ffffff';
+                        $contentColor = $block['content_color'] ?? $block['font_color'] ?? '#ffffff';
                         
                         // 스타일 생성
-                        $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingTop}px; padding-left: {$paddingLeft}px; padding-right: {$paddingLeft}px; text-align: {$textAlign}; color: {$fontColor};";
+                        $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingTop}px; padding-left: {$paddingLeft}px; padding-right: {$paddingLeft}px; text-align: {$textAlign};";
                         
                         if ($backgroundType === 'color') {
                             // 투명도 적용
@@ -714,14 +721,14 @@
                     <div class="block-slide-item block-slide-item-clone" style="{{ $blockStyle }}" data-index="{{ $index }}">
                         @if($link && !$showButton)
                             <a href="{{ $link }}" 
-                               style="color: {{ $fontColor }}; text-decoration: none; display: block;"
+                               style="text-decoration: none; display: block;"
                                @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
                         @endif
                         @if($blockTitle)
-                            <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }};">{{ $blockTitle }}</h4>
+                            <h4 class="mb-2" style="color: {{ $titleColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }};">{!! nl2br(e($blockTitle)) !!}</h4>
                         @endif
                         @if($blockContent)
-                            <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
+                            <p class="mb-0" style="color: {{ $contentColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
                         @endif
                         @if($link && !$showButton)
                             </a>
@@ -4159,7 +4166,9 @@
                     $paddingTop = $blockSettings['padding_top'] ?? 20;
                     $paddingLeft = $blockSettings['padding_left'] ?? 20;
                     $link = $blockSettings['link'] ?? '';
-                    $fontColor = $blockSettings['font_color'] ?? '#ffffff';
+                    // 제목/내용 컬러 분리 (하위 호환성: font_color도 지원)
+                    $titleColor = $blockSettings['title_color'] ?? $blockSettings['font_color'] ?? '#ffffff';
+                    $contentColor = $blockSettings['content_color'] ?? $blockSettings['font_color'] ?? '#ffffff';
                     $titleFontSize = $blockSettings['title_font_size'] ?? '16';
                     $contentFontSize = $blockSettings['content_font_size'] ?? '14';
                     // 반응형 폰트 사이즈 계산
@@ -4171,7 +4180,7 @@
         $buttonTextColor = $blockSettings['button_text_color'] ?? '#ffffff';
                     
                     // 스타일 생성
-                    $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingTop}px; padding-left: {$paddingLeft}px; padding-right: {$paddingLeft}px; text-align: {$textAlign}; color: {$fontColor};";
+                    $blockStyle = "padding-top: {$paddingTop}px; padding-bottom: {$paddingTop}px; padding-left: {$paddingLeft}px; padding-right: {$paddingLeft}px; text-align: {$textAlign};";
                     
                     if ($backgroundType === 'color') {
                         $blockStyle .= " background-color: {$backgroundColor};";
@@ -4205,14 +4214,14 @@
                         $openNewTab = $blockSettings['open_new_tab'] ?? false;
                     @endphp
                     @if($link && !$showButton)
-                        <a href="{{ $link }}" style="color: {{ $fontColor }}; text-decoration: none; display: block;"
+                        <a href="{{ $link }}" style="text-decoration: none; display: block;"
                            @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif>
                     @endif
                     @if($blockTitle)
-                        <h4 class="mb-2" style="color: {{ $fontColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }};">{{ $blockTitle }}</h4>
+                        <h4 class="mb-2" style="color: {{ $titleColor }}; font-weight: bold; font-size: {{ $responsiveTitleFontSize }};">{!! nl2br(e($blockTitle)) !!}</h4>
                     @endif
                     @if($blockContent)
-                        <p class="mb-0" style="color: {{ $fontColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
+                        <p class="mb-0" style="color: {{ $contentColor }}; font-size: {{ $responsiveContentFontSize }}; white-space: pre-wrap;">{{ $blockContent }}</p>
                     @endif
                     @if($link && !$showButton)
                         </a>
