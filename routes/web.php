@@ -1570,6 +1570,62 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             }
             return app(\App\Http\Controllers\AdminController::class)->deleteCustomPage($customPage, $request, $site);
         });
+        Route::post('/custom-pages/{customPage}/containers/store', function (Request $request, \App\Models\CustomPage $customPage) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->storeCustomPageWidgetContainer($customPage, $request, $site);
+        });
+        Route::put('/custom-pages/{customPage}/containers/{container}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidgetContainer $container) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateCustomPageWidgetContainer($customPage, $container, $request, $site);
+        });
+        Route::delete('/custom-pages/{customPage}/containers/{container}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidgetContainer $container) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->deleteCustomPageWidgetContainer($customPage, $container, $request, $site);
+        });
+        Route::post('/custom-pages/{customPage}/widgets/store', function (Request $request, \App\Models\CustomPage $customPage) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->storeCustomPageWidget($customPage, $request);
+        });
+        Route::put('/custom-pages/{customPage}/widgets/{widget}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidget $widget) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateCustomPageWidget($customPage, $widget, $request, $site);
+        });
+        Route::delete('/custom-pages/{customPage}/widgets/{widget}', function (Request $request, \App\Models\CustomPage $customPage, \App\Models\CustomPageWidget $widget) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->deleteCustomPageWidget($customPage, $widget, $request, $site);
+        });
+        Route::post('/custom-pages/{customPage}/containers/reorder', function (Request $request, \App\Models\CustomPage $customPage) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgetContainers($customPage, $request, $site);
+        });
+        Route::post('/custom-pages/{customPage}/widgets/reorder', function (Request $request, \App\Models\CustomPage $customPage) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgets($customPage, $request, $site);
+        });
         
         // Sidebar Widgets
         Route::match(['get', 'post'], '/sidebar-widgets', function (Request $request) {

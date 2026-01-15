@@ -21,16 +21,6 @@ class TestAdminReadOnly
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // 디버깅 로그
-        \Log::debug('TestAdminReadOnly', [
-            'auth_check' => Auth::check(),
-            'auth_id' => Auth::id(),
-            'is_test_admin' => session('is_test_admin'),
-            'test_admin_site_id' => session('test_admin_site_id'),
-            'method' => $request->method(),
-            'path' => $request->path(),
-        ]);
-        
         // 실제 사용자가 로그인되어 있으면 테스트 어드민 세션 무시
         // (테스트 어드민은 실제 로그인을 하지 않으므로 Auth::check()가 false)
         if (Auth::check()) {
@@ -38,7 +28,6 @@ class TestAdminReadOnly
             if (session('is_test_admin')) {
                 session()->forget(['is_test_admin', 'test_admin_site_id', 'test_admin_username']);
             }
-            \Log::debug('TestAdminReadOnly: Real user logged in, passing through');
             return $next($request);
         }
         
