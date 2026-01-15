@@ -2209,7 +2209,7 @@
             transition: all 0.3s ease;
         }
         
-        /* 스크롤 시 글래스 모피즘 효과 적용 - 순수 반투명 글래스 */
+        /* 스크롤 시 wrapper는 투명 - nav에서 글래스모피즘 효과 적용 */
         .header-transparent-sticky-overlay.scrolled {
             position: fixed !important;
             top: 0 !important;
@@ -2217,21 +2217,11 @@
             right: 0 !important;
             width: 100% !important;
             z-index: 1030 !important;
-            /* 글래스 모피즘 효과 - 라이트 모드 기본 */
-            background: rgba(255, 255, 255, 0.25) !important;
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            /* wrapper는 투명하게 - nav 자체에서 글래스모피즘 적용 */
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
         }
-        
-        /* 다크모드에서 글래스 효과 */
-        @if($themeDarkMode === 'dark')
-        .header-transparent-sticky-overlay.scrolled {
-            background: rgba(0, 0, 0, 0.25) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        @endif
         
         /* 스크롤 시 nav 배경도 투명하게 (글래스 효과는 wrapper에서 적용) */
         /* 단, navbar에 .scrolled 클래스가 있으면 navbar 자체의 글래스모피즘 스타일이 적용되도록 예외 처리 */
@@ -2255,17 +2245,12 @@
             }
             @endif
             
-            /* 모바일에서 스크롤 시 더 강한 글래스 효과 */
+            /* 모바일에서 스크롤 시 wrapper는 투명하게 - nav에서 글래스모피즘 적용 */
             .header-transparent-sticky-overlay.scrolled {
-                background: rgba(255, 255, 255, 0.35) !important;
-                backdrop-filter: blur(16px) saturate(150%);
-                -webkit-backdrop-filter: blur(16px) saturate(150%);
+                background: transparent !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
             }
-            @if($themeDarkMode === 'dark')
-            .header-transparent-sticky-overlay.scrolled {
-                background: rgba(0, 0, 0, 0.35) !important;
-            }
-            @endif
         }
         
         /* 투명헤더 + 최상단 헤더 + sticky일 때 스크롤 시 최상단 헤더 숨기기 */
