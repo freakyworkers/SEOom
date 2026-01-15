@@ -1131,14 +1131,14 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgetContainers($request, $masterSite, $customPage);
+                return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgetContainers($masterSite, $customPage, $request);
             })->name('master.admin.custom-pages.containers.reorder');
             Route::post('/custom-pages/{customPage}/widgets/reorder', function (Request $request, \App\Models\CustomPage $customPage) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgets($request, $masterSite, $customPage);
+                return app(\App\Http\Controllers\AdminController::class)->reorderCustomPageWidgets($masterSite, $customPage, $request);
             })->name('master.admin.custom-pages.widgets.reorder');
             
             // Chat Management
