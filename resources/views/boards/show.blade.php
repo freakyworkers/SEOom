@@ -1536,11 +1536,11 @@
             @if($posts->hasMorePages())
             <div class="mt-4 mb-4 text-center" id="pinterest-load-more-container">
                 <button type="button" 
-                        class="btn btn-outline-secondary px-5 py-2" 
+                        class="btn px-5 py-2" 
                         id="pinterest-load-more-btn"
                         data-page="{{ $posts->currentPage() + 1 }}"
                         data-url="{{ route('boards.loadMore', ['site' => $site->slug, 'slug' => $board->slug]) }}"
-                        style="border-radius: 50px; font-weight: 500;">
+                        style="border-radius: 50px; font-weight: 500; background-color: {{ $pointColor }}; border-color: {{ $pointColor }}; color: #fff;">
                     <span class="btn-text">더보기</span>
                     <span class="btn-loading d-none">
                         <span class="spinner-border spinner-border-sm me-1" role="status"></span>

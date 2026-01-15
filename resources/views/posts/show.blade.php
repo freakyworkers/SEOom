@@ -1869,11 +1869,95 @@
         @endif
         
         @if($posts->hasPages())
-            <div class="mt-4 mb-4">
-                {{ $posts->links('pagination::bootstrap-4', ['pointColor' => $pointColor]) }}
-            </div>
+            @if($board->type === 'pinterest')
+                {{-- 핀터레스트 타입: 더보기 버튼 --}}
+                @if($posts->hasMorePages())
+                <div class="mt-4 mb-4 text-center" id="pinterest-detail-load-more-container">
+                    <button type="button" 
+                            class="btn px-5 py-2" 
+                            id="pinterest-detail-load-more-btn"
+                            data-page="{{ $posts->currentPage() + 1 }}"
+                            data-url="{{ route('boards.loadMore', ['site' => $site->slug, 'slug' => $board->slug]) }}"
+                            style="border-radius: 50px; font-weight: 500; background-color: {{ $pointColor }}; border-color: {{ $pointColor }}; color: #fff;">
+                        <span class="btn-text">더보기</span>
+                        <span class="btn-loading d-none">
+                            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                            로딩 중...
+                        </span>
+                    </button>
+                </div>
+                @endif
+            @else
+                <div class="mt-4 mb-4">
+                    {{ $posts->links('pagination::bootstrap-4', ['pointColor' => $pointColor]) }}
+                </div>
+            @endif
         @endif
     </div>
+    
+    {{-- 핀터레스트 더보기 버튼 스크립트 --}}
+    @if($board->type === 'pinterest')
+    @push('scripts')
+    <script>
+    (function() {
+        const loadMoreBtn = document.getElementById('pinterest-detail-load-more-btn');
+        if (!loadMoreBtn) return;
+        
+        const masonryContainer = document.querySelector('.pinterest-masonry-detail');
+        if (!masonryContainer) return;
+        
+        loadMoreBtn.addEventListener('click', function() {
+            const btn = this;
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+            const currentPage = parseInt(btn.dataset.page);
+            const baseUrl = btn.dataset.url;
+            
+            // 버튼 로딩 상태
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            btnLoading.classList.remove('d-none');
+            
+            // 쿼리 파라미터
+            const urlParams = new URLSearchParams();
+            urlParams.set('page', currentPage);
+            
+            fetch(baseUrl + '?' + urlParams.toString(), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.html) {
+                    // 새 게시글 HTML 추가 (클래스명 변경)
+                    const modifiedHtml = data.html.replace(/pinterest-masonry-item/g, 'pinterest-masonry-detail-item');
+                    masonryContainer.insertAdjacentHTML('beforeend', modifiedHtml);
+                    
+                    // 다음 페이지로 업데이트
+                    btn.dataset.page = currentPage + 1;
+                    
+                    // 더 이상 페이지가 없으면 버튼 숨김
+                    if (!data.hasMorePages) {
+                        document.getElementById('pinterest-detail-load-more-container').style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error loading more posts:', error);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnLoading.classList.add('d-none');
+            });
+        });
+    })();
+    </script>
+    @endpush
+    @endif
 @endif
 @endsection
 
