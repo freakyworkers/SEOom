@@ -1003,7 +1003,7 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateMainWidgetContainer($request, $masterSite, $container);
+                return app(\App\Http\Controllers\AdminController::class)->updateMainWidgetContainer($masterSite, $container, $request);
             })->name('master.admin.main-widgets.containers.update');
             Route::delete('/main-widgets/containers/{container}', function (\App\Models\MainWidgetContainer $container) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -1489,7 +1489,7 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->updateMainWidgetContainer($request, $site, $container);
+            return app(\App\Http\Controllers\AdminController::class)->updateMainWidgetContainer($site, $container, $request);
         });
         Route::delete('/main-widgets/containers/{container}', function (Request $request, \App\Models\MainWidgetContainer $container) {
             $site = $request->attributes->get('site');
