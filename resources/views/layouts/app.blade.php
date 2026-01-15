@@ -1198,13 +1198,16 @@
         // 체크박스 값 비교 (문자열 '1' 또는 숫자 1 모두 처리)
         $showTopHeader = ($themeTopHeaderShow == '1' || $themeTopHeaderShow === '1' || $themeTopHeaderShow === 1);
         $isHeaderSticky = ($headerSticky == '1' || $headerSticky === '1' || $headerSticky === 1);
-        $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
+        // 투명헤더 기능 일시적으로 비활성화 (성능 문제로 인해)
+        // TODO: 투명헤더 코드 최적화 후 다시 활성화
+        $headerTransparent = false;
+        // $headerTransparent = $site->getSetting('header_transparent', '0') == '1';
         
         // 사이드바 설정 확인 (투명헤더는 사이드바가 없을 때만 적용 가능)
         $hasSidebar = $themeSidebar !== 'none';
-        if ($hasSidebar) {
-            $headerTransparent = false;
-        }
+        // if ($hasSidebar) {
+        //     $headerTransparent = false;
+        // }
         
         // 메인 페이지인지 확인 - 루트 경로(/)와 /site/{site} 모두 HomeController::index를 호출하므로 동일하게 처리
         $currentPath = request()->path();
