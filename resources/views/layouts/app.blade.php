@@ -2161,7 +2161,7 @@
         
         /* 스크롤 시 글래스 모피즘 효과 적용 - 헤더 배경색 기반 */
         @php
-            // 헤더 배경색을 RGBA로 변환 (85% 투명도)
+            // 헤더 배경색을 RGBA로 변환 (70% 투명도 - 글래스 효과가 더 잘 보이도록)
             $headerBgHex = $themeDarkMode === 'dark' ? ($colorDarkHeaderBg ?? '#212529') : ($colorLightHeaderBg ?? '#ffffff');
             // hex to rgb
             $headerBgHex = ltrim($headerBgHex, '#');
@@ -2171,8 +2171,9 @@
             $r = hexdec(substr($headerBgHex, 0, 2));
             $g = hexdec(substr($headerBgHex, 2, 2));
             $b = hexdec(substr($headerBgHex, 4, 2));
-            $glassBackground = "rgba($r, $g, $b, 0.85)";
-            $glassBackgroundMobile = "rgba($r, $g, $b, 0.92)";
+            // 글래스 효과를 위해 투명도를 낮춤 (0.65)
+            $glassBackground = "rgba($r, $g, $b, 0.65)";
+            $glassBackgroundMobile = "rgba($r, $g, $b, 0.75)";
         @endphp
         .header-transparent-sticky-overlay.scrolled {
             position: fixed !important;
@@ -2181,12 +2182,12 @@
             right: 0 !important;
             width: 100% !important;
             z-index: 1030 !important;
-            /* 글래스 모피즘 효과 - 사이트 헤더 배경색 사용 */
+            /* 글래스 모피즘 효과 - 뚜렷한 블러 효과 */
             background: {{ $glassBackground }} !important;
-            backdrop-filter: blur(12px) saturate(180%);
-            -webkit-backdrop-filter: blur(12px) saturate(180%);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
         }
         
         /* 스크롤 시 nav 배경도 투명하게 (글래스 효과는 wrapper에서 적용) */
@@ -2200,8 +2201,8 @@
         @media (max-width: 1199px) {
             .header-transparent-sticky-overlay.scrolled {
                 background: {{ $glassBackgroundMobile }} !important;
-                backdrop-filter: blur(10px) saturate(150%);
-                -webkit-backdrop-filter: blur(10px) saturate(150%);
+                backdrop-filter: blur(16px) saturate(150%);
+                -webkit-backdrop-filter: blur(16px) saturate(150%);
             }
         }
         
