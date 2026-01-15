@@ -4947,6 +4947,12 @@ class AdminController extends Controller
             abort(403);
         }
 
+        // Get site from custom page
+        $site = $customPage->site;
+        if (!$site) {
+            abort(404);
+        }
+
         $request->validate([
             'title' => 'nullable|string|max:255',
             'settings' => 'nullable|string',
@@ -4962,6 +4968,58 @@ class AdminController extends Controller
             } else {
                 $settings = $settingsInput;
             }
+        }
+        
+        // 블록 타입 배경 이미지 업로드 처리
+        if ($widget->type === 'block' && $request->hasFile('block_background_image_file')) {
+            $image = $request->file('block_background_image_file');
+            $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+            $result = $this->fileUploadService->upload($image, $directory);
+            $settings['background_image_url'] = asset('storage/' . $result['file_path']);
+        }
+        
+        // 블록 위 이미지 업로드 처리
+        if ($widget->type === 'block' && $request->hasFile('block_image_file')) {
+            $image = $request->file('block_image_file');
+            $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+            $result = $this->fileUploadService->upload($image, $directory);
+            $settings['block_image_url'] = asset('storage/' . $result['file_path']);
+        }
+        
+        // 블록 슬라이드 타입 이미지 업로드 처리
+        if ($widget->type === 'block_slide' && isset($settings['blocks']) && is_array($settings['blocks'])) {
+            foreach ($settings['blocks'] as $index => &$block) {
+                if (isset($block['background_type']) && $block['background_type'] === 'image') {
+                    $fileKey = "edit_block_slide.{$index}.background_image_file";
+                    if ($request->hasFile($fileKey)) {
+                        $image = $request->file($fileKey);
+                        $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+                        $result = $this->fileUploadService->upload($image, $directory);
+                        $block['background_image_url'] = asset('storage/' . $result['file_path']);
+                    }
+                }
+            }
+        }
+        
+        // 이미지 슬라이드 타입 이미지 업로드 처리
+        if ($widget->type === 'image_slide' && isset($settings['images']) && is_array($settings['images'])) {
+            foreach ($settings['images'] as $index => &$imageItem) {
+                $fileKey = "edit_image_slide.{$index}.image_file";
+                if ($request->hasFile($fileKey)) {
+                    $image = $request->file($fileKey);
+                    $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+                    $result = $this->fileUploadService->upload($image, $directory);
+                    $imageItem['image_url'] = asset('storage/' . $result['file_path']);
+                }
+            }
+        }
+        
+        // 이미지 위젯 이미지 업로드 처리
+        if ($widget->type === 'image' && $request->hasFile('image_file')) {
+            $image = $request->file('image_file');
+            $directory = 'widget-images/' . $site->id . '/' . date('Y/m');
+            $result = $this->fileUploadService->upload($image, $directory);
+            $settings['image_url'] = asset('storage/' . $result['file_path']);
         }
 
         $widget->title = $request->input('title') ?? '';
