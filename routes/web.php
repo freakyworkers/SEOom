@@ -1547,28 +1547,28 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->storeCustomPage($site, $request);
+            return app(\App\Http\Controllers\AdminController::class)->storeCustomPage($request, $site);
         });
         Route::get('/custom-pages/{customPage}/edit', function (Request $request, \App\Models\CustomPage $customPage) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->editCustomPage($site, $customPage, $request);
+            return app(\App\Http\Controllers\AdminController::class)->editCustomPage($customPage, $request, $site);
         });
         Route::put('/custom-pages/{customPage}', function (Request $request, \App\Models\CustomPage $customPage) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->updateCustomPage($request, $site, $customPage);
+            return app(\App\Http\Controllers\AdminController::class)->updateCustomPage($customPage, $request, $site);
         });
         Route::delete('/custom-pages/{customPage}', function (Request $request, \App\Models\CustomPage $customPage) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->deleteCustomPage($site, $customPage);
+            return app(\App\Http\Controllers\AdminController::class)->deleteCustomPage($customPage, $request, $site);
         });
         
         // Sidebar Widgets
