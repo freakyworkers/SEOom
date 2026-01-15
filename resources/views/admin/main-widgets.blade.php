@@ -5774,7 +5774,8 @@ function editMainWidget(widgetId) {
                     'edit_main_widget_image_slide_gap_container',
                     'edit_main_widget_image_slide_background_container',
                     'edit_main_widget_block_link_container',
-                    'edit_main_widget_countdown_dday_container'
+                    'edit_main_widget_countdown_dday_container',
+                    'edit_main_widget_block_slide_container'
                 ];
                 elementsToRemove.forEach(id => {
                     const el = document.getElementById(id);

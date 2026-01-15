@@ -4688,7 +4688,8 @@ function editCustomPageWidget(widgetId) {
                     'edit_custom_page_widget_image_slide_gap_container',
                     'edit_custom_page_widget_image_slide_background_container',
                     'edit_custom_page_widget_block_link_container',
-                    'edit_custom_page_widget_countdown_dday_container'
+                    'edit_custom_page_widget_countdown_dday_container',
+                    'edit_custom_page_widget_block_slide_container'
                 ];
                 elementsToRemove.forEach(id => {
                     const el = document.getElementById(id);
