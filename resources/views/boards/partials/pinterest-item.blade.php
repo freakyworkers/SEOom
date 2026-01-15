@@ -1,4 +1,8 @@
-<div class="pinterest-masonry-item">
+@php
+    // 위젯용 클래스명 결정
+    $itemClass = ($isWidget ?? false) ? 'pinterest-masonry-widget-item' : 'pinterest-masonry-item';
+@endphp
+<div class="{{ $itemClass }}">
     <div class="card shadow-sm" style="overflow: hidden; border-radius: 12px;">
         <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
            class="text-decoration-none text-dark">

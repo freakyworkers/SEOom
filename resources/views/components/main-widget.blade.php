@@ -2866,9 +2866,8 @@
                                                 @if($board->pinterest_show_title ?? false)
                                                     @php
                                                         $pinterestTitleAlign = $board->pinterest_title_align ?? 'left';
-                                                        $pinterestTitleBgStyle = $boardViewerNoBackground ? 'background-color: transparent;' : 'background-color: rgba(255,255,255,0.95);';
                                                     @endphp
-                                                    <div class="card-body p-2" style="{{ $pinterestTitleBgStyle }} text-align: {{ $pinterestTitleAlign }};">
+                                                    <div class="card-body p-2" style="background-color: rgba(255,255,255,0.95); text-align: {{ $pinterestTitleAlign }};">
                                                         <h6 class="card-title mb-0 small text-truncate" style="font-size: 0.85rem; line-height: 1.3;">
                                                             {{ $post->title }}
                                                         </h6>
@@ -3232,6 +3231,7 @@
                             // 쿼리 파라미터
                             const urlParams = new URLSearchParams();
                             urlParams.set('page', currentPage);
+                            urlParams.set('is_widget', '1');
                             
                             fetch(baseUrl + '?' + urlParams.toString(), {
                                 method: 'GET',

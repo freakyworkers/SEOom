@@ -280,6 +280,7 @@ class BoardController extends Controller
         $searchKeyword = $request->query('search');
         $searchType = $request->query('search_type', 'title_content');
         $perPage = $board->posts_per_page ?? 20;
+        $isWidget = $request->query('is_widget', false);
         
         // 게시글 가져오기
         $posts = $this->postService->getPostsByBoard($board->id, $perPage, false, $topicId, $site->id, $searchKeyword, $searchType);
@@ -301,6 +302,7 @@ class BoardController extends Controller
                 'pointColor' => $pointColor,
                 'showViews' => $showViews,
                 'showDatetime' => $showDatetime,
+                'isWidget' => (bool) $isWidget,
             ])->render();
         }
         
