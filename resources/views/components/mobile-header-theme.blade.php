@@ -2301,8 +2301,10 @@ document.addEventListener('DOMContentLoaded', function() {
 .mobile-transparent-header-fixed.scrolled,
 .mobile-header-transparent-sticky.scrolled {
     background: rgba(255, 255, 255, 0.25) !important;
-    backdrop-filter: blur(20px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
     box-shadow: 
         0 4px 30px rgba(0, 0, 0, 0.1),
         0 1px 3px rgba(0, 0, 0, 0.05) !important;
@@ -2376,8 +2378,11 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileHeader.classList.add('scrolled');
             // PC와 동일한 글래스모피즘 효과 인라인 적용 (투명도 25%)
             mobileHeader.style.background = 'rgba(255, 255, 255, 0.25)';
+            mobileHeader.style.setProperty('-webkit-backdrop-filter', 'blur(20px) saturate(180%)');
             mobileHeader.style.backdropFilter = 'blur(20px) saturate(180%)';
             mobileHeader.style.webkitBackdropFilter = 'blur(20px) saturate(180%)';
+            mobileHeader.style.transform = 'translateZ(0)';
+            mobileHeader.style.webkitTransform = 'translateZ(0)';
             mobileHeader.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.1)';
             // 하단 메뉴 바 숨김
             if (bottomMenu) {
