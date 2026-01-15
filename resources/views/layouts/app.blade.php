@@ -2190,8 +2190,21 @@
             background: transparent !important;
         }
         
-        /* 모바일에서도 글래스 효과 적용 */
+        /* 모바일에서 글래스 효과 적용 (스크롤 전에도 적용) */
         @media (max-width: 1199px) {
+            /* 모바일에서는 스크롤 전에도 약간의 글래스 배경 적용하여 가독성 확보 */
+            .header-transparent-sticky-overlay {
+                background: rgba(255, 255, 255, 0.15) !important;
+                backdrop-filter: blur(8px) saturate(120%);
+                -webkit-backdrop-filter: blur(8px) saturate(120%);
+            }
+            @if($themeDarkMode === 'dark')
+            .header-transparent-sticky-overlay {
+                background: rgba(0, 0, 0, 0.15) !important;
+            }
+            @endif
+            
+            /* 모바일에서 스크롤 시 더 강한 글래스 효과 */
             .header-transparent-sticky-overlay.scrolled {
                 background: rgba(255, 255, 255, 0.35) !important;
                 backdrop-filter: blur(16px) saturate(150%);
