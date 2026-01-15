@@ -2374,11 +2374,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (scrollTop > 10) {
             // 스크롤 시 글래스모피즘 배경 적용 (인라인 스타일로 직접 설정)
             mobileHeader.classList.add('scrolled');
-            // PC와 동일한 글래스모피즘 효과 인라인 적용
-            mobileHeader.style.background = 'rgba(255, 255, 255, 0.7)';
+            // PC와 동일한 글래스모피즘 효과 인라인 적용 (투명도 25%)
+            mobileHeader.style.background = 'rgba(255, 255, 255, 0.25)';
             mobileHeader.style.backdropFilter = 'blur(20px) saturate(180%)';
             mobileHeader.style.webkitBackdropFilter = 'blur(20px) saturate(180%)';
-            mobileHeader.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05)';
+            mobileHeader.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.1)';
             // 하단 메뉴 바 숨김
             if (bottomMenu) {
                 bottomMenu.classList.add('scrolled-hide');

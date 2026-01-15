@@ -815,11 +815,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (headerWrapper) {
                     headerWrapper.classList.add('scrolled');
                 }
-                // 글래스모피즘 효과 인라인 적용
-                header.style.background = 'rgba(255, 255, 255, 0.7)';
+                // 글래스모피즘 효과 인라인 적용 (투명도 25%)
+                header.style.background = 'rgba(255, 255, 255, 0.25)';
                 header.style.backdropFilter = 'blur(20px) saturate(180%)';
                 header.style.webkitBackdropFilter = 'blur(20px) saturate(180%)';
-                header.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05)';
+                header.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.1)';
                 header.style.color = textColor;
                 header.style.transition = 'all 0.3s ease';
                 
