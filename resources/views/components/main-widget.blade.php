@@ -2672,7 +2672,7 @@
                         // 배경색 없음 설정 확인
                         $boardViewerNoBackground = $widgetSettings['no_background'] ?? false;
                         $boardViewerShadowClass = $boardViewerNoBackground ? '' : 'shadow-sm';
-                        $boardViewerBgClass = $boardViewerNoBackground ? '' : 'bg-white';
+                        $boardViewerBgClass = $boardViewerNoBackground ? 'bg-transparent' : 'bg-white';
                     @endphp
                     {{-- 게시판 헤더 이미지 --}}
                     @if($board->header_image_path)
