@@ -2361,62 +2361,62 @@
         
         document.addEventListener('DOMContentLoaded', function() {
             const headerWrapper = document.querySelector('.header-transparent-overlay');
-            if (!headerWrapper) return;
             
-            // 헤더 내부의 nav 요소들도 투명하게 설정 (재확인)
-            const navElements = headerWrapper.querySelectorAll('nav, .navbar, .pc-header');
-            navElements.forEach(nav => {
-                // 인라인 스타일을 직접 수정하여 CSS보다 우선순위 높게
-                nav.style.cssText += 'background-color: transparent !important; background: none !important; background-image: none !important;';
-                // CSS 변수도 오버라이드
-                nav.style.setProperty('--header-bg-color', 'transparent', 'important');
-            });
-            
-            const firstContainer = document.querySelector('.main-widget-container')?.closest('div[class*="container"], div[class*="container-fluid"]');
-            
-            if (firstContainer) {
-                // 헤더 높이 계산
-                const headerHeight = headerWrapper.offsetHeight;
+            if (headerWrapper) {
+                // 헤더 내부의 nav 요소들도 투명하게 설정 (재확인)
+                const navElements = headerWrapper.querySelectorAll('nav, .navbar, .pc-header');
+                navElements.forEach(nav => {
+                    // 인라인 스타일을 직접 수정하여 CSS보다 우선순위 높게
+                    nav.style.cssText += 'background-color: transparent !important; background: none !important; background-image: none !important;';
+                    // CSS 변수도 오버라이드
+                    nav.style.setProperty('--header-bg-color', 'transparent', 'important');
+                });
                 
-                // 투명헤더일 때는 첫 번째 컨테이너의 상단 마진과 패딩 제거 (헤더가 오버레이되므로)
-                firstContainer.style.setProperty('margin-top', '0', 'important');
-                firstContainer.style.setProperty('padding-top', '0', 'important');
-                firstContainer.classList.add('first-container-with-transparent-header');
+                const firstContainer = document.querySelector('.main-widget-container')?.closest('div[class*="container"], div[class*="container-fluid"]');
                 
-                // row 요소도 확인하여 패딩 제거
-                const rowElement = document.querySelector('.main-widget-container');
-                if (rowElement && rowElement.closest('div[class*="container"], div[class*="container-fluid"]') === firstContainer) {
-                    rowElement.style.setProperty('margin-top', '0', 'important');
-                    rowElement.style.setProperty('padding-top', '0', 'important');
-                    rowElement.classList.add('first-container-with-transparent-header');
+                if (firstContainer) {
+                    // 헤더 높이 계산
+                    const headerHeight = headerWrapper.offsetHeight;
+                    
+                    // 투명헤더일 때는 첫 번째 컨테이너의 상단 마진과 패딩 제거 (헤더가 오버레이되므로)
+                    firstContainer.style.setProperty('margin-top', '0', 'important');
+                    firstContainer.style.setProperty('padding-top', '0', 'important');
+                    firstContainer.classList.add('first-container-with-transparent-header');
+                    
+                    // row 요소도 확인하여 패딩 제거
+                    const rowElement = document.querySelector('.main-widget-container');
+                    if (rowElement && rowElement.closest('div[class*="container"], div[class*="container-fluid"]') === firstContainer) {
+                        rowElement.style.setProperty('margin-top', '0', 'important');
+                        rowElement.style.setProperty('padding-top', '0', 'important');
+                        rowElement.classList.add('first-container-with-transparent-header');
+                    }
                 }
             }
-                
-                // sticky 헤더인 경우 스크롤 이벤트 처리
-                const stickyOverlay = document.querySelector('.header-transparent-sticky-overlay');
-                const topHeaderBar = document.querySelector('.top-header-bar');
-                if (stickyOverlay) {
-                    let lastScrollTop = 0;
-                    window.addEventListener('scroll', function() {
-                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                        
-                        if (scrollTop > 50) {
-                            stickyOverlay.classList.add('scrolled');
-                            // 스크롤 시 최상단 헤더 숨기기
-                            if (topHeaderBar) {
-                                topHeaderBar.classList.add('transparent-header-scrolled');
-                            }
-                        } else {
-                            stickyOverlay.classList.remove('scrolled');
-                            // 최상단 헤더 다시 표시
-                            if (topHeaderBar) {
-                                topHeaderBar.classList.remove('transparent-header-scrolled');
-                            }
+            
+            // sticky 헤더인 경우 스크롤 이벤트 처리 (headerWrapper와 독립적으로 실행)
+            const stickyOverlay = document.querySelector('.header-transparent-sticky-overlay');
+            const topHeaderBar = document.querySelector('.top-header-bar');
+            if (stickyOverlay) {
+                let lastScrollTop = 0;
+                window.addEventListener('scroll', function() {
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    
+                    if (scrollTop > 50) {
+                        stickyOverlay.classList.add('scrolled');
+                        // 스크롤 시 최상단 헤더 숨기기
+                        if (topHeaderBar) {
+                            topHeaderBar.classList.add('transparent-header-scrolled');
                         }
-                        
-                        lastScrollTop = scrollTop;
-                    });
-                }
+                    } else {
+                        stickyOverlay.classList.remove('scrolled');
+                        // 최상단 헤더 다시 표시
+                        if (topHeaderBar) {
+                            topHeaderBar.classList.remove('transparent-header-scrolled');
+                        }
+                    }
+                    
+                    lastScrollTop = scrollTop;
+                });
             }
         });
     </script>
