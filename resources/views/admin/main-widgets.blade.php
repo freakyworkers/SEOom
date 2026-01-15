@@ -5758,12 +5758,19 @@ function editMainWidget(widgetId) {
             const modal = new bootstrap.Modal(document.getElementById('mainWidgetSettingsModal'));
             modal.show();
             
-            // 이미지 위젯일 때 전광판 옵션 HTML 요소 완전히 제거
+            // 이미지 위젯일 때 불필요한 옵션 HTML 요소 완전히 제거
             if (widgetType === 'image') {
-                const sortOrderContainer = document.getElementById('edit_main_widget_sort_order_container');
-                const marqueeDirectionContainer = document.getElementById('edit_main_widget_marquee_direction_container');
-                if (sortOrderContainer) sortOrderContainer.remove();
-                if (marqueeDirectionContainer) marqueeDirectionContainer.remove();
+                const elementsToRemove = [
+                    'edit_main_widget_sort_order_container',
+                    'edit_main_widget_marquee_direction_container',
+                    'edit_main_widget_gallery_container',
+                    'edit_main_widget_gallery_display_type_container',
+                    'edit_main_widget_image_slide_speed_container'
+                ];
+                elementsToRemove.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.remove();
+                });
             }
         } else {
             alert('위젯 정보를 가져오는데 실패했습니다.');
