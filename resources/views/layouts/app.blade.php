@@ -2159,22 +2159,7 @@
             transition: all 0.3s ease;
         }
         
-        /* 스크롤 시 글래스 모피즘 효과 적용 - 헤더 배경색 기반 */
-        @php
-            // 헤더 배경색을 RGBA로 변환 (70% 투명도 - 글래스 효과가 더 잘 보이도록)
-            $headerBgHex = $themeDarkMode === 'dark' ? ($colorDarkHeaderBg ?? '#212529') : ($colorLightHeaderBg ?? '#ffffff');
-            // hex to rgb
-            $headerBgHex = ltrim($headerBgHex, '#');
-            if (strlen($headerBgHex) == 3) {
-                $headerBgHex = $headerBgHex[0].$headerBgHex[0].$headerBgHex[1].$headerBgHex[1].$headerBgHex[2].$headerBgHex[2];
-            }
-            $r = hexdec(substr($headerBgHex, 0, 2));
-            $g = hexdec(substr($headerBgHex, 2, 2));
-            $b = hexdec(substr($headerBgHex, 4, 2));
-            // 글래스 효과를 위해 투명도를 낮춤 (0.65)
-            $glassBackground = "rgba($r, $g, $b, 0.65)";
-            $glassBackgroundMobile = "rgba($r, $g, $b, 0.75)";
-        @endphp
+        /* 스크롤 시 글래스 모피즘 효과 적용 - 순수 반투명 글래스 */
         .header-transparent-sticky-overlay.scrolled {
             position: fixed !important;
             top: 0 !important;
@@ -2182,13 +2167,21 @@
             right: 0 !important;
             width: 100% !important;
             z-index: 1030 !important;
-            /* 글래스 모피즘 효과 - 뚜렷한 블러 효과 */
-            background: {{ $glassBackground }} !important;
+            /* 글래스 모피즘 효과 - 라이트 모드 기본 */
+            background: rgba(255, 255, 255, 0.25) !important;
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
+        
+        /* 다크모드에서 글래스 효과 */
+        @if($themeDarkMode === 'dark')
+        .header-transparent-sticky-overlay.scrolled {
+            background: rgba(0, 0, 0, 0.25) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        @endif
         
         /* 스크롤 시 nav 배경도 투명하게 (글래스 효과는 wrapper에서 적용) */
         .header-transparent-sticky-overlay.scrolled .navbar,
@@ -2200,10 +2193,15 @@
         /* 모바일에서도 글래스 효과 적용 */
         @media (max-width: 1199px) {
             .header-transparent-sticky-overlay.scrolled {
-                background: {{ $glassBackgroundMobile }} !important;
+                background: rgba(255, 255, 255, 0.35) !important;
                 backdrop-filter: blur(16px) saturate(150%);
                 -webkit-backdrop-filter: blur(16px) saturate(150%);
             }
+            @if($themeDarkMode === 'dark')
+            .header-transparent-sticky-overlay.scrolled {
+                background: rgba(0, 0, 0, 0.35) !important;
+            }
+            @endif
         }
         
         /* 투명헤더 + 최상단 헤더 + sticky일 때 스크롤 시 최상단 헤더 숨기기 */
