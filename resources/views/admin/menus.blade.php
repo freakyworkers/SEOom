@@ -120,21 +120,6 @@
                     <small class="text-muted d-none" id="new_link_target_anchor_help">컨테이너에 설정한 앵커 ID를 선택하세요. 클릭 시 해당 컨테이너로 스크롤됩니다.</small>
                     <div class="link-target-placeholder" style="display: none;"></div>
                 </div>
-                <div class="col-md-3">
-                    <label for="new_font_color" class="form-label">폰트 컬러 <small class="text-muted">(선택)</small></label>
-                    <div class="input-group">
-                        <input type="color" class="form-control form-control-color" id="new_font_color_picker" value="{{ $globalMenuFontColor ?? '#000000' }}" title="색상 선택">
-                        <input type="text" class="form-control" id="new_font_color" placeholder="{{ $globalMenuFontColor ?? '기본값' }}" style="max-width: 120px;">
-                        <button type="button" class="btn btn-outline-secondary" id="new_font_color_reset" title="기본값으로 초기화">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                    </div>
-                    @if($globalMenuFontColor)
-                        <small class="text-info">전체설정: {{ $globalMenuFontColor }} (비워두면 자동 적용)</small>
-                    @else
-                        <small class="text-muted">비워두면 테마 기본 색상 사용</small>
-                    @endif
-                </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">등록</button>
                 </div>
@@ -513,28 +498,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const newLinkTargetAnchor = document.getElementById('new_link_target_anchor');
     const newLinkTargetAnchorHelp = document.getElementById('new_link_target_anchor_help');
 
-    // 폰트 컬러 피커 연동
-    const newFontColorPicker = document.getElementById('new_font_color_picker');
-    const newFontColor = document.getElementById('new_font_color');
-    const newFontColorReset = document.getElementById('new_font_color_reset');
-
-    if (newFontColorPicker && newFontColor) {
-        newFontColorPicker.addEventListener('input', function() {
-            newFontColor.value = this.value;
-        });
-        
-        newFontColor.addEventListener('input', function() {
-            if (this.value && /^#[0-9A-Fa-f]{6}$/.test(this.value)) {
-                newFontColorPicker.value = this.value;
-            }
-        });
-        
-        newFontColorReset.addEventListener('click', function() {
-            newFontColor.value = '';
-            newFontColorPicker.value = '#000000';
-        });
-    }
-
     newLinkType.addEventListener('change', function() {
         // 모든 연결 대상 필드 숨김
         newLinkTargetBoard.style.display = 'none';
@@ -604,7 +567,8 @@ document.addEventListener('DOMContentLoaded', function() {
             linkTarget = document.getElementById('new_link_target_anchor').value;
         }
 
-        const fontColor = document.getElementById('new_font_color').value || null;
+        // 기본 폰트 컬러는 #000000으로 자동 적용
+        const fontColor = '#000000';
 
         fetch('{{ route("admin.menus.store", ["site" => $site->slug]) }}', {
             method: 'POST',
