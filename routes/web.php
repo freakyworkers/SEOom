@@ -740,14 +740,14 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->storeMenu($request, $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->storeMenu($masterSite, $request);
             })->name('master.admin.menus.store');
             Route::put('/menus/order', function (Request $request) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateMenuOrder($request, $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->updateMenuOrder($masterSite, $request);
             })->name('master.admin.menus.update-order');
             Route::delete('/menus/{menu}', function (\App\Models\Menu $menu) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -763,28 +763,28 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->storeMobileMenu($request, $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->storeMobileMenu($masterSite, $request);
             })->name('master.admin.mobile-menus.store');
             Route::put('/mobile-menus/order', function (Request $request) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateMobileMenuOrder($request, $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->updateMobileMenuOrder($masterSite, $request);
             })->name('master.admin.mobile-menus.update-order');
             Route::post('/mobile-menus/design-type', function (Request $request) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateMobileMenuDesignType($request, $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->updateMobileMenuDesignType($masterSite, $request);
             })->name('master.admin.mobile-menus.design-type');
             Route::put('/mobile-menus/{mobileMenu}', function (Request $request, \App\Models\MobileMenu $mobileMenu) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateMobileMenu($request, $masterSite, $mobileMenu);
+                return app(\App\Http\Controllers\AdminController::class)->updateMobileMenu($masterSite, $mobileMenu, $request);
             })->name('master.admin.mobile-menus.update');
             Route::delete('/mobile-menus/{mobileMenu}', function (\App\Models\MobileMenu $mobileMenu) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -918,14 +918,14 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->storeToggleMenu($request, $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->storeToggleMenu($masterSite, $request);
             })->name('master.admin.toggle-menus.store');
             Route::put('/toggle-menus/{toggleMenu}', function (Request $request, \App\Models\ToggleMenu $toggleMenu) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateToggleMenu($request, $masterSite, $toggleMenu);
+                return app(\App\Http\Controllers\AdminController::class)->updateToggleMenu($masterSite, $toggleMenu, $request);
             })->name('master.admin.toggle-menus.update');
             Route::delete('/toggle-menus/{toggleMenu}', function (\App\Models\ToggleMenu $toggleMenu) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -939,7 +939,7 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateToggleMenuOrder($request, $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->updateToggleMenuOrder($masterSite, $request);
             })->name('master.admin.toggle-menus.update-order');
             Route::post('/toggle-menus/{toggleMenu}/toggle-active', function (\App\Models\ToggleMenu $toggleMenu) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -1452,14 +1452,14 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->storeMenu($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->storeMenu($site, $request);
         });
         Route::put('/menus/order', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->updateMenuOrder($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->updateMenuOrder($site, $request);
         });
         Route::delete('/menus/{menu}', function (Request $request, \App\Models\Menu $menu) {
             $site = $request->attributes->get('site');
