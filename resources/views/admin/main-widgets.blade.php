@@ -7327,6 +7327,11 @@ function handleImageSlideModeChange(clickedType) {
         if (singleCheckbox) singleCheckbox.checked = false;
     }
     
+    // 둘 다 체크 해제된 경우 1단 슬라이드 기본 선택
+    if (singleCheckbox && infiniteCheckbox && !singleCheckbox.checked && !infiniteCheckbox.checked) {
+        singleCheckbox.checked = true;
+    }
+    
     // 1단 슬라이드가 체크되어 있는 경우
     if (singleCheckbox && singleCheckbox.checked) {
         if (speedContainer) speedContainer.style.display = 'block';

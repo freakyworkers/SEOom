@@ -9685,6 +9685,209 @@ function removeBlockImage(prefix) {
         imageContainer.style.display = 'none';
     }
 }
+
+// 이미지 위젯 텍스트 오버레이 토글 함수
+function toggleWidgetImageTextOverlay() {
+    const checkbox = document.getElementById('widget_image_text_overlay');
+    const container = document.getElementById('widget_image_text_overlay_container');
+    const linkContainer = document.querySelector('#widget_image_container .mb-3:nth-of-type(2)');
+    const newTabContainer = document.querySelector('#widget_image_container .mb-3:nth-of-type(3)');
+    const hasButtonCheckbox = document.getElementById('widget_image_has_button');
+    
+    if (checkbox && container) {
+        container.style.display = checkbox.checked ? 'block' : 'none';
+        // 텍스트 오버레이가 활성화되고 버튼이 추가되면 링크 입력 숨김
+        if (checkbox.checked && hasButtonCheckbox && hasButtonCheckbox.checked) {
+            if (linkContainer) linkContainer.style.display = 'none';
+            if (newTabContainer) newTabContainer.style.display = 'none';
+        } else {
+            if (linkContainer) linkContainer.style.display = 'block';
+            if (newTabContainer) newTabContainer.style.display = 'block';
+        }
+    }
+}
+
+// 이미지 위젯 버튼 토글 함수
+function toggleWidgetImageButton() {
+    const checkbox = document.getElementById('widget_image_has_button');
+    const container = document.getElementById('widget_image_button_container');
+    const linkContainer = document.querySelector('#widget_image_container .mb-3:nth-of-type(2)');
+    const newTabContainer = document.querySelector('#widget_image_container .mb-3:nth-of-type(3)');
+    
+    if (checkbox && container) {
+        container.style.display = checkbox.checked ? 'block' : 'none';
+        // 버튼이 추가되면 링크 입력 숨김
+        if (checkbox.checked) {
+            if (linkContainer) linkContainer.style.display = 'none';
+            if (newTabContainer) newTabContainer.style.display = 'none';
+        } else {
+            const textOverlayCheckbox = document.getElementById('widget_image_text_overlay');
+            // 텍스트 오버레이가 비활성화되어 있으면 링크 입력 표시
+            if (!textOverlayCheckbox || !textOverlayCheckbox.checked) {
+                if (linkContainer) linkContainer.style.display = 'block';
+                if (newTabContainer) newTabContainer.style.display = 'block';
+            }
+        }
+    }
+}
+
+// 이미지 슬라이드 모드 변경 함수 (1단 슬라이드 / 무한루프 슬라이드 상호 배타)
+function handleImageSlideModeChange(clickedType) {
+    const singleCheckbox = document.getElementById('widget_image_slide_single');
+    const infiniteCheckbox = document.getElementById('widget_image_slide_infinite');
+    const visibleCountContainer = document.getElementById('widget_image_slide_visible_count_container');
+    const visibleCountMobileContainer = document.getElementById('widget_image_slide_visible_count_mobile_container');
+    const gapContainer = document.getElementById('widget_image_slide_gap_container');
+    const backgroundContainer = document.getElementById('widget_image_slide_background_container');
+    const speedContainer = document.getElementById('widget_image_slide_speed_container');
+    const directionGroup = document.getElementById('image_slide_direction_group');
+    const upRadio = document.getElementById('image_slide_direction_up');
+    const downRadio = document.getElementById('image_slide_direction_down');
+    const upLabel = upRadio ? upRadio.nextElementSibling : null;
+    const downLabel = downRadio ? downRadio.nextElementSibling : null;
+    
+    // 클릭된 체크박스에 따라 상호 배타적 처리
+    if (clickedType === 'single' && singleCheckbox && singleCheckbox.checked) {
+        // 1단 슬라이드 클릭 시 무한루프 해제
+        if (infiniteCheckbox) infiniteCheckbox.checked = false;
+    } else if (clickedType === 'infinite' && infiniteCheckbox && infiniteCheckbox.checked) {
+        // 무한루프 클릭 시 1단 슬라이드 해제
+        if (singleCheckbox) singleCheckbox.checked = false;
+    }
+    
+    // 둘 다 체크 해제된 경우 1단 슬라이드 기본 선택
+    if (singleCheckbox && infiniteCheckbox && !singleCheckbox.checked && !infiniteCheckbox.checked) {
+        singleCheckbox.checked = true;
+    }
+    
+    // 1단 슬라이드가 체크되어 있는 경우
+    if (singleCheckbox && singleCheckbox.checked) {
+        if (speedContainer) speedContainer.style.display = 'block';
+    } else {
+        if (speedContainer) speedContainer.style.display = 'none';
+    }
+    
+    // 무한루프가 체크되어 있는 경우
+    if (infiniteCheckbox && infiniteCheckbox.checked) {
+        if (visibleCountContainer) visibleCountContainer.style.display = 'block';
+        if (visibleCountMobileContainer) visibleCountMobileContainer.style.display = 'block';
+        if (gapContainer) gapContainer.style.display = 'block';
+        if (backgroundContainer) backgroundContainer.style.display = 'block';
+        if (speedContainer) speedContainer.style.display = 'none';
+        
+        // 무한루프 슬라이드일 때 상하 방향 비활성화
+        if (upRadio) {
+            upRadio.disabled = true;
+            if (upLabel) upLabel.classList.add('disabled');
+        }
+        if (downRadio) {
+            downRadio.disabled = true;
+            if (downLabel) downLabel.classList.add('disabled');
+        }
+        
+        // 상하 방향이 선택되어 있으면 좌로 변경
+        if (upRadio && upRadio.checked) {
+            const leftRadio = document.getElementById('image_slide_direction_left');
+            if (leftRadio) leftRadio.checked = true;
+        }
+        if (downRadio && downRadio.checked) {
+            const leftRadio = document.getElementById('image_slide_direction_left');
+            if (leftRadio) leftRadio.checked = true;
+        }
+    } else {
+        if (visibleCountContainer) visibleCountContainer.style.display = 'none';
+        if (visibleCountMobileContainer) visibleCountMobileContainer.style.display = 'none';
+        if (gapContainer) gapContainer.style.display = 'none';
+        if (backgroundContainer) backgroundContainer.style.display = 'none';
+        
+        // 1단 슬라이드일 때 상하 방향 활성화
+        if (upRadio) {
+            upRadio.disabled = false;
+            if (upLabel) upLabel.classList.remove('disabled');
+        }
+        if (downRadio) {
+            downRadio.disabled = false;
+            if (downLabel) downLabel.classList.remove('disabled');
+        }
+    }
+    
+    // 툴팁 초기화
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+}
+
+// 이미지 슬라이드 아이템 텍스트 오버레이 토글
+function toggleImageSlideTextOverlay(itemIndex) {
+    const checkbox = document.getElementById(`image_slide_${itemIndex}_text_overlay`);
+    const container = document.getElementById(`image_slide_${itemIndex}_text_overlay_container`);
+    if (checkbox && container) {
+        container.style.display = checkbox.checked ? 'block' : 'none';
+    }
+}
+
+// 이미지 슬라이드 버튼 토글
+function toggleImageSlideButton(itemIndex) {
+    const checkbox = document.getElementById(`image_slide_${itemIndex}_has_button`);
+    const container = document.getElementById(`image_slide_${itemIndex}_button_container`);
+    const linkContainer = document.getElementById(`image_slide_${itemIndex}_link_container`);
+    const newTabContainer = document.getElementById(`image_slide_${itemIndex}_new_tab_container`);
+    
+    if (checkbox && container) {
+        container.style.display = checkbox.checked ? 'block' : 'none';
+        // 버튼이 추가되면 링크 입력 숨김
+        if (checkbox.checked) {
+            if (linkContainer) linkContainer.style.display = 'none';
+            if (newTabContainer) newTabContainer.style.display = 'none';
+        } else {
+            if (linkContainer) linkContainer.style.display = 'block';
+            if (newTabContainer) newTabContainer.style.display = 'block';
+        }
+    }
+}
+
+// 이미지 슬라이드 아이템 토글
+function toggleImageSlideItem(itemIndex) {
+    const body = document.getElementById(`image_slide_item_${itemIndex}_body`);
+    const icon = document.getElementById(`image_slide_item_${itemIndex}_icon`);
+    if (body && icon) {
+        if (body.style.display === 'none') {
+            body.style.display = 'block';
+            icon.className = 'bi bi-chevron-down';
+        } else {
+            body.style.display = 'none';
+            icon.className = 'bi bi-chevron-right';
+        }
+    }
+}
+
+// 이미지 슬라이드 아이템 제거
+function removeImageSlideItem(itemIndex) {
+    const item = document.getElementById(`image_slide_item_${itemIndex}`);
+    if (item) item.remove();
+}
+
+// 이미지 슬라이드 이미지 제거
+function removeImageSlideImage(itemIndex) {
+    const imageInput = document.getElementById(`image_slide_${itemIndex}_image_input`);
+    const imageUrl = document.getElementById(`image_slide_${itemIndex}_image_url`);
+    const preview = document.getElementById(`image_slide_${itemIndex}_image_preview`);
+    
+    if (imageInput) imageInput.value = '';
+    if (imageUrl) imageUrl.value = '';
+    if (preview) preview.style.display = 'none';
+}
+
+// 이미지 슬라이드 배경 타입 변경
+function handleImageSlideBackgroundTypeChange() {
+    const bgType = document.getElementById('widget_image_slide_background_type');
+    const bgColorContainer = document.getElementById('widget_image_slide_background_color_container');
+    
+    if (bgType && bgColorContainer) {
+        bgColorContainer.style.display = bgType.value === 'color' ? 'block' : 'none';
+    }
+}
 </script>
 @endpush
 
