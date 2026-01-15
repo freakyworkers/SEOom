@@ -443,6 +443,90 @@
                                     </div>
                                 </td>
                             </tr>
+                            {{-- 제목 폰트 사이즈 --}}
+                            <tr id="header_image_text_title_size_row" style="display: {{ old('header_image_text_enabled', $board->header_image_text_enabled) ? '' : 'none' }};">
+                                <td>
+                                    <label for="header_image_text_title_size" class="form-label mb-0">
+                                        제목 폰트 사이즈
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="header_image_text_title_size" 
+                                               name="header_image_text_title_size"
+                                               value="{{ old('header_image_text_title_size', $board->header_image_text_title_size ?? 32) }}"
+                                               min="10" max="100" style="width: 100px;">
+                                        <span class="text-muted">px</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{-- 제목 폰트 컬러 --}}
+                            <tr id="header_image_text_title_color_row" style="display: {{ old('header_image_text_enabled', $board->header_image_text_enabled) ? '' : 'none' }};">
+                                <td>
+                                    <label for="header_image_text_title_color" class="form-label mb-0">
+                                        제목 폰트 컬러
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" 
+                                               class="form-control form-control-color" 
+                                               id="header_image_text_title_color" 
+                                               name="header_image_text_title_color"
+                                               value="{{ old('header_image_text_title_color', $board->header_image_text_title_color ?? '#ffffff') }}">
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="header_image_text_title_color_text"
+                                               value="{{ old('header_image_text_title_color', $board->header_image_text_title_color ?? '#ffffff') }}"
+                                               style="width: 100px;"
+                                               onchange="document.getElementById('header_image_text_title_color').value = this.value">
+                                    </div>
+                                </td>
+                            </tr>
+                            {{-- 내용 폰트 사이즈 --}}
+                            <tr id="header_image_text_content_size_row" style="display: {{ old('header_image_text_enabled', $board->header_image_text_enabled) ? '' : 'none' }};">
+                                <td>
+                                    <label for="header_image_text_content_size" class="form-label mb-0">
+                                        내용 폰트 사이즈
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="header_image_text_content_size" 
+                                               name="header_image_text_content_size"
+                                               value="{{ old('header_image_text_content_size', $board->header_image_text_content_size ?? 16) }}"
+                                               min="10" max="100" style="width: 100px;">
+                                        <span class="text-muted">px</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{-- 내용 폰트 컬러 --}}
+                            <tr id="header_image_text_content_color_row" style="display: {{ old('header_image_text_enabled', $board->header_image_text_enabled) ? '' : 'none' }};">
+                                <td>
+                                    <label for="header_image_text_content_color" class="form-label mb-0">
+                                        내용 폰트 컬러
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" 
+                                               class="form-control form-control-color" 
+                                               id="header_image_text_content_color" 
+                                               name="header_image_text_content_color"
+                                               value="{{ old('header_image_text_content_color', $board->header_image_text_content_color ?? '#ffffff') }}">
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="header_image_text_content_color_text"
+                                               value="{{ old('header_image_text_content_color', $board->header_image_text_content_color ?? '#ffffff') }}"
+                                               style="width: 100px;"
+                                               onchange="document.getElementById('header_image_text_content_color').value = this.value">
+                                    </div>
+                                </td>
+                            </tr>
                             <tr id="random-order-row" style="display: {{ old('type', $board->type) === 'bookmark' ? '' : 'none' }};">
                                 <td>
                                     <label class="form-label mb-0">
@@ -1422,6 +1506,10 @@
         const contentRow = document.getElementById('header_image_text_content_row');
         const alignRow = document.getElementById('header_image_text_align_row');
         const valignRow = document.getElementById('header_image_text_valign_row');
+        const titleSizeRow = document.getElementById('header_image_text_title_size_row');
+        const titleColorRow = document.getElementById('header_image_text_title_color_row');
+        const contentSizeRow = document.getElementById('header_image_text_content_size_row');
+        const contentColorRow = document.getElementById('header_image_text_content_color_row');
         
         const display = checkbox && checkbox.checked ? '' : 'none';
         
@@ -1429,7 +1517,31 @@
         if (contentRow) contentRow.style.display = display;
         if (alignRow) alignRow.style.display = display;
         if (valignRow) valignRow.style.display = display;
+        if (titleSizeRow) titleSizeRow.style.display = display;
+        if (titleColorRow) titleColorRow.style.display = display;
+        if (contentSizeRow) contentSizeRow.style.display = display;
+        if (contentColorRow) contentColorRow.style.display = display;
     }
+    
+    // 컬러 피커와 텍스트 입력 동기화
+    document.addEventListener('DOMContentLoaded', function() {
+        const titleColorPicker = document.getElementById('header_image_text_title_color');
+        const titleColorText = document.getElementById('header_image_text_title_color_text');
+        const contentColorPicker = document.getElementById('header_image_text_content_color');
+        const contentColorText = document.getElementById('header_image_text_content_color_text');
+        
+        if (titleColorPicker && titleColorText) {
+            titleColorPicker.addEventListener('input', function() {
+                titleColorText.value = this.value;
+            });
+        }
+        
+        if (contentColorPicker && contentColorText) {
+            contentColorPicker.addEventListener('input', function() {
+                contentColorText.value = this.value;
+            });
+        }
+    });
     
     // 초기 로드 시에도 체크 (create.blade.php와 동일한 구조)
     document.addEventListener('DOMContentLoaded', function() {

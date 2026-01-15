@@ -561,6 +561,20 @@ class BoardController extends Controller
         if ($request->has('header_image_text_valign')) {
             $updateData['header_image_text_valign'] = $request->input('header_image_text_valign');
         }
+        
+        // 제목/내용 폰트 사이즈 및 컬러 처리
+        if ($request->has('header_image_text_title_size')) {
+            $updateData['header_image_text_title_size'] = (int) $request->input('header_image_text_title_size', 32);
+        }
+        if ($request->has('header_image_text_title_color')) {
+            $updateData['header_image_text_title_color'] = $request->input('header_image_text_title_color', '#ffffff');
+        }
+        if ($request->has('header_image_text_content_size')) {
+            $updateData['header_image_text_content_size'] = (int) $request->input('header_image_text_content_size', 16);
+        }
+        if ($request->has('header_image_text_content_color')) {
+            $updateData['header_image_text_content_color'] = $request->input('header_image_text_content_color', '#ffffff');
+        }
 
         // 게시판 타입 업데이트
         if ($request->has('type')) {

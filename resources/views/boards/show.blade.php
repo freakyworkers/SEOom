@@ -38,6 +38,10 @@
                 $headerImageTextContent = $board->header_image_text_content ?? '';
                 $headerImageTextAlign = $board->header_image_text_align ?? 'center';
                 $headerImageTextValign = $board->header_image_text_valign ?? 'center';
+                $headerImageTextTitleSize = $board->header_image_text_title_size ?? 32;
+                $headerImageTextTitleColor = $board->header_image_text_title_color ?? '#ffffff';
+                $headerImageTextContentSize = $board->header_image_text_content_size ?? 16;
+                $headerImageTextContentColor = $board->header_image_text_content_color ?? '#ffffff';
                 
                 // 가로 정렬 CSS
                 $textAlignClass = match($headerImageTextAlign) {
@@ -59,12 +63,12 @@
                     <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid" style="width: 100%; height: auto; object-fit: cover;">
                     @if($headerImageTextEnabled && ($headerImageTextTitle || $headerImageTextContent))
                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center" style="background: rgba(0,0,0,0.3);">
-                            <div class="{{ $textAlignClass }} text-white px-4 py-3" style="max-width: 800px;">
+                            <div class="{{ $textAlignClass }} px-4 py-3" style="max-width: 800px;">
                                 @if($headerImageTextTitle)
-                                    <h2 class="mb-2 fw-bold" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
+                                    <h2 class="mb-2 fw-bold" style="font-size: {{ $headerImageTextTitleSize }}px; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
                                 @endif
                                 @if($headerImageTextContent)
-                                    <p class="mb-0" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>
+                                    <p class="mb-0" style="font-size: {{ $headerImageTextContentSize }}px; color: {{ $headerImageTextContentColor }}; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>
                                 @endif
                             </div>
                         </div>
@@ -76,12 +80,12 @@
                     <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: auto;">
                     @if($headerImageTextEnabled && ($headerImageTextTitle || $headerImageTextContent))
                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center rounded" style="background: rgba(0,0,0,0.3);">
-                            <div class="{{ $textAlignClass }} text-white px-4 py-3" style="max-width: 100%;">
+                            <div class="{{ $textAlignClass }} px-4 py-3" style="max-width: 100%;">
                                 @if($headerImageTextTitle)
-                                    <h2 class="mb-2 fw-bold" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
+                                    <h2 class="mb-2 fw-bold" style="font-size: {{ $headerImageTextTitleSize }}px; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
                                 @endif
                                 @if($headerImageTextContent)
-                                    <p class="mb-0" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>
+                                    <p class="mb-0" style="font-size: {{ $headerImageTextContentSize }}px; color: {{ $headerImageTextContentColor }}; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>
                                 @endif
                             </div>
                         </div>
