@@ -1991,11 +1991,14 @@
     
     @php
         // 투명헤더 CSS/JS 출력 전에 변수 재확인 (자식 뷰에서 재정의될 수 있으므로)
-        $headerTransparentFinal = $site->getSetting('header_transparent', '0') == '1';
+        // 투명헤더 기능 일시적으로 비활성화 (성능 문제로 인해)
+        // TODO: 투명헤더 코드 최적화 후 다시 활성화
+        $headerTransparentFinal = false;
+        // $headerTransparentFinal = $site->getSetting('header_transparent', '0') == '1';
         $themeSidebarFinal = $site->getSetting('theme_sidebar', 'none');
-        if ($themeSidebarFinal !== 'none') {
-            $headerTransparentFinal = false;
-        }
+        // if ($themeSidebarFinal !== 'none') {
+        //     $headerTransparentFinal = false;
+        // }
     @endphp
     
     @if($headerTransparentFinal)
