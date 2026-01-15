@@ -5740,6 +5740,20 @@ function editMainWidget(widgetId) {
                 }
             }
             
+            // 모든 설정이 완료된 후, image 위젯에서 불필요한 옵션 숨기기 (최종 확인)
+            if (widgetType === 'image' || widgetType === 'block' || widgetType === 'block_slide' || 
+                widgetType === 'gallery' || widgetType === 'board_viewer' || widgetType === 'tab_menu' ||
+                widgetType === 'ranking' || widgetType === 'image_slide' || widgetType === 'countdown') {
+                const finalSortOrderContainer = document.getElementById('edit_main_widget_sort_order_container');
+                const finalMarqueeDirectionContainer = document.getElementById('edit_main_widget_marquee_direction_container');
+                if (widgetType !== 'board' && widgetType !== 'marquee_board') {
+                    if (finalSortOrderContainer) finalSortOrderContainer.style.display = 'none';
+                }
+                if (widgetType !== 'marquee_board') {
+                    if (finalMarqueeDirectionContainer) finalMarqueeDirectionContainer.style.display = 'none';
+                }
+            }
+            
             // 모든 설정이 완료된 후 모달 열기
             const modal = new bootstrap.Modal(document.getElementById('mainWidgetSettingsModal'));
             modal.show();
