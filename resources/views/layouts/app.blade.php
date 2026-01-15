@@ -2141,13 +2141,26 @@
         
         /* 스크롤 시 글래스모피즘 배경 허용 - PC 및 모바일 공통 */
         /* .scrolled 클래스가 있을 때는 글래스모피즘 배경이 적용되도록 예외 처리 */
+        /* 가장 높은 특정성을 위해 매우 구체적인 선택자 사용 */
         html body .header-transparent-overlay nav.scrolled,
         html body .header-transparent-overlay .navbar.scrolled,
+        html body .header-transparent-overlay nav.navbar.scrolled,
+        html body .header-transparent-overlay nav.navbar.navbar-expand-lg.scrolled,
+        html body .header-transparent-overlay nav.navbar.d-xl-none.scrolled,
+        html body .header-transparent-overlay nav.navbar.navbar-expand-lg.d-xl-none.scrolled,
         html body .header-transparent-overlay nav.header-transparent-sticky.scrolled,
         html body .header-transparent-overlay nav.mobile-header-transparent-sticky.scrolled,
+        html body .header-transparent-overlay nav.navbar.mobile-header-transparent-sticky.scrolled,
+        html body .header-transparent-overlay nav.navbar.navbar-expand-lg.d-xl-none.mobile-header-transparent-sticky.scrolled,
         html body div.header-transparent-overlay nav.scrolled,
-        html body div.header-transparent-overlay .navbar.scrolled {
+        html body div.header-transparent-overlay .navbar.scrolled,
+        html body div.header-transparent-overlay nav.navbar.scrolled,
+        html body div.header-transparent-overlay nav.navbar.d-xl-none.scrolled,
+        html body div.header-transparent-overlay nav.mobile-header-transparent-sticky.scrolled,
+        html body div.header-transparent-overlay nav[class*="mobile-header-transparent"].scrolled,
+        html body div.header-transparent-overlay .navbar[class*="mobile-header-transparent"].scrolled {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
             backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
             -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
             box-shadow: 
@@ -2161,11 +2174,15 @@
         /* 다크 모드일 때 스크롤 시 글래스모피즘 */
         [data-theme="dark"] .header-transparent-overlay nav.scrolled,
         [data-theme="dark"] .header-transparent-overlay .navbar.scrolled,
+        [data-theme="dark"] .header-transparent-overlay nav.mobile-header-transparent-sticky.scrolled,
         .theme-dark .header-transparent-overlay nav.scrolled,
         .theme-dark .header-transparent-overlay .navbar.scrolled,
+        .theme-dark .header-transparent-overlay nav.mobile-header-transparent-sticky.scrolled,
         body.dark-mode .header-transparent-overlay nav.scrolled,
-        body.dark-mode .header-transparent-overlay .navbar.scrolled {
+        body.dark-mode .header-transparent-overlay .navbar.scrolled,
+        body.dark-mode .header-transparent-overlay nav.mobile-header-transparent-sticky.scrolled {
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2)) !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
             backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
             -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
