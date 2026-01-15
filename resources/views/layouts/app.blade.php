@@ -2139,6 +2139,38 @@
             --header-bg-color: transparent !important;
         }
         
+        /* 스크롤 시 글래스모피즘 배경 허용 - PC 및 모바일 공통 */
+        /* .scrolled 클래스가 있을 때는 글래스모피즘 배경이 적용되도록 예외 처리 */
+        html body .header-transparent-overlay nav.scrolled,
+        html body .header-transparent-overlay .navbar.scrolled,
+        html body .header-transparent-overlay nav.header-transparent-sticky.scrolled,
+        html body .header-transparent-overlay nav.mobile-header-transparent-sticky.scrolled,
+        html body div.header-transparent-overlay nav.scrolled,
+        html body div.header-transparent-overlay .navbar.scrolled {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
+            backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
+            -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.95) contrast(1.05) !important;
+            box-shadow: 
+                0 8px 32px 0 rgba(0, 0, 0, 0.15),
+                0 4px 16px 0 rgba(0, 0, 0, 0.08),
+                inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 1px 0 rgba(255, 255, 255, 0.1) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        /* 다크 모드일 때 스크롤 시 글래스모피즘 */
+        [data-theme="dark"] .header-transparent-overlay nav.scrolled,
+        [data-theme="dark"] .header-transparent-overlay .navbar.scrolled,
+        .theme-dark .header-transparent-overlay nav.scrolled,
+        .theme-dark .header-transparent-overlay .navbar.scrolled,
+        body.dark-mode .header-transparent-overlay nav.scrolled,
+        body.dark-mode .header-transparent-overlay .navbar.scrolled {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2)) !important;
+            backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
+            -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(0.8) contrast(1.05) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        
         /* 투명헤더일 때 메인 컨텐츠 영역의 상단 마진 제거 - 모든 페이지에서 적용 */
         @if($headerTransparentFinal)
         main.container {
