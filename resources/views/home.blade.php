@@ -104,8 +104,8 @@
             // 위젯 간격 설정 (Bootstrap gutter 클래스 사용)
             $widgetSpacing = $container->widget_spacing ?? 3;
             $widgetSpacingValue = min(max($widgetSpacing, 0), 5);
-            // Bootstrap gutter 클래스 (g-0, g-1, g-2, g-3, g-4, g-5)
-            $gutterClass = 'g-' . $widgetSpacingValue;
+            // Bootstrap gutter 클래스 - gx만 사용 (가로 방향만, 세로는 위젯에서 처리)
+            $gutterClass = 'gx-' . $widgetSpacingValue;
             
             // 칸 고정너비가 아닐 때만 row에 100% 적용
             $rowStyle = ($isFullWidth && !$fixedWidthColumns) ? 'margin-left: 0; margin-right: 0; width: 100%;' : '';
