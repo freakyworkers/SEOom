@@ -66,8 +66,17 @@
     @foreach($containers as $container)
         @php
             $verticalAlign = $container->vertical_align ?? 'top';
+            
+            // 컨테이너에 지도 위젯이 포함되어 있는지 확인
+            $hasMapWidget = $container->widgets->contains(function($widget) {
+                return $widget->type === 'map';
+            });
+            
+            // 지도 위젯이 있으면 항상 stretch 사용 (지도가 높이를 채우도록)
             $alignClass = '';
-            if ($verticalAlign === 'center') {
+            if ($hasMapWidget) {
+                $alignClass = 'align-items-stretch';
+            } elseif ($verticalAlign === 'center') {
                 $alignClass = 'align-items-center';
             } elseif ($verticalAlign === 'bottom') {
                 $alignClass = 'align-items-end';
