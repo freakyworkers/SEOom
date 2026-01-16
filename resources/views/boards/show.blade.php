@@ -110,6 +110,10 @@
                 $headerImageTextContentSize = $board->header_image_text_content_size ?? 16;
                 $headerImageTextContentColor = $board->header_image_text_content_color ?? '#ffffff';
                 
+                // 반응형 폰트 사이즈 계산 - clamp(최소, 선호, 최대)
+                $responsiveTitleFontSize = "clamp(" . round($headerImageTextTitleSize * 0.65) . "px, " . round($headerImageTextTitleSize / 8, 1) . "vw, " . $headerImageTextTitleSize . "px)";
+                $responsiveContentFontSize = "clamp(" . round($headerImageTextContentSize * 0.65) . "px, " . round($headerImageTextContentSize / 8, 1) . "vw, " . $headerImageTextContentSize . "px)";
+                
                 // 가로 정렬 CSS
                 $textAlignClass = match($headerImageTextAlign) {
                     'left' => 'text-start',
@@ -132,10 +136,10 @@
                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center" style="background: rgba(0,0,0,0.3);{{ $boardHeaderTransparent ? ' padding-top: 80px;' : '' }}">
                             <div class="{{ $textAlignClass }} px-4 py-3" style="max-width: 800px;">
                                 @if($headerImageTextTitle)
-                                    <h2 class="mb-2 fw-bold" style="font-size: {{ $headerImageTextTitleSize }}px; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
+                                    <h2 class="mb-2 fw-bold" style="font-size: {{ $responsiveTitleFontSize }}; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
                                 @endif
                                 @if($headerImageTextContent)
-                                    <p class="mb-0" style="font-size: {{ $headerImageTextContentSize }}px; color: {{ $headerImageTextContentColor }}; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>
+                                    <p class="mb-0" style="font-size: {{ $responsiveContentFontSize }}; color: {{ $headerImageTextContentColor }}; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>
                                 @endif
                             </div>
                         </div>
@@ -149,10 +153,10 @@
                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center rounded" style="background: rgba(0,0,0,0.3);">
                             <div class="{{ $textAlignClass }} px-4 py-3" style="max-width: 100%;">
                                 @if($headerImageTextTitle)
-                                    <h2 class="mb-2 fw-bold" style="font-size: {{ $headerImageTextTitleSize }}px; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
+                                    <h2 class="mb-2 fw-bold" style="font-size: {{ $responsiveTitleFontSize }}; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
                                 @endif
                                 @if($headerImageTextContent)
-                                    <p class="mb-0" style="font-size: {{ $headerImageTextContentSize }}px; color: {{ $headerImageTextContentColor }}; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>
+                                    <p class="mb-0" style="font-size: {{ $responsiveContentFontSize }}; color: {{ $headerImageTextContentColor }}; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>
                                 @endif
                             </div>
                         </div>
