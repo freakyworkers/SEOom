@@ -37,7 +37,7 @@
                                 @foreach($contactForms as $form)
                                     <tr>
                                         <td>
-                                            <a href="{{ route('admin.contact-forms.show', ['site' => $site->slug, 'contactForm' => $form->id]) }}" class="text-decoration-none">
+                                            <a href="{{ $site->isUsingDirectDomain() ? '/admin/contact-forms/' . $form->id : route('admin.contact-forms.show', ['site' => $site->slug, 'contactForm' => $form->id]) }}" class="text-decoration-none">
                                                 {{ $form->title }}
                                             </a>
                                         </td>
@@ -51,7 +51,7 @@
                                         </td>
                                         <td>{{ $form->created_at->format('Y-m-d H:i') }}</td>
                                         <td>
-                                            <a href="{{ route('admin.contact-forms.show', ['site' => $site->slug, 'contactForm' => $form->id]) }}" class="btn btn-sm btn-outline-primary">
+                                            <a href="{{ $site->isUsingDirectDomain() ? '/admin/contact-forms/' . $form->id : route('admin.contact-forms.show', ['site' => $site->slug, 'contactForm' => $form->id]) }}" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-eye me-1"></i>보기
                                             </a>
                                             <button type="button" class="btn btn-sm btn-outline-warning" onclick="editContactForm({{ $form->id }})">
@@ -74,7 +74,7 @@
                                 <div class="card-body p-3">
                                     <!-- 제목 -->
                                     <div class="mb-3">
-                                        <a href="{{ route('admin.contact-forms.show', ['site' => $site->slug, 'contactForm' => $form->id]) }}" 
+                                        <a href="{{ $site->isUsingDirectDomain() ? '/admin/contact-forms/' . $form->id : route('admin.contact-forms.show', ['site' => $site->slug, 'contactForm' => $form->id]) }}" 
                                            class="text-decoration-none">
                                             <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">{{ $form->title }}</h6>
                                         </a>
@@ -106,7 +106,7 @@
 
                                     <!-- 작업 버튼 -->
                                     <div class="d-grid gap-2">
-                                        <a href="{{ route('admin.contact-forms.show', ['site' => $site->slug, 'contactForm' => $form->id]) }}" 
+                                        <a href="{{ $site->isUsingDirectDomain() ? '/admin/contact-forms/' . $form->id : route('admin.contact-forms.show', ['site' => $site->slug, 'contactForm' => $form->id]) }}" 
                                            class="btn btn-sm btn-outline-primary"
                                            style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
                                             <i class="bi bi-eye"></i> 보기
@@ -493,8 +493,8 @@ function saveContactForm() {
 
     const contactFormId = document.getElementById('contact_form_id').value;
     const url = contactFormId 
-        ? '{{ route("admin.contact-forms.update", ["site" => $site->slug, "contactForm" => ":id"]) }}'.replace(':id', contactFormId)
-        : '{{ route("admin.contact-forms.store", ["site" => $site->slug]) }}';
+        ? '{{ $site->isUsingDirectDomain() ? "/admin/contact-forms/:id" : route("admin.contact-forms.update", ["site" => $site->slug, "contactForm" => ":id"]) }}'.replace(':id', contactFormId)
+        : '{{ $site->isUsingDirectDomain() ? "/admin/contact-forms" : route("admin.contact-forms.store", ["site" => $site->slug]) }}';
     const method = contactFormId ? 'PUT' : 'POST';
 
     fetch(url, {
@@ -526,7 +526,7 @@ function deleteContactForm(id) {
         return;
     }
 
-    fetch('{{ route("admin.contact-forms.delete", ["site" => $site->slug, "contactForm" => ":id"]) }}'.replace(':id', id), {
+    fetch('{{ $site->isUsingDirectDomain() ? "/admin/contact-forms/:id" : route("admin.contact-forms.delete", ["site" => $site->slug, "contactForm" => ":id"]) }}'.replace(':id', id), {
         method: 'DELETE',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
