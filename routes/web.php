@@ -226,7 +226,8 @@ Route::middleware('web')->group(function () {
     
     // 마스터 사이트 관리자 페이지 라우트 (루트 경로)
     // 모든 관리자 라우트를 마스터 사이트용으로 복제
-    Route::prefix('admin')->middleware('auth')->group(function () {
+    // only.master.domain 미들웨어를 추가하여 서브도메인에서 접근 시 404 반환
+    Route::prefix('admin')->middleware(['auth', 'only.master.domain'])->group(function () {
         // /admin 경로로 접속 시 /admin/dashboard로 리다이렉트
         Route::get('/', function () {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -1764,6 +1765,57 @@ Route::middleware(['web', 'block.ip'])->group(function () {
                 abort(404);
             }
             return app(\App\Http\Controllers\AdminController::class)->popupsDelete($site, $popup);
+        });
+        
+        // Maps (서브도메인/커스텀 도메인용)
+        Route::get('/maps', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->mapsIndex($site);
+        });
+        Route::post('/maps', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->mapsStore($site, $request);
+        });
+        Route::get('/maps/{map}/edit', function (Request $request, \App\Models\Map $map) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->mapsEdit($site, $map);
+        });
+        Route::put('/maps/{map}', function (Request $request, \App\Models\Map $map) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->mapsUpdate($site, $request, $map);
+        });
+        Route::delete('/maps/{map}', function (Request $request, \App\Models\Map $map) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->mapsDestroy($site, $map);
+        });
+        Route::post('/maps/geocode', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->mapsGeocode($site, $request);
+        });
+        Route::post('/maps/add-default', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->mapsAddDefault($request, $site);
         });
     });
     

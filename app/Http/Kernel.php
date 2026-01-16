@@ -60,6 +60,7 @@ class Kernel extends HttpKernel
      */
     protected $middlewareAliases = [
         'block.ip' => \App\Http\Middleware\BlockIp::class,
+        'only.master.domain' => \App\Http\Middleware\OnlyMasterDomain::class,
         'verify.site.user' => \App\Http\Middleware\VerifySiteUser::class,
         'sample.readonly' => \App\Http\Middleware\SampleSiteReadOnly::class,
         'test.admin.readonly' => \App\Http\Middleware\TestAdminReadOnly::class,

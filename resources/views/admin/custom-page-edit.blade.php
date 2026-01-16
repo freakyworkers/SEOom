@@ -1679,6 +1679,44 @@
                         </select>
                         <small class="text-muted">표시할 토글 메뉴를 선택하세요.</small>
                     </div>
+                    <div class="mb-3" id="edit_custom_page_widget_contact_form_container" style="display: none;">
+                        <label for="edit_custom_page_widget_contact_form_id" class="form-label">컨텍트폼 선택</label>
+                        <select class="form-select" id="edit_custom_page_widget_contact_form_id" name="contact_form_id">
+                            <option value="">선택하세요</option>
+                            @foreach(\App\Models\ContactForm::where('site_id', $site->id)->orderBy('created_at', 'desc')->get() as $contactForm)
+                                <option value="{{ $contactForm->id }}">{{ $contactForm->title ?? '' }}</option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted">사용할 컨텍트폼을 선택하세요.</small>
+                    </div>
+                    <div class="mb-3" id="edit_custom_page_widget_map_container" style="display: none;">
+                        <label for="edit_custom_page_widget_map_id" class="form-label">지도 선택</label>
+                        <select class="form-select" id="edit_custom_page_widget_map_id" name="map_id">
+                            <option value="">선택하세요</option>
+                            @php
+                                $masterSite = \App\Models\Site::getMasterSite();
+                                $googleApiKey = $masterSite ? \Illuminate\Support\Facades\DB::table('site_settings')->where('site_id', $masterSite->id)->where('key', 'map_api_google_key')->value('value') : null;
+                                $naverApiKey = $masterSite ? \Illuminate\Support\Facades\DB::table('site_settings')->where('site_id', $masterSite->id)->where('key', 'map_api_naver_key')->value('value') : null;
+                                $kakaoApiKey = $masterSite ? \Illuminate\Support\Facades\DB::table('site_settings')->where('site_id', $masterSite->id)->where('key', 'map_api_kakao_key')->value('value') : null;
+                            @endphp
+                            @foreach(\App\Models\Map::where('site_id', $site->id)->orderBy('created_at', 'desc')->get() as $map)
+                                @php
+                                    $hasApiKey = false;
+                                    if ($map->map_type === 'google' && !empty($googleApiKey)) {
+                                        $hasApiKey = true;
+                                    } elseif ($map->map_type === 'naver' && !empty($naverApiKey)) {
+                                        $hasApiKey = true;
+                                    } elseif ($map->map_type === 'kakao' && !empty($kakaoApiKey)) {
+                                        $hasApiKey = true;
+                                    }
+                                @endphp
+                                @if($hasApiKey)
+                                    <option value="{{ $map->id }}">{{ $map->name ?? '' }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                        <small class="text-muted">사용할 지도를 선택하세요.</small>
+                    </div>
                     <div class="mb-3" id="edit_custom_page_widget_title_container_main">
                         <label for="edit_custom_page_widget_title" class="form-label">
                             위젯 제목 <span id="edit_custom_page_widget_title_optional" style="display: none;">(선택사항)</span>
@@ -3528,6 +3566,16 @@ async function addCustomPageWidget() {
             settings.html = customHtml;
             settings.custom_html = customHtml;
         }
+    } else if (widgetType === 'contact_form') {
+        const contactFormId = formData.get('contact_form_id');
+        if (contactFormId) {
+            settings.contact_form_id = parseInt(contactFormId);
+        }
+    } else if (widgetType === 'map') {
+        const mapId = formData.get('map_id');
+        if (mapId) {
+            settings.map_id = parseInt(mapId);
+        }
     } else if (widgetType === 'block') {
         const blockTitle = formData.get('block_title');
         const blockContent = formData.get('block_content');
@@ -4252,6 +4300,10 @@ function editCustomPageWidget(widgetId) {
             if (galleryShowTitleContainer) galleryShowTitleContainer.style.display = 'none';
             const customHtmlContainer = document.getElementById('edit_custom_page_widget_custom_html_container');
             if (customHtmlContainer) customHtmlContainer.style.display = 'none';
+            const contactFormContainer = document.getElementById('edit_custom_page_widget_contact_form_container');
+            if (contactFormContainer) contactFormContainer.style.display = 'none';
+            const mapContainer = document.getElementById('edit_custom_page_widget_map_container');
+            if (mapContainer) mapContainer.style.display = 'none';
             const blockContainer = document.getElementById('edit_custom_page_widget_block_container');
             if (blockContainer) blockContainer.style.display = 'none';
             const blockSlideContainer = document.getElementById('edit_custom_page_widget_block_slide_container');
@@ -4466,6 +4518,24 @@ function editCustomPageWidget(widgetId) {
                 if (titleOptional) titleOptional.style.display = 'inline';
                 if (document.getElementById('edit_custom_page_widget_custom_html')) {
                     document.getElementById('edit_custom_page_widget_custom_html').value = settings.html || settings.custom_html || '';
+                }
+                if (document.getElementById('edit_custom_page_widget_title')) {
+                    document.getElementById('edit_custom_page_widget_title').value = title;
+                }
+            } else if (widgetType === 'contact_form') {
+                if (contactFormContainer) contactFormContainer.style.display = 'block';
+                if (titleContainer) titleContainer.style.display = 'block';
+                if (document.getElementById('edit_custom_page_widget_contact_form_id')) {
+                    document.getElementById('edit_custom_page_widget_contact_form_id').value = settings.contact_form_id || '';
+                }
+                if (document.getElementById('edit_custom_page_widget_title')) {
+                    document.getElementById('edit_custom_page_widget_title').value = title;
+                }
+            } else if (widgetType === 'map') {
+                if (mapContainer) mapContainer.style.display = 'block';
+                if (titleContainer) titleContainer.style.display = 'block';
+                if (document.getElementById('edit_custom_page_widget_map_id')) {
+                    document.getElementById('edit_custom_page_widget_map_id').value = settings.map_id || '';
                 }
                 if (document.getElementById('edit_custom_page_widget_title')) {
                     document.getElementById('edit_custom_page_widget_title').value = title;
@@ -5003,6 +5073,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const gallerySlideContainer = document.getElementById('widget_gallery_slide_container');
             const galleryShowTitleContainer = document.getElementById('widget_gallery_show_title_container');
             const customHtmlContainer = document.getElementById('widget_custom_html_container');
+            const contactFormContainer = document.getElementById('widget_contact_form_container');
+            const mapContainer = document.getElementById('widget_map_container');
             const titleHelp = document.getElementById('widget_title_help');
             
             // 모든 컨테이너 숨김
@@ -5017,6 +5089,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (gallerySlideContainer) gallerySlideContainer.style.display = 'none';
             if (galleryShowTitleContainer) galleryShowTitleContainer.style.display = 'none';
             if (customHtmlContainer) customHtmlContainer.style.display = 'none';
+            if (contactFormContainer) contactFormContainer.style.display = 'none';
+            if (mapContainer) mapContainer.style.display = 'none';
             if (blockContainer) blockContainer.style.display = 'none';
             if (blockSlideContainer) blockSlideContainer.style.display = 'none';
             if (imageContainer) imageContainer.style.display = 'none';
@@ -5094,6 +5168,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (titleInput) titleInput.required = false;
                 const titleOptional = document.getElementById('widget_title_optional');
                 if (titleOptional) titleOptional.style.display = 'inline';
+            } else if (widgetType === 'contact_form') {
+                if (contactFormContainer) contactFormContainer.style.display = 'block';
+                if (titleContainer) titleContainer.style.display = 'block';
+                if (titleInput) titleInput.required = true;
+            } else if (widgetType === 'map') {
+                if (mapContainer) mapContainer.style.display = 'block';
+                if (titleContainer) titleContainer.style.display = 'block';
+                if (titleInput) titleInput.required = true;
             } else if (widgetType === 'block') {
                 if (blockContainer) blockContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'none';
@@ -6239,6 +6321,16 @@ function saveCustomPageWidgetSettings() {
         if (customHtml) {
             settings.html = customHtml;
             settings.custom_html = customHtml;
+        }
+    } else if (widgetType === 'contact_form') {
+        const contactFormId = document.getElementById('edit_custom_page_widget_contact_form_id')?.value;
+        if (contactFormId) {
+            settings.contact_form_id = parseInt(contactFormId);
+        }
+    } else if (widgetType === 'map') {
+        const mapId = document.getElementById('edit_custom_page_widget_map_id')?.value;
+        if (mapId) {
+            settings.map_id = parseInt(mapId);
         }
     } else if (widgetType === 'block') {
         const blockTitle = document.getElementById('edit_custom_page_widget_block_title')?.value;
