@@ -29,7 +29,7 @@
             $hideTitleDescription = $board->hide_title_description ?? false;
         @endphp
         @if(!$hideTitleDescription)
-            <div class="bg-white py-3 rounded shadow-sm mb-3">
+            <div class="bg-white p-3 rounded shadow-sm mb-3">
                 <h2 class="mb-1"><i class="bi bi-file-text"></i> {{ $board->name }}</h2>
             </div>
         @endif

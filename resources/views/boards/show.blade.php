@@ -164,7 +164,12 @@
             $hideTitleDescription = $board->hide_title_description ?? false;
         @endphp
         @if(!$hideTitleDescription)
-            <div class="bg-white py-3 rounded shadow-sm mb-3">
+            @if($boardHeaderImageFullWidth)
+                {{-- 전체 너비 헤더 이미지가 있을 때: 컨테이너 패딩 상쇄 --}}
+                <div class="bg-white p-3 rounded shadow-sm mb-3" style="margin-left: -12px; margin-right: -12px; padding-left: calc(12px + 1rem); padding-right: calc(12px + 1rem);">
+            @else
+                <div class="bg-white p-3 rounded shadow-sm mb-3">
+            @endif
                 <h2 class="mb-1">{{ $board->name }}</h2>
                 @if($board->description)
                     <p class="text-muted mb-0">{{ $board->description }}</p>
