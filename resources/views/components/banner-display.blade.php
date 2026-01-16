@@ -357,34 +357,43 @@
             }
             .header-banner-toggle {
                 position: absolute;
-                bottom: -12px;
+                bottom: 0;
                 left: 50%;
                 transform: translateX(-50%);
                 z-index: 100;
-                background: rgba(0, 0, 0, 0.5);
+                background: rgba(0, 0, 0, 0.6);
                 color: white;
                 border: none;
                 border-radius: 0 0 8px 8px;
-                padding: 2px 16px;
-                font-size: 12px;
+                padding: 4px 20px;
+                font-size: 11px;
                 cursor: pointer;
-                transition: background 0.2s;
+                transition: all 0.2s;
                 display: flex;
                 align-items: center;
                 gap: 4px;
             }
             .header-banner-toggle:hover {
-                background: rgba(0, 0, 0, 0.7);
+                background: rgba(0, 0, 0, 0.8);
             }
             .header-banner-toggle i {
                 transition: transform 0.3s;
+                font-size: 10px;
             }
             .header-banner-toggle.collapsed {
-                bottom: 0;
+                position: relative;
+                left: 50%;
+                transform: translateX(-50%);
                 border-radius: 0 0 8px 8px;
+                margin-top: 0;
             }
             .header-banner-toggle.collapsed i {
                 transform: rotate(180deg);
+            }
+            .header-banner-wrapper.collapsed-state {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
         </style>
         <div class="header-banner-wrapper">
@@ -516,11 +525,13 @@
         </div>
         <script>
         function toggleHeaderBanner() {
+            const wrapper = document.querySelector('.header-banner-wrapper');
             const content = document.getElementById('headerBannerContent');
             const toggle = document.getElementById('headerBannerToggle');
             const isCollapsed = content.classList.contains('collapsed');
             
             if (isCollapsed) {
+                wrapper.classList.remove('collapsed-state');
                 content.classList.remove('collapsed');
                 content.style.maxHeight = content.scrollHeight + 'px';
                 toggle.classList.remove('collapsed');
@@ -529,6 +540,7 @@
             } else {
                 content.style.maxHeight = content.scrollHeight + 'px';
                 content.offsetHeight; // force reflow
+                wrapper.classList.add('collapsed-state');
                 content.classList.add('collapsed');
                 toggle.classList.add('collapsed');
                 toggle.querySelector('span').textContent = '펼치기';
@@ -538,15 +550,17 @@
         
         // 페이지 로드 시 이전 상태 복원
         document.addEventListener('DOMContentLoaded', function() {
+            const wrapper = document.querySelector('.header-banner-wrapper');
             const content = document.getElementById('headerBannerContent');
             const toggle = document.getElementById('headerBannerToggle');
             
-            if (content && toggle) {
+            if (content && toggle && wrapper) {
                 // 초기 높이 설정
                 content.style.maxHeight = content.scrollHeight + 'px';
                 
                 // 이전에 접었던 상태였으면 접힌 상태로 시작
                 if (localStorage.getItem('headerBannerCollapsed') === 'true') {
+                    wrapper.classList.add('collapsed-state');
                     content.classList.add('collapsed');
                     toggle.classList.add('collapsed');
                     toggle.querySelector('span').textContent = '펼치기';
