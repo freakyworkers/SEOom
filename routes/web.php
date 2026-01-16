@@ -1868,6 +1868,43 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             }
             return app(\App\Http\Controllers\AdminController::class)->toggleToggleMenuActive($site, $toggleMenu);
         });
+        
+        // Contact Forms (서브도메인/커스텀 도메인용)
+        Route::get('/contact-forms', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->contactForms($site);
+        });
+        Route::post('/contact-forms', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->storeContactForm($request, $site);
+        });
+        Route::get('/contact-forms/{contactForm}', function (Request $request, \App\Models\ContactForm $contactForm) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->showContactForm($site, $contactForm);
+        });
+        Route::put('/contact-forms/{contactForm}', function (Request $request, \App\Models\ContactForm $contactForm) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateContactForm($request, $site, $contactForm);
+        });
+        Route::delete('/contact-forms/{contactForm}', function (Request $request, \App\Models\ContactForm $contactForm) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->deleteContactForm($site, $contactForm);
+        });
     });
     
     // Board routes for domain-based access (서브도메인/커스텀 도메인용)
