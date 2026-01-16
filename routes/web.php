@@ -1692,28 +1692,28 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->bannersStore($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->bannersStore($site, $request);
         });
         Route::post('/banners/update-order', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->bannersUpdateOrder($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->bannersUpdateOrder($site, $request);
         });
         Route::post('/banners/update-item', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->bannersUpdateItem($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->bannersUpdateItem($site, $request);
         });
         Route::post('/banners/save-all', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->bannersSaveAll($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->bannersSaveAll($site, $request);
         });
         Route::delete('/banners/{banner}', function (Request $request, \App\Models\Banner $banner) {
             $site = $request->attributes->get('site');
