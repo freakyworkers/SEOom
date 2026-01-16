@@ -1678,7 +1678,7 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->bannersUpdate($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->bannersUpdate($site, $request);
         });
         Route::get('/banners/{location}', function (Request $request, $location) {
             $site = $request->attributes->get('site');
