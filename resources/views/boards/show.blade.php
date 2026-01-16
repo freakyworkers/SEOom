@@ -133,7 +133,7 @@
                 <div class="position-relative {{ $boardHeaderTransparent ? 'board-header-image-fullwidth' : '' }}" style="margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); width: 100vw; margin-bottom: 1rem;">
                     <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid" style="width: 100%; height: auto; object-fit: cover;">
                     @if($headerImageTextEnabled && ($headerImageTextTitle || $headerImageTextContent))
-                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center" style="background: rgba(0,0,0,0.3);{{ $boardHeaderTransparent ? ' padding-top: 80px;' : '' }}">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center" style="{{ $boardHeaderTransparent ? 'padding-top: 80px;' : '' }}">
                             <div class="{{ $textAlignClass }} px-4 py-3" style="max-width: 800px;">
                                 @if($headerImageTextTitle)
                                     <h2 class="mb-2" style="font-size: {{ $responsiveTitleFontSize }}; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 500;">{{ $headerImageTextTitle }}</h2>
@@ -150,7 +150,7 @@
                 <div class="mb-3 position-relative">
                     <img src="{{ asset('storage/' . $board->header_image_path) }}" alt="{{ $board->name }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: auto;">
                     @if($headerImageTextEnabled && ($headerImageTextTitle || $headerImageTextContent))
-                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center rounded" style="background: rgba(0,0,0,0.3);">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center rounded">
                             <div class="{{ $textAlignClass }} px-4 py-3" style="max-width: 100%;">
                                 @if($headerImageTextTitle)
                                     <h2 class="mb-2" style="font-size: {{ $responsiveTitleFontSize }}; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 500;">{{ $headerImageTextTitle }}</h2>
