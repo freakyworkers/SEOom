@@ -55,7 +55,7 @@
                                 @foreach($maps as $map)
                                     <tr>
                                         <td>
-                                            <a href="{{ $site->getAdminRouteUrl('admin.maps.edit', ['map' => $map->id]) }}" class="text-decoration-none">
+                                            <a href="{{ $site->isUsingDirectDomain() ? '/admin/maps/' . $map->id . '/edit' : route('admin.maps.edit', ['site' => $site->slug, 'map' => $map->id]) }}" class="text-decoration-none">
                                                 {{ $map->name }}
                                             </a>
                                         </td>
@@ -71,7 +71,7 @@
                                         <td>{{ $map->address }}</td>
                                         <td>{{ $map->created_at->format('Y-m-d H:i') }}</td>
                                         <td>
-                                            <a href="{{ $site->getAdminRouteUrl('admin.maps.edit', ['map' => $map->id]) }}" class="btn btn-sm btn-outline-primary">
+                                            <a href="{{ $site->isUsingDirectDomain() ? '/admin/maps/' . $map->id . '/edit' : route('admin.maps.edit', ['site' => $site->slug, 'map' => $map->id]) }}" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-pencil me-1"></i>수정
                                             </a>
                                             <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteMap({{ $map->id }})">
@@ -92,7 +92,7 @@
                                     <!-- 이름과 지도 타입 -->
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div class="flex-grow-1">
-                                            <a href="{{ $site->getAdminRouteUrl('admin.maps.edit', ['map' => $map->id]) }}" 
+                                            <a href="{{ $site->isUsingDirectDomain() ? '/admin/maps/' . $map->id . '/edit' : route('admin.maps.edit', ['site' => $site->slug, 'map' => $map->id]) }}" 
                                                class="text-decoration-none">
                                                 <h6 class="mb-1 fw-bold" style="font-size: 0.95rem;">{{ $map->name }}</h6>
                                             </a>
@@ -122,7 +122,7 @@
 
                                     <!-- 작업 버튼 -->
                                     <div class="d-grid gap-2">
-                                        <a href="{{ $site->getAdminRouteUrl('admin.maps.edit', ['map' => $map->id]) }}" 
+                                        <a href="{{ $site->isUsingDirectDomain() ? '/admin/maps/' . $map->id . '/edit' : route('admin.maps.edit', ['site' => $site->slug, 'map' => $map->id]) }}" 
                                            class="btn btn-sm btn-outline-primary"
                                            style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
                                             <i class="bi bi-pencil"></i> 수정
@@ -337,7 +337,7 @@ function searchAddress() {
     searchBtn.disabled = true;
     searchBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>검색 중...';
     
-    fetch('{{ $site->getAdminRouteUrl("admin.maps.geocode") }}', {
+    fetch('{{ $site->isUsingDirectDomain() ? "/admin/maps/geocode" : route("admin.maps.geocode", ["site" => $site->slug]) }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -400,8 +400,8 @@ function saveMap() {
     }
     
     const url = mapId 
-        ? '{{ $site->getAdminRouteUrl("admin.maps.update", ["map" => ":id"]) }}'.replace(':id', mapId)
-        : '{{ $site->getAdminRouteUrl("admin.maps.store") }}';
+        ? '{{ $site->isUsingDirectDomain() ? "/admin/maps/:id" : route("admin.maps.update", ["site" => $site->slug, "map" => ":id"]) }}'.replace(':id', mapId)
+        : '{{ $site->isUsingDirectDomain() ? "/admin/maps" : route("admin.maps.store", ["site" => $site->slug]) }}';
     
     // PUT 메서드 사용 시 _method 필드 추가
     if (mapId) {
@@ -457,7 +457,7 @@ function deleteMap(id) {
         return;
     }
     
-    fetch('{{ $site->getAdminRouteUrl("admin.maps.delete", ["map" => ":id"]) }}'.replace(':id', id), {
+    fetch('{{ $site->isUsingDirectDomain() ? "/admin/maps/:id" : route("admin.maps.delete", ["site" => $site->slug, "map" => ":id"]) }}'.replace(':id', id), {
         method: 'DELETE',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -484,7 +484,7 @@ function addDefaultMaps() {
         return;
     }
     
-    fetch('{{ $site->getAdminRouteUrl("admin.maps.add-default") }}', {
+    fetch('{{ $site->isUsingDirectDomain() ? "/admin/maps/add-default" : route("admin.maps.add-default", ["site" => $site->slug]) }}', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
