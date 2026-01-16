@@ -1882,7 +1882,7 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->storeContactForm($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->storeContactForm($site, $request);
         });
         Route::get('/contact-forms/{contactForm}', function (Request $request, \App\Models\ContactForm $contactForm) {
             $site = $request->attributes->get('site');
@@ -1896,7 +1896,7 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->updateContactForm($request, $site, $contactForm);
+            return app(\App\Http\Controllers\AdminController::class)->updateContactForm($site, $contactForm, $request);
         });
         Route::delete('/contact-forms/{contactForm}', function (Request $request, \App\Models\ContactForm $contactForm) {
             $site = $request->attributes->get('site');
