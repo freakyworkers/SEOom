@@ -128,7 +128,12 @@
 @endphp
 
 @if($banners->isNotEmpty())
-    <div class="banner-container banner-{{ $location }}" data-location="{{ $location }}" style="width: 100%; max-width: 100%; @if(!in_array($location, ['mobile_menu_top', 'mobile_menu_bottom'])) overflow: hidden; @else overflow: visible; height: auto; @endif margin-bottom: {{ $exposureType !== 'slide' ? ($mobileGap . 'px') : '0' }};">
+    @php
+        // 헤더 배너는 상하단 여백 없이 표시
+        $isHeaderBanner = ($location === 'header');
+        $containerMarginBottom = $isHeaderBanner ? '0' : ($exposureType !== 'slide' ? ($mobileGap . 'px') : '0');
+    @endphp
+    <div class="banner-container banner-{{ $location }}" data-location="{{ $location }}" style="width: 100%; max-width: 100%; @if(!in_array($location, ['mobile_menu_top', 'mobile_menu_bottom'])) overflow: hidden; @else overflow: visible; height: auto; @endif margin-bottom: {{ $containerMarginBottom }};">
         @if(in_array($location, ['left_margin', 'right_margin']))
             <style>
                 /* 좌측/우측 여백 배너 스타일 */
@@ -220,8 +225,8 @@
                 flex-wrap: wrap !important;
                 gap: {{ $mobileGap }}px !important;
                 align-items: center !important;
-                margin-top: {{ $mobileGap }}px !important;
-                margin-bottom: {{ $mobileGap }}px !important;
+                margin-top: {{ $isHeaderBanner ? '0' : $mobileGap . 'px' }} !important;
+                margin-bottom: {{ $isHeaderBanner ? '0' : $mobileGap . 'px' }} !important;
             }
             
             /* 최상단 고정 배너도 동일한 여백 적용 (모바일) */
@@ -253,7 +258,7 @@
             /* 데스크탑 스타일 - 가로 3개 */
             @media (min-width: 768px) {
                 .banner-container.banner-{{ $location }} {
-                    margin-bottom: {{ $desktopGap }}px !important;
+                    margin-bottom: {{ $isHeaderBanner ? '0' : $desktopGap . 'px' }} !important;
                 }
                 
                 .banner-container.banner-{{ $location }} .banner-row-{{ $location }} {
@@ -261,8 +266,8 @@
                     flex-wrap: wrap !important;
                     gap: {{ $desktopGap }}px !important;
                     align-items: center !important;
-                    margin-top: {{ $desktopGap }}px !important;
-                    margin-bottom: {{ $desktopGap }}px !important;
+                    margin-top: {{ $isHeaderBanner ? '0' : $desktopGap . 'px' }} !important;
+                    margin-bottom: {{ $isHeaderBanner ? '0' : $desktopGap . 'px' }} !important;
                 }
                 
                 /* 최상단 고정 배너도 동일한 여백 적용 (데스크탑) */
@@ -332,6 +337,58 @@
                 margin-bottom: {{ $mobileGap }}px !important;
             }
         </style>
+        @endif
+        
+        @if($isHeaderBanner)
+        {{-- 헤더 배너 접기/펼치기 버튼 --}}
+        <style>
+            .header-banner-wrapper {
+                position: relative;
+                width: 100%;
+            }
+            .header-banner-content {
+                width: 100%;
+                overflow: hidden;
+                transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            }
+            .header-banner-content.collapsed {
+                max-height: 0 !important;
+                opacity: 0;
+            }
+            .header-banner-toggle {
+                position: absolute;
+                bottom: -12px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 100;
+                background: rgba(0, 0, 0, 0.5);
+                color: white;
+                border: none;
+                border-radius: 0 0 8px 8px;
+                padding: 2px 16px;
+                font-size: 12px;
+                cursor: pointer;
+                transition: background 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .header-banner-toggle:hover {
+                background: rgba(0, 0, 0, 0.7);
+            }
+            .header-banner-toggle i {
+                transition: transform 0.3s;
+            }
+            .header-banner-toggle.collapsed {
+                bottom: 0;
+                border-radius: 0 0 8px 8px;
+            }
+            .header-banner-toggle.collapsed i {
+                transform: rotate(180deg);
+            }
+        </style>
+        <div class="header-banner-wrapper">
+            <div class="header-banner-content" id="headerBannerContent">
         @endif
         
         @if($exposureType === 'slide' && $banners->count() > 1)
@@ -448,6 +505,55 @@
                     </div>
                 @endforeach
             </div>
+        @endif
+        
+        @if($isHeaderBanner)
+            </div>
+            <button class="header-banner-toggle" id="headerBannerToggle" onclick="toggleHeaderBanner()">
+                <i class="bi bi-chevron-up"></i>
+                <span>접기</span>
+            </button>
+        </div>
+        <script>
+        function toggleHeaderBanner() {
+            const content = document.getElementById('headerBannerContent');
+            const toggle = document.getElementById('headerBannerToggle');
+            const isCollapsed = content.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                content.classList.remove('collapsed');
+                content.style.maxHeight = content.scrollHeight + 'px';
+                toggle.classList.remove('collapsed');
+                toggle.querySelector('span').textContent = '접기';
+                localStorage.removeItem('headerBannerCollapsed');
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                content.offsetHeight; // force reflow
+                content.classList.add('collapsed');
+                toggle.classList.add('collapsed');
+                toggle.querySelector('span').textContent = '펼치기';
+                localStorage.setItem('headerBannerCollapsed', 'true');
+            }
+        }
+        
+        // 페이지 로드 시 이전 상태 복원
+        document.addEventListener('DOMContentLoaded', function() {
+            const content = document.getElementById('headerBannerContent');
+            const toggle = document.getElementById('headerBannerToggle');
+            
+            if (content && toggle) {
+                // 초기 높이 설정
+                content.style.maxHeight = content.scrollHeight + 'px';
+                
+                // 이전에 접었던 상태였으면 접힌 상태로 시작
+                if (localStorage.getItem('headerBannerCollapsed') === 'true') {
+                    content.classList.add('collapsed');
+                    toggle.classList.add('collapsed');
+                    toggle.querySelector('span').textContent = '펼치기';
+                }
+            }
+        });
+        </script>
         @endif
     </div>
     
