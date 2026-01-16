@@ -2707,7 +2707,7 @@
                         $hideTitleDescription = $board->hide_title_description ?? false;
                     @endphp
                     @if(!$hideTitleDescription)
-                        <div class="{{ $boardViewerBgClass }} p-3 rounded {{ $boardViewerShadowClass }} mb-3">
+                        <div class="{{ $boardViewerBgClass }} py-3 rounded {{ $boardViewerShadowClass }} mb-3">
                             <h2 class="mb-1"><i class="bi bi-file-text"></i> {{ $board->name }}</h2>
                             @if($board->description)
                                 <p class="text-muted mb-0">{{ $board->description }}</p>
