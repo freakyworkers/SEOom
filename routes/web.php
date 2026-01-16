@@ -2276,49 +2276,49 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->index($site, $request);
+            return app(\App\Http\Controllers\Admin\PointExchangeController::class)->index($site);
         });
         Route::put('/point-exchange/settings', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->updateSettings($site, $request);
+            return app(\App\Http\Controllers\Admin\PointExchangeController::class)->updateSettings($site, $request);
         });
         Route::post('/point-exchange/products', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->storeProduct($site, $request);
+            return app(\App\Http\Controllers\Admin\PointExchangeController::class)->storeProduct($site, $request);
         });
         Route::put('/point-exchange/products/{product}', function (Request $request, \App\Models\PointExchangeProduct $product) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->updateProduct($site, $product, $request);
+            return app(\App\Http\Controllers\Admin\PointExchangeController::class)->updateProduct($site, $product, $request);
         });
         Route::delete('/point-exchange/products/{product}', function (Request $request, \App\Models\PointExchangeProduct $product) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->destroyProduct($site, $product);
+            return app(\App\Http\Controllers\Admin\PointExchangeController::class)->destroyProduct($site, $product);
         });
         Route::get('/point-exchange/products/{product}/applications', function (Request $request, \App\Models\PointExchangeProduct $product) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->showApplications($site, $product, $request);
+            return app(\App\Http\Controllers\Admin\PointExchangeController::class)->showApplications($site, $product);
         });
         Route::put('/point-exchange/applications/{application}', function (Request $request, \App\Models\PointExchangeApplication $application) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->updateApplication($site, $application, $request);
+            return app(\App\Http\Controllers\Admin\PointExchangeController::class)->updateApplication($site, $application, $request);
         });
         
         // Event Applications (신청형 이벤트)
