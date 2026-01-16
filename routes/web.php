@@ -1905,6 +1905,472 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             }
             return app(\App\Http\Controllers\AdminController::class)->deleteContactForm($site, $contactForm);
         });
+        
+        // Boards (게시판 관리)
+        Route::get('/boards', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->boards($request);
+        });
+        Route::get('/boards/{board}/topics', function (Request $request, \App\Models\Board $board) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->getBoardTopics($request, $board);
+        });
+        Route::post('/banned-words', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateBannedWords($request);
+        });
+        
+        // Posts (게시글 관리)
+        Route::get('/posts', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->posts($site, $request);
+        });
+        Route::put('/posts/{post}/board', function (Request $request, \App\Models\Post $post) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updatePostBoard($site, $post, $request);
+        });
+        Route::put('/posts/{post}/views', function (Request $request, \App\Models\Post $post) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updatePostViews($site, $post, $request);
+        });
+        
+        // Registration Settings (회원가입 설정)
+        Route::get('/registration-settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->registrationSettings($site);
+        });
+        Route::post('/registration-settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateRegistrationSettings($site, $request);
+        });
+        Route::post('/registration-settings/test-sms', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->testSms($site, $request);
+        });
+        
+        // User Grades (회원등급)
+        Route::get('/user-ranks', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->userRanks($site);
+        });
+        Route::post('/user-ranks', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->userRanksStore($request, $site);
+        });
+        Route::put('/user-ranks/{userRank}', function (Request $request, \App\Models\UserRank $userRank) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->userRanksUpdate($request, $site);
+        });
+        Route::delete('/user-ranks/{userRank}', function (Request $request, \App\Models\UserRank $userRank) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->userRanksDelete($userRank);
+        });
+        
+        // My Page Settings (마이페이지)
+        Route::get('/my-page-settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->myPageSettings($site);
+        });
+        Route::put('/my-page-settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateMyPageSettings($site, $request);
+        });
+        
+        // Mail Settings (메일 설정)
+        Route::get('/mail-settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->mailSettings($site);
+        });
+        Route::post('/mail-settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateMailSettings($site, $request);
+        });
+        Route::post('/mail-settings/test', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->testMail($site, $request);
+        });
+        
+        // Messages (쪽지관리)
+        Route::get('/messages', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->messages($site, $request);
+        });
+        Route::put('/messages/settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateMessageSettings($site, $request);
+        });
+        Route::put('/messages/{message}', function (Request $request, \App\Models\Message $message) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateMessage($site, $message, $request);
+        });
+        Route::delete('/messages/{message}', function (Request $request, \App\Models\Message $message) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->deleteMessage($site, $message);
+        });
+        
+        // Chat (채팅)
+        Route::get('/chat', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminChatController::class)->index($site, $request);
+        });
+        Route::put('/chat/settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminChatController::class)->updateSettings($site, $request);
+        });
+        Route::delete('/chat/messages/{message}', function (Request $request, \App\Models\ChatMessage $message) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminChatController::class)->deleteMessage($site, $message);
+        });
+        Route::post('/chat/ban-user', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminChatController::class)->banUser($site, $request);
+        });
+        
+        // Attendance (출첵)
+        Route::get('/attendance', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminAttendanceController::class)->index($site, $request);
+        });
+        Route::put('/attendance', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminAttendanceController::class)->update($site, $request);
+        });
+        
+        // Reports (신고)
+        Route::get('/reports', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminReportController::class)->index($site, $request);
+        });
+        Route::get('/reports/{report}', function (Request $request, \App\Models\Report $report) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminReportController::class)->show($site, $report, $request);
+        });
+        Route::put('/reports/{report}/status', function (Request $request, \App\Models\Report $report) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminReportController::class)->updateStatus($site, $report, $request);
+        });
+        Route::post('/reports/penalties', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminReportController::class)->issuePenalty($site, $request);
+        });
+        Route::delete('/reports/penalties/{penalty}', function (Request $request, \App\Models\Penalty $penalty) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminReportController::class)->removePenalty($site, $penalty);
+        });
+        
+        // Custom Codes (코드커스텀)
+        Route::get('/custom-codes', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->customCodes($site);
+        });
+        Route::post('/custom-codes', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateCustomCodes($site, $request);
+        });
+        
+        // Server Management (서버관리)
+        Route::get('/server-management', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->serverManagement($site);
+        });
+        
+        // Blocked IPs (아이피차단)
+        Route::get('/blocked-ips', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->blockedIpsIndex($site);
+        });
+        Route::post('/blocked-ips', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->blockedIpsStore($request, $site);
+        });
+        Route::delete('/blocked-ips/{ip}', function (Request $request, $ip) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->blockedIpsDestroy($site, $ip);
+        });
+        
+        // Crawlers (크롤러)
+        Route::get('/crawlers', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->crawlersIndex($site);
+        });
+        Route::post('/crawlers', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->crawlersStore($site, $request);
+        });
+        Route::get('/crawlers/{crawler}', function (Request $request, \App\Models\Crawler $crawler) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->crawlersShow($site, $crawler);
+        });
+        Route::get('/crawlers/{crawler}/edit', function (Request $request, \App\Models\Crawler $crawler) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->crawlersEdit($site, $crawler);
+        });
+        Route::put('/crawlers/{crawler}', function (Request $request, \App\Models\Crawler $crawler) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->crawlersUpdate($site, $crawler, $request);
+        });
+        Route::delete('/crawlers/{crawler}', function (Request $request, \App\Models\Crawler $crawler) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->crawlersDestroy($site, $crawler);
+        });
+        Route::post('/crawlers/{crawler}/toggle-active', function (Request $request, \App\Models\Crawler $crawler) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->crawlersToggleActive($site, $crawler);
+        });
+        Route::post('/crawlers/test', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->crawlersTest($site, $request);
+        });
+        Route::post('/crawlers/run-all', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->crawlersRunAll($site);
+        });
+        
+        // Point Exchange (포인트교환)
+        Route::get('/point-exchange', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->index($site, $request);
+        });
+        Route::put('/point-exchange/settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->updateSettings($site, $request);
+        });
+        Route::post('/point-exchange/products', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->storeProduct($site, $request);
+        });
+        Route::put('/point-exchange/products/{product}', function (Request $request, \App\Models\PointExchangeProduct $product) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->updateProduct($site, $product, $request);
+        });
+        Route::delete('/point-exchange/products/{product}', function (Request $request, \App\Models\PointExchangeProduct $product) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->destroyProduct($site, $product);
+        });
+        Route::get('/point-exchange/products/{product}/applications', function (Request $request, \App\Models\PointExchangeProduct $product) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->showApplications($site, $product, $request);
+        });
+        Route::put('/point-exchange/applications/{application}', function (Request $request, \App\Models\PointExchangeApplication $application) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\AdminPointExchangeController::class)->updateApplication($site, $application, $request);
+        });
+        
+        // Event Applications (신청형 이벤트)
+        Route::get('/event-application', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\EventApplicationController::class)->index($site);
+        });
+        Route::put('/event-application/settings', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\EventApplicationController::class)->updateSettings($site, $request);
+        });
+        Route::post('/event-application/products', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\EventApplicationController::class)->storeProduct($site, $request);
+        });
+        Route::put('/event-application/products/{product}', function (Request $request, \App\Models\EventApplicationProduct $product) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\EventApplicationController::class)->updateProduct($site, $product, $request);
+        });
+        Route::delete('/event-application/products/{product}', function (Request $request, \App\Models\EventApplicationProduct $product) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\EventApplicationController::class)->destroyProduct($site, $product);
+        });
+        Route::get('/event-application/products/{product}/submissions', function (Request $request, \App\Models\EventApplicationProduct $product) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\EventApplicationController::class)->showSubmissions($site, $product);
+        });
+        Route::put('/event-application/submissions/{submission}', function (Request $request, \App\Models\EventApplicationSubmission $submission) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\Admin\EventApplicationController::class)->updateSubmission($site, $submission, $request);
+        });
     });
     
     // Board routes for domain-based access (서브도메인/커스텀 도메인용)
