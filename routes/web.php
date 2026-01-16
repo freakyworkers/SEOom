@@ -1935,7 +1935,7 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->posts($site, $request);
+            return app(\App\Http\Controllers\AdminController::class)->posts($request);
         });
         Route::put('/posts/{post}/board', function (Request $request, \App\Models\Post $post) {
             $site = $request->attributes->get('site');
@@ -2080,28 +2080,28 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminChatController::class)->index($site, $request);
+            return app(\App\Http\Controllers\AdminChatController::class)->index($site);
         });
         Route::put('/chat/settings', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminChatController::class)->updateSettings($site, $request);
+            return app(\App\Http\Controllers\AdminChatController::class)->updateSettings($site, $request);
         });
         Route::delete('/chat/messages/{message}', function (Request $request, \App\Models\ChatMessage $message) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminChatController::class)->deleteMessage($site, $message);
+            return app(\App\Http\Controllers\AdminChatController::class)->deleteMessage($site, $message);
         });
         Route::post('/chat/ban-user', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminChatController::class)->banUser($site, $request);
+            return app(\App\Http\Controllers\AdminChatController::class)->banUser($site, $request);
         });
         
         // Attendance (출첵)
@@ -2110,14 +2110,14 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminAttendanceController::class)->index($site, $request);
+            return app(\App\Http\Controllers\Admin\AttendanceController::class)->index($site);
         });
         Route::put('/attendance', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminAttendanceController::class)->update($site, $request);
+            return app(\App\Http\Controllers\Admin\AttendanceController::class)->update($site, $request);
         });
         
         // Reports (신고)
@@ -2126,35 +2126,35 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminReportController::class)->index($site, $request);
+            return app(\App\Http\Controllers\AdminReportController::class)->index($site, $request);
         });
         Route::get('/reports/{report}', function (Request $request, \App\Models\Report $report) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminReportController::class)->show($site, $report, $request);
+            return app(\App\Http\Controllers\AdminReportController::class)->show($site, $report);
         });
         Route::put('/reports/{report}/status', function (Request $request, \App\Models\Report $report) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminReportController::class)->updateStatus($site, $report, $request);
+            return app(\App\Http\Controllers\AdminReportController::class)->updateStatus($site, $report, $request);
         });
         Route::post('/reports/penalties', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminReportController::class)->issuePenalty($site, $request);
+            return app(\App\Http\Controllers\AdminReportController::class)->issuePenalty($site, $request);
         });
         Route::delete('/reports/penalties/{penalty}', function (Request $request, \App\Models\Penalty $penalty) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\Admin\AdminReportController::class)->removePenalty($site, $penalty);
+            return app(\App\Http\Controllers\AdminReportController::class)->removePenalty($site, $penalty);
         });
         
         // Custom Codes (코드커스텀)
