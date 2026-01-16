@@ -4409,7 +4409,7 @@
                     <div class="map-widget-container" style="display: flex; flex-direction: column; height: 100%; min-height: 400px;">
                         <div class="map-widget" style="width: 100%; flex: 1; min-height: 300px; border: 1px solid #dee2e6; border-radius: 0.375rem; overflow: hidden;">
                             @if($map->map_type === 'google' && !empty($googleApiKey))
-                                <div id="google-map-{{ $map->id }}" style="width: 100%; height: 100%;"></div>
+                                <div id="google-map-{{ $map->id }}" style="width: 100%; height: 100%; min-height: 300px;"></div>
                                 @push('scripts')
                                 <script>
                                 // 구글 지도 API가 로드되기 전에 함수를 window 객체에 등록
@@ -4533,7 +4533,7 @@
                                 </script>
                                 @endpush
                         @elseif($map->map_type === 'kakao' && !empty($kakaoApiKey))
-                            <div id="kakao-map-{{ $map->id }}" style="width: 100%; height: 100%;"></div>
+                            <div id="kakao-map-{{ $map->id }}" style="width: 100%; height: 100%; min-height: 300px;"></div>
                             @push('scripts')
                             <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ $kakaoApiKey }}"></script>
                             <script>
@@ -4569,7 +4569,7 @@
                             </script>
                             @endpush
                         @elseif($map->map_type === 'naver' && !empty($naverApiKey))
-                            <div id="naver-map-{{ $map->id }}" style="width: 100%; height: 100%;"></div>
+                            <div id="naver-map-{{ $map->id }}" style="width: 100%; height: 100%; min-height: 300px;"></div>
                             @push('scripts')
                             <script type="text/javascript" src="https://oapi.map.naver.com/map3.js?v=3.0&ncpClientId={{ $naverApiKey }}"></script>
                             <script>
