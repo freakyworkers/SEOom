@@ -516,7 +516,7 @@
                     <div class="image-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
                         <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
                             @if($title)
-                                <h3 style="color: {{ $textColor }}; font-size: {{ $responsiveTitleFontSize }}; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
+                                <h3 style="color: {{ $textColor }}; font-size: {{ $responsiveTitleFontSize }}; margin: 0{{ $content ? ' 0 ' . $titleContentGap . 'px 0' : '' }};">{{ $title }}</h3>
                             @endif
                             @if($content)
                                 <p style="color: {{ $textColor }}; font-size: {{ $responsiveContentFontSize }}; margin: 0;">{{ $content }}</p>
@@ -645,7 +645,7 @@
                                     <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
                                         <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
                                             @if($title)
-                                                <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
+                                                <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0{{ $content ? ' 0 ' . $titleContentGap . 'px 0' : '' }};">{{ $title }}</h3>
                                             @endif
                                             @if($content)
                                                 <p style="color: {{ $textColor }}; font-size: {{ $contentFontSize }}px; margin: 0;">{{ $content }}</p>
@@ -747,7 +747,7 @@
                                     <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
                                         <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
                                             @if($title)
-                                                <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
+                                                <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0{{ $content ? ' 0 ' . $titleContentGap . 'px 0' : '' }};">{{ $title }}</h3>
                                             @endif
                                             @if($content)
                                                 <p style="color: {{ $textColor }}; font-size: {{ $contentFontSize }}px; margin: 0;">{{ $content }}</p>
@@ -847,7 +847,7 @@
                                         <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none; z-index: 2;">
                                             <div style="pointer-events: auto; text-align: {{ $alignH === 'center' ? 'center' : ($alignH === 'right' ? 'right' : 'left') }};">
                                                 @if($title)
-                                                    <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0 0 {{ $titleContentGap }}px 0;">{{ $title }}</h3>
+                                                    <h3 style="color: {{ $textColor }}; font-size: {{ $titleFontSize }}px; margin: 0{{ $content ? ' 0 ' . $titleContentGap . 'px 0' : '' }};">{{ $title }}</h3>
                                                 @endif
                                                 @if($content)
                                                     <p style="color: {{ $textColor }}; font-size: {{ $contentFontSize }}px; margin: 0;">{{ $content }}</p>
