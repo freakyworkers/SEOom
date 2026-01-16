@@ -136,7 +136,7 @@
                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center" style="background: rgba(0,0,0,0.3);{{ $boardHeaderTransparent ? ' padding-top: 80px;' : '' }}">
                             <div class="{{ $textAlignClass }} px-4 py-3" style="max-width: 800px;">
                                 @if($headerImageTextTitle)
-                                    <h2 class="mb-2 fw-bold" style="font-size: {{ $responsiveTitleFontSize }}; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
+                                    <h2 class="mb-2" style="font-size: {{ $responsiveTitleFontSize }}; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 500;">{{ $headerImageTextTitle }}</h2>
                                 @endif
                                 @if($headerImageTextContent)
                                     <p class="mb-0" style="font-size: {{ $responsiveContentFontSize }}; color: {{ $headerImageTextContentColor }}; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>
@@ -153,7 +153,7 @@
                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex {{ $valignClass }} justify-content-center rounded" style="background: rgba(0,0,0,0.3);">
                             <div class="{{ $textAlignClass }} px-4 py-3" style="max-width: 100%;">
                                 @if($headerImageTextTitle)
-                                    <h2 class="mb-2 fw-bold" style="font-size: {{ $responsiveTitleFontSize }}; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $headerImageTextTitle }}</h2>
+                                    <h2 class="mb-2" style="font-size: {{ $responsiveTitleFontSize }}; color: {{ $headerImageTextTitleColor }}; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 500;">{{ $headerImageTextTitle }}</h2>
                                 @endif
                                 @if($headerImageTextContent)
                                     <p class="mb-0" style="font-size: {{ $responsiveContentFontSize }}; color: {{ $headerImageTextContentColor }}; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{!! nl2br(e($headerImageTextContent)) !!}</p>

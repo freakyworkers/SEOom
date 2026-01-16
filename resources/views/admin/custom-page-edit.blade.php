@@ -4664,6 +4664,92 @@ function editCustomPageWidget(widgetId) {
                 if (document.getElementById('edit_custom_page_widget_image_open_new_tab')) {
                     document.getElementById('edit_custom_page_widget_image_open_new_tab').checked = settings.image_open_new_tab || false;
                 }
+                
+                // 텍스트 오버레이 설정 로드
+                const textOverlayCheckbox = document.getElementById('edit_custom_page_widget_image_text_overlay');
+                const textOverlayContainer = document.getElementById('edit_custom_page_widget_image_text_overlay_container');
+                if (textOverlayCheckbox) {
+                    textOverlayCheckbox.checked = settings.text_overlay || false;
+                    if (textOverlayContainer) {
+                        textOverlayContainer.style.display = settings.text_overlay ? 'block' : 'none';
+                    }
+                }
+                if (document.getElementById('edit_custom_page_widget_image_title')) {
+                    document.getElementById('edit_custom_page_widget_image_title').value = settings.title || '';
+                }
+                if (document.getElementById('edit_custom_page_widget_image_title_font_size')) {
+                    document.getElementById('edit_custom_page_widget_image_title_font_size').value = settings.title_font_size || 24;
+                }
+                if (document.getElementById('edit_custom_page_widget_image_content')) {
+                    document.getElementById('edit_custom_page_widget_image_content').value = settings.content || '';
+                }
+                if (document.getElementById('edit_custom_page_widget_image_content_font_size')) {
+                    document.getElementById('edit_custom_page_widget_image_content_font_size').value = settings.content_font_size || 16;
+                }
+                if (document.getElementById('edit_custom_page_widget_image_title_content_gap')) {
+                    document.getElementById('edit_custom_page_widget_image_title_content_gap').value = settings.title_content_gap || 10;
+                }
+                if (document.getElementById('edit_custom_page_widget_image_text_padding_left')) {
+                    document.getElementById('edit_custom_page_widget_image_text_padding_left').value = settings.text_padding_left || 0;
+                }
+                if (document.getElementById('edit_custom_page_widget_image_text_padding_right')) {
+                    document.getElementById('edit_custom_page_widget_image_text_padding_right').value = settings.text_padding_right || 0;
+                }
+                if (document.getElementById('edit_custom_page_widget_image_text_padding_top')) {
+                    document.getElementById('edit_custom_page_widget_image_text_padding_top').value = settings.text_padding_top || 0;
+                }
+                if (document.getElementById('edit_custom_page_widget_image_text_padding_bottom')) {
+                    document.getElementById('edit_custom_page_widget_image_text_padding_bottom').value = settings.text_padding_bottom || 10;
+                }
+                // 정렬 설정
+                const alignH = settings.align_h || 'left';
+                const alignHRadio = document.querySelector(`input[name="edit_custom_page_widget_image_align_h"][value="${alignH}"]`);
+                if (alignHRadio) alignHRadio.checked = true;
+                const alignV = settings.align_v || 'middle';
+                const alignVRadio = document.querySelector(`input[name="edit_custom_page_widget_image_align_v"][value="${alignV}"]`);
+                if (alignVRadio) alignVRadio.checked = true;
+                if (document.getElementById('edit_custom_page_widget_image_text_color')) {
+                    document.getElementById('edit_custom_page_widget_image_text_color').value = settings.text_color || '#ffffff';
+                }
+                // 버튼 설정
+                const hasButtonCheckbox = document.getElementById('edit_custom_page_widget_image_has_button');
+                const buttonContainer = document.getElementById('edit_custom_page_widget_image_button_container');
+                if (hasButtonCheckbox) {
+                    hasButtonCheckbox.checked = settings.has_button || false;
+                    if (buttonContainer) {
+                        buttonContainer.style.display = settings.has_button ? 'block' : 'none';
+                    }
+                }
+                if (document.getElementById('edit_custom_page_widget_image_button_text')) {
+                    document.getElementById('edit_custom_page_widget_image_button_text').value = settings.button_text || '';
+                }
+                if (document.getElementById('edit_custom_page_widget_image_button_link')) {
+                    document.getElementById('edit_custom_page_widget_image_button_link').value = settings.button_link || '';
+                }
+                if (document.getElementById('edit_custom_page_widget_image_button_new_tab')) {
+                    document.getElementById('edit_custom_page_widget_image_button_new_tab').checked = settings.button_new_tab || false;
+                }
+                if (document.getElementById('edit_custom_page_widget_image_button_color')) {
+                    document.getElementById('edit_custom_page_widget_image_button_color').value = settings.button_color || '#0d6efd';
+                }
+                if (document.getElementById('edit_custom_page_widget_image_button_text_color')) {
+                    document.getElementById('edit_custom_page_widget_image_button_text_color').value = settings.button_text_color || '#ffffff';
+                }
+                if (document.getElementById('edit_custom_page_widget_image_button_border_color')) {
+                    document.getElementById('edit_custom_page_widget_image_button_border_color').value = settings.button_border_color || '#0d6efd';
+                }
+                if (document.getElementById('edit_custom_page_widget_image_button_opacity')) {
+                    document.getElementById('edit_custom_page_widget_image_button_opacity').value = settings.button_opacity !== undefined ? settings.button_opacity : 100;
+                }
+                if (document.getElementById('edit_custom_page_widget_image_button_hover_bg_color')) {
+                    document.getElementById('edit_custom_page_widget_image_button_hover_bg_color').value = settings.button_hover_bg_color || '#0b5ed7';
+                }
+                if (document.getElementById('edit_custom_page_widget_image_button_hover_text_color')) {
+                    document.getElementById('edit_custom_page_widget_image_button_hover_text_color').value = settings.button_hover_text_color || '#ffffff';
+                }
+                if (document.getElementById('edit_custom_page_widget_image_button_hover_border_color')) {
+                    document.getElementById('edit_custom_page_widget_image_button_hover_border_color').value = settings.button_hover_border_color || '#0a58ca';
+                }
             } else if (widgetType === 'image_slide') {
                 if (imageSlideContainer) imageSlideContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'none';
