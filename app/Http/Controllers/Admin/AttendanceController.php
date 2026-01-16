@@ -75,11 +75,21 @@ class AttendanceController extends Controller
 
         try {
             $this->attendanceService->saveSettings($site->id, $settings);
-            return redirect()->route('admin.attendance.index', ['site' => $site->slug])
-                ->with('success', '출석 설정이 저장되었습니다.');
+            if ($site->isUsingDirectDomain()) {
+                return redirect('/admin/attendance')
+                    ->with('success', '출석 설정이 저장되었습니다.');
+            } else {
+                return redirect()->route('admin.attendance.index', ['site' => $site->slug])
+                    ->with('success', '출석 설정이 저장되었습니다.');
+            }
         } catch (\Exception $e) {
-            return redirect()->route('admin.attendance.index', ['site' => $site->slug])
-                ->with('error', '설정 저장 중 오류가 발생했습니다: ' . $e->getMessage());
+            if ($site->isUsingDirectDomain()) {
+                return redirect('/admin/attendance')
+                    ->with('error', '설정 저장 중 오류가 발생했습니다: ' . $e->getMessage());
+            } else {
+                return redirect()->route('admin.attendance.index', ['site' => $site->slug])
+                    ->with('error', '설정 저장 중 오류가 발생했습니다: ' . $e->getMessage());
+            }
         }
     }
 }
