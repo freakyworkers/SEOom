@@ -993,7 +993,11 @@
     <label for="widget_toggle_menu_id" class="form-label">토글 메뉴 선택</label>
     <select class="form-select" id="widget_toggle_menu_id" name="toggle_menu_id">
         <option value="">선택하세요</option>
-        <!-- 토글 메뉴 옵션들이 여기에 동적으로 추가됨 -->
+        @if(isset($site))
+            @foreach(\App\Models\ToggleMenu::where('site_id', $site->id)->where('is_active', true)->orderBy('order')->get() as $toggleMenu)
+                <option value="{{ $toggleMenu->id }}">{{ $toggleMenu->name ?? '' }}</option>
+            @endforeach
+        @endif
     </select>
     <small class="text-muted">표시할 토글 메뉴를 선택하세요.</small>
 </div>

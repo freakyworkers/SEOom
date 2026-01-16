@@ -203,6 +203,9 @@
 
 @push('scripts')
 <script>
+    // Base admin URL for API calls
+    const adminToggleMenusUrl = '{{ $site->isUsingDirectDomain() ? "/admin/toggle-menus" : "/site/" . $site->slug . "/admin/toggle-menus" }}';
+    
     let items = [];
     let editItems = [];
 
@@ -334,7 +337,7 @@
             items: items
         };
         
-        fetch('{{ route("admin.toggle-menus.store", ["site" => $site->slug]) }}', {
+        fetch(adminToggleMenusUrl, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -362,7 +365,7 @@
     function editToggleMenu(id, event) {
         event.stopPropagation();
         
-        fetch(`/site/{{ $site->slug }}/admin/toggle-menus/${id}`)
+        fetch(`${adminToggleMenusUrl}/${id}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -402,7 +405,7 @@
             return;
         }
         
-        fetch(`/site/{{ $site->slug }}/admin/toggle-menus/${id}`, {
+        fetch(`${adminToggleMenusUrl}/${id}`, {
             method: 'PUT',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -436,7 +439,7 @@
             return;
         }
         
-        fetch(`/site/{{ $site->slug }}/admin/toggle-menus/${id}`, {
+        fetch(`${adminToggleMenusUrl}/${id}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -461,7 +464,7 @@
     function toggleActive(id, event) {
         event.stopPropagation();
         
-        fetch(`/site/{{ $site->slug }}/admin/toggle-menus/${id}/toggle-active`, {
+        fetch(`${adminToggleMenusUrl}/${id}/toggle-active`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',

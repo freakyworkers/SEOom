@@ -4461,7 +4461,7 @@ function editCustomPageWidget(widgetId) {
                     }
                 }
                 // 토글 메뉴 목록 로드
-                fetch('/site/{{ $site->slug }}/admin/toggle-menus/list')
+                fetch('{{ $site->isUsingDirectDomain() ? "/admin/toggle-menus/list" : "/site/" . $site->slug . "/admin/toggle-menus/list" }}')
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -5075,6 +5075,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const customHtmlContainer = document.getElementById('widget_custom_html_container');
             const contactFormContainer = document.getElementById('widget_contact_form_container');
             const mapContainer = document.getElementById('widget_map_container');
+            const toggleMenuContainer = document.getElementById('widget_toggle_menu_container');
             const titleHelp = document.getElementById('widget_title_help');
             
             // 모든 컨테이너 숨김
@@ -5091,6 +5092,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (customHtmlContainer) customHtmlContainer.style.display = 'none';
             if (contactFormContainer) contactFormContainer.style.display = 'none';
             if (mapContainer) mapContainer.style.display = 'none';
+            if (toggleMenuContainer) toggleMenuContainer.style.display = 'none';
             if (blockContainer) blockContainer.style.display = 'none';
             if (blockSlideContainer) blockSlideContainer.style.display = 'none';
             if (imageContainer) imageContainer.style.display = 'none';
@@ -5174,6 +5176,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (titleInput) titleInput.required = true;
             } else if (widgetType === 'map') {
                 if (mapContainer) mapContainer.style.display = 'block';
+                if (titleContainer) titleContainer.style.display = 'block';
+                if (titleInput) titleInput.required = true;
+            } else if (widgetType === 'toggle_menu') {
+                if (toggleMenuContainer) toggleMenuContainer.style.display = 'block';
                 if (titleContainer) titleContainer.style.display = 'block';
                 if (titleInput) titleInput.required = true;
             } else if (widgetType === 'block') {

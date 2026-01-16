@@ -1817,6 +1817,57 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             }
             return app(\App\Http\Controllers\AdminController::class)->mapsAddDefault($request, $site);
         });
+        
+        // Toggle Menus (서브도메인/커스텀 도메인용)
+        Route::get('/toggle-menus', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->toggleMenus($site);
+        });
+        Route::get('/toggle-menus/list', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->getToggleMenusList($site);
+        });
+        Route::get('/toggle-menus/{toggleMenu}', function (Request $request, \App\Models\ToggleMenu $toggleMenu) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->getToggleMenu($site, $toggleMenu);
+        });
+        Route::post('/toggle-menus', function (Request $request) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->storeToggleMenu($site, $request);
+        });
+        Route::put('/toggle-menus/{toggleMenu}', function (Request $request, \App\Models\ToggleMenu $toggleMenu) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->updateToggleMenu($site, $toggleMenu, $request);
+        });
+        Route::delete('/toggle-menus/{toggleMenu}', function (Request $request, \App\Models\ToggleMenu $toggleMenu) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->deleteToggleMenu($site, $toggleMenu);
+        });
+        Route::post('/toggle-menus/{toggleMenu}/toggle-active', function (Request $request, \App\Models\ToggleMenu $toggleMenu) {
+            $site = $request->attributes->get('site');
+            if (!$site) {
+                abort(404);
+            }
+            return app(\App\Http\Controllers\AdminController::class)->toggleToggleMenuActive($site, $toggleMenu);
+        });
     });
     
     // Board routes for domain-based access (서브도메인/커스텀 도메인용)
