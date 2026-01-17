@@ -358,8 +358,7 @@
             .header-banner-toggle {
                 position: absolute;
                 bottom: 0;
-                left: 50%;
-                transform: translateX(-50%);
+                right: 0;
                 z-index: 100;
                 background: rgba(0, 0, 0, 0.6);
                 color: white;
@@ -382,8 +381,8 @@
             }
             .header-banner-toggle.collapsed {
                 position: relative;
-                left: 50%;
-                transform: translateX(-50%);
+                right: 0;
+                margin-left: auto;
                 border-radius: 0 0 8px 8px;
                 margin-top: 0;
             }
@@ -393,7 +392,7 @@
             .header-banner-wrapper.collapsed-state {
                 display: flex;
                 flex-direction: column;
-                align-items: center;
+                align-items: flex-end;
             }
         </style>
         <div class="header-banner-wrapper">
