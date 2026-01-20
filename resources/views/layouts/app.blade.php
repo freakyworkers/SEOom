@@ -291,6 +291,19 @@
             background-color: var(--light-bg);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans KR", "Malgun Gothic", sans-serif;
         }
+
+        /* 게시글 본문(에디터 HTML) 반응형 처리: 모바일에서 이미지가 화면 밖으로 넘치지 않게 */
+        .post-content img {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+
+        /* 에디터가 inline style로 display:inline/float 등을 줄 때도 레이아웃이 깨지지 않게 */
+        .post-content figure,
+        .post-content p,
+        .post-content div {
+            max-width: 100%;
+        }
         
         .navbar {
             box-shadow: 0 2px 4px rgba(0,0,0,.1);
