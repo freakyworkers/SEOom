@@ -27,7 +27,9 @@ class BoardController extends Controller
         $this->boardService = $boardService;
         $this->postService = $postService;
         $this->fileUploadService = $fileUploadService;
-        $this->middleware('auth')->except(['index', 'show']);
+        // loadMore는 핀터레스트 타입 게시판의 "더보기" AJAX에서 사용되며,
+        // 게시판 read_permission(guest/user/admin)에 따라 별도로 권한 체크를 수행한다.
+        $this->middleware('auth')->except(['index', 'show', 'loadMore']);
     }
 
     /**
