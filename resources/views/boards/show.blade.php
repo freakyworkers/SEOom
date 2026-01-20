@@ -1795,8 +1795,14 @@ window.openSendMessageModal = function(userId, userName) {
         const btn = this;
         const btnText = btn.querySelector('.btn-text');
         const btnLoading = btn.querySelector('.btn-loading');
-        const currentPage = parseInt(btn.dataset.page);
+        const currentPage = parseInt(btn.dataset.page, 10);
         const baseUrl = btn.dataset.url;
+
+        const resetButtonState = () => {
+            btn.disabled = false;
+            btnText.classList.remove('d-none');
+            btnLoading.classList.add('d-none');
+        };
         
         // 버튼 로딩 상태
         btn.disabled = true;
@@ -1816,7 +1822,7 @@ window.openSendMessageModal = function(userId, userName) {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.html) {
+            if (data && data.success && data.html) {
                 // 새 게시글 HTML 추가
                 masonryContainer.insertAdjacentHTML('beforeend', data.html);
                 
@@ -1828,16 +1834,12 @@ window.openSendMessageModal = function(userId, userName) {
                     document.getElementById('pinterest-load-more-container').style.display = 'none';
                 }
             }
+            resetButtonState();
         })
         .catch(error => {
             console.error('Error loading more posts:', error);
             alert('게시글을 불러오는 중 오류가 발생했습니다.');
-        })
-        .finally(() => {
-            // 버튼 상태 복원
-            btn.disabled = false;
-            btnText.classList.remove('d-none');
-            btnLoading.classList.add('d-none');
+            resetButtonState();
         });
     });
 })();

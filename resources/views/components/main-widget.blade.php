@@ -3243,8 +3243,14 @@
                             const btn = this;
                             const btnText = btn.querySelector('.btn-text');
                             const btnLoading = btn.querySelector('.btn-loading');
-                            const currentPage = parseInt(btn.dataset.page);
+                            const currentPage = parseInt(btn.dataset.page, 10);
                             const baseUrl = btn.dataset.url;
+
+                            const resetButtonState = () => {
+                                btn.disabled = false;
+                                btnText.classList.remove('d-none');
+                                btnLoading.classList.add('d-none');
+                            };
                             
                             // 버튼 로딩 상태
                             btn.disabled = true;
@@ -3265,7 +3271,7 @@
                             })
                             .then(response => response.json())
                             .then(data => {
-                                if (data.success && data.html) {
+                                if (data && data.success && data.html) {
                                     // 새 게시글 HTML 추가
                                     masonryContainer.insertAdjacentHTML('beforeend', data.html);
                                     
@@ -3277,14 +3283,11 @@
                                         document.getElementById('pinterest-widget-load-more-container-' + widgetId).style.display = 'none';
                                     }
                                 }
+                                resetButtonState();
                             })
                             .catch(error => {
                                 console.error('Error loading more posts:', error);
-                            })
-                            .finally(() => {
-                                btn.disabled = false;
-                                btnText.classList.remove('d-none');
-                                btnLoading.classList.add('d-none');
+                                resetButtonState();
                             });
                         });
                     })();
