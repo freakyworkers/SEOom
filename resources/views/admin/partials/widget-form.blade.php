@@ -574,6 +574,19 @@
             </label>
         </div>
     </div>
+    <div class="mb-3">
+        <label class="form-label">슬라이드 유지 시간 (초)</label>
+        <input type="number" 
+               class="form-control" 
+               id="block_slide_hold_time" 
+               name="block_slide_hold_time" 
+               value="3" 
+               min="0.5" 
+               max="60" 
+               step="0.1"
+               placeholder="3">
+        <small class="text-muted">각 슬라이드가 보여지는 시간 (초 단위, 소수점 입력 가능)</small>
+    </div>
     <div id="widget_block_slide_items">
         <!-- 블록 아이템들이 여기에 동적으로 추가됨 -->
     </div>

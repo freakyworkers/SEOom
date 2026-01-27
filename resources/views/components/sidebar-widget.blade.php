@@ -165,14 +165,16 @@
     @php
         $slideSettings = $widgetSettings;
         $slideDirection = $slideSettings['slide_direction'] ?? 'left';
+        $slideHoldTime = $slideSettings['slide_hold_time'] ?? 3;
         $blocks = $slideSettings['blocks'] ?? [];
     @endphp
     @if(count($blocks) > 0)
         <div class="mb-3 block-slide-wrapper {{ $shadowClass }}" 
              data-direction="{{ $slideDirection }}" 
+             data-hold-time="{{ $slideHoldTime }}"
              data-widget-id="{{ $widget->id }}"
-             style="position: relative; overflow: hidden; width: 100%; {{ in_array($slideDirection, ['up', 'down']) ? 'height: 200px;' : '' }}">
-            <div class="block-slide-container" style="display: flex; width: calc(100% * {{ count($blocks) }}); transition: transform 0.5s ease-in-out; {{ in_array($slideDirection, ['up', 'down']) ? 'flex-direction: column; height: 100%;' : '' }}">
+             style="position: relative; overflow: hidden; width: 100%; flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column;">
+            <div class="block-slide-container" style="display: flex; width: calc(100% * {{ count($blocks) }}); transition: transform 0.5s ease-in-out; flex: 1; {{ in_array($slideDirection, ['up', 'down']) ? 'flex-direction: column; height: 100%;' : 'height: 100%;' }}">
                 @foreach($blocks as $index => $block)
                     @php
                         $blockTitle = $block['title'] ?? '';
@@ -216,7 +218,7 @@
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
                         if (in_array($slideDirection, ['left', 'right'])) {
-                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; height: 100%; flex-shrink: 0;";
                         } else {
                             $blockStyle .= " width: 100%; height: 100%; flex-shrink: 0;";
                         }
@@ -367,6 +369,7 @@
                     
                 const items = wrapper.querySelectorAll('.block-slide-item:not(.block-slide-item-clone)');
                 const direction = wrapper.dataset.direction;
+                const holdTime = parseFloat(wrapper.dataset.holdTime) || 3;
                 const totalItems = items.length;
                 
                 if (totalItems <= 1) return;
@@ -420,8 +423,8 @@
                     updatePosition();
                         // 기존 interval이 있으면 제거
                         if (slideInterval) clearInterval(slideInterval);
-                    // 3초마다 슬라이드 전환
-                        slideInterval = setInterval(nextSlide, 3000);
+                    // 슬라이드 유지 시간 (초 단위)
+                        slideInterval = setInterval(nextSlide, holdTime * 1000);
                 }, 100);
                 });
             }

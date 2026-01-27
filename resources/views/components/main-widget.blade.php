@@ -436,14 +436,14 @@
     @php
         $slideSettings = $widgetSettings;
         $slideDirection = $slideSettings['slide_direction'] ?? 'left';
+        $slideHoldTime = $slideSettings['slide_hold_time'] ?? 3;
         $blocks = $slideSettings['blocks'] ?? [];
     @endphp
     @if(count($blocks) > 0)
         @php
             $blockSlideWrapperStyle = $animationStyle . ' position: relative; overflow: hidden; width: 100%;';
-            if (in_array($slideDirection, ['up', 'down'])) {
-                $blockSlideWrapperStyle .= ' height: 200px;';
-            }
+            // 컨테이너 높이에 맞추기 위한 flex 설정 (block 위젯과 동일하게)
+            $blockSlideWrapperStyle .= ' flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column;';
             // 가로 100%일 때 보더 레디우스 제거 (칸 고정너비일 때는 유지)
             if ($isActualFullWidth) {
                 $blockSlideWrapperStyle .= ' border-radius: 0 !important;';
@@ -452,8 +452,9 @@
         <div class="mb-0 block-slide-wrapper {{ $shadowClass }} {{ $animationClass }}" 
              style="{{ $blockSlideWrapperStyle }}"
              data-direction="{{ $slideDirection }}" 
+             data-hold-time="{{ $slideHoldTime }}"
              data-widget-id="{{ $widget->id }}">
-            <div class="block-slide-container" style="display: flex; width: calc(100% * {{ count($blocks) }}); transition: transform 0.5s ease-in-out; {{ in_array($slideDirection, ['up', 'down']) ? 'flex-direction: column; height: 100%;' : '' }}">
+            <div class="block-slide-container" style="display: flex; width: calc(100% * {{ count($blocks) }}); transition: transform 0.5s ease-in-out; flex: 1; {{ in_array($slideDirection, ['up', 'down']) ? 'flex-direction: column; height: 100%;' : 'height: 100%;' }}">
                 @foreach($blocks as $index => $block)
                     @php
                         $blockTitle = $block['title'] ?? '';
@@ -526,7 +527,7 @@
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
                         if (in_array($slideDirection, ['left', 'right'])) {
-                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; height: 100%; flex-shrink: 0;";
                         } else {
                             $blockStyle .= " width: 100%; height: 100%; flex-shrink: 0;";
                         }
@@ -702,7 +703,7 @@
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
                         if (in_array($slideDirection, ['left', 'right'])) {
-                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; height: 100%; flex-shrink: 0;";
                         } else {
                             $blockStyle .= " width: 100%; height: 100%; flex-shrink: 0;";
                         }
@@ -822,8 +823,9 @@
             // 초기 위치 설정
             updatePosition();
             
-            // 3초마다 슬라이드 전환
-            setInterval(nextSlide, 3000);
+            // 슬라이드 유지 시간 (초 단위, 기본 3초)
+            const holdTime = parseFloat(wrapper.dataset.holdTime) || 3;
+            setInterval(nextSlide, holdTime * 1000);
         })();
         </script>
     @endif

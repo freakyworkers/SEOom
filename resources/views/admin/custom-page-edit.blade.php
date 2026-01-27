@@ -1391,6 +1391,19 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">슬라이드 유지 시간 (초)</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="edit_custom_page_block_slide_hold_time" 
+                                   name="edit_custom_page_block_slide_hold_time" 
+                                   value="3" 
+                                   min="0.5" 
+                                   max="60" 
+                                   step="0.1"
+                                   placeholder="3">
+                            <small class="text-muted">각 슬라이드가 보여지는 시간 (초 단위, 소수점 입력 가능)</small>
+                        </div>
                         <div id="edit_custom_page_widget_block_slide_items">
                             <!-- 블록 아이템들이 여기에 동적으로 추가됨 -->
                         </div>
@@ -3729,6 +3742,10 @@ async function addCustomPageWidget() {
         const slideDirection = document.querySelector('input[name="block_slide_direction"]:checked')?.value || 'left';
         settings.slide_direction = slideDirection;
         
+        // 슬라이드 유지 시간
+        const slideHoldTime = parseFloat(document.getElementById('block_slide_hold_time')?.value) || 3;
+        settings.slide_hold_time = slideHoldTime;
+        
         const blockItems = [];
         const itemsContainer = document.getElementById('widget_block_slide_items');
         if (!itemsContainer) {
@@ -4702,6 +4719,11 @@ function editCustomPageWidget(widgetId) {
                 const slideDirection = settings.slide_direction || 'left';
                 const directionRadio = document.querySelector(`input[name="edit_custom_page_block_slide_direction"][value="${slideDirection}"]`);
                 if (directionRadio) directionRadio.checked = true;
+                
+                // 슬라이드 유지 시간 로드
+                const slideHoldTime = settings.slide_hold_time || 3;
+                const holdTimeInput = document.getElementById('edit_custom_page_block_slide_hold_time');
+                if (holdTimeInput) holdTimeInput.value = slideHoldTime;
                 
                 const blocks = settings.blocks || [];
                 const itemsContainer = document.getElementById('edit_custom_page_widget_block_slide_items');
@@ -6509,6 +6531,10 @@ function saveCustomPageWidgetSettings() {
     } else if (widgetType === 'block_slide') {
         const slideDirection = document.querySelector('input[name="edit_custom_page_block_slide_direction"]:checked')?.value || 'left';
         settings.slide_direction = slideDirection;
+        
+        // 슬라이드 유지 시간
+        const slideHoldTime = parseFloat(document.getElementById('edit_custom_page_block_slide_hold_time')?.value) || 3;
+        settings.slide_hold_time = slideHoldTime;
         
         // 블록 아이템들 수집
         const blockItems = [];
