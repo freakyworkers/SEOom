@@ -174,7 +174,7 @@
              data-hold-time="{{ $slideHoldTime }}"
              data-widget-id="{{ $widget->id }}"
              style="position: relative; overflow: hidden; width: 100%; flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column;">
-            <div class="block-slide-container" style="display: flex; width: calc(100% * {{ count($blocks) }}); transition: transform 0.5s ease-in-out; flex: 1; {{ in_array($slideDirection, ['up', 'down']) ? 'flex-direction: column; height: 100%;' : 'height: 100%;' }}">
+            <div class="block-slide-container" style="display: flex; width: calc(100% * {{ count($blocks) * 2 }}); transition: transform 0.5s ease-in-out; flex: 1; {{ in_array($slideDirection, ['up', 'down']) ? 'flex-direction: column; height: 100%;' : 'height: 100%;' }}">
                 @foreach($blocks as $index => $block)
                     @php
                         $blockTitle = $block['title'] ?? '';
@@ -217,10 +217,12 @@
                         }
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
+                        // 각 아이템은 컨테이너 전체 너비의 1/(원본+클론) = wrapper 100%가 되도록 설정
+                        $totalSlideItems = count($blocks) * 2; // 원본 + 클론
                         if (in_array($slideDirection, ['left', 'right'])) {
-                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; height: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: calc(100% / {$totalSlideItems}); height: 100%; flex-shrink: 0;";
                         } else {
-                            $blockStyle .= " width: 100%; height: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: 100%; height: calc(100% / {$totalSlideItems}); flex-shrink: 0;";
                         }
                     @endphp
                     <div class="block-slide-item" style="{{ $blockStyle }}" data-index="{{ $index }}">
@@ -302,10 +304,12 @@
                         }
                         
                         // 슬라이드 방향에 따른 너비/높이 설정
+                        // 클론 아이템도 원본과 동일한 너비로 설정
+                        $totalSlideItemsClone = count($blocks) * 2; // 원본 + 클론
                         if (in_array($slideDirection, ['left', 'right'])) {
-                            $blockStyle .= " width: calc(100% / " . count($blocks) . "); min-width: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: calc(100% / {$totalSlideItemsClone}); height: 100%; flex-shrink: 0;";
                         } else {
-                            $blockStyle .= " width: 100%; height: 100%; flex-shrink: 0;";
+                            $blockStyle .= " width: 100%; height: calc(100% / {$totalSlideItemsClone}); flex-shrink: 0;";
                         }
                     @endphp
                     <div class="block-slide-item block-slide-item-clone" style="{{ $blockStyle }}" data-index="{{ $index }}">
@@ -378,6 +382,9 @@
                 let isTransitioning = false;
                     let slideInterval = null;
                 
+                // 각 슬라이드 아이템이 컨테이너에서 차지하는 비율 (원본 + 클론 = totalItems * 2)
+                const itemPercentage = 100 / (totalItems * 2);
+                
                 // 초기 위치 설정
                 function updatePosition(withoutTransition = false) {
                     if (withoutTransition) {
@@ -387,10 +394,10 @@
                     }
                     
                     if (direction === 'left' || direction === 'right') {
-                            container.style.transform = `translateX(-${currentIndex * 100}%)`;
+                            container.style.transform = `translateX(-${currentIndex * itemPercentage}%)`;
                     } else if (direction === 'up' || direction === 'down') {
                         container.style.flexDirection = direction === 'up' ? 'column-reverse' : 'column';
-                            container.style.transform = `translateY(-${currentIndex * 100}%)`;
+                            container.style.transform = `translateY(-${currentIndex * itemPercentage}%)`;
                     }
                 }
                 
