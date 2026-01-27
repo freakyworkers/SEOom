@@ -18,36 +18,33 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-4">
             <!-- Left: Advertisement Image -->
-            <div class="col-md-6 mb-4">
+            <div class="col-md-5 col-lg-4 mb-3 mb-md-0">
                 @if($product->thumbnail_path)
                     <img src="{{ asset('storage/' . $product->thumbnail_path) }}" 
                          class="img-fluid rounded shadow-sm" 
-                         alt="{{ $product->item_content }}">
+                         alt="{{ $product->item_content }}"
+                         style="width: 100%; height: auto; object-fit: contain;">
                 @endif
             </div>
 
             <!-- Right: Exchange Info -->
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <table class="table table-bordered mb-0">
-                            <tr>
-                                <td class="bg-light" style="width: 120px;">{{ $product->item_name }}</td>
-                                <td>{{ $product->item_content }}</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light">처리현황</td>
-                                <td>완료 {{ $completedCount }}건 보류 {{ $rejectedCount }}건</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light">완료금액</td>
-                                <td>{{ number_format($completedAmount) }}P</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
+            <div class="col-md-7 col-lg-8 d-flex align-items-start">
+                <table class="table table-bordered mb-0">
+                    <tr>
+                        <td class="bg-light" style="width: 120px;">{{ $product->item_name }}</td>
+                        <td>{{ $product->item_content }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">처리현황</td>
+                        <td>완료 {{ $completedCount }}건 보류 {{ $rejectedCount }}건</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">완료금액</td>
+                        <td>{{ number_format($completedAmount) }}P</td>
+                    </tr>
+                </table>
             </div>
         </div>
 
