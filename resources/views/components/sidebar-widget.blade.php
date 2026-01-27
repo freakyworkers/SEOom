@@ -1732,7 +1732,7 @@
                                             }
                                         @endphp
                                         <div class="gallery-slide-item" 
-                                             style="flex-shrink: 0; padding: 0 4px;">
+                                             style="flex: 0 0 {{ 100 / $slideCols }}%; max-width: {{ 100 / $slideCols }}%; padding: 0 4px; box-sizing: border-box;">
                                             <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
                                                class="text-decoration-none d-block">
                                                 <div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">
@@ -1802,30 +1802,8 @@
                                         const cols = parseInt(wrapper.dataset.cols) || 3;
                                         const totalItems = parseInt(wrapper.dataset.totalItems) || {{ $galleryPosts->count() }};
                                         const items = wrapper.querySelectorAll('.gallery-slide-item');
-                                        const imageGap = 8;
                                         
                                         if (totalItems <= cols) return;
-                                        
-                                        // 아이템 너비 설정
-                                        function updateItemWidths() {
-                                            const containerWidth = container.offsetWidth;
-                                            const itemWidth = (containerWidth - (imageGap * (cols - 1))) / cols;
-                                            items.forEach(item => {
-                                                item.style.width = itemWidth + 'px';
-                                            });
-                                        }
-                                        
-                                        updateItemWidths();
-                                        
-                                        // 화면 크기 변경 시 너비 업데이트
-                                        let resizeTimeout;
-                                        window.addEventListener('resize', () => {
-                                            clearTimeout(resizeTimeout);
-                                            resizeTimeout = setTimeout(() => {
-                                                updateItemWidths();
-                                                startAnimation();
-                                            }, 250);
-                                        });
                                         
                                         let animationId = null;
                                         let isPaused = false;
@@ -1838,7 +1816,7 @@
                                             const firstItem = items[0];
                                             if (!firstItem) return;
                                             
-                                            const itemWidth = firstItem.offsetWidth + imageGap;
+                                            const itemWidth = firstItem.offsetWidth;
                                             if (itemWidth === 0) {
                                                 setTimeout(startAnimation, 100);
                                                 return;
@@ -1880,6 +1858,13 @@
                                             
                                             animationId = requestAnimationFrame(animate);
                                         }
+                                        
+                                        // 화면 크기 변경 시 재시작
+                                        let resizeTimeout;
+                                        window.addEventListener('resize', () => {
+                                            clearTimeout(resizeTimeout);
+                                            resizeTimeout = setTimeout(startAnimation, 250);
+                                        });
                                         
                                         // 호버 시 일시 정지
                                         container.addEventListener('mouseenter', () => {
