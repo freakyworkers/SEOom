@@ -18,31 +18,31 @@
             </div>
         </div>
 
-        <div class="row mb-4">
+        <div class="row mb-4" style="display: flex; align-items: stretch;">
             <!-- Left: Advertisement Image -->
             <div class="col-md-5 col-lg-4 mb-3 mb-md-0">
                 @if($product->thumbnail_path)
                     <img src="{{ asset('storage/' . $product->thumbnail_path) }}" 
                          class="img-fluid rounded shadow-sm" 
                          alt="{{ $product->item_content }}"
-                         style="width: 100%; height: auto; object-fit: contain;">
+                         style="width: 100%; height: 100%; object-fit: cover;">
                 @endif
             </div>
 
             <!-- Right: Exchange Info -->
-            <div class="col-md-7 col-lg-8 d-flex align-items-start">
-                <table class="table table-bordered mb-0">
+            <div class="col-md-7 col-lg-8 d-flex">
+                <table class="table table-bordered mb-0 h-100" style="height: 100%;">
                     <tr>
-                        <td class="bg-light" style="width: 120px;">{{ $product->item_name }}</td>
-                        <td>{{ $product->item_content }}</td>
+                        <td class="bg-light align-middle" style="width: 120px;">{{ $product->item_name }}</td>
+                        <td class="align-middle">{{ $product->item_content }}</td>
                     </tr>
                     <tr>
-                        <td class="bg-light">처리현황</td>
-                        <td>완료 {{ $completedCount }}건 보류 {{ $rejectedCount }}건</td>
+                        <td class="bg-light align-middle">처리현황</td>
+                        <td class="align-middle">완료 {{ $completedCount }}건 보류 {{ $rejectedCount }}건</td>
                     </tr>
                     <tr>
-                        <td class="bg-light">완료금액</td>
-                        <td>{{ number_format($completedAmount) }}P</td>
+                        <td class="bg-light align-middle">완료금액</td>
+                        <td class="align-middle">{{ number_format($completedAmount) }}P</td>
                     </tr>
                 </table>
             </div>
