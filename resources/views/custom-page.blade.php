@@ -256,13 +256,13 @@
                                     'is_active' => $widget->is_active,
                                     'order' => $widget->order,
                                 ];
-                                // 블록 위젯, 이미지 위젯, 지도 위젯인 경우 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1 적용
-                                $isBlockWidget = $widget->type === 'block';
+                                // 블록 위젯, 블록 슬라이드 위젯, 이미지 위젯, 지도 위젯인 경우 같은 row 내 컬럼들이 같은 높이를 가지도록 항상 flex: 1 적용
+                                $isBlockWidget = $widget->type === 'block' || $widget->type === 'block_slide';
                                 $isImageWidget = $widget->type === 'image';
                                 $isMapWidget = $widget->type === 'map';
                                 $widgetWrapperStyle = 'display: flex; flex-direction: column; width: 100%; max-width: 100%; margin-top: 0 !important; margin-bottom: 0 !important;';
                                 if ($isFullHeight || $isBlockWidget || $isMapWidget) {
-                                    // 세로 100%이거나 블록 위젯, 지도 위젯일 때는 항상 flex: 1 적용하여 위젯이 높이를 꽉 채우도록
+                                    // 세로 100%이거나 블록/블록슬라이드 위젯, 지도 위젯일 때는 항상 flex: 1 적용하여 위젯이 높이를 꽉 채우도록
                                     $widgetWrapperStyle .= ' flex: 1;';
                                 } elseif ($verticalAlign === 'center' || $isImageWidget) {
                                     // 중앙 정렬이거나 이미지 위젯일 때 flex: 1 적용
