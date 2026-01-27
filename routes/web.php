@@ -963,14 +963,14 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->storeSidebarWidget($request, $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->storeSidebarWidget($masterSite, $request);
             })->name('master.admin.sidebar-widgets.store');
             Route::put('/sidebar-widgets/{widget}', function (Request $request, \App\Models\SidebarWidget $widget) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->updateSidebarWidget($request, $masterSite, $widget);
+                return app(\App\Http\Controllers\AdminController::class)->updateSidebarWidget($masterSite, $widget, $request);
             })->name('master.admin.sidebar-widgets.update');
             Route::delete('/sidebar-widgets/{widget}', function (\App\Models\SidebarWidget $widget) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -1641,14 +1641,14 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->storeSidebarWidget($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->storeSidebarWidget($site, $request);
         });
         Route::put('/sidebar-widgets/{widget}', function (Request $request, \App\Models\SidebarWidget $widget) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->updateSidebarWidget($request, $site, $widget);
+            return app(\App\Http\Controllers\AdminController::class)->updateSidebarWidget($site, $widget, $request);
         });
         Route::delete('/sidebar-widgets/{widget}', function (Request $request, \App\Models\SidebarWidget $widget) {
             $site = $request->attributes->get('site');
