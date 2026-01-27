@@ -318,73 +318,71 @@
                     ? $site->getSetting('color_dark_point_main', '#ffffff')
                     : $site->getSetting('color_light_point_main', '#0d6efd');
             @endphp
-            <div class="row">
+            <div class="row" style="display: flex; align-items: stretch;">
                 <div class="col-md-4 mb-3 mb-md-0">
                     @if($post->thumbnail_path)
                         <img src="{{ asset('storage/' . $post->thumbnail_path) }}" 
                              class="img-fluid rounded" 
                              alt="{{ $post->title }}" 
-                             style="width: 100%; height: auto; max-height: 400px; object-fit: contain;">
+                             style="width: 100%; height: 100%; object-fit: cover;">
                     @else
                         <div class="bg-light d-flex align-items-center justify-content-center rounded" 
-                             style="width: 100%; height: 300px;">
+                             style="width: 100%; height: 100%; min-height: 200px;">
                             <i class="bi bi-image display-4 text-muted"></i>
                         </div>
                     @endif
                 </div>
-                <div class="col-md-8">
-                    <div style="overflow: hidden;">
-                        <table class="table table-bordered mb-0" style="table-layout: fixed; width: 100%;">
-                            <tbody>
-                                @php
-                                    $hasFirstItem = false;
-                                @endphp
-                                @if($post->bookmark_items && is_array($post->bookmark_items) && count($post->bookmark_items) > 0)
-                                    @foreach($post->bookmark_items as $index => $item)
-                                        @if(isset($item['name']) && isset($item['value']) && !empty($item['name']) && !empty($item['value']))
-                                            <tr>
-                                                <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal; text-align: center; vertical-align: middle;">{{ $item['name'] }}</th>
-                                                <td style="word-break: break-all; overflow-wrap: break-word;">{{ $item['value'] }}</td>
-                                            </tr>
-                                            @if($index === 0)
-                                                @php $hasFirstItem = true; @endphp
-                                            @endif
+                <div class="col-md-8 d-flex">
+                    <table class="table table-bordered mb-0 text-center" style="table-layout: fixed; width: 100%; height: 100%;">
+                        <tbody>
+                            @php
+                                $hasFirstItem = false;
+                            @endphp
+                            @if($post->bookmark_items && is_array($post->bookmark_items) && count($post->bookmark_items) > 0)
+                                @foreach($post->bookmark_items as $index => $item)
+                                    @if(isset($item['name']) && isset($item['value']) && !empty($item['name']) && !empty($item['value']))
+                                        <tr>
+                                            <th class="align-middle" style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">{{ $item['name'] }}</th>
+                                            <td class="align-middle" style="word-break: break-all; overflow-wrap: break-word;">{{ $item['value'] }}</td>
+                                        </tr>
+                                        @if($index === 0)
+                                            @php $hasFirstItem = true; @endphp
                                         @endif
-                                        @if($index === 0 && $post->link)
-                                            <tr>
-                                                <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal; text-align: center; vertical-align: middle;">링크</th>
-                                                <td style="word-break: break-all; overflow-wrap: break-word;">
-                                                    <a href="{{ $post->link }}" 
-                                                       target="_blank" 
-                                                       rel="noopener noreferrer"
-                                                       class="text-decoration-none"
-                                                       style="word-break: break-all;">
-                                                        {{ $post->link }}
-                                                        <i class="bi bi-box-arrow-up-right ms-1"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                @endif
-                                @if($post->link && !$hasFirstItem)
-                                    <tr>
-                                        <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal; text-align: center; vertical-align: middle;">링크</th>
-                                        <td style="word-break: break-all; overflow-wrap: break-word;">
-                                            <a href="{{ $post->link }}" 
-                                               target="_blank" 
-                                               rel="noopener noreferrer"
-                                               class="text-decoration-none"
-                                               style="word-break: break-all;">
-                                                {{ $post->link }}
-                                                <i class="bi bi-box-arrow-up-right ms-1"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
+                                    @endif
+                                    @if($index === 0 && $post->link)
+                                        <tr>
+                                            <th class="align-middle" style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">링크</th>
+                                            <td class="align-middle" style="word-break: break-all; overflow-wrap: break-word;">
+                                                <a href="{{ $post->link }}" 
+                                                   target="_blank" 
+                                                   rel="noopener noreferrer"
+                                                   class="text-decoration-none"
+                                                   style="word-break: break-all;">
+                                                    {{ $post->link }}
+                                                    <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            @endif
+                            @if($post->link && !$hasFirstItem)
+                                <tr>
+                                    <th class="align-middle" style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">링크</th>
+                                    <td class="align-middle" style="word-break: break-all; overflow-wrap: break-word;">
+                                        <a href="{{ $post->link }}" 
+                                           target="_blank" 
+                                           rel="noopener noreferrer"
+                                           class="text-decoration-none"
+                                           style="word-break: break-all;">
+                                            {{ $post->link }}
+                                            <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
