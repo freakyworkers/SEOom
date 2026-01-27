@@ -511,7 +511,7 @@ Route::middleware('web')->group(function () {
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->crawlersTest($request, $masterSite);
+                return app(\App\Http\Controllers\AdminController::class)->crawlersTest($request);
             })->name('master.admin.crawlers.test');
             Route::post('/crawlers/run-all', function () {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -2260,7 +2260,7 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->crawlersTest($site, $request);
+            return app(\App\Http\Controllers\AdminController::class)->crawlersTest($request);
         });
         Route::post('/crawlers/run-all', function (Request $request) {
             $site = $request->attributes->get('site');
