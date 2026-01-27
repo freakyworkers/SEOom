@@ -333,8 +333,8 @@
                     @endif
                 </div>
                 <div class="col-md-8">
-                    <div class="table-responsive">
-                        <table class="table table-bordered mb-0">
+                    <div style="overflow: hidden;">
+                        <table class="table table-bordered mb-0" style="table-layout: fixed; width: 100%;">
                             <tbody>
                                 @php
                                     $hasFirstItem = false;
@@ -343,8 +343,8 @@
                                     @foreach($post->bookmark_items as $index => $item)
                                         @if(isset($item['name']) && isset($item['value']) && !empty($item['name']) && !empty($item['value']))
                                             <tr>
-                                                <th style="width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">{{ $item['name'] }}</th>
-                                                <td>{{ $item['value'] }}</td>
+                                                <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">{{ $item['name'] }}</th>
+                                                <td style="word-break: break-all; overflow-wrap: break-word;">{{ $item['value'] }}</td>
                                             </tr>
                                             @if($index === 0)
                                                 @php $hasFirstItem = true; @endphp
@@ -352,12 +352,13 @@
                                         @endif
                                         @if($index === 0 && $post->link)
                                             <tr>
-                                                <th style="width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">링크</th>
-                                                <td>
+                                                <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">링크</th>
+                                                <td style="word-break: break-all; overflow-wrap: break-word;">
                                                     <a href="{{ $post->link }}" 
                                                        target="_blank" 
                                                        rel="noopener noreferrer"
-                                                       class="text-decoration-none">
+                                                       class="text-decoration-none"
+                                                       style="word-break: break-all;">
                                                         {{ $post->link }}
                                                         <i class="bi bi-box-arrow-up-right ms-1"></i>
                                                     </a>
@@ -368,12 +369,13 @@
                                 @endif
                                 @if($post->link && !$hasFirstItem)
                                     <tr>
-                                        <th style="width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">링크</th>
-                                        <td>
+                                        <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">링크</th>
+                                        <td style="word-break: break-all; overflow-wrap: break-word;">
                                             <a href="{{ $post->link }}" 
                                                target="_blank" 
                                                rel="noopener noreferrer"
-                                               class="text-decoration-none">
+                                               class="text-decoration-none"
+                                               style="word-break: break-all;">
                                                 {{ $post->link }}
                                                 <i class="bi bi-box-arrow-up-right ms-1"></i>
                                             </a>
