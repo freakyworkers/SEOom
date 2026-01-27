@@ -678,7 +678,7 @@
                                 @elseif($link && !$hasButton)
                                     <a href="{{ $link }}" 
                                        @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
-                                       style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block;">
+                                       style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block; z-index: 1;">
                                     </a>
                                 @endif
                             </div>
@@ -780,7 +780,7 @@
                                 @elseif($link && !$hasButton)
                                     <a href="{{ $link }}" 
                                        @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
-                                       style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block;">
+                                       style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block; z-index: 1;">
                                     </a>
                                 @endif
                             </div>
@@ -880,7 +880,7 @@
                                     @elseif($link && !$hasButton)
                                         <a href="{{ $link }}" 
                                            @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
-                                           style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block;">
+                                           style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block; z-index: 1;">
                                         </a>
                                     @endif
                                 </div>
