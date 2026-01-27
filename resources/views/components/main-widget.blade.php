@@ -796,15 +796,9 @@
             // 각 슬라이드 아이템이 컨테이너에서 차지하는 비율 (원본 + 클론 = totalItems * 2)
             const itemPercentage = 100 / (totalItems * 2);
             
-            // 초기 위치 설정
-            function updatePosition(withoutTransition = false) {
-                if (withoutTransition) {
-                    container.style.transition = 'none';
-                    // Force reflow to ensure transition is disabled before transform change
-                    void container.offsetHeight;
-                } else {
-                    container.style.transition = 'transform 0.5s ease-in-out';
-                }
+            // 위치 업데이트 (애니메이션 포함)
+            function updatePosition() {
+                container.style.transition = 'transform 0.5s ease-in-out';
                 
                 if (direction === 'left' || direction === 'right') {
                     container.style.transform = `translateX(-${currentIndex * itemPercentage}%)`;
@@ -812,13 +806,21 @@
                     container.style.flexDirection = direction === 'up' ? 'column-reverse' : 'column';
                     container.style.transform = `translateY(-${currentIndex * itemPercentage}%)`;
                 }
+            }
+            
+            // 위치 즉시 이동 (애니메이션 없이)
+            function resetPosition() {
+                // transition 완전히 비활성화
+                container.style.transition = 'none';
                 
-                // Restore transition after instant position change
-                if (withoutTransition) {
-                    requestAnimationFrame(() => {
-                        container.style.transition = 'transform 0.5s ease-in-out';
-                    });
+                if (direction === 'left' || direction === 'right') {
+                    container.style.transform = `translateX(-${currentIndex * itemPercentage}%)`;
+                } else if (direction === 'up' || direction === 'down') {
+                    container.style.transform = `translateY(-${currentIndex * itemPercentage}%)`;
                 }
+                
+                // 강제 reflow로 즉시 적용
+                void container.offsetHeight;
             }
             
             // 슬라이드 전환
@@ -829,15 +831,18 @@
                 currentIndex++;
                 updatePosition();
                 
-                // 마지막 원본 블록에 도달하면 (복제된 첫 번째 블록 위치)
+                // 마지막 원본 블록 다음(클론 첫번째)에 도달하면 원본 첫번째로 점프
                 if (currentIndex >= totalItems) {
                     setTimeout(() => {
+                        // 클론에서 원본으로 즉시 점프 (눈에 안 보이게)
                         currentIndex = 0;
-                        updatePosition(true);
+                        resetPosition();
+                        
+                        // 충분한 시간 후에 transition 복구 및 다음 슬라이드 허용
                         setTimeout(() => {
                             isTransitioning = false;
                         }, 50);
-                    }, 500); // transition 시간과 동일
+                    }, 500); // transition 완료 후
                 } else {
                     setTimeout(() => {
                         isTransitioning = false;
