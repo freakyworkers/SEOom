@@ -2299,69 +2299,15 @@
                                      id="gallery-slide-wrapper-{{ $widget->id }}"
                                      data-direction="{{ $slideDirection }}"
                                      data-cols="{{ $slideCols }}"
+                                     data-total-items="{{ $galleryPosts->count() }}"
                                      style="display: flex; 
                                             @if($slideDirection === 'left' || $slideDirection === 'right')
-                                                flex-direction: row; 
-                                                transition: transform 0.5s ease;
+                                                flex-direction: row;
                                             @else
-                                                flex-direction: column; 
-                                                transition: transform 0.5s ease;
+                                                flex-direction: column;
                                             @endif">
-                                    {{-- 무한 슬라이드를 위한 복제 아이템 (앞에 추가) --}}
-                                    @foreach($galleryPosts->take($slideCols) as $index => $post)
-                                        @php
-                                            $thumbnail = $post->thumbnail_path;
-                                            if (!$thumbnail && $post->attachments->count() > 0) {
-                                                $imageAttachment = $post->attachments->firstWhere('mime_type', 'like', 'image/%');
-                                                if ($imageAttachment) {
-                                                    $thumbnail = $imageAttachment->file_path;
-                                                }
-                                            }
-                                            if (!$thumbnail) {
-                                                preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $post->content ?? '', $matches);
-                                                $thumbnail = $matches[1] ?? null;
-                                            }
-                                        @endphp
-                                        <div class="gallery-slide-item gallery-slide-duplicate gallery-slide-duplicate-start" 
-                                             style="@if($slideDirection === 'left' || $slideDirection === 'right')
-                                                        flex: 0 0 {{ 100 / $slideCols }}%; 
-                                                        padding: 0 4px;
-                                                    @else
-                                                        width: 100%;
-                                                        padding: 4px 0;
-                                                    @endif">
-                                            <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
-                                               class="text-decoration-none d-block">
-                                                <div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">
-                                                    @if($thumbnail)
-                                                        @if(str_starts_with($thumbnail, 'http'))
-                                                            <img src="{{ $thumbnail }}" 
-                                                                 alt="{{ $post->title }}" 
-                                                                 class="w-100" 
-                                                                 style="width: 100%; height: auto; display: block;">
-                                                        @else
-                                                            <img src="{{ asset('storage/' . $thumbnail) }}" 
-                                                                 alt="{{ $post->title }}" 
-                                                                 class="w-100" 
-                                                                 style="width: 100%; height: auto; display: block;">
-                                                        @endif
-                                                    @else
-                                                        <div class="w-100 d-flex align-items-center justify-content-center" style="min-height: 100px;">
-                                                            <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                @if($showTitle)
-                                                    <div class="mt-1 text-center">
-                                                        <small class="text-muted text-truncate d-block" style="font-size: 0.75rem;">
-                                                            {{ Str::limit($post->title, 20, '...') }}
-                                                        </small>
-                                                    </div>
-                                                @endif
-                                            </a>
-                                        </div>
-                                    @endforeach
-                                    {{-- 원본 아이템 --}}
+                                    {{-- 무한 루프를 위해 아이템을 3번 반복 --}}
+                                    @for($repeat = 0; $repeat < 3; $repeat++)
                                     @foreach($galleryPosts as $index => $post)
                                         @php
                                             $thumbnail = $post->thumbnail_path;
@@ -2377,13 +2323,7 @@
                                             }
                                         @endphp
                                         <div class="gallery-slide-item" 
-                                             style="@if($slideDirection === 'left' || $slideDirection === 'right')
-                                                        flex: 0 0 {{ 100 / $slideCols }}%; 
-                                                        padding: 0 4px;
-                                                    @else
-                                                        width: 100%;
-                                                        padding: 4px 0;
-                                                    @endif">
+                                             style="flex-shrink: 0; padding: 0 4px;">
                                             <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
                                                class="text-decoration-none d-block">
                                                 <div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">
@@ -2415,60 +2355,7 @@
                                             </a>
                                         </div>
                                     @endforeach
-                                    {{-- 무한 슬라이드를 위한 복제 아이템 (뒤에 추가) --}}
-                                    @foreach($galleryPosts->take($slideCols) as $index => $post)
-                                        @php
-                                            $thumbnail = $post->thumbnail_path;
-                                            if (!$thumbnail && $post->attachments->count() > 0) {
-                                                $imageAttachment = $post->attachments->firstWhere('mime_type', 'like', 'image/%');
-                                                if ($imageAttachment) {
-                                                    $thumbnail = $imageAttachment->file_path;
-                                                }
-                                            }
-                                            if (!$thumbnail) {
-                                                preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $post->content ?? '', $matches);
-                                                $thumbnail = $matches[1] ?? null;
-                                            }
-                                        @endphp
-                                        <div class="gallery-slide-item gallery-slide-duplicate gallery-slide-duplicate-end" 
-                                             style="@if($slideDirection === 'left' || $slideDirection === 'right')
-                                                        flex: 0 0 {{ 100 / $slideCols }}%; 
-                                                        padding: 0 4px;
-                                                    @else
-                                                        width: 100%;
-                                                        padding: 4px 0;
-                                                    @endif">
-                                            <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
-                                               class="text-decoration-none d-block">
-                                                <div class="position-relative" style="overflow: hidden; background-color: #f8f9fa;">
-                                                    @if($thumbnail)
-                                                        @if(str_starts_with($thumbnail, 'http'))
-                                                            <img src="{{ $thumbnail }}" 
-                                                                 alt="{{ $post->title }}" 
-                                                                 class="w-100" 
-                                                                 style="width: 100%; height: auto; display: block;">
-                                                        @else
-                                                            <img src="{{ asset('storage/' . $thumbnail) }}" 
-                                                                 alt="{{ $post->title }}" 
-                                                                 class="w-100" 
-                                                                 style="width: 100%; height: auto; display: block;">
-                                                        @endif
-                                                    @else
-                                                        <div class="w-100 d-flex align-items-center justify-content-center" style="min-height: 100px;">
-                                                            <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                @if($showTitle)
-                                                    <div class="mt-1 text-center">
-                                                        <small class="text-muted text-truncate d-block" style="font-size: 0.75rem;">
-                                                            {{ Str::limit($post->title, 20, '...') }}
-                                                        </small>
-                                                    </div>
-                                                @endif
-                                            </a>
-                                        </div>
-                                    @endforeach
+                                    @endfor
                                 </div>
                             </div>
                             <script>
@@ -2478,119 +2365,144 @@
                                         const container = document.getElementById('gallery-slider-' + widgetId);
                                         const wrapper = document.getElementById('gallery-slide-wrapper-' + widgetId);
                                         if (!container || !wrapper) {
-                                            setTimeout(initGallerySlide, 100); // Retry if elements are not found
+                                            setTimeout(initGallerySlide, 100);
                                             return;
                                         }
                                         
-                                        // 이미 초기화된 위젯은 건너뛰기
                                         if (wrapper.dataset.initialized === 'true') return;
                                         wrapper.dataset.initialized = 'true';
                                         
                                         const direction = wrapper.dataset.direction || 'left';
                                         const cols = parseInt(wrapper.dataset.cols) || 3;
-                                        const totalItems = {{ $galleryPosts->count() }};
+                                        const totalItems = parseInt(wrapper.dataset.totalItems) || {{ $galleryPosts->count() }};
+                                        const items = wrapper.querySelectorAll('.gallery-slide-item');
+                                        const imageGap = 8; // 4px padding * 2
                                         
-                                        if (totalItems <= cols) return; // 슬라이드 불필요
+                                        if (totalItems <= cols) return;
                                         
-                                        let currentIndex = 0;
-                                        let intervalId;
-                                        let isTransitioning = false;
+                                        // 아이템 너비 설정
+                                        function updateItemWidths() {
+                                            const containerWidth = container.offsetWidth;
+                                            const itemWidth = (containerWidth - (imageGap * (cols - 1))) / cols;
+                                            items.forEach(item => {
+                                                item.style.width = itemWidth + 'px';
+                                            });
+                                        }
                                         
-                                        function slideNext() {
-                                            if (isTransitioning) return;
-                                            isTransitioning = true;
+                                        updateItemWidths();
+                                        
+                                        // 화면 크기 변경 시 너비 업데이트
+                                        let resizeTimeout;
+                                        window.addEventListener('resize', () => {
+                                            clearTimeout(resizeTimeout);
+                                            resizeTimeout = setTimeout(() => {
+                                                updateItemWidths();
+                                                startAnimation();
+                                            }, 250);
+                                        });
+                                        
+                                        let animationId = null;
+                                        let isPaused = false;
+                                        
+                                        function startAnimation() {
+                                            if (animationId) {
+                                                cancelAnimationFrame(animationId);
+                                            }
                                             
-                                            // 서버 사이드 아이템 개수 사용 (totalItems)
-                                            const itemCount = totalItems;
+                                            const firstItem = items[0];
+                                            if (!firstItem) return;
                                             
-                                            if (direction === 'left') {
-                                                currentIndex += cols;
-                                                
-                                                // 원본 아이템의 끝에 도달했을 때 (복제 아이템 앞의 개수 + 원본 아이템 개수)
-                                                if (currentIndex >= cols + itemCount) {
-                                                    // 복제 아이템의 시작 위치로 transition 없이 이동 (원본 아이템의 시작 위치)
-                                                    wrapper.style.transition = 'none';
-                                                    wrapper.style.transform = `translateX(-${cols * (100 / cols)}%)`;
-                                                    
-                                                    // 다음 프레임에서 계속 슬라이드
-                                                    requestAnimationFrame(() => {
-                                                        setTimeout(() => {
-                                                            wrapper.style.transition = 'transform 0.5s ease';
-                                                            currentIndex = cols;
-                                                            wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
-                                                            setTimeout(() => {
-                                                                isTransitioning = false;
-                                                            }, 500);
-                                                        }, 10);
-                                                    });
-                                                } else {
-                                                    wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
-                                                    setTimeout(() => {
-                                                        isTransitioning = false;
-                                                    }, 500);
+                                            const itemWidth = firstItem.offsetWidth + imageGap;
+                                            if (itemWidth === 0) {
+                                                setTimeout(startAnimation, 100);
+                                                return;
+                                            }
+                                            
+                                            // 하나의 세트 전체 너비 (아이템 3번 반복 중 1번 분량)
+                                            const singleSetWidth = totalItems * itemWidth;
+                                            
+                                            let position = 0;
+                                            const speed = 0.5; // 픽셀 단위 이동 속도
+                                            let lastTime = performance.now();
+                                            
+                                            function animate(currentTime) {
+                                                if (isPaused) {
+                                                    lastTime = currentTime;
+                                                    animationId = requestAnimationFrame(animate);
+                                                    return;
                                                 }
-                                            } else if (direction === 'right') {
-                                                currentIndex -= cols;
                                                 
-                                                // 원본 아이템의 시작에 도달했을 때 (복제 아이템 앞의 개수보다 작을 때)
-                                                if (currentIndex < cols) {
-                                                    // 복제 아이템의 끝 위치로 transition 없이 이동 (원본 아이템의 끝 위치)
-                                                    wrapper.style.transition = 'none';
-                                                    wrapper.style.transform = `translateX(-${(cols + itemCount) * (100 / cols)}%)`;
-                                                    
-                                                    // 다음 프레임에서 계속 슬라이드
-                                                    requestAnimationFrame(() => {
-                                                        setTimeout(() => {
-                                                            wrapper.style.transition = 'transform 0.5s ease';
-                                                            currentIndex = cols + itemCount - cols;
-                                                            wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
-                                                            setTimeout(() => {
-                                                                isTransitioning = false;
-                                                            }, 500);
-                                                        }, 10);
-                                                    });
-                                                } else {
-                                                    wrapper.style.transform = `translateX(-${currentIndex * (100 / cols)}%)`;
-                                                    setTimeout(() => {
-                                                        isTransitioning = false;
-                                                    }, 500);
+                                                const deltaTime = currentTime - lastTime;
+                                                lastTime = currentTime;
+                                                
+                                                const frameSpeed = speed * (deltaTime / 16.67);
+                                                
+                                                if (direction === 'left') {
+                                                    position -= frameSpeed;
+                                                    if (Math.abs(position) >= singleSetWidth) {
+                                                        position = position + singleSetWidth;
+                                                    }
+                                                } else if (direction === 'right') {
+                                                    position += frameSpeed;
+                                                    if (position >= singleSetWidth) {
+                                                        position = position - singleSetWidth;
+                                                    }
                                                 }
+                                                
+                                                wrapper.style.transform = `translateX(${position}px)`;
+                                                animationId = requestAnimationFrame(animate);
                                             }
-                                        }
-                                        
-                                        // 초기 위치를 원본 아이템의 시작 위치로 설정 (복제 아이템 뒤)
-                                        wrapper.style.transform = `translateX(-${cols * (100 / cols)}%)`;
-                                        currentIndex = cols;
-                                        
-                                        function startAutoSlide() {
-                                            if (intervalId) clearInterval(intervalId);
-                                            intervalId = setInterval(slideNext, 3000);
-                                        }
-                                        
-                                        function stopAutoSlide() {
-                                            if (intervalId) {
-                                                clearInterval(intervalId);
-                                                intervalId = null;
-                                            }
-                                        }
-                                        
-                                        // 초기 설정
-                                        if (direction === 'left' || direction === 'right') {
-                                            const slideContainer = container.querySelector('.gallery-slide-container');
-                                            if (slideContainer) {
-                                                slideContainer.style.width = '100%';
-                                            }
+                                            
+                                            animationId = requestAnimationFrame(animate);
                                         }
                                         
                                         // 호버 시 일시 정지
-                                        container.addEventListener('mouseenter', stopAutoSlide);
-                                        container.addEventListener('mouseleave', startAutoSlide);
+                                        container.addEventListener('mouseenter', () => {
+                                            isPaused = true;
+                                        });
+                                        container.addEventListener('mouseleave', () => {
+                                            isPaused = false;
+                                        });
                                         
-                                        // 자동 슬라이드 시작
-                                        startAutoSlide();
+                                        // 이미지 로드 확인 후 시작
+                                        const images = wrapper.querySelectorAll('img');
+                                        let loadedCount = 0;
+                                        const totalImages = images.length;
+                                        
+                                        if (totalImages === 0) {
+                                            startAnimation();
+                                        } else {
+                                            images.forEach(img => {
+                                                if (img.complete) {
+                                                    loadedCount++;
+                                                    if (loadedCount === totalImages) {
+                                                        startAnimation();
+                                                    }
+                                                } else {
+                                                    img.addEventListener('load', () => {
+                                                        loadedCount++;
+                                                        if (loadedCount === totalImages) {
+                                                            startAnimation();
+                                                        }
+                                                    });
+                                                    img.addEventListener('error', () => {
+                                                        loadedCount++;
+                                                        if (loadedCount === totalImages) {
+                                                            startAnimation();
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                            
+                                            // 3초 후에도 로드되지 않으면 강제 시작
+                                            setTimeout(() => {
+                                                if (loadedCount < totalImages) {
+                                                    startAnimation();
+                                                }
+                                            }, 3000);
+                                        }
                                     }
                                     
-                                    // DOMContentLoaded 또는 지연 실행
                                     if (document.readyState === 'loading') {
                                         document.addEventListener('DOMContentLoaded', initGallerySlide);
                                     } else {
