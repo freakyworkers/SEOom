@@ -72,9 +72,14 @@
                 return $widget->type === 'map';
             });
             
-            // 지도 위젯이 있으면 항상 stretch 사용 (지도가 높이를 채우도록)
+            // 컨테이너에 블록/블록슬라이드 위젯이 포함되어 있는지 확인
+            $hasBlockWidget = $container->widgets->contains(function($widget) {
+                return $widget->type === 'block' || $widget->type === 'block_slide';
+            });
+            
+            // 지도 위젯 또는 블록/블록슬라이드 위젯이 있으면 항상 stretch 사용 (높이를 채우도록)
             $alignClass = '';
-            if ($hasMapWidget) {
+            if ($hasMapWidget || $hasBlockWidget) {
                 $alignClass = 'align-items-stretch';
             } elseif ($verticalAlign === 'center') {
                 $alignClass = 'align-items-center';
