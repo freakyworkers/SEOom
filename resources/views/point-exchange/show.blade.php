@@ -31,7 +31,7 @@
 
             <!-- Right: Exchange Info -->
             <div class="col-md-7 col-lg-8 d-flex">
-                <table class="table table-bordered mb-0 h-100" style="height: 100%;">
+                <table class="table table-bordered mb-0 h-100 text-center" style="height: 100%;">
                     <tr>
                         <td class="bg-light align-middle" style="width: 120px;">{{ $product->item_name }}</td>
                         <td class="align-middle">{{ $product->item_content }}</td>
