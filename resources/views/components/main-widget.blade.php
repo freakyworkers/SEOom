@@ -791,6 +791,8 @@
             function updatePosition(withoutTransition = false) {
                 if (withoutTransition) {
                     container.style.transition = 'none';
+                    // Force reflow to ensure transition is disabled before transform change
+                    void container.offsetHeight;
                 } else {
                     container.style.transition = 'transform 0.5s ease-in-out';
                 }
@@ -800,6 +802,13 @@
                 } else if (direction === 'up' || direction === 'down') {
                     container.style.flexDirection = direction === 'up' ? 'column-reverse' : 'column';
                     container.style.transform = `translateY(-${currentIndex * itemPercentage}%)`;
+                }
+                
+                // Restore transition after instant position change
+                if (withoutTransition) {
+                    requestAnimationFrame(() => {
+                        container.style.transition = 'transform 0.5s ease-in-out';
+                    });
                 }
             }
             
