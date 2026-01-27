@@ -1356,13 +1356,9 @@
                                                  style="min-height: 150px; padding: 0.5rem; border-right: 1px solid #dee2e6;">
                                                 <i class="bi bi-image text-muted"></i>
                                             </div>
-                                        @endif
-                                        {{-- 제목 표시 (썸네일 하단) --}}
-                                        <div class="px-2 py-1 text-center" style="border-top: 1px solid #dee2e6; border-right: 1px solid #dee2e6; background-color: #f8f9fa;">
-                                            <h6 class="mb-0 fw-bold" style="font-size: 0.8rem; line-height: 1.3;">{{ Str::limit($post->title, 20) }}</h6>
-                                        </div>
-                                    </div>
-                                    {{-- 오른쪽: 항목들 + 버튼 --}}
+                                    @endif
+                                </div>
+                                {{-- 오른쪽: 항목들 + 버튼 --}}
                                     <div class="col-7 d-flex flex-column">
                                         <div class="bookmark-card-body-mobile flex-grow-1" style="padding: 0.5rem;">
                                             @if(count($displayItems) > 0)
@@ -1420,10 +1416,6 @@
                                         <i class="bi bi-image display-4 text-muted"></i>
                                     </div>
                                 @endif
-                                {{-- 제목 표시 (썸네일 하단) --}}
-                                <div class="px-3 pt-2 pb-2 text-center" style="border-bottom: 1px solid #dee2e6;">
-                                    <h6 class="mb-0 fw-bold" style="font-size: 0.95rem; line-height: 1.4;">{{ Str::limit($post->title, 50) }}</h6>
-                                </div>
                                 <div class="card-body bookmark-card-body">
                                     @if(count($displayItems) > 0)
                                         <div class="table-responsive">
