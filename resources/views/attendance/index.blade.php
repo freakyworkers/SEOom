@@ -15,7 +15,7 @@
     $greetings = $settings['greetings'] ?? [];
     $greetingPlaceholder = !empty($greetings) ? $greetings[array_rand($greetings)] : '오늘도 출석체크!';
 @endphp
-<div class="container-fluid px-0">
+<div class="container-fluid">
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
