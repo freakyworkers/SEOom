@@ -11,13 +11,6 @@
         ? $site->getSetting('color_dark_point_main', '#ffffff')
         : $site->getSetting('color_light_point_main', '#0d6efd');
     
-    // 테마 라운드 설정 가져오기
-    $themeRound = $site->getSetting('theme_round', 'default');
-    $borderRadiusCard = $themeRound === 'round' ? '1rem' : ($themeRound === 'square' ? '0' : '0.375rem');
-    $borderRadiusBtn = $themeRound === 'round' ? '50px' : ($themeRound === 'square' ? '0' : '0.375rem');
-    $borderRadiusInput = $themeRound === 'round' ? '50px' : ($themeRound === 'square' ? '0' : '0.375rem');
-    $borderRadiusTable = $themeRound === 'round' ? '0.75rem' : ($themeRound === 'square' ? '0' : '0.375rem');
-    
     // 출석 인사 placeholder 가져오기
     $greetings = $settings['greetings'] ?? [];
     $greetingPlaceholder = !empty($greetings) ? $greetings[array_rand($greetings)] : '오늘도 출석체크!';
@@ -37,18 +30,18 @@
         </div>
     @endif
 
-    <div class="card shadow-sm mb-4" style="border-radius: {{ $borderRadiusCard }}; overflow: hidden;">
+    <div class="card shadow-sm mb-3">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h3 class="mb-0"><i class="bi bi-calendar-check me-2"></i>출석체크</h3>
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#pointsInfoModal" style="border-color: {{ $pointColor }}; color: {{ $pointColor }}; border-radius: {{ $borderRadiusBtn }};">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#pointsInfoModal" style="border-color: {{ $pointColor }}; color: {{ $pointColor }};">
                     <i class="bi bi-info-circle me-1"></i>출첵 포인트 안내
                 </button>
             </div>
 
             @auth
                 @if(!$hasAttended)
-                    <form action="{{ route('attendance.store', ['site' => $site->slug]) }}" method="POST" class="mb-4">
+                    <form action="{{ route('attendance.store', ['site' => $site->slug]) }}" method="POST" class="mb-3">
                         @csrf
                         <div class="d-flex flex-column flex-md-row gap-2 gap-md-3">
                             <input type="text" 
@@ -56,9 +49,8 @@
                                    class="form-control flex-grow-1" 
                                    placeholder="{{ $greetingPlaceholder }}" 
                                    value="{{ old('greeting') }}"
-                                   maxlength="255"
-                                   style="border-radius: {{ $borderRadiusInput }};">
-                            <button type="submit" class="btn btn-danger flex-shrink-0" style="border-radius: {{ $borderRadiusBtn }};">
+                                   maxlength="255">
+                            <button type="submit" class="btn btn-danger flex-shrink-0">
                                 <i class="bi bi-stamp me-1"></i>출석체크 도장찍기
                             </button>
                         </div>
@@ -83,9 +75,9 @@
         </div>
     </div>
 
-    <div class="card shadow-sm" style="border-radius: {{ $borderRadiusCard }}; overflow: hidden;">
+    <div class="card shadow-sm mb-3">
         <div class="card-body">
-            <div class="table-responsive" style="border-radius: {{ $borderRadiusTable }}; overflow: hidden;">
+            <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
