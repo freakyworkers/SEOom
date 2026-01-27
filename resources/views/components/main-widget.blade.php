@@ -711,6 +711,15 @@
                         } else {
                             $blockStyle .= " width: 100%; height: calc(100% / {$totalSlideItemsClone}); flex-shrink: 0;";
                         }
+                        
+                        // 클론에도 원본과 동일한 flex 정렬 적용
+                        $justifyContentClone = 'center';
+                        if ($verticalAlign === 'top') {
+                            $justifyContentClone = 'flex-start';
+                        } elseif ($verticalAlign === 'bottom') {
+                            $justifyContentClone = 'flex-end';
+                        }
+                        $blockStyle .= " display: flex; flex-direction: column; justify-content: {$justifyContentClone};";
                     @endphp
                     @php
                         $titleFontSize = $block['title_font_size'] ?? '16';

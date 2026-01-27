@@ -311,6 +311,9 @@
                         } else {
                             $blockStyle .= " width: 100%; height: calc(100% / {$totalSlideItemsClone}); flex-shrink: 0;";
                         }
+                        
+                        // 클론에도 원본과 동일한 flex 정렬 적용 (수직 중앙 정렬)
+                        $blockStyle .= " display: flex; flex-direction: column; justify-content: center;";
                     @endphp
                     <div class="block-slide-item block-slide-item-clone" style="{{ $blockStyle }}" data-index="{{ $index }}">
                         @if($link && !$showButton)
