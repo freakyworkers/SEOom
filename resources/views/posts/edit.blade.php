@@ -154,7 +154,7 @@
                                                    class="form-control bookmark-item-value" 
                                                    name="bookmark_items[{{ $index }}][value]" 
                                                    value="{{ $item['value'] ?? '' }}"
-                                                   placeholder="내용 (예: ATM)">
+                                                   placeholder="내용 (예: NAVER)">
                                         </div>
                                         <div class="col-md-1">
                                             <button type="button" class="btn btn-sm btn-outline-danger remove-bookmark-item" title="삭제">
@@ -177,7 +177,7 @@
                                         <input type="text" 
                                                class="form-control bookmark-item-value" 
                                                name="bookmark_items[0][value]" 
-                                               placeholder="내용 (예: ATM)">
+                                               placeholder="내용 (예: NAVER)">
                                     </div>
                                     <div class="col-md-1">
                                         <button type="button" class="btn btn-sm btn-outline-danger remove-bookmark-item" title="삭제">

@@ -171,7 +171,7 @@
                                     <input type="text" 
                                            class="form-control bookmark-item-value" 
                                            name="bookmark_items[0][value]" 
-                                           placeholder="내용 (예: ATM)">
+                                           placeholder="내용 (예: NAVER)">
                                 </div>
                             </div>
                         </div>
