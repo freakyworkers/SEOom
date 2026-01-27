@@ -417,7 +417,7 @@
                     <div class="mb-3">
                         <label for="item_content" class="form-label">항목내용</label>
                         <input type="text" class="form-control" id="item_content" name="item_content" 
-                               placeholder="ex: 에그벳" required>
+                               placeholder="ex: 다음" required>
                     </div>
                     <div class="mb-3">
                         <label for="notice" class="form-label">공지</label>
