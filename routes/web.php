@@ -1525,14 +1525,14 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->reorderMainWidgetContainers($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->reorderMainWidgetContainers($site, $request);
         });
         Route::post('/main-widgets/reorder', function (Request $request) {
             $site = $request->attributes->get('site');
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->reorderMainWidgets($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->reorderMainWidgets($site, $request);
         });
         
         // Custom Pages
@@ -1662,7 +1662,7 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->reorderSidebarWidgets($request, $site);
+            return app(\App\Http\Controllers\AdminController::class)->reorderSidebarWidgets($site, $request);
         });
         
         // Banners
