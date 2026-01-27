@@ -30,7 +30,7 @@
         </div>
     @endif
 
-    <div class="card shadow-sm mb-3">
+    <div class="card shadow-sm mb-3 overflow-hidden">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h3 class="mb-0"><i class="bi bi-calendar-check me-2"></i>출석체크</h3>
@@ -75,7 +75,7 @@
         </div>
     </div>
 
-    <div class="card shadow-sm mb-3">
+    <div class="card shadow-sm mb-3 overflow-hidden">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
