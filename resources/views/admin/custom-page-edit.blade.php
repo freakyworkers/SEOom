@@ -6294,7 +6294,7 @@ function saveCustomPageWidgetSettings() {
     } else if (widgetType === 'tab_menu') {
         // 탭메뉴 설정 수집
         const tabMenus = [];
-        const tabMenuItems = document.querySelectorAll('#edit_custom_page_tab_menu_list .edit-custom-page-tab-menu-item');
+        const tabMenuItems = document.querySelectorAll('#edit_main_tab_menu_list .edit-custom-page-tab-menu-item');
         tabMenuItems.forEach((item) => {
             const nameInput = item.querySelector('.edit-custom-page-tab-menu-name');
             const widgetTypeSelect = item.querySelector('.edit-custom-page-tab-menu-widget-type');
