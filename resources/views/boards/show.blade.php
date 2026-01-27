@@ -654,7 +654,7 @@
                                             @endforeach
                                         </div>
                                     @endif
-                                    <h5 class="card-title mb-2">
+                                    <h5 class="card-title mb-2" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                         @php
                                             $isSecret = $board->force_secret || ($board->enable_secret && $post->is_secret);
                                             $canViewSecret = false;
@@ -664,12 +664,12 @@
                                         @endphp
                                         @if($isSecret)
                                             @if($canViewSecret)
-                                                <i class="bi bi-lock me-1"></i>{{ Str::limit($post->title, 30) }}
+                                                <i class="bi bi-lock me-1"></i>{{ $post->title }}
                                             @else
                                                 <i class="bi bi-lock me-1"></i>비밀 글입니다.
                                             @endif
                                         @else
-                                            {{ Str::limit($post->title, 30) }}
+                                            {{ $post->title }}
                                         @endif
                                     </h5>
                                     {{-- 제목과 내용 사이 구분선 --}}
