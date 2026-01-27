@@ -343,7 +343,7 @@
                                     @foreach($post->bookmark_items as $index => $item)
                                         @if(isset($item['name']) && isset($item['value']) && !empty($item['name']) && !empty($item['value']))
                                             <tr>
-                                                <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">{{ $item['name'] }}</th>
+                                                <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal; text-align: center; vertical-align: middle;">{{ $item['name'] }}</th>
                                                 <td style="word-break: break-all; overflow-wrap: break-word;">{{ $item['value'] }}</td>
                                             </tr>
                                             @if($index === 0)
@@ -352,7 +352,7 @@
                                         @endif
                                         @if($index === 0 && $post->link)
                                             <tr>
-                                                <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">링크</th>
+                                                <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal; text-align: center; vertical-align: middle;">링크</th>
                                                 <td style="word-break: break-all; overflow-wrap: break-word;">
                                                     <a href="{{ $post->link }}" 
                                                        target="_blank" 
@@ -369,7 +369,7 @@
                                 @endif
                                 @if($post->link && !$hasFirstItem)
                                     <tr>
-                                        <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal;">링크</th>
+                                        <th style="width: 150px; min-width: 150px; background-color: #f8f9fa; color: #6c757d; font-weight: normal; text-align: center; vertical-align: middle;">링크</th>
                                         <td style="word-break: break-all; overflow-wrap: break-word;">
                                             <a href="{{ $post->link }}" 
                                                target="_blank" 
