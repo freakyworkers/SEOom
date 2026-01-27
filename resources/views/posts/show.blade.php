@@ -1320,6 +1320,122 @@
                     </div>
                 @endforeach
             </div>
+        @elseif($board->type === 'blog')
+            {{-- 블로그 게시판 레이아웃 --}}
+            @php
+                $showDatetime = $board->show_datetime ?? false;
+            @endphp
+            <div class="row g-4">
+                @foreach($posts as $post)
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm" style="overflow: hidden;">
+                            <a href="{{ route('posts.show', ['site' => $site->slug, 'boardSlug' => $board->slug, 'post' => $post->id]) }}" 
+                               class="text-decoration-none text-dark">
+                                {{-- 블로그 게시판 이미지 영역 --}}
+                                @if($post->thumbnail_path)
+                                    <div class="card-img-top" style="padding: 1rem; background-color: #ffffff; display: flex; align-items: center; justify-content: center;">
+                                        <img src="{{ asset('storage/' . $post->thumbnail_path) }}" 
+                                             class="img-fluid" 
+                                             alt="{{ $post->title }}" 
+                                             style="max-width: 100%; max-height: 400px; width: auto; height: auto; object-fit: contain; display: block;">
+                                    </div>
+                                @else
+                                    @php
+                                        // 게시글 내용에서 첫 번째 이미지 추출
+                                        $content = $post->content;
+                                        preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $content, $matches);
+                                        $firstImage = $matches[1] ?? null;
+                                    @endphp
+                                    @if($firstImage)
+                                        <div class="card-img-top" style="padding: 1rem; background-color: #ffffff; display: flex; align-items: center; justify-content: center;">
+                                            <img src="{{ $firstImage }}" 
+                                                 class="img-fluid" 
+                                                 alt="{{ $post->title }}" 
+                                                 style="max-width: 100%; max-height: 400px; width: auto; height: auto; object-fit: contain; display: block;">
+                                        </div>
+                                    @else
+                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                             style="min-height: 200px; padding: 1rem;">
+                                            <i class="bi bi-image display-4 text-muted"></i>
+                                        </div>
+                                    @endif
+                                @endif
+                                
+                                {{-- 블로그 게시판 본문 --}}
+                                <div class="card-body">
+                                    {{-- 주제 배지 (제목 상단) --}}
+                                    @if($post->topics->count() > 0)
+                                        <div class="mb-2">
+                                            @foreach($post->topics as $topic)
+                                                <span class="badge me-1" style="background-color: {{ $topic->color }}; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem;">
+                                                    {{ $topic->name }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    <h5 class="card-title mb-2" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        @php
+                                            $isSecret = $board->force_secret || ($board->enable_secret && $post->is_secret);
+                                            $canViewSecret = false;
+                                            if ($isSecret && auth()->check()) {
+                                                $canViewSecret = (auth()->id() === $post->user_id || auth()->user()->canManage());
+                                            }
+                                        @endphp
+                                        @if($isSecret)
+                                            @if($canViewSecret)
+                                                <i class="bi bi-lock me-1"></i>{{ $post->title }}
+                                            @else
+                                                <i class="bi bi-lock me-1"></i>비밀 글입니다.
+                                            @endif
+                                        @else
+                                            {{ $post->title }}
+                                        @endif
+                                    </h5>
+                                    {{-- 제목과 내용 사이 구분선 --}}
+                                    <hr class="my-2">
+                                    {{-- 요약 내용 표시 --}}
+                                    @if($post->content)
+                                        @php
+                                            $summaryLength = $board->summary_length ?? 150;
+                                            $plainText = strip_tags($post->content);
+                                            $summary = Str::limit($plainText, $summaryLength);
+                                        @endphp
+                                        <p class="card-text text-muted small mb-2" style="line-height: 1.6;">
+                                            {{ $summary }}
+                                        </p>
+                                    @endif
+                                    {{-- 내용 하단 구분선 및 작성자 정보 --}}
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            @if($board->enable_anonymous)
+                                                <i class="bi bi-person"></i> 익명
+                                            @else
+                                                <x-user-rank :user="$post->user" :site="$site" />
+                                                {{ $post->user->nickname ?? $post->user->name }}
+                                            @endif
+                                        </small>
+                                        <div class="d-flex align-items-center gap-2">
+                                            @if($board->enable_likes && $post->like_count > 0)
+                                                <small class="text-muted">
+                                                    <i class="bi bi-hand-thumbs-up"></i> {{ $post->like_count }}
+                                                </small>
+                                            @endif
+                                            <small class="text-muted">
+                                                @if($showDatetime)
+                                                    {{ $post->created_at->format('Y.m.d H:i') }}
+                                                @else
+                                                    {{ $post->created_at->format('Y.m.d') }}
+                                                @endif
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         @elseif($board->type === 'bookmark')
             {{-- 북마크 게시판 레이아웃 --}}
             <div class="row g-4">
