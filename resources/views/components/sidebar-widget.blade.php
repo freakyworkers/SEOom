@@ -662,6 +662,13 @@
                                             @endif
                                         </div>
                                     </div>
+                                    {{-- 텍스트 오버레이가 있고 버튼이 없지만 링크가 있는 경우 --}}
+                                    @if($link && !$hasButton)
+                                        <a href="{{ $link }}" 
+                                           @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                           style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block; z-index: 1;">
+                                        </a>
+                                    @endif
                                 @elseif($hasButton && $buttonText)
                                     <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
                                         <div style="pointer-events: auto;">
@@ -764,6 +771,13 @@
                                             @endif
                                         </div>
                                     </div>
+                                    {{-- 텍스트 오버레이가 있고 버튼이 없지만 링크가 있는 경우 --}}
+                                    @if($link && !$hasButton)
+                                        <a href="{{ $link }}" 
+                                           @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                           style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block; z-index: 1;">
+                                        </a>
+                                    @endif
                                 @elseif($hasButton && $buttonText)
                                     <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: {{ $textPaddingTop }}px {{ $textPaddingRight }}px {{ $textPaddingBottom }}px {{ $textPaddingLeft }}px; pointer-events: none; z-index: 2;">
                                         <div style="pointer-events: auto;">
@@ -864,6 +878,13 @@
                                                 @endif
                                             </div>
                                         </div>
+                                        {{-- 텍스트 오버레이가 있고 버튼이 없지만 링크가 있는 경우 --}}
+                                        @if($link && !$hasButton)
+                                            <a href="{{ $link }}" 
+                                               @if($openNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                               style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block; z-index: 1;">
+                                            </a>
+                                        @endif
                                     @elseif($hasButton && $buttonText)
                                         <div class="image-slide-text-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: {{ $justifyContent }}; align-items: {{ $alignItems }}; padding: 20px; pointer-events: none;">
                                             <div style="pointer-events: auto;">
