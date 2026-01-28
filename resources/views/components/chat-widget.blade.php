@@ -283,21 +283,24 @@
 }
 
 .chat-message-nickname {
-    font-weight: bold;
+    font-weight: 700;
     font-size: 0.9em;
     cursor: pointer;
     position: relative;
+    color: {{ $isDark ? '#ffffff' : '#212529' }};
 }
 
 .chat-message-time {
     font-size: 0.75em;
-    font-weight: bold;
+    font-weight: 600;
     color: {{ $chatMutedColor }};
 }
 
 .chat-message-content {
     word-wrap: break-word;
     color: {{ $chatTextColor }};
+    font-weight: 400;
+    margin-top: 4px;
 }
 
 .chat-message-image {
