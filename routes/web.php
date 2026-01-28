@@ -2379,7 +2379,7 @@ Route::middleware(['web', 'block.ip'])->group(function () {
         if (!$site) {
             abort(404);
         }
-        return app(\App\Http\Controllers\ChatController::class)->getMessages($site);
+        return app(\App\Http\Controllers\ChatController::class)->getMessages($site, $request);
     })->name('api.chat.messages.domain');
     
     Route::post('/api/chat/messages', function (Request $request) {
