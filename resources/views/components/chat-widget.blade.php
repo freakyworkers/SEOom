@@ -103,11 +103,12 @@
 @endphp
 
 <div class="chat-widget-container d-none d-md-block" id="chatWidget_{{ $site->id }}" data-site-id="{{ $site->id }}">
-    {{-- 헤더는 모바일 모달에서만 표시 (닫기 버튼용) --}}
-    <div class="chat-widget-header d-none">
-        <h6 class="mb-0"><i class="bi bi-chat-dots me-2"></i>채팅</h6>
-        <button type="button" class="btn-close" id="chatWidgetCloseBtn_{{ $site->id }}" aria-label="Close" style="display: none;"></button>
+    @if($widgetTitle)
+    {{-- 운영자가 위젯 제목을 입력한 경우 헤더 표시 --}}
+    <div class="chat-widget-header" style="padding: 10px 15px; background-color: {{ $chatHeaderBgColor }}; border-bottom: 1px solid {{ $chatBorderColor }};">
+        <h6 class="mb-0" style="color: {{ $chatTextColor }};"><i class="bi bi-chat-dots me-2"></i>{{ $widgetTitle }}</h6>
     </div>
+    @endif
     
     @if($hasPenalty)
     <div class="alert alert-warning mb-0 rounded-0" style="border-left: none; border-right: none; border-top: none;">
