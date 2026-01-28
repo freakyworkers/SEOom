@@ -302,7 +302,7 @@
 
 .chat-message-image {
     max-width: 100% !important;
-    width: 100% !important;
+    width: auto !important;
     height: auto !important;
     max-height: 300px;
     border-radius: 4px;
@@ -313,31 +313,48 @@
 }
 
 .chat-message {
-    overflow: hidden;
+    overflow: hidden !important;
     word-wrap: break-word;
-    max-width: 100%;
+    word-break: break-word;
+    max-width: 100% !important;
+    width: 100% !important;
     box-sizing: border-box;
 }
 
 .chat-message-content {
-    overflow: hidden;
+    overflow: hidden !important;
     word-wrap: break-word;
-    max-width: 100%;
+    word-break: break-word;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box;
 }
 
 .chat-messages, .mobile-chat-messages {
     overflow-x: hidden !important;
+    overflow-y: auto !important;
     box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
 .mobile-chat-modal-content {
     overflow-x: hidden !important;
     box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
 .chat-widget-container {
     overflow: hidden !important;
     box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.chat-widget-container img {
+    max-width: 100% !important;
+    height: auto !important;
 }
 
 .chat-user-menu {
@@ -611,7 +628,7 @@
             <div class="chat-message-content">
                 ${escapeHtml(msg.message || msg.content || '')}
             </div>
-            ${(msg.attachment_path || msg.file_path) ? `<img src="/storage/${msg.attachment_path || msg.file_path}" class="chat-message-image" alt="Attachment">` : ''}
+            ${(msg.attachment_path || msg.file_path) ? `<img src="/storage/${msg.attachment_path || msg.file_path}" class="chat-message-image" alt="Attachment" style="max-width: 100% !important; height: auto !important; display: block;">` : ''}
         `;
         
         messagesContainer.appendChild(messageDiv);
@@ -1245,7 +1262,7 @@
                                 <div class="chat-message-content">
                                     ${escapeHtmlNew(msg.message || msg.content || '')}
                                 </div>
-                                ${(msg.attachment_path || msg.file_path) ? `<img src="/storage/${msg.attachment_path || msg.file_path}" class="chat-message-image" alt="Attachment">` : ''}
+                                ${(msg.attachment_path || msg.file_path) ? `<img src="/storage/${msg.attachment_path || msg.file_path}" class="chat-message-image" alt="Attachment" style="max-width: 100% !important; height: auto !important; display: block;">` : ''}
                             `;
                             
                             messagesContainer.appendChild(messageDiv);
@@ -2443,7 +2460,7 @@
             <div class="chat-message-content">
                 ${escapeHtml(msg.message || msg.content || '')}
             </div>
-            ${(msg.attachment_path || msg.file_path) ? `<img src="/storage/${msg.attachment_path || msg.file_path}" class="chat-message-image" alt="Attachment">` : ''}
+            ${(msg.attachment_path || msg.file_path) ? `<img src="/storage/${msg.attachment_path || msg.file_path}" class="chat-message-image" alt="Attachment" style="max-width: 100% !important; height: auto !important; display: block;">` : ''}
         `;
         
         messagesContainer.appendChild(messageDiv);
