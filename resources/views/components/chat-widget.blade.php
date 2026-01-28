@@ -79,6 +79,22 @@
     $reportUrl = $apiBaseUrl . '/api/chat/report';
     $blockUrl = $apiBaseUrl . '/api/chat/block';
     $csrfToken = csrf_token();
+    
+    // 다크모드 설정
+    $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
+    $isDark = $themeDarkMode === 'dark';
+    
+    // 다크모드 색상
+    $chatBgColor = $isDark ? '#2b2b2b' : 'white';
+    $chatMessagesBgColor = $isDark ? '#1e1e1e' : '#f8f9fa';
+    $chatHeaderBgColor = $isDark ? '#333333' : '#f8f9fa';
+    $chatBorderColor = $isDark ? '#444444' : '#dee2e6';
+    $chatMessageBgColor = $isDark ? '#2b2b2b' : 'white';
+    $chatMessageBorderColor = $isDark ? '#444444' : '#e9ecef';
+    $chatTextColor = $isDark ? '#ffffff' : '#212529';
+    $chatMutedColor = $isDark ? '#adb5bd' : '#6c757d';
+    $chatInputBgColor = $isDark ? '#333333' : 'white';
+    $chatInputBorderColor = $isDark ? '#555555' : '#dee2e6';
 @endphp
 
 <div class="chat-widget-container d-none d-md-block" id="chatWidget_{{ $site->id }}" data-site-id="{{ $site->id }}">
@@ -99,11 +115,11 @@
     </div>
     @endif
     
-    <div class="chat-messages" id="chatMessages_{{ $site->id }}" style="height: 400px; overflow-y: auto; padding: 15px; background-color: #f8f9fa;">
+    <div class="chat-messages" id="chatMessages_{{ $site->id }}" style="height: 400px; overflow-y: auto; padding: 15px; background-color: {{ $chatMessagesBgColor }}; color: {{ $chatTextColor }};">
         <!-- Messages will be loaded here -->
     </div>
     
-    <div class="chat-input-container" style="border-top: 1px solid #dee2e6; padding: 10px; background-color: white;">
+    <div class="chat-input-container" style="border-top: 1px solid {{ $chatBorderColor }}; padding: 10px; background-color: {{ $chatBgColor }}; color: {{ $chatTextColor }};">
         <div class="d-flex align-items-end gap-2">
             <div class="flex-grow-1">
                 <div class="input-group">
@@ -114,7 +130,8 @@
                            class="form-control form-control-sm" 
                            id="chatInput_{{ $site->id }}" 
                            placeholder="메시지를 입력하세요..." 
-                           maxlength="1000">
+                           maxlength="1000"
+                           style="background-color: {{ $chatInputBgColor }}; color: {{ $chatTextColor }}; border-color: {{ $chatInputBorderColor }};">
                     <label class="btn btn-sm btn-outline-secondary" for="chatFileInput_{{ $site->id }}" title="이미지 첨부">
                         <i class="bi bi-image"></i>
                         <input type="file" 
@@ -165,9 +182,10 @@
 @push('styles')
 <style>
 .chat-widget-container {
-    border: 1px solid #dee2e6;
+    border: 1px solid {{ $chatBorderColor }};
     border-radius: 4px;
-    background-color: white;
+    background-color: {{ $chatBgColor }};
+    color: {{ $chatTextColor }};
 }
 
 /* 모바일에서 채팅 위젯 숨김 (모달로 표시되므로) */
@@ -225,19 +243,21 @@
 
 .chat-widget-header {
     padding: 10px 15px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
+    background-color: {{ $chatHeaderBgColor }};
+    border-bottom: 1px solid {{ $chatBorderColor }};
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: {{ $chatTextColor }};
 }
 
 .chat-message {
     margin-bottom: 10px;
     padding: 8px;
-    background-color: white;
+    background-color: {{ $chatMessageBgColor }};
     border-radius: 4px;
-    border: 1px solid #e9ecef;
+    border: 1px solid {{ $chatMessageBorderColor }};
+    color: {{ $chatTextColor }};
 }
 
 .chat-message-header {
@@ -256,11 +276,12 @@
 
 .chat-message-time {
     font-size: 0.75em;
-    color: #6c757d;
+    color: {{ $chatMutedColor }};
 }
 
 .chat-message-content {
     word-wrap: break-word;
+    color: {{ $chatTextColor }};
 }
 
 .chat-message-image {
@@ -271,14 +292,15 @@
 
 .chat-user-menu {
     position: absolute;
-    background: white;
-    border: 1px solid #dee2e6;
+    background: {{ $chatBgColor }};
+    border: 1px solid {{ $chatBorderColor }};
     border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     z-index: 1000;
     min-width: 150px;
     padding: 5px 0;
     display: none;
+    color: {{ $chatTextColor }};
 }
 
 .chat-user-menu-item {
@@ -388,7 +410,7 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: white;
+        background-color: {{ $chatBgColor }};
         border-top-left-radius: 20px;
         border-top-right-radius: 20px;
         height: 80vh;
@@ -397,31 +419,36 @@
         flex-direction: column;
         transform: translateY(100%);
         transition: transform 0.3s ease-out;
+        color: {{ $chatTextColor }};
     }
     
     .mobile-chat-modal-header {
         padding: 15px;
-        border-bottom: 1px solid #dee2e6;
+        border-bottom: 1px solid {{ $chatBorderColor }};
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-shrink: 0;
+        background-color: {{ $chatHeaderBgColor }};
+        color: {{ $chatTextColor }};
     }
     
     .mobile-chat-messages {
         flex: 1;
         overflow-y: auto;
         padding: 15px;
-        background-color: #f8f9fa;
+        background-color: {{ $chatMessagesBgColor }};
         min-height: 200px;
         -webkit-overflow-scrolling: touch;
+        color: {{ $chatTextColor }};
     }
     
     .mobile-chat-input-container {
-        border-top: 1px solid #dee2e6;
+        border-top: 1px solid {{ $chatBorderColor }};
         padding: 10px;
-        background-color: white;
+        background-color: {{ $chatBgColor }};
         flex-shrink: 0;
+        color: {{ $chatTextColor }};
     }
 }
 </style>
@@ -452,6 +479,21 @@
     const allowGuestChat = {{ $allowGuestChat ? 'true' : 'false' }};
     const hasChatPenalty = {{ $hasPenalty ? 'true' : 'false' }};
     const chatPenaltyRemainingText = {!! $penaltyRemainingText ? "'남은기간: {$penaltyRemainingText}'" : "null" !!};
+    
+    // 다크모드 색상 변수
+    const isDarkMode = {{ $isDark ? 'true' : 'false' }};
+    const chatColors = {
+        bg: '{{ $chatBgColor }}',
+        messagesBg: '{{ $chatMessagesBgColor }}',
+        headerBg: '{{ $chatHeaderBgColor }}',
+        border: '{{ $chatBorderColor }}',
+        messageBg: '{{ $chatMessageBgColor }}',
+        messageBorder: '{{ $chatMessageBorderColor }}',
+        text: '{{ $chatTextColor }}',
+        muted: '{{ $chatMutedColor }}',
+        inputBg: '{{ $chatInputBgColor }}',
+        inputBorder: '{{ $chatInputBorderColor }}'
+    };
     
     let selectedFile = null;
     let pollInterval = null;
@@ -879,7 +921,7 @@
     const emojiPicker = document.createElement('div');
     emojiPicker.id = 'emojiPicker_' + siteId;
     emojiPicker.className = 'emoji-picker';
-    emojiPicker.style.cssText = 'position: absolute; bottom: 50px; left: 10px; background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; display: none; max-width: 300px; max-height: 300px; overflow-y: auto;';
+    emojiPicker.style.cssText = 'position: absolute; bottom: 50px; left: 10px; background: ' + chatColors.bg + '; border: 1px solid ' + chatColors.border + '; border-radius: 8px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; display: none; max-width: 300px; max-height: 300px; overflow-y: auto;';
     
     // Common emojis
     const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '😈', '👿', '👹', '👺', '🤡', '💩', '👻', '💀', '☠️', '👽', '👾', '🤖', '🎃', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾'];
@@ -1064,8 +1106,9 @@
                 widget.style.setProperty('border-radius', '20px 20px 0 0', 'important');
                 widget.style.setProperty('margin', '0', 'important');
                 widget.style.setProperty('border', 'none', 'important');
-                widget.style.setProperty('border-top', '1px solid #dee2e6', 'important');
-                widget.style.setProperty('background-color', 'white', 'important');
+                widget.style.setProperty('border-top', '1px solid ' + chatColors.border, 'important');
+                widget.style.setProperty('background-color', chatColors.bg, 'important');
+                widget.style.setProperty('color', chatColors.text, 'important');
                 widget.style.setProperty('visibility', 'visible', 'important');
                 widget.style.setProperty('opacity', '1', 'important');
                 
@@ -1146,7 +1189,7 @@
                         emojiPicker = document.createElement('div');
                         emojiPicker.id = emojiPickerId;
                         emojiPicker.className = 'emoji-picker';
-                        emojiPicker.style.cssText = 'position: absolute; bottom: 50px; left: 10px; background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10002; display: none; max-width: 300px; max-height: 300px; overflow-y: auto;';
+                        emojiPicker.style.cssText = 'position: absolute; bottom: 50px; left: 10px; background: ' + chatColors.bg + '; border: 1px solid ' + chatColors.border + '; border-radius: 8px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10002; display: none; max-width: 300px; max-height: 300px; overflow-y: auto;';
                         
                         const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '😈', '👿', '👹', '👺', '🤡', '💩', '👻', '💀', '☠️', '👽', '👾', '🤖', '🎃', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾'];
                         
@@ -1891,7 +1934,7 @@
         mobileEmojiPicker = document.createElement('div');
         mobileEmojiPicker.id = 'mobileEmojiPicker_' + siteId;
         mobileEmojiPicker.className = 'emoji-picker';
-        mobileEmojiPicker.style.cssText = 'position: absolute; bottom: 60px; left: 10px; right: 10px; background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10001; display: none; max-width: 100%; max-height: 300px; overflow-y: auto;';
+        mobileEmojiPicker.style.cssText = 'position: absolute; bottom: 60px; left: 10px; right: 10px; background: ' + chatColors.bg + '; border: 1px solid ' + chatColors.border + '; border-radius: 8px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10001; display: none; max-width: 100%; max-height: 300px; overflow-y: auto;';
         
         const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '😈', '👿', '👹', '👺', '🤡', '💩', '👻', '💀', '☠️', '👽', '👾', '🤖', '🎃', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾'];
         
