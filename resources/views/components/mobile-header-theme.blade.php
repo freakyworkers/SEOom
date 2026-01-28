@@ -638,8 +638,13 @@
     /* 하단 메뉴가 있는 테마(5,6,7,8)의 하단 메뉴 스타일 */
     .mobile-header-bottom-menu {
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        @if($headerSticky)
         position: fixed;
         top: 67px !important;
+        @else
+        position: relative;
+        top: auto;
+        @endif
         bottom: auto;
         z-index: 1020;
         background-color: {{ $headerBgColor }};
@@ -2271,9 +2276,13 @@ document.addEventListener('DOMContentLoaded', function() {
         transition: background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease !important;
     }
     
-    /* 하단 메뉴 바 - 투명헤더일 때 fixed로 고정 */
+    /* 하단 메뉴 바 - 투명헤더일 때 스타일 */
     .mobile-bottom-menu-transparent {
+        @if($headerSticky)
         position: fixed !important;
+        @else
+        position: relative !important;
+        @endif
         left: 0 !important;
         right: 0 !important;
         z-index: 1039 !important;
