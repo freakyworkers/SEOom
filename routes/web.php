@@ -2373,6 +2373,39 @@ Route::middleware(['web', 'block.ip'])->group(function () {
         });
     });
     
+    // Chat API for domain-based access (서브도메인/커스텀 도메인용)
+    Route::get('/api/chat/messages', function (Request $request) {
+        $site = $request->attributes->get('site');
+        if (!$site) {
+            abort(404);
+        }
+        return app(\App\Http\Controllers\ChatController::class)->getMessages($site);
+    })->name('api.chat.messages.domain');
+    
+    Route::post('/api/chat/messages', function (Request $request) {
+        $site = $request->attributes->get('site');
+        if (!$site) {
+            abort(404);
+        }
+        return app(\App\Http\Controllers\ChatController::class)->sendMessage($site, $request);
+    })->name('api.chat.send-message.domain');
+    
+    Route::post('/api/chat/report', function (Request $request) {
+        $site = $request->attributes->get('site');
+        if (!$site) {
+            abort(404);
+        }
+        return app(\App\Http\Controllers\ChatController::class)->reportMessage($site, $request);
+    })->name('api.chat.report.domain');
+    
+    Route::post('/api/chat/block', function (Request $request) {
+        $site = $request->attributes->get('site');
+        if (!$site) {
+            abort(404);
+        }
+        return app(\App\Http\Controllers\ChatController::class)->blockUser($site, $request);
+    })->name('api.chat.block.domain');
+    
     // Board routes for domain-based access (서브도메인/커스텀 도메인용)
     Route::get('/boards/{slug}', function (Request $request, $slug) {
         $site = $request->attributes->get('site');

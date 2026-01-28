@@ -62,8 +62,18 @@
             : '제한 없음')
         : null;
 
-    // Get API routes
-    $apiBaseUrl = "/site/{$site->slug}";
+    // Get API routes - 커스텀 도메인 여부에 따라 다르게 설정
+    $currentHost = request()->getHost();
+    $isCustomDomain = $site->domain && ($currentHost === $site->domain || $currentHost === 'www.' . $site->domain);
+    $isSubdomain = !$isCustomDomain && str_contains($currentHost, '.' . config('app.master_domain', 'seoomweb.com'));
+    
+    // 커스텀 도메인이나 서브도메인을 사용하는 경우 /site/{slug} 접두사 불필요
+    if ($isCustomDomain || $isSubdomain) {
+        $apiBaseUrl = "";
+    } else {
+        $apiBaseUrl = "/site/{$site->slug}";
+    }
+    
     $getMessagesUrl = $apiBaseUrl . '/api/chat/messages';
     $sendMessageUrl = $apiBaseUrl . '/api/chat/messages';
     $reportUrl = $apiBaseUrl . '/api/chat/report';
