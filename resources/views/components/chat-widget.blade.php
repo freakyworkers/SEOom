@@ -292,8 +292,20 @@
 
 .chat-message-image {
     max-width: 100%;
+    width: auto;
+    height: auto;
     border-radius: 4px;
     margin-top: 5px;
+    display: block;
+    object-fit: contain;
+}
+
+.chat-message-content {
+    overflow: hidden;
+}
+
+.chat-messages, .mobile-chat-messages {
+    overflow-x: hidden;
 }
 
 .chat-user-menu {
@@ -1121,6 +1133,31 @@
         if (!icon.hasAttribute('data-listener-attached')) {
             icon.setAttribute('data-listener-attached', 'true');
             
+            // API URL 설정
+            const getMessagesUrl = '{{ $getMessagesUrl }}';
+            const sendMessageUrl = '{{ $sendMessageUrl }}';
+            const csrfToken = '{{ $csrfToken }}';
+            const nickname = '{{ $nickname }}';
+            const isGuest = {{ $isGuest ? 'true' : 'false' }};
+            const allowGuestChat = {{ $allowGuestChat ? 'true' : 'false' }};
+            const hasChatPenalty = {{ $hasPenalty ? 'true' : 'false' }};
+            
+            let newMobilePollInterval = null;
+            let newMobileSelectedFile = null;
+            
+            // HTML 이스케이프 함수
+            function escapeHtmlNew(text) {
+                if (!text) return '';
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
+            
             // 새 모바일 모달 닫기 함수 (먼저 정의)
             function closeMobileChatModalNew() {
                 const modal = document.getElementById(mobileModalId);
@@ -1129,12 +1166,128 @@
                 const modalContent = modal.querySelector('.mobile-chat-modal-content');
                 if (!modalContent) return;
                 
+                // 폴링 중지
+                if (newMobilePollInterval) {
+                    clearInterval(newMobilePollInterval);
+                    newMobilePollInterval = null;
+                }
+                
                 // 애니메이션으로 내려가기
                 modalContent.style.transform = 'translateY(100%)';
                 setTimeout(() => {
                     modal.style.display = 'none';
                     document.body.style.overflow = '';
                 }, 300);
+            }
+            
+            // 메시지 로드 함수
+            function loadNewMobileMessages() {
+                fetch(getMessagesUrl, {
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error loading messages:', data.error);
+                        return;
+                    }
+                    
+                    const messagesContainer = document.getElementById('mobileChatMessages_' + siteId);
+                    if (!messagesContainer) return;
+                    
+                    messagesContainer.innerHTML = '';
+                    
+                    if (data.messages && data.messages.length > 0) {
+                        data.messages.forEach(msg => {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = 'chat-message';
+                            messageDiv.dataset.messageId = msg.id;
+                            
+                            const time = new Date(msg.created_at).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+                            
+                            messageDiv.innerHTML = `
+                                <div class="chat-message-header">
+                                    <span class="chat-message-nickname">${msg.nickname}</span>
+                                    <span class="chat-message-time">${time}</span>
+                                </div>
+                                <div class="chat-message-content">
+                                    ${escapeHtmlNew(msg.message || msg.content || '')}
+                                </div>
+                                ${(msg.attachment_path || msg.file_path) ? `<img src="/storage/${msg.attachment_path || msg.file_path}" class="chat-message-image" alt="Attachment">` : ''}
+                            `;
+                            
+                            messagesContainer.appendChild(messageDiv);
+                        });
+                    }
+                    
+                    // 스크롤 최하단으로
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+            
+            // 메시지 전송 함수
+            function sendNewMobileMessage() {
+                const input = document.getElementById('mobileChatInput_' + siteId);
+                if (!input) return;
+                
+                const message = input.value.trim();
+                
+                if (!message && !newMobileSelectedFile) return;
+                
+                // 게스트 체크
+                if (isGuest && !allowGuestChat) {
+                    alert('로그인 후 이용해주세요.');
+                    return;
+                }
+                
+                // 채팅 금지 체크
+                if (hasChatPenalty) {
+                    alert('채팅이 금지되었습니다.');
+                    return;
+                }
+                
+                const formData = new FormData();
+                formData.append('message', message);
+                if (newMobileSelectedFile) {
+                    formData.append('file', newMobileSelectedFile);
+                }
+                
+                fetch(sendMessageUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+                    
+                    if (data.success) {
+                        input.value = '';
+                        newMobileSelectedFile = null;
+                        const preview = document.getElementById('mobileChatPreview_' + siteId);
+                        if (preview) preview.style.display = 'none';
+                        loadNewMobileMessages();
+                        
+                        // PC 위젯도 업데이트
+                        const loadPcFunc = window['loadMessages_' + siteId];
+                        if (loadPcFunc && typeof loadPcFunc === 'function') {
+                            loadPcFunc();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('메시지 전송에 실패했습니다.');
+                });
             }
             
             const handleClick = function(e) {
@@ -1178,8 +1331,7 @@
                 
                 // 닫기 버튼 이벤트 연결
                 const closeBtn = modal.querySelector('[id^="mobileChatCloseBtn_"]');
-                if (closeBtn && !closeBtn.hasAttribute('data-listener-attached')) {
-                    closeBtn.setAttribute('data-listener-attached', 'true');
+                if (closeBtn) {
                     closeBtn.onclick = function(e) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -1188,25 +1340,77 @@
                 }
                 
                 // 모달 배경 클릭 시 닫기
-                if (!modal.hasAttribute('data-listener-attached')) {
-                    modal.setAttribute('data-listener-attached', 'true');
-                    modal.addEventListener('click', function(e) {
-                        if (e.target === modal) {
-                            closeMobileChatModalNew();
-                        }
-                    });
+                modal.onclick = function(e) {
+                    if (e.target === modal) {
+                        closeMobileChatModalNew();
+                    }
+                };
+                
+                // 전송 버튼 이벤트 연결
+                const sendBtn = modal.querySelector('[id^="mobileSendBtn_"]');
+                if (sendBtn) {
+                    sendBtn.onclick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        sendNewMobileMessage();
+                    };
                 }
                 
-                // 메시지 로드 함수 호출 (전역에서 찾기)
-                const loadFunc = window['loadMobileMessages_' + siteId];
-                if (loadFunc && typeof loadFunc === 'function') {
-                    loadFunc();
+                // 입력 필드 엔터키 이벤트
+                const input = modal.querySelector('[id^="mobileChatInput_"]');
+                if (input) {
+                    input.onkeypress = function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            sendNewMobileMessage();
+                        }
+                    };
                 }
+                
+                // 파일 입력 이벤트
+                const fileInput = modal.querySelector('[id^="mobileChatFileInput_"]');
+                if (fileInput) {
+                    fileInput.onchange = function(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            newMobileSelectedFile = file;
+                            const preview = document.getElementById('mobileChatPreview_' + siteId);
+                            const previewImg = document.getElementById('mobileChatPreviewImg_' + siteId);
+                            if (preview && previewImg) {
+                                previewImg.src = URL.createObjectURL(file);
+                                preview.style.display = 'block';
+                            }
+                        }
+                    };
+                }
+                
+                // 미리보기 제거 버튼
+                const removePreviewBtn = modal.querySelector('[id^="mobileRemovePreviewBtn_"]');
+                if (removePreviewBtn) {
+                    removePreviewBtn.onclick = function() {
+                        newMobileSelectedFile = null;
+                        const preview = document.getElementById('mobileChatPreview_' + siteId);
+                        const fileInput = document.getElementById('mobileChatFileInput_' + siteId);
+                        if (preview) preview.style.display = 'none';
+                        if (fileInput) fileInput.value = '';
+                    };
+                }
+                
+                // 메시지 로드
+                loadNewMobileMessages();
+                
+                // 폴링 시작
+                if (newMobilePollInterval) {
+                    clearInterval(newMobilePollInterval);
+                }
+                newMobilePollInterval = setInterval(loadNewMobileMessages, 3000);
             }
             
             // 전역으로 노출
             window['openMobileChatModalNew_' + siteId] = openMobileChatModalNew;
             window['closeMobileChatModalNew_' + siteId] = closeMobileChatModalNew;
+            window['loadNewMobileMessages_' + siteId] = loadNewMobileMessages;
+            window['sendNewMobileMessage_' + siteId] = sendNewMobileMessage;
             
             // 기존 레거시 호환성 유지
             function setupMobileModal(widget, overlay) {
