@@ -89,6 +89,10 @@
     $themeDarkMode = $site->getSetting('theme_dark_mode', 'light');
     $isDark = $themeDarkMode === 'dark';
     
+    // 테마 설정 (라운드/각진 테마)
+    $themeMain = $site->getSetting('theme_main', 'round');
+    $isRoundTheme = $themeMain === 'round';
+    
     // 다크모드 색상
     $chatBgColor = $isDark ? '#2b2b2b' : 'white';
     $chatMessagesBgColor = $isDark ? '#1e1e1e' : '#f8f9fa';
@@ -100,13 +104,17 @@
     $chatMutedColor = $isDark ? '#adb5bd' : '#6c757d';
     $chatInputBgColor = $isDark ? '#333333' : 'white';
     $chatInputBorderColor = $isDark ? '#555555' : '#dee2e6';
+    
+    // 사이드바 카드 헤더 색상 (다른 위젯과 동일)
+    $sidebarCardHeaderBg = $isDark ? 'rgb(43, 43, 43)' : 'white';
+    $sidebarCardHeaderTextColor = $isDark ? '#ffffff' : 'inherit';
 @endphp
 
 <div class="chat-widget-container d-none d-md-block" id="chatWidget_{{ $site->id }}" data-site-id="{{ $site->id }}">
     @if($widgetTitle)
-    {{-- 운영자가 위젯 제목을 입력한 경우 헤더 표시 --}}
-    <div class="chat-widget-header" style="padding: 10px 15px; background-color: {{ $chatHeaderBgColor }}; border-bottom: 1px solid {{ $chatBorderColor }};">
-        <h6 class="mb-0" style="color: {{ $chatTextColor }};"><i class="bi bi-chat-dots me-2"></i>{{ $widgetTitle }}</h6>
+    {{-- 운영자가 위젯 제목을 입력한 경우 헤더 표시 (다른 위젯과 동일한 스타일) --}}
+    <div class="card-header" style="background-color: {{ $sidebarCardHeaderBg }}; color: {{ $sidebarCardHeaderTextColor }};{{ $isRoundTheme ? ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' : ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' }} border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; border: none !important; border-bottom: 1px solid {{ $chatBorderColor }} !important;">
+        <h6 class="mb-0" style="color: {{ $sidebarCardHeaderTextColor }};">{{ $widgetTitle }}</h6>
     </div>
     @endif
     
