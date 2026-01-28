@@ -1663,9 +1663,11 @@
                         {{-- 사이드바 상단 배너 --}}
                         <x-banner-display :site="$site" location="sidebar_top" />
                         
-                        {{-- 사이드바 위젯 --}}
+                        {{-- 사이드바 위젯 (모바일에서는 채팅 위젯 제외 - 아이콘으로 접근) --}}
                         @foreach($sidebarWidgets as $widget)
-                            <x-sidebar-widget :widget="$widget" :site="$site" />
+                            @if($widget->type !== 'chat')
+                                <x-sidebar-widget :widget="$widget" :site="$site" />
+                            @endif
                         @endforeach
                         
                         {{-- 사이드바 하단 배너 --}}
@@ -1775,9 +1777,11 @@
                         {{-- 사이드바 상단 배너 --}}
                         <x-banner-display :site="$site" location="sidebar_top" />
                         
-                        {{-- 사이드바 위젯 --}}
+                        {{-- 사이드바 위젯 (모바일에서는 채팅 위젯 제외 - 아이콘으로 접근) --}}
                         @foreach($sidebarWidgets as $widget)
-                            <x-sidebar-widget :widget="$widget" :site="$site" />
+                            @if($widget->type !== 'chat')
+                                <x-sidebar-widget :widget="$widget" :site="$site" />
+                            @endif
                         @endforeach
                         
                         {{-- 사이드바 하단 배너 --}}
