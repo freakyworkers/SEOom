@@ -1161,13 +1161,13 @@
     @endif
 @else
 @php
-    // 제목이 있을 때만 상단 테두리 적용
-    $hasTitle = $widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && !empty($widget->title);
+    // 제목이 있을 때만 상단 테두리 적용 (채팅 위젯은 자체 헤더가 있으므로 제외)
+    $hasTitle = $widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat' && !empty($widget->title);
     $cardStyle = $hasTitle ? $widgetTopBorderStyle : '';
     $cardStyle .= !$isRoundTheme ? ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' : '';
 @endphp
 <div class="card {{ $shadowClass }} {{ $animationClass }} mb-3 {{ $isRoundTheme ? '' : 'rounded-0' }}" style="{{ $cardStyle }} {{ $animationStyle }}" data-widget-id="{{ $widget->id }}">
-    @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu')
+    @if($widget->type !== 'user_ranking' && $widget->type !== 'marquee_board' && $widget->type !== 'block' && $widget->type !== 'block_slide' && $widget->type !== 'image' && $widget->type !== 'image_slide' && $widget->type !== 'tab_menu' && $widget->type !== 'toggle_menu' && $widget->type !== 'chat')
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
             @php
@@ -1872,7 +1872,8 @@
                                             
                                             const singleSetWidth = totalItems * itemWidth;
                                             
-                                            let position = 0;
+                                            // 오른쪽 방향일 때는 -singleSetWidth에서 시작하여 0으로 이동
+                                            let position = direction === 'right' ? -singleSetWidth : 0;
                                             const speed = 0.5;
                                             let lastTime = performance.now();
                                             
@@ -1895,7 +1896,7 @@
                                                     }
                                                 } else if (direction === 'right') {
                                                     position += frameSpeed;
-                                                    if (position >= singleSetWidth) {
+                                                    if (position >= 0) {
                                                         position = position - singleSetWidth;
                                                     }
                                                 }

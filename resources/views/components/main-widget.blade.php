@@ -1517,7 +1517,8 @@
                     const itemWithGap = itemWidth + imageGap;
                     const singleSetWidth = (totalItems / 3) * itemWithGap;
                     
-                    let position = 0;
+                    // 오른쪽 방향일 때는 -singleSetWidth에서 시작하여 0으로 이동
+                    let position = direction === 'right' ? -singleSetWidth : 0;
                     const speed = 0.5; // 픽셀 단위 이동 속도
                     let lastTime = performance.now();
                     
@@ -1537,8 +1538,8 @@
                             container.style.transform = `translateX(${position}px)`;
                         } else if (direction === 'right') {
                             position += frameSpeed;
-                            // 첫 번째 세트가 완전히 사라지면 위치 리셋 (부드럽게)
-                            if (position >= singleSetWidth) {
+                            // 0에 도달하면 다시 -singleSetWidth로 리셋 (부드럽게)
+                            if (position >= 0) {
                                 position = position - singleSetWidth;
                             }
                             container.style.transform = `translateX(${position}px)`;
@@ -2453,7 +2454,8 @@
                                             // 하나의 세트 전체 너비 (원본 아이템들의 총 너비)
                                             const singleSetWidth = totalItems * itemWidth;
                                             
-                                            let position = 0;
+                                            // 오른쪽 방향일 때는 -singleSetWidth에서 시작하여 0으로 이동
+                                            let position = direction === 'right' ? -singleSetWidth : 0;
                                             const speed = 0.5; // 픽셀 단위 이동 속도
                                             let lastTime = performance.now();
                                             
@@ -2476,7 +2478,7 @@
                                                     }
                                                 } else if (direction === 'right') {
                                                     position += frameSpeed;
-                                                    if (position >= singleSetWidth) {
+                                                    if (position >= 0) {
                                                         position = position - singleSetWidth;
                                                     }
                                                 }

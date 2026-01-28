@@ -98,9 +98,10 @@
 @endphp
 
 <div class="chat-widget-container d-none d-md-block" id="chatWidget_{{ $site->id }}" data-site-id="{{ $site->id }}">
-    <div class="chat-widget-header">
+    {{-- 헤더는 모바일 모달에서만 표시 (닫기 버튼용) --}}
+    <div class="chat-widget-header d-none">
         <h6 class="mb-0"><i class="bi bi-chat-dots me-2"></i>채팅</h6>
-        <button type="button" class="btn-close d-md-none" id="chatWidgetCloseBtn_{{ $site->id }}" aria-label="Close" style="display: none;"></button>
+        <button type="button" class="btn-close" id="chatWidgetCloseBtn_{{ $site->id }}" aria-label="Close" style="display: none;"></button>
     </div>
     
     @if($hasPenalty)
