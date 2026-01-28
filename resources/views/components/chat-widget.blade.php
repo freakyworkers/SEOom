@@ -1121,6 +1121,22 @@
         if (!icon.hasAttribute('data-listener-attached')) {
             icon.setAttribute('data-listener-attached', 'true');
             
+            // 새 모바일 모달 닫기 함수 (먼저 정의)
+            function closeMobileChatModalNew() {
+                const modal = document.getElementById(mobileModalId);
+                if (!modal) return;
+                
+                const modalContent = modal.querySelector('.mobile-chat-modal-content');
+                if (!modalContent) return;
+                
+                // 애니메이션으로 내려가기
+                modalContent.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+            
             const handleClick = function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1186,22 +1202,6 @@
                 if (loadFunc && typeof loadFunc === 'function') {
                     loadFunc();
                 }
-            }
-            
-            // 새 모바일 모달 닫기 함수
-            function closeMobileChatModalNew() {
-                const modal = document.getElementById(mobileModalId);
-                if (!modal) return;
-                
-                const modalContent = modal.querySelector('.mobile-chat-modal-content');
-                if (!modalContent) return;
-                
-                // 애니메이션으로 내려가기
-                modalContent.style.transform = 'translateY(100%)';
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = '';
-                }, 300);
             }
             
             // 전역으로 노출
