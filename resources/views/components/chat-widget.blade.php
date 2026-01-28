@@ -1074,6 +1074,7 @@
 (function() {
     const siteId = {{ $site->id }};
     const iconId = 'mobileChatIcon_' + siteId;
+    const mobileModalId = 'mobileChatModal_' + siteId;
     
     // 아이콘을 body로 이동하고 스타일 적용
     function ensureIconVisible() {
@@ -1124,18 +1125,90 @@
                 e.preventDefault();
                 e.stopPropagation();
                 
-                // PC 채팅 위젯을 모달로 표시
-                const widgetId = 'chatWidget_' + siteId;
-                const widget = document.getElementById(widgetId);
-                const overlay = document.getElementById('chatWidgetModalOverlay_' + siteId);
-                
-                if (!widget) return;
-                
-                // 모달 열기
-                setupMobileModal(widget, overlay);
+                // 새 HTML 모달 사용
+                openMobileChatModalNew();
             };
             
-            // 모바일 모달 설정
+            // 새 모바일 모달 열기 함수
+            function openMobileChatModalNew() {
+                let modal = document.getElementById(mobileModalId);
+                if (!modal) return;
+                
+                // 모달을 body로 이동
+                if (modal.parentElement !== document.body) {
+                    const modalClone = modal.cloneNode(true);
+                    modalClone.id = mobileModalId;
+                    document.body.appendChild(modalClone);
+                    modal.remove();
+                    modal = document.getElementById(mobileModalId);
+                }
+                
+                if (!modal) return;
+                
+                const modalContent = modal.querySelector('.mobile-chat-modal-content');
+                if (!modalContent) return;
+                
+                // 모달 표시
+                modal.style.cssText = 'display: block !important; position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; top: 0 !important; z-index: 10001 !important; background-color: rgba(0,0,0,0.5) !important;';
+                
+                // body 스크롤 방지
+                document.body.style.overflow = 'hidden';
+                
+                // 애니메이션으로 올라오기
+                modalContent.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    modalContent.style.transform = 'translateY(0)';
+                }, 10);
+                
+                // 닫기 버튼 이벤트 연결
+                const closeBtn = modal.querySelector('[id^="mobileChatCloseBtn_"]');
+                if (closeBtn && !closeBtn.hasAttribute('data-listener-attached')) {
+                    closeBtn.setAttribute('data-listener-attached', 'true');
+                    closeBtn.onclick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        closeMobileChatModalNew();
+                    };
+                }
+                
+                // 모달 배경 클릭 시 닫기
+                if (!modal.hasAttribute('data-listener-attached')) {
+                    modal.setAttribute('data-listener-attached', 'true');
+                    modal.addEventListener('click', function(e) {
+                        if (e.target === modal) {
+                            closeMobileChatModalNew();
+                        }
+                    });
+                }
+                
+                // 메시지 로드 함수 호출 (전역에서 찾기)
+                const loadFunc = window['loadMobileMessages_' + siteId];
+                if (loadFunc && typeof loadFunc === 'function') {
+                    loadFunc();
+                }
+            }
+            
+            // 새 모바일 모달 닫기 함수
+            function closeMobileChatModalNew() {
+                const modal = document.getElementById(mobileModalId);
+                if (!modal) return;
+                
+                const modalContent = modal.querySelector('.mobile-chat-modal-content');
+                if (!modalContent) return;
+                
+                // 애니메이션으로 내려가기
+                modalContent.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+            
+            // 전역으로 노출
+            window['openMobileChatModalNew_' + siteId] = openMobileChatModalNew;
+            window['closeMobileChatModalNew_' + siteId] = closeMobileChatModalNew;
+            
+            // 기존 레거시 호환성 유지
             function setupMobileModal(widget, overlay) {
                 if (!widget) return;
                 
