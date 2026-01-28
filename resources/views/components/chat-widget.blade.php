@@ -1,8 +1,13 @@
+@props(['site', 'widgetTitle' => null])
+
 @php
     // Check if site has chat widget feature
     if (!$site->hasFeature('chat_widget')) {
         return;
     }
+    
+    // 위젯 제목 (운영자가 설정한 제목 또는 기본값)
+    $chatTitle = $widgetTitle ?? '채팅';
 
     $chatSetting = \App\Models\ChatSetting::firstOrCreate(
         ['site_id' => $site->id],
@@ -1007,8 +1012,62 @@
     </div>
 </div>
 
-{{-- 모바일 모달 오버레이 --}}
-<div class="chat-widget-modal-overlay d-md-none" id="chatWidgetModalOverlay_{{ $site->id }}"></div>
+{{-- 모바일 채팅 모달 --}}
+<div class="mobile-chat-modal d-md-none" id="mobileChatModal_{{ $site->id }}" style="display: none;">
+    <div class="mobile-chat-modal-content" style="background-color: {{ $chatBgColor }}; color: {{ $chatTextColor }};">
+        {{-- 모달 헤더 (닫기 버튼 포함) --}}
+        <div class="mobile-chat-modal-header" style="background-color: {{ $chatHeaderBgColor }}; border-bottom: 1px solid {{ $chatBorderColor }};">
+            <h6 class="mb-0" style="color: {{ $chatTextColor }};"><i class="bi bi-chat-dots me-2"></i>{{ $chatTitle }}</h6>
+            <button type="button" class="btn-close" id="mobileChatCloseBtn_{{ $site->id }}" aria-label="Close" style="{{ $isDark ? 'filter: invert(1);' : '' }}"></button>
+        </div>
+        
+        @if($hasPenalty)
+        <div class="alert alert-warning mb-0 rounded-0" style="border-left: none; border-right: none; border-top: none;">
+            <small><i class="bi bi-exclamation-triangle me-1"></i>채팅이 금지되었습니다. @if($penaltyRemainingText) (남은기간: {{ $penaltyRemainingText }}) @endif</small>
+        </div>
+        @endif
+        
+        @if($chatSetting->notice)
+        <div class="chat-notice alert alert-info mb-0 rounded-0" style="border-left: none; border-right: none; border-top: none;">
+            <small>{{ $chatSetting->notice }}</small>
+        </div>
+        @endif
+        
+        {{-- 메시지 영역 --}}
+        <div class="mobile-chat-messages" id="mobileChatMessages_{{ $site->id }}" style="background-color: {{ $chatMessagesBgColor }}; color: {{ $chatTextColor }};">
+            <!-- Messages will be loaded here -->
+        </div>
+        
+        {{-- 이미지 미리보기 --}}
+        <div id="mobileChatPreview_{{ $site->id }}" style="display: none; padding: 10px; background-color: {{ $chatBgColor }}; border-top: 1px solid {{ $chatBorderColor }};">
+            <div class="position-relative d-inline-block">
+                <img id="mobileChatPreviewImg_{{ $site->id }}" src="" alt="미리보기" style="max-height: 100px; max-width: 200px; border-radius: 8px;">
+                <button type="button" class="btn-close position-absolute top-0 end-0" id="mobileRemovePreviewBtn_{{ $site->id }}" style="background-color: rgba(255,255,255,0.8); border-radius: 50%; padding: 4px;"></button>
+            </div>
+        </div>
+        
+        {{-- 입력 영역 --}}
+        <div class="mobile-chat-input-container" style="border-top: 1px solid {{ $chatBorderColor }}; background-color: {{ $chatBgColor }};">
+            <div class="d-flex align-items-end gap-2">
+                <div class="flex-grow-1">
+                    <div class="input-group">
+                        <button type="button" class="btn btn-outline-secondary" id="mobileEmojiBtn_{{ $site->id }}">
+                            <i class="bi bi-emoji-smile"></i>
+                        </button>
+                        <input type="text" class="form-control" id="mobileChatInput_{{ $site->id }}" placeholder="메시지를 입력하세요..." style="background-color: {{ $chatInputBgColor }}; color: {{ $chatTextColor }}; border-color: {{ $chatInputBorderColor }};">
+                        <label class="btn btn-outline-secondary mb-0" style="cursor: pointer;">
+                            <i class="bi bi-image"></i>
+                            <input type="file" id="mobileChatFileInput_{{ $site->id }}" accept="image/*" style="display: none;">
+                        </label>
+                        <button type="button" class="btn btn-primary" id="mobileSendBtn_{{ $site->id }}">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 // 즉시 실행 - 스크립트가 파싱되는 즉시 실행

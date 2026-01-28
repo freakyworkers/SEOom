@@ -2903,7 +2903,7 @@
             @case('chat')
                 @if($site->hasFeature('chat_widget'))
                     <div class="d-none d-md-block">
-                        <x-chat-widget :site="$site" />
+                        <x-chat-widget :site="$site" :widgetTitle="$widget->title ?? null" />
                     </div>
                 @endif
                 @break
