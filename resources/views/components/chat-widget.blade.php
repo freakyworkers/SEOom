@@ -291,21 +291,32 @@
 }
 
 .chat-message-image {
-    max-width: 100%;
-    width: auto;
-    height: auto;
+    max-width: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: 300px;
     border-radius: 4px;
     margin-top: 5px;
     display: block;
     object-fit: contain;
 }
 
+.chat-message {
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
 .chat-message-content {
     overflow: hidden;
+    word-wrap: break-word;
 }
 
 .chat-messages, .mobile-chat-messages {
-    overflow-x: hidden;
+    overflow-x: hidden !important;
+}
+
+.mobile-chat-modal-content {
+    overflow-x: hidden !important;
 }
 
 .chat-user-menu {
