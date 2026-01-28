@@ -77,63 +77,124 @@
 
     <div class="card shadow-sm mb-3 overflow-hidden">
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width: 80px; text-align: center;">등수</th>
-                            <th style="width: 150px; text-align: center;">출석시간</th>
-                            <th style="text-align: center;">닉네임</th>
-                            <th style="text-align: center;">출석인사</th>
-                            <th style="width: 120px; text-align: center;">적립포인트</th>
-                            <th style="width: 100px; text-align: center;">개근일</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($attendances as $attendance)
+            {{-- PC 버전: 테이블 형태 --}}
+            <div class="d-none d-md-block">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
                             <tr>
-                                <td style="text-align: center;">
-                                    @if($attendance->rank == 1)
-                                        <i class="bi bi-trophy-fill text-warning" style="font-size: 1.5rem;"></i>
-                                    @elseif($attendance->rank == 2)
-                                        <i class="bi bi-trophy-fill text-secondary" style="font-size: 1.5rem;"></i>
-                                    @elseif($attendance->rank == 3)
-                                        <i class="bi bi-trophy-fill" style="font-size: 1.5rem; color: #cd7f32;"></i>
-                                    @else
-                                        {{ $attendance->rank }}
-                                    @endif
-                                </td>
-                                <td style="text-align: center;">
-                                    {{ $attendance->attendance_time->format('H:i:s') }}
-                                </td>
-                                <td style="text-align: center;">
-                                    <x-user-rank :user="$attendance->user" :site="$site" />
-                                    {{ $attendance->user->nickname ?? $attendance->user->name }}
-                                </td>
-                                <td style="text-align: center;">
-                                    {{ $attendance->greeting ?? '-' }}
-                                </td>
-                                <td style="text-align: center;">
-                                    <span style="color: {{ $pointColor }}; font-weight: bold;">{{ number_format($attendance->points_earned) }} P</span>
-                                </td>
-                                <td style="text-align: center;">
-                                    @php
-                                        $attendanceService = app(\App\Services\AttendanceService::class);
-                                        $consecutiveDays = $attendanceService->getUserConsecutiveDays($site->id, $attendance->user_id);
-                                    @endphp
-                                    {{ $consecutiveDays }}일째
-                                </td>
+                                <th style="width: 80px; text-align: center;">등수</th>
+                                <th style="width: 150px; text-align: center;">출석시간</th>
+                                <th style="text-align: center;">닉네임</th>
+                                <th style="text-align: center;">출석인사</th>
+                                <th style="width: 120px; text-align: center;">적립포인트</th>
+                                <th style="width: 100px; text-align: center;">개근일</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-4">
-                                    <i class="bi bi-inbox display-4 text-muted d-block mb-2"></i>
-                                    <p class="text-muted mb-0">아직 출석한 사용자가 없습니다.</p>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse($attendances as $attendance)
+                                <tr>
+                                    <td style="text-align: center;">
+                                        @if($attendance->rank == 1)
+                                            <i class="bi bi-trophy-fill text-warning" style="font-size: 1.5rem;"></i>
+                                        @elseif($attendance->rank == 2)
+                                            <i class="bi bi-trophy-fill text-secondary" style="font-size: 1.5rem;"></i>
+                                        @elseif($attendance->rank == 3)
+                                            <i class="bi bi-trophy-fill" style="font-size: 1.5rem; color: #cd7f32;"></i>
+                                        @else
+                                            {{ $attendance->rank }}
+                                        @endif
+                                    </td>
+                                    <td style="text-align: center;">
+                                        {{ $attendance->attendance_time->format('H:i:s') }}
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <x-user-rank :user="$attendance->user" :site="$site" />
+                                        {{ $attendance->user->nickname ?? $attendance->user->name }}
+                                    </td>
+                                    <td style="text-align: center;">
+                                        {{ $attendance->greeting ?? '-' }}
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span style="color: {{ $pointColor }}; font-weight: bold;">{{ number_format($attendance->points_earned) }} P</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        @php
+                                            $attendanceService = app(\App\Services\AttendanceService::class);
+                                            $consecutiveDays = $attendanceService->getUserConsecutiveDays($site->id, $attendance->user_id);
+                                        @endphp
+                                        {{ $consecutiveDays }}일째
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <i class="bi bi-inbox display-4 text-muted d-block mb-2"></i>
+                                        <p class="text-muted mb-0">아직 출석한 사용자가 없습니다.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- 모바일 버전: 카드 형태 --}}
+            <div class="d-md-none">
+                @forelse($attendances as $attendance)
+                    @php
+                        $attendanceService = app(\App\Services\AttendanceService::class);
+                        $consecutiveDays = $attendanceService->getUserConsecutiveDays($site->id, $attendance->user_id);
+                    @endphp
+                    <div class="attendance-card mb-3 p-3 rounded-3" style="background-color: {{ $isDark ? 'rgba(255,255,255,0.05)' : '#f8f9fa' }}; border: 1px solid {{ $isDark ? 'rgba(255,255,255,0.1)' : '#e9ecef' }};">
+                        <div class="d-flex align-items-start gap-3">
+                            {{-- 등수 영역 --}}
+                            <div class="attendance-rank text-center" style="min-width: 50px;">
+                                @if($attendance->rank == 1)
+                                    <i class="bi bi-trophy-fill text-warning" style="font-size: 2rem;"></i>
+                                    <div class="small text-muted mt-1">1등</div>
+                                @elseif($attendance->rank == 2)
+                                    <i class="bi bi-trophy-fill text-secondary" style="font-size: 2rem;"></i>
+                                    <div class="small text-muted mt-1">2등</div>
+                                @elseif($attendance->rank == 3)
+                                    <i class="bi bi-trophy-fill" style="font-size: 2rem; color: #cd7f32;"></i>
+                                    <div class="small text-muted mt-1">3등</div>
+                                @else
+                                    <div class="fw-bold" style="font-size: 1.5rem;">{{ $attendance->rank }}</div>
+                                    <div class="small text-muted">등</div>
+                                @endif
+                            </div>
+                            {{-- 정보 영역 --}}
+                            <div class="attendance-info flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="fw-bold">
+                                        <x-user-rank :user="$attendance->user" :site="$site" />
+                                        {{ $attendance->user->nickname ?? $attendance->user->name }}
+                                    </div>
+                                    <span style="color: {{ $pointColor }}; font-weight: bold; font-size: 1.1rem;">+{{ number_format($attendance->points_earned) }}P</span>
+                                </div>
+                                @if($attendance->greeting)
+                                    <div class="attendance-greeting mb-2 text-muted" style="font-size: 0.95rem;">
+                                        <i class="bi bi-chat-quote me-1"></i>{{ $attendance->greeting }}
+                                    </div>
+                                @endif
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock me-1"></i>{{ $attendance->attendance_time->format('H:i:s') }}
+                                    </small>
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar-check me-1"></i>개근 {{ $consecutiveDays }}일째
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox display-4 text-muted d-block mb-2"></i>
+                        <p class="text-muted mb-0">아직 출석한 사용자가 없습니다.</p>
+                    </div>
+                @endforelse
             </div>
 
             @if($attendances->hasPages())
