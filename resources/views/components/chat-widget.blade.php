@@ -294,31 +294,42 @@
 
 .chat-message-image {
     max-width: 100% !important;
-    width: auto !important;
+    width: 100% !important;
     height: auto !important;
     max-height: 300px;
     border-radius: 4px;
     margin-top: 5px;
     display: block;
     object-fit: contain;
+    box-sizing: border-box;
 }
 
 .chat-message {
     overflow: hidden;
     word-wrap: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .chat-message-content {
     overflow: hidden;
     word-wrap: break-word;
+    max-width: 100%;
 }
 
 .chat-messages, .mobile-chat-messages {
     overflow-x: hidden !important;
+    box-sizing: border-box;
 }
 
 .mobile-chat-modal-content {
     overflow-x: hidden !important;
+    box-sizing: border-box;
+}
+
+.chat-widget-container {
+    overflow: hidden !important;
+    box-sizing: border-box;
 }
 
 .chat-user-menu {
