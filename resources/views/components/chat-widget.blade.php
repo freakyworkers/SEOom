@@ -130,7 +130,7 @@
     </div>
     @endif
     
-    <div class="chat-messages" id="chatMessages_{{ $site->id }}" style="height: 400px; overflow-y: auto; padding: 15px; background-color: {{ $chatMessagesBgColor }}; color: {{ $chatTextColor }};">
+    <div class="chat-messages" id="chatMessages_{{ $site->id }}" style="height: 400px; overflow-y: auto; overflow-x: hidden; padding: 15px; background-color: {{ $chatMessagesBgColor }}; color: {{ $chatTextColor }};">
         <!-- Messages will be loaded here -->
     </div>
     
@@ -1095,7 +1095,7 @@
         @endif
         
         {{-- 메시지 영역 --}}
-        <div class="mobile-chat-messages" id="mobileChatMessages_{{ $site->id }}" style="flex: 1; overflow-y: auto; padding: 15px; background-color: {{ $chatMessagesBgColor }}; color: {{ $chatTextColor }}; min-height: 200px; -webkit-overflow-scrolling: touch;">
+        <div class="mobile-chat-messages" id="mobileChatMessages_{{ $site->id }}" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 15px; background-color: {{ $chatMessagesBgColor }}; color: {{ $chatTextColor }}; min-height: 200px; -webkit-overflow-scrolling: touch;">
             <!-- Messages will be loaded here -->
         </div>
         
