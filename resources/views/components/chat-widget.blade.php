@@ -551,12 +551,30 @@
         }
         
         // 모바일 모달이 열려있으면 모바일 모달의 입력 필드 사용, 아니면 원본 사용
-        const widget = document.getElementById(widgetId);
-        const isMobileModal = widget && widget.classList.contains('mobile-modal');
-        const input = isMobileModal ? widget.querySelector('#' + inputId) : document.getElementById(inputId);
-        const fileInput = isMobileModal ? widget.querySelector('#' + fileInputId) : document.getElementById(fileInputId);
+        let widget = document.getElementById(widgetId);
+        let isMobileModal = widget && widget.classList.contains('mobile-modal');
         
-        if (!input) return;
+        // 입력 필드 찾기 - 여러 방법으로 시도
+        let input = null;
+        let fileInput = null;
+        
+        if (isMobileModal && widget) {
+            input = widget.querySelector('#' + inputId);
+            fileInput = widget.querySelector('#' + fileInputId);
+        }
+        
+        // 위젯 내에서 찾지 못하면 document에서 직접 찾기
+        if (!input) {
+            input = document.getElementById(inputId);
+        }
+        if (!fileInput) {
+            fileInput = document.getElementById(fileInputId);
+        }
+        
+        if (!input) {
+            console.error('Chat input not found:', inputId);
+            return;
+        }
         
         const message = input.value.trim();
         
@@ -603,8 +621,14 @@
                 input.value = '';
                 selectedFile = null;
                 
-                // 미리보기 숨기기 (모바일 모달이면 모바일 위젯 내의 미리보기, 아니면 원본)
-                const preview = isMobileModal ? widget.querySelector('#' + previewId) : document.getElementById(previewId);
+                // 미리보기 숨기기
+                let preview = null;
+                if (isMobileModal && widget) {
+                    preview = widget.querySelector('#' + previewId);
+                }
+                if (!preview) {
+                    preview = document.getElementById(previewId);
+                }
                 if (preview) preview.style.display = 'none';
                 
                 // 파일 입력 초기화
@@ -894,12 +918,21 @@
         }
     });
     
-    // 전역으로 함수 노출
+    // 전역으로 함수 및 변수 노출
     window['sendMessage_' + siteId] = sendMessage;
     window['loadMessages_' + siteId] = loadMessages;
+    window['selectedFile_' + siteId] = null; // selectedFile을 전역으로 노출
+    
+    // selectedFile getter/setter
+    window['setSelectedFile_' + siteId] = function(file) {
+        selectedFile = file;
+        window['selectedFile_' + siteId] = file;
+    };
+    window['getSelectedFile_' + siteId] = function() {
+        return selectedFile || window['selectedFile_' + siteId];
+    };
     
     // 전역으로 노출 (모바일에서 호출 가능하도록)
-    window['loadMessages_' + siteId] = loadMessages;
     window.loadMessages = loadMessages; // 간단한 이름으로도 접근 가능
 })();
 </script>
@@ -1194,6 +1227,12 @@
                     newFileInput.addEventListener('change', function(e) {
                         const file = e.target.files[0];
                         if (file && file.type.startsWith('image/')) {
+                            // 전역 selectedFile 변수 설정
+                            const setSelectedFile = window['setSelectedFile_' + siteId];
+                            if (setSelectedFile) {
+                                setSelectedFile(file);
+                            }
+                            
                             const reader = new FileReader();
                             reader.onload = function(e) {
                                 const previewImg = widget.querySelector('#chatPreviewImg_' + siteId);
@@ -1219,6 +1258,11 @@
                         const fileInput = widget.querySelector('#chatFileInput_' + siteId);
                         if (preview) preview.style.display = 'none';
                         if (fileInput) fileInput.value = '';
+                        // 전역 selectedFile 변수 초기화
+                        const setSelectedFile = window['setSelectedFile_' + siteId];
+                        if (setSelectedFile) {
+                            setSelectedFile(null);
+                        }
                     });
                 }
                 

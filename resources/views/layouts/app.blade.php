@@ -1665,7 +1665,7 @@
                         
                         {{-- 사이드바 위젯 (모바일에서는 채팅 위젯 제외 - 아이콘으로 접근) --}}
                         @foreach($sidebarWidgets as $widget)
-                            @if($widget->type !== 'chat')
+                            @if($widget->type !== 'chat' && $widget->type !== 'chat_widget')
                                 <x-sidebar-widget :widget="$widget" :site="$site" />
                             @endif
                         @endforeach
@@ -1779,7 +1779,7 @@
                         
                         {{-- 사이드바 위젯 (모바일에서는 채팅 위젯 제외 - 아이콘으로 접근) --}}
                         @foreach($sidebarWidgets as $widget)
-                            @if($widget->type !== 'chat')
+                            @if($widget->type !== 'chat' && $widget->type !== 'chat_widget')
                                 <x-sidebar-widget :widget="$widget" :site="$site" />
                             @endif
                         @endforeach
