@@ -1562,7 +1562,7 @@
             @endphp
             
             @if($themeSidebar === 'left')
-                <aside class="col-md-3 mb-4 {{ $showMobileSidebar ? 'd-md-block d-none' : '' }}">
+                <aside class="col-md-3 mb-4 d-none d-md-block">
                     {{-- 사용자 위젯 --}}
                     @if($site->getSetting('enable_sidebar_login_widget', true))
                         <x-sidebar-user-widget :site="$site" :themeDarkMode="$themeDarkMode" />
@@ -1791,7 +1791,7 @@
             </div>
 
             @if($themeSidebar === 'right')
-                <aside class="col-md-3 mb-4 {{ $showMobileSidebar ? 'd-md-block d-none' : '' }}">
+                <aside class="col-md-3 mb-4 d-none d-md-block">
                     {{-- 사용자 위젯 --}}
                     @if($site->getSetting('enable_sidebar_login_widget', true))
                         <x-sidebar-user-widget :site="$site" :themeDarkMode="$themeDarkMode" />
