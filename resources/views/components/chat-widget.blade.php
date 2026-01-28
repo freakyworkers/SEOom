@@ -283,6 +283,7 @@
 
 .chat-message-time {
     font-size: 0.75em;
+    font-weight: bold;
     color: {{ $chatMutedColor }};
 }
 
