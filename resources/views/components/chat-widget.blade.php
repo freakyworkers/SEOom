@@ -1013,10 +1013,10 @@
 </div>
 
 {{-- 모바일 채팅 모달 --}}
-<div class="mobile-chat-modal d-md-none" id="mobileChatModal_{{ $site->id }}" style="display: none;">
-    <div class="mobile-chat-modal-content" style="background-color: {{ $chatBgColor }}; color: {{ $chatTextColor }};">
+<div class="mobile-chat-modal d-md-none" id="mobileChatModal_{{ $site->id }}" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; top: 0; z-index: 10001; background-color: rgba(0,0,0,0.5);">
+    <div class="mobile-chat-modal-content" style="position: absolute; bottom: 0; left: 0; right: 0; background-color: {{ $chatBgColor }}; color: {{ $chatTextColor }}; border-top-left-radius: 20px; border-top-right-radius: 20px; height: 80vh; max-height: 80vh; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s ease-out;">
         {{-- 모달 헤더 (닫기 버튼 포함) --}}
-        <div class="mobile-chat-modal-header" style="background-color: {{ $chatHeaderBgColor }}; border-bottom: 1px solid {{ $chatBorderColor }};">
+        <div class="mobile-chat-modal-header" style="padding: 15px; background-color: {{ $chatHeaderBgColor }}; border-bottom: 1px solid {{ $chatBorderColor }}; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-top-left-radius: 20px; border-top-right-radius: 20px;">
             <h6 class="mb-0" style="color: {{ $chatTextColor }};"><i class="bi bi-chat-dots me-2"></i>{{ $chatTitle }}</h6>
             <button type="button" class="btn-close" id="mobileChatCloseBtn_{{ $site->id }}" aria-label="Close" style="{{ $isDark ? 'filter: invert(1);' : '' }}"></button>
         </div>
@@ -1034,12 +1034,12 @@
         @endif
         
         {{-- 메시지 영역 --}}
-        <div class="mobile-chat-messages" id="mobileChatMessages_{{ $site->id }}" style="background-color: {{ $chatMessagesBgColor }}; color: {{ $chatTextColor }};">
+        <div class="mobile-chat-messages" id="mobileChatMessages_{{ $site->id }}" style="flex: 1; overflow-y: auto; padding: 15px; background-color: {{ $chatMessagesBgColor }}; color: {{ $chatTextColor }}; min-height: 200px; -webkit-overflow-scrolling: touch;">
             <!-- Messages will be loaded here -->
         </div>
         
         {{-- 이미지 미리보기 --}}
-        <div id="mobileChatPreview_{{ $site->id }}" style="display: none; padding: 10px; background-color: {{ $chatBgColor }}; border-top: 1px solid {{ $chatBorderColor }};">
+        <div id="mobileChatPreview_{{ $site->id }}" style="display: none; padding: 10px; background-color: {{ $chatBgColor }}; border-top: 1px solid {{ $chatBorderColor }}; flex-shrink: 0;">
             <div class="position-relative d-inline-block">
                 <img id="mobileChatPreviewImg_{{ $site->id }}" src="" alt="미리보기" style="max-height: 100px; max-width: 200px; border-radius: 8px;">
                 <button type="button" class="btn-close position-absolute top-0 end-0" id="mobileRemovePreviewBtn_{{ $site->id }}" style="background-color: rgba(255,255,255,0.8); border-radius: 50%; padding: 4px;"></button>
@@ -1047,7 +1047,7 @@
         </div>
         
         {{-- 입력 영역 --}}
-        <div class="mobile-chat-input-container" style="border-top: 1px solid {{ $chatBorderColor }}; background-color: {{ $chatBgColor }};">
+        <div class="mobile-chat-input-container" style="border-top: 1px solid {{ $chatBorderColor }}; background-color: {{ $chatBgColor }}; padding: 10px; flex-shrink: 0;">
             <div class="d-flex align-items-end gap-2">
                 <div class="flex-grow-1">
                     <div class="input-group">
