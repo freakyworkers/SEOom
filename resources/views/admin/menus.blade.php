@@ -605,13 +605,34 @@ document.addEventListener('DOMContentLoaded', function() {
         const menus = [];
         // 데스크탑 테이블 또는 모바일 카드에서 메뉴 정보 수집
         const menuElements = document.querySelectorAll('.menu-row, .menu-card');
-        menuElements.forEach((element, index) => {
+        
+        // 대메뉴와 하위 메뉴의 순서를 각각 계산
+        let parentOrderMap = {}; // 각 부모 메뉴 아래의 하위 메뉴 순서
+        let rootOrder = 0; // 대메뉴 순서
+        
+        menuElements.forEach((element) => {
             const menuId = element.dataset.menuId;
             const parentId = element.dataset.parentId || null;
+            const level = parseInt(element.dataset.level) || 0;
+            
             if (menuId) {
+                let order;
+                if (level === 0 || !parentId) {
+                    // 대메뉴
+                    rootOrder++;
+                    order = rootOrder;
+                } else {
+                    // 하위 메뉴: 해당 부모 내에서 순서 계산
+                    if (!parentOrderMap[parentId]) {
+                        parentOrderMap[parentId] = 0;
+                    }
+                    parentOrderMap[parentId]++;
+                    order = parentOrderMap[parentId];
+                }
+                
                 menus.push({
                     id: menuId,
-                    order: index + 1,
+                    order: order,
                     parent_id: parentId
                 });
             }
@@ -643,6 +664,99 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // 대메뉴와 해당 하위 메뉴들을 함께 가져오는 함수
+    function getMenuGroupElements(menuRow) {
+        const elements = [menuRow];
+        const menuId = menuRow.dataset.menuId;
+        const level = parseInt(menuRow.dataset.level) || 0;
+        
+        // 대메뉴인 경우 모든 하위 메뉴도 포함
+        if (level === 0) {
+            let next = menuRow.nextElementSibling;
+            while (next && (next.classList.contains('menu-row') || next.classList.contains('menu-card'))) {
+                const nextLevel = parseInt(next.dataset.level) || 0;
+                if (nextLevel > 0 && next.dataset.parentId === menuId) {
+                    elements.push(next);
+                    next = next.nextElementSibling;
+                } else {
+                    break;
+                }
+            }
+        }
+        
+        return elements;
+    }
+    
+    // 같은 레벨의 이전 메뉴 찾기
+    function findPrevSameLevel(row) {
+        const level = parseInt(row.dataset.level) || 0;
+        const parentId = row.dataset.parentId || null;
+        let prev = row.previousElementSibling;
+        
+        while (prev && (prev.classList.contains('menu-row') || prev.classList.contains('menu-card'))) {
+            const prevLevel = parseInt(prev.dataset.level) || 0;
+            const prevParentId = prev.dataset.parentId || null;
+            
+            // 같은 레벨이고 같은 부모인 경우
+            if (prevLevel === level && prevParentId === parentId) {
+                return prev;
+            }
+            // 대메뉴를 이동하는 경우, 다른 대메뉴 그룹의 첫 번째 요소 찾기
+            if (level === 0 && prevLevel === 0) {
+                return prev;
+            }
+            // 레벨이 낮아지면 (부모로 올라가면) 더 이상 검색 안함
+            if (prevLevel < level) {
+                return null;
+            }
+            
+            prev = prev.previousElementSibling;
+        }
+        
+        return null;
+    }
+    
+    // 같은 레벨의 다음 메뉴 찾기
+    function findNextSameLevel(row) {
+        const level = parseInt(row.dataset.level) || 0;
+        const parentId = row.dataset.parentId || null;
+        
+        // 대메뉴인 경우 하위 메뉴들을 건너뛰고 다음 대메뉴 찾기
+        if (level === 0) {
+            const menuGroup = getMenuGroupElements(row);
+            const lastInGroup = menuGroup[menuGroup.length - 1];
+            let next = lastInGroup.nextElementSibling;
+            
+            while (next && (next.classList.contains('menu-row') || next.classList.contains('menu-card'))) {
+                const nextLevel = parseInt(next.dataset.level) || 0;
+                if (nextLevel === 0) {
+                    return next;
+                }
+                next = next.nextElementSibling;
+            }
+            return null;
+        }
+        
+        // 하위 메뉴인 경우
+        let next = row.nextElementSibling;
+        while (next && (next.classList.contains('menu-row') || next.classList.contains('menu-card'))) {
+            const nextLevel = parseInt(next.dataset.level) || 0;
+            const nextParentId = next.dataset.parentId || null;
+            
+            if (nextLevel === level && nextParentId === parentId) {
+                return next;
+            }
+            // 대메뉴가 나오면 더 이상 검색 안함
+            if (nextLevel === 0) {
+                return null;
+            }
+            
+            next = next.nextElementSibling;
+        }
+        
+        return null;
+    }
+
     // 표시 순서 상하 조정 (데스크탑 테이블 및 모바일 카드 모두 지원)
     document.addEventListener('click', function(e) {
         if (e.target.closest('.order-up-btn')) {
@@ -651,9 +765,25 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!row) return;
             
             const container = row.parentNode;
-            const prevRow = row.previousElementSibling;
-            if (prevRow && (prevRow.classList.contains('menu-row') || prevRow.classList.contains('menu-card'))) {
-                container.insertBefore(row, prevRow);
+            const level = parseInt(row.dataset.level) || 0;
+            
+            if (level === 0) {
+                // 대메뉴: 대메뉴 그룹 전체를 이동
+                const menuGroup = getMenuGroupElements(row);
+                const prevMenu = findPrevSameLevel(row);
+                
+                if (prevMenu) {
+                    // 이전 대메뉴 앞으로 이동
+                    menuGroup.forEach(el => {
+                        container.insertBefore(el, prevMenu);
+                    });
+                }
+            } else {
+                // 하위 메뉴: 같은 부모 내에서만 이동
+                const prevRow = findPrevSameLevel(row);
+                if (prevRow) {
+                    container.insertBefore(row, prevRow);
+                }
             }
         } else if (e.target.closest('.order-down-btn')) {
             const btn = e.target.closest('.order-down-btn');
@@ -661,9 +791,34 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!row) return;
             
             const container = row.parentNode;
-            const nextRow = row.nextElementSibling;
-            if (nextRow && (nextRow.classList.contains('menu-row') || nextRow.classList.contains('menu-card'))) {
-                container.insertBefore(nextRow, row);
+            const level = parseInt(row.dataset.level) || 0;
+            
+            if (level === 0) {
+                // 대메뉴: 대메뉴 그룹 전체를 이동
+                const menuGroup = getMenuGroupElements(row);
+                const nextMenu = findNextSameLevel(row);
+                
+                if (nextMenu) {
+                    // 다음 대메뉴 그룹 뒤로 이동
+                    const nextMenuGroup = getMenuGroupElements(nextMenu);
+                    const insertAfter = nextMenuGroup[nextMenuGroup.length - 1];
+                    
+                    // 삽입 위치 다음 요소 앞에 삽입
+                    const insertBefore = insertAfter.nextElementSibling;
+                    menuGroup.forEach(el => {
+                        if (insertBefore) {
+                            container.insertBefore(el, insertBefore);
+                        } else {
+                            container.appendChild(el);
+                        }
+                    });
+                }
+            } else {
+                // 하위 메뉴: 같은 부모 내에서만 이동
+                const nextRow = findNextSameLevel(row);
+                if (nextRow) {
+                    container.insertBefore(nextRow, row);
+                }
             }
         }
     });

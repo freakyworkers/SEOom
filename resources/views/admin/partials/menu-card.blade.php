@@ -28,7 +28,7 @@
     $displayFontColor = $menu->font_color ?? ($globalMenuFontColor ?? null);
 @endphp
 
-<div class="card mb-3 menu-card" data-menu-id="{{ $menu->id }}" data-parent-id="{{ $menu->parent_id }}" style="{{ $level > 0 ? 'margin-left: 1.5rem; border-left: 3px solid #0d6efd;' : '' }}">
+<div class="card mb-3 menu-card" data-menu-id="{{ $menu->id }}" data-parent-id="{{ $menu->parent_id }}" data-level="{{ $level }}" style="{{ $level > 0 ? 'margin-left: 1.5rem; border-left: 3px solid #0d6efd;' : '' }}">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-start mb-2">
             <div class="flex-grow-1">
@@ -46,7 +46,8 @@
                 <div class="small text-muted">
                     <div><strong>연결 타입:</strong> {{ $linkTypeLabels[$menu->link_type] ?? $menu->link_type }}</div>
                     <div><strong>연결 대상:</strong> {{ $linkTargetDisplay }}</div>
-                    @if($displayFontColor)
+                    @if($level == 0 && $displayFontColor)
+                        {{-- 대메뉴에만 폰트 컬러 정보 표시 --}}
                         <div><strong>폰트 컬러:</strong> 
                             <span style="background-color: {{ $displayFontColor }}; width: 12px; height: 12px; display: inline-block; border: 1px solid #dee2e6; border-radius: 2px; vertical-align: middle;"></span>
                             {{ $displayFontColor }}
@@ -67,9 +68,12 @@
                     <i class="bi bi-arrow-down"></i>
                 </button>
             </div>
+            @if($level == 0)
+            {{-- 대메뉴에만 하위 메뉴 추가 버튼 표시 --}}
             <button type="button" class="btn btn-sm btn-outline-primary add-submenu-btn" data-menu-id="{{ $menu->id }}">
                 <i class="bi bi-plus-circle me-1"></i>하위 메뉴
             </button>
+            @endif
             <button type="button" class="btn btn-sm btn-outline-danger delete-menu-btn" data-menu-id="{{ $menu->id }}">
                 <i class="bi bi-trash me-1"></i>삭제
             </button>

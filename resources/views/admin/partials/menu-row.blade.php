@@ -30,7 +30,7 @@
     $fontColorDisplay = $displayFontColor ?? '';
 @endphp
 
-<tr class="{{ $rowClass }} menu-row" data-menu-id="{{ $menu->id }}" data-parent-id="{{ $menu->parent_id }}">
+<tr class="{{ $rowClass }} menu-row" data-menu-id="{{ $menu->id }}" data-parent-id="{{ $menu->parent_id }}" data-level="{{ $level }}">
     <td>
         @if($level > 0)
             <span class="text-muted">└─</span>
@@ -45,6 +45,8 @@
     <td>{{ $linkTypeLabels[$menu->link_type] ?? $menu->link_type }}</td>
     <td>{{ $linkTargetDisplay }}</td>
     <td>
+        @if($level == 0)
+        {{-- 대메뉴에만 폰트 컬러 설정 표시 --}}
         <div class="d-flex align-items-center gap-1 justify-content-center">
             <input type="color" class="form-control form-control-color menu-font-color-picker" data-menu-id="{{ $menu->id }}" value="{{ $displayFontColor ?: '#000000' }}" style="width: 40px; height: 32px; cursor: pointer;">
             <input type="text" class="form-control form-control-sm menu-font-color-input" data-menu-id="{{ $menu->id }}" value="{{ $menu->font_color ?? '' }}" placeholder="{{ $globalMenuFontColor ?? '기본값' }}" maxlength="20" style="width: 80px;">
@@ -54,6 +56,10 @@
         </div>
         @if(!$menu->font_color && $globalMenuFontColor)
             <small class="text-muted d-block mt-1" style="font-size: 10px;">전체설정: {{ $globalMenuFontColor }}</small>
+        @endif
+        @else
+        {{-- 하위 메뉴는 "-" 표시 --}}
+        <span class="text-muted">-</span>
         @endif
     </td>
     <td>
@@ -67,9 +73,12 @@
         </div>
     </td>
     <td>
+        @if($level == 0)
+        {{-- 대메뉴에만 하위 메뉴 추가 버튼 표시 --}}
         <button type="button" class="btn btn-sm btn-outline-primary add-submenu-btn" data-menu-id="{{ $menu->id }}">
             하위 메뉴 추가
         </button>
+        @endif
         <button type="button" class="btn btn-sm btn-outline-danger delete-menu-btn" data-menu-id="{{ $menu->id }}">
             삭제
         </button>
