@@ -499,12 +499,12 @@ Route::middleware('web')->group(function () {
             }
                 return app(\App\Http\Controllers\AdminController::class)->crawlersDestroy($masterSite, $crawler);
             })->name('master.admin.crawlers.delete');
-            Route::post('/crawlers/{crawler}/toggle-active', function (\App\Models\Crawler $crawler) {
+            Route::post('/crawlers/{crawler}/toggle-active', function (\App\Models\Crawler $crawler, Request $request) {
             $masterSite = \App\Models\Site::getMasterSite();
             if (!$masterSite) {
                 abort(404);
             }
-                return app(\App\Http\Controllers\AdminController::class)->crawlersToggleActive($masterSite, $crawler);
+                return app(\App\Http\Controllers\AdminController::class)->crawlersToggleActive($masterSite, $crawler, $request);
             })->name('master.admin.crawlers.toggle-active');
             Route::post('/crawlers/test', function (Request $request) {
             $masterSite = \App\Models\Site::getMasterSite();
@@ -2253,7 +2253,7 @@ Route::middleware(['web', 'block.ip'])->group(function () {
             if (!$site) {
                 abort(404);
             }
-            return app(\App\Http\Controllers\AdminController::class)->crawlersToggleActive($site, $crawler);
+            return app(\App\Http\Controllers\AdminController::class)->crawlersToggleActive($site, $crawler, $request);
         });
         Route::post('/crawlers/test', function (Request $request) {
             $site = $request->attributes->get('site');
