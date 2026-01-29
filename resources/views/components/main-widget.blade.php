@@ -1717,7 +1717,7 @@
             $boardMoreUrl = null;
             if ($widget->type === 'board' && !empty($widgetSettings['board_id'])) {
                 $boardForMore = \App\Models\Board::find($widgetSettings['board_id']);
-                if ($boardForMore) {
+                if ($boardForMore && !empty($boardForMore->slug)) {
                     $boardMoreUrl = route('boards.show', ['site' => $site->slug, 'board' => $boardForMore->slug]);
                 }
             }
