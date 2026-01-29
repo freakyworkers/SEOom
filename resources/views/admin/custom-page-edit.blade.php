@@ -900,13 +900,13 @@
                             <i class="bi bi-question-circle text-muted ms-1" 
                                data-bs-toggle="tooltip" 
                                data-bs-placement="top" 
-                               title="사진형 게시판, 북마크 게시판, 블로그 게시판만 선택 가능합니다."></i>
+                               title="사진형, 북마크, 블로그, 이벤트 게시판만 선택 가능합니다."></i>
                         </label>
                         <select class="form-select" id="edit_custom_page_widget_gallery_board_id" name="gallery_board_id">
                             <option value="">선택하세요</option>
                             @foreach(\App\Models\Board::where('site_id', $site->id)->active()->orderBy('order')->get() as $board)
-                                @if(in_array($board->type, ['photo', 'bookmark', 'blog', 'pinterest']))
-                                    <option value="{{ $board->id }}">{{ $board->name }} @if($board->type === 'pinterest')(핀터레스트)@endif</option>
+                                @if(in_array($board->type, ['photo', 'bookmark', 'blog', 'pinterest', 'event']))
+                                    <option value="{{ $board->id }}">{{ $board->name }} @if($board->type === 'pinterest')(핀터레스트)@elseif($board->type === 'event')(이벤트)@endif</option>
                                 @endif
                             @endforeach
                         </select>
