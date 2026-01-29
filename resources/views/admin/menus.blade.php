@@ -603,8 +603,20 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const menus = [];
-        // 데스크탑 테이블 또는 모바일 카드에서 메뉴 정보 수집
-        const menuElements = document.querySelectorAll('.menu-row, .menu-card');
+        // 화면에 보이는 요소만 수집 (데스크탑 또는 모바일 중 하나만)
+        // 데스크탑 테이블이 보이면 데스크탑 요소 사용, 아니면 모바일 카드 사용
+        const desktopContainer = document.getElementById('menuListBody');
+        const mobileContainer = document.getElementById('mobileMenuListBody');
+        
+        let menuElements;
+        if (desktopContainer && desktopContainer.offsetParent !== null) {
+            menuElements = desktopContainer.querySelectorAll('.menu-row');
+        } else if (mobileContainer && mobileContainer.offsetParent !== null) {
+            menuElements = mobileContainer.querySelectorAll('.menu-card');
+        } else {
+            // 기본적으로 데스크탑 테이블 사용
+            menuElements = desktopContainer ? desktopContainer.querySelectorAll('.menu-row') : [];
+        }
         
         // 대메뉴와 하위 메뉴의 순서를 각각 계산
         let parentOrderMap = {}; // 각 부모 메뉴 아래의 하위 메뉴 순서
