@@ -4231,7 +4231,7 @@ class AdminController extends Controller
         $request->validate([
             'container_id' => 'required|integer',
             'column_index' => 'required|integer',
-            'widgets' => 'required|array',
+            'widgets' => 'present|array', // 빈 배열도 허용 (위젯이 다른 칸으로 이동하면 이전 칸이 비어있을 수 있음)
             'widgets.*.id' => 'required_with:widgets|integer',
             'widgets.*.order' => 'required_with:widgets|integer',
             'widgets.*.container_id' => 'nullable|integer', // 이동된 위젯의 새 컨테이너 ID
@@ -4240,7 +4240,7 @@ class AdminController extends Controller
 
         $containerId = $request->container_id;
         $columnIndex = $request->column_index;
-        $widgets = $request->widgets;
+        $widgets = $request->widgets ?? [];
 
         // 컨테이너가 해당 사이트에 속하는지 확인
         $container = MainWidgetContainer::where('id', $containerId)
@@ -5120,7 +5120,7 @@ class AdminController extends Controller
         $request->validate([
             'container_id' => 'required|integer',
             'column_index' => 'required|integer',
-            'widgets' => 'required|array',
+            'widgets' => 'present|array', // 빈 배열도 허용 (위젯이 다른 칸으로 이동하면 이전 칸이 비어있을 수 있음)
             'widgets.*.id' => 'required_with:widgets|integer',
             'widgets.*.order' => 'required_with:widgets|integer',
             'widgets.*.container_id' => 'nullable|integer', // 이동된 위젯의 새 컨테이너 ID
@@ -5129,7 +5129,7 @@ class AdminController extends Controller
 
         $containerId = $request->container_id;
         $columnIndex = $request->column_index;
-        $widgets = $request->widgets;
+        $widgets = $request->widgets ?? [];
 
         // 컨테이너가 해당 커스텀 페이지에 속하는지 확인
         $container = CustomPageWidgetContainer::where('id', $containerId)
