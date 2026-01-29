@@ -1712,6 +1712,15 @@
             $cardHeaderBg = $isDark ? 'rgb(43, 43, 43)' : 'white';
             $cardHeaderBorder = $isDark ? 'rgba(255, 255, 255, 0.1)' : '#dee2e6';
             $cardHeaderTextColor = $isDark ? '#ffffff' : 'inherit';
+            
+            // 게시판 위젯의 경우 더보기 링크를 위한 게시판 URL 가져오기
+            $boardMoreUrl = null;
+            if ($widget->type === 'board' && !empty($widgetSettings['board_id'])) {
+                $boardForMore = \App\Models\Board::find($widgetSettings['board_id']);
+                if ($boardForMore) {
+                    $boardMoreUrl = route('boards.show', ['site' => $site->slug, 'board' => $boardForMore->slug]);
+                }
+            }
         @endphp
         @if($widget->type === 'gallery')
             @if(!empty($widget->title))
@@ -1720,8 +1729,11 @@
             </div>
             @endif
         @else
-        <div class="card-header" style="background-color: {{ $cardHeaderBg }}; color: {{ $cardHeaderTextColor }}; padding-top: 1rem !important; {{ $widgetTopBorderStyle }}{{ $isRoundTheme ? ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' : ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' }} border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; border: none !important; border-bottom: 1px solid {{ $cardHeaderBorder }} !important;">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: {{ $cardHeaderBg }}; color: {{ $cardHeaderTextColor }}; padding-top: 1rem !important; {{ $widgetTopBorderStyle }}{{ $isRoundTheme ? ' border-top-left-radius: 0.5rem !important; border-top-right-radius: 0.5rem !important;' : ' border-radius: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;' }} border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; border: none !important; border-bottom: 1px solid {{ $cardHeaderBorder }} !important;">
             <h6 class="mb-0" style="color: {{ $cardHeaderTextColor }};">{{ $widget->title }}</h6>
+            @if($boardMoreUrl)
+                <a href="{{ $boardMoreUrl }}" class="btn btn-sm btn-outline-secondary" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">더보기 <i class="bi bi-chevron-right"></i></a>
+            @endif
         </div>
         @endif
     @endif
