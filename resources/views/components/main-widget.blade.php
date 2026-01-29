@@ -2275,7 +2275,7 @@
                         if ($board && $board->type === 'pinterest') {
                             $showTitle = $board->pinterest_show_title ?? false;
                         }
-                        if ($board && in_array($board->type, ['photo', 'bookmark', 'blog', 'pinterest'])) {
+                        if ($board && in_array($board->type, ['photo', 'bookmark', 'blog', 'pinterest', 'event'])) {
                             $query = \App\Models\Post::where('site_id', $site->id)
                                 ->where('board_id', $boardId)
                                 ->with(['user', 'board', 'attachments'])

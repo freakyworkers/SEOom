@@ -1666,7 +1666,7 @@
                     
                     if ($boardId) {
                         $board = \App\Models\Board::find($boardId);
-                        if ($board && in_array($board->type, ['photo', 'bookmark', 'blog'])) {
+                        if ($board && in_array($board->type, ['photo', 'bookmark', 'blog', 'pinterest', 'event'])) {
                             $query = \App\Models\Post::where('site_id', $site->id)
                                 ->where('board_id', $boardId)
                                 ->with(['user', 'board', 'attachments'])
